@@ -1,0 +1,7 @@
+ArtE-ephys Version 0.1
+
+Very early stages.  Building the basic program (when something goes up) can be done w/ the command:
+
+g++ src/*.cpp -o arte_test -lnidaqmx `pkg-config gtkmm-2.4 --cflags --libs`
+
+This will get a little more complicated when we add openGL calls.
