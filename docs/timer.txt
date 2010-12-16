@@ -1,0 +1,25 @@
+Timer Object
+
+Goal:
+Build a class that is instanciated once per machine (once per process?), to keep track of global experiment time.
+
+Primary functionality:
+-When asked, report the global experiment time (probabl in units of some clock ticks since timer-reset)
+-Respond to an incoming clock signal by updating its internal count
+-If slave, and it process starts while the master is already recording, communicate with the master to negotiate a pulse to start counting again, and find the proper initializing count for this timer to match that of the master counter.
+-Accept a command to write the current clock count (perhaps alongside system time) to an eventstring in the common output file.
+
+Usage:
+-Should be instanciated by the main loop.  A handle to it should be passed to any object that needs to collect timestamps
+-Pass some simple instructions, and it should communicate with a counter card (in slave mode), or counter card & clock card (in master mode), or should set itself to simply use the system clock to give a 'virtual count' since timer reset.
+-The most likely objects to query the timer object are 
+ (a) the DataBufferIn object (which communicates w/ NiDAQ card), timestamping the beginning of each buffer 
+ (b) the main gui, in writing event-strings, which will be timestamped
+ (c) tracker program, timestamping camera frames in.
+ (d) any closed-loop event triggering object, which will have to write eventstrings when it does some output
+
+
+Hardware target:
+Need to figure it out.
+Need to get the driver for it.
+Need to figure out how to respond to line-in triggering events to that card.
