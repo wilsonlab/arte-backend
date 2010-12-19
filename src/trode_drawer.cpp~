@@ -1,8 +1,0 @@
-#include "trode_drawer.h"
-
-TrodeDrawer::TrodeDrawer(){
-}
-
-TrodeDrawer::~TrodeDrawer(){
-}
-
