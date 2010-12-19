@@ -1,0 +1,1 @@
+const int MAX_TRODE_NAME_LENGTH = 50;
