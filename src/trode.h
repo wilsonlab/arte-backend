@@ -6,6 +6,13 @@
 
 enum trig_mode_t {CENTER_ON_THRESH=0, CENTER_ON_NEXT_MAX=1};
 
+// not a method, but a regular function
+// this way has less overhead.
+// fn gets pointer to trode, so it has access
+// to all the public member variables
+void trode_filter_data(Trode *, float64 *, int);  // trode_filter_data(trode_to_process, raw buffer, timestamp at buffer start)
+void trode_process_data(Trode *); // only need access to this trode's buffers (filtered data is there)
+
 Class Trode{
 
  public:
@@ -26,12 +33,8 @@ Class Trode{
 
   //add_data(prt_to_array, n_chans, n_samps_per_chan, time_at_beginning_of_buffer)
   void add_data(float64 *,int,int,long int);
-
- private:
-
-  TrodeDrawer td;
-
-  ArteOpt opt;
+  // NB: we'll prob use the fn's trode_filter_data & trode_process_data instead of this method
+  // to save overhead.  But let's keep this member fn and implement it so we can compare the execution time
 
   float64 *buffer;
   int data_cursor;
