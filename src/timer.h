@@ -10,7 +10,7 @@ class Timer {
  private:
   
   timer_role_t timer_role;  // is this master timer (TIMER_ROLE_MASTER) or slave (TIMER_ROLE_SLAVE)
-  unsigned long int raw_count_value;
+  unsigned long int raw_count_value; // the count value on the countercard, if we read that
   unsigned long int count_offset_value; // we may want to store a value 
   bool timer_armed; // armed = able to start running at the next sync-start pulse
   bool timer_running; // running = incrementing at each tic pulse
@@ -20,11 +20,9 @@ class Timer {
  public:
   
   Timer();
-  ~Timer();
+  virtual ~Timer();
   int timer_init();
   unsigned long int get_count();
-  unsigned long int get_count_by_sysclock();
-  unsigned long int get_count_by_countercard();
 
   void set_count(unsigned long int); // an override function.  Generally shouldn't be used.
 
@@ -37,6 +35,10 @@ class Timer {
 
   // make a packet giving the count value at current sys time.  Send it to
   // another machine to check if its count value was the same at its systime
-  unsigned long int test_sync(int); 
+  unsigned long int test_sysclock_sync(int); 
+
+ private:
+  unsigned long int get_count_by_sysclock();
+  unsigned long int get_count_by_countercard();
 
 }

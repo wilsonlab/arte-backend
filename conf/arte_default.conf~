@@ -1,0 +1,12 @@
+<options> arte_default_master
+
+ <setup>
+
+  <timer>
+   <timer_source> sysclock </timer_source>
+   <timer_role> master </timer_role>
+  </timer>
+
+  <raw_dump> </raw_dump>
+
+  <
