@@ -2,7 +2,6 @@
 #define TRODE_H_
 
 #include <NIDAQmx.h>
-#include "arteopt.h"  
 
 enum trig_mode_t {CENTER_ON_THRESH=0, CENTER_ON_NEXT_MAX=1};
 
@@ -16,9 +15,17 @@ void trode_process_data(Trode *); // only need access to this trode's buffers (f
 Class Trode{
 
  public:
+  // Constructor will be called by arteopt.cpp itself, to avoid this class having
+  // an include for arteopt.h (prefer arte opt includes trode, for scope reasons;
+  // arteopt now does all the initialization stuff, and needs a std::vector<Trode>
   Trode::Trode();
+  Trode::Trode(std::string name, int n_chans, float64 *thresholds, int samps_pre, int samps_post, int trig_mode,
+	       std::string filt_name);
+
+  // The old idea: constructor just takes a tetrode name and the options structure. 
   Trode::Trode(char *, opt *)   // override constructor, take just a name and opt object
                                 // then let the trode finish initializing
+
   virtual Trode::~Trode();
 
   void set_filter();
@@ -36,7 +43,8 @@ Class Trode{
   // NB: we'll prob use the fn's trode_filter_data & trode_process_data instead of this method
   // to save overhead.  But let's keep this member fn and implement it so we can compare the execution time
 
-  float64 *buffer;
+  float64 *raw_buffer;
+  float64 *filtered_buffer;
   int data_cursor;
   int cursor_time;
 
