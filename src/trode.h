@@ -35,8 +35,9 @@ Class Trode{
   int get_n_chans;
   int get_n_samps_per_chan();
   
-  void remove_all_drawing_areas();
-  void add_drawing_area();
+  // these are handled during initialization by arteopt
+  // void remove_all_drawing_areas();
+  // void add_drawing_area();
 
   //add_data(prt_to_array, n_chans, n_samps_per_chan, time_at_beginning_of_buffer)
   void add_data(float64 *,int,int,long int);
