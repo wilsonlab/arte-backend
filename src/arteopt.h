@@ -17,7 +17,10 @@ std::vector <Trode> trode_list;
 // but 'tetrode banks' and eeg windows
 std::vector <Gtk/Window> window_list;
 
-void arte_init(std::string &, std::string &); // setup filename, session filename 
+boost::property_tree::ptree setup_pt;
+boost::property_tree::ptree session_pt;
+
+void arte_init(argc, argv, std::string &, std::string &); // argc, argv, setup filename, session filename 
 
 int save_setup_config(std::string &);
 int save_session_config(std::string &);
