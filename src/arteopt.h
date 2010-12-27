@@ -20,7 +20,13 @@ std::vector <Gtk/Window> window_list;
 boost::property_tree::ptree setup_pt;
 boost::property_tree::ptree session_pt;
 
-void arte_init(argc, argv, std::string &, std::string &); // argc, argv, setup filename, session filename 
+void arte_init(int argc,char *argv[], std::string &, std::string &); // argc, argv, setup filename, session filename 
+
+void arte_setup_init(int argc, char *argv[]);
+void arte_session_init(int argc, char *argv[]);
+void arte_setup_daq_cards();
+
+void new_trode(ptree::value_type &v);
 
 int save_setup_config(std::string &);
 int save_session_config(std::string &);
