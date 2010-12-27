@@ -1,6 +1,7 @@
 #include "arteopt.h"
 #include "timer.h"
 #include <boost/foreach.hpp>
+#include <assert.h>
 
 using boost::property_tree;
 
@@ -36,17 +37,40 @@ void arte_init(int argc, char *argv[], std::string &setup_fn, std::string &sessi
 
 void arte_setup_init(int argc, char *argv[]){
 
+
+
 }
 
 void arte_session_init(int argc, char *argv[]){
 
   Trode trode_default(); // store the default settings here
 
+
   BOOST_FOREACH(ptree::value_type &v, 
 		session_pt.get_child("options.session.trodes"))
-    new_trode(v);
+    trode_group.push_back(new_trode(v));
 		
 
 }
 
 Trode new_trode(ptree::value_type &v){
+
+  // check the uniquness of the new name
+  assert(trode_list.find(v->first) == trode_list.end()); // assert that finding the trode name returns map::end iterator, meaning name doesn't exist as key in list
+
+  Trode new_trode;
+  new_trode.trode_name = v->first;
+
+  new_trode.n_chans = FIX;
+  new_trode.chan_inds = new int [new_trode.n_chans];
+
+
+
+  new_trode.buffer_mult_of_input = FIX;
+  new_trode.ptr_to_raw_stream = FIX;
+  new_trode.filt_buffer = FIX;
+  new_trode.raw_buffer = new float64 [FIX];
+  new_trode.raw_data_cursor = 0;
+  new_trode.filt_data_cursor = 0;
+  new_trode.raw_cursor_time = 0;
+  new_trode.filt_cursor_time = 0;

@@ -2,6 +2,7 @@
 #define TRODE_H_
 
 #include <NIDAQmx.h>
+#include <string>
 
 enum trig_mode_t {CENTER_ON_THRESH=0, CENTER_ON_NEXT_MAX=1};
 
@@ -44,10 +45,15 @@ Class Trode{
   // NB: we'll prob use the fn's trode_filter_data & trode_process_data instead of this method
   // to save overhead.  But let's keep this member fn and implement it so we can compare the execution time
 
+  string trode_name;
+  float64 *ptr_to_raw_stream;
+  int buffer_mult_of_input; // how many input buffers do we keep for this trode?
   float64 *raw_buffer;
-  float64 *filtered_buffer;
-  int data_cursor;
-  int cursor_time;
+  float64 *filt_buffer;
+  int raw_data_cursor;
+  int filt_data_cursor;
+  int raw_cursor_time;
+  int filt_cursor_time;
 
   int n_chans;                // num of chans for this trode
   int n_samps_per_chan;       // num of samps per chan
