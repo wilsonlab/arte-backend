@@ -22,6 +22,10 @@ void parse_line_for_nums(std::string the_line,int n_elem, T *t){
 
   iss.str(the_line);
 
+
+  // counting this way seems to be sensitive to white spaces at 
+  // beginning and end of string.  Can this be fixed?
+  // (try it with test_util.cpp)
   int n = 0;
   while(! iss.eof()){
     iss >> t[n];
