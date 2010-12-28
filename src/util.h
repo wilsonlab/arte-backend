@@ -28,6 +28,9 @@ void parse_line_for_nums(std::string the_line,int n_elem, T *t){
 
   if(n != n_elem){
     std::cerr << "While parsing nums from a string, found " << n << " numbers when " << n_elem << " were requested." << std::endl;
+    std::cerr << "Maybe an error in arteopt, or in the xml .conf files.  If n_chans, check for n thresh values and n window_heights, etc." << std::endl;
+    std::cerr << "Input string:" << the_line << std::endl;
+    std::cerr << "(watch out for white spaces?)" << std::endl;
     for(int a = 0; a < n; a++)
       std::cout << "array element is: " << t[a] << std::endl;
   }

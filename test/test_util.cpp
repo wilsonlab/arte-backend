@@ -18,6 +18,10 @@ int main(int argc, char *argv[]){
 
   parse_line_for_nums<double>(str, 5,b);
 
+  for (int n = 0; n < 5; n++){
+    std::cout << "b[" << n << "] = " << b[n] << std::endl;
+  }
+
   return 0;
 
 }
