@@ -10,7 +10,9 @@
 #include "assert.h"
 #include <stdio.h>
 
-
+// Template functions can't have their interface and implementation separated.
+// So please don't move this fn to util.cpp
+// Thanks
 template <class T> 
 void parse_line_for_nums(std::string the_line,int n_elem, T *t){
   
