@@ -22,7 +22,7 @@ string session_config_filename;
 std::map <string, Trode> trode_map;
 
 // struct to represent a daq card for neural data
-struct daq_card{
+struct neural_daq{
   string dev_name;
   int n_samps_per_buffer;
   int n_chans;
@@ -30,11 +30,11 @@ struct daq_card{
 };
 
 // map list for daq cards
-std::map <string, daq_card> daq_card_map;
+std::map <string, neural_daq> neural_daq_map;
 
 // vector of display ports (prob not to include 'main' window)
 // but 'tetrode banks' and eeg windows
-std::map <string, Gtk/Window> window_list;
+std::map <string, Gtk/Window> window_map;
 
 boost::property_tree::ptree setup_pt;
 boost::property_tree::ptree session_pt;
@@ -45,7 +45,8 @@ void arte_setup_init(int argc, char *argv[]);
 void arte_session_init(int argc, char *argv[]);
 void arte_setup_daq_cards();  // eg tasks, virtual chans, callback attachment
 
-void new_trode(ptree::value_type &v); // ptree_value_type &v copied from recipe, don't quite understand this
+Trode new_trode(ptree::value_type &v); // ptree_value_type &v copied from recipe, don't quite understand this
+neural_daq new_neural_daq(ptree::value_type &v);
 
 int save_setup_config(std::string &);
 int save_session_config(std::string &);

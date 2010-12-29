@@ -37,9 +37,15 @@ void arte_init(int argc, char *argv[], std::string &setup_fn, std::string &sessi
 
 void arte_setup_init(int argc, char *argv[]){
 
+  // Mostly for initializing the neural daq cards.  But other global state stuff
+  // could be initialized here, too.
 
+  BOOST_FOREACH(ptree::value_type &v,
+		setup_pt.get_child("options.setup.neural_daq_list"))
+    neural_daq_map.push_back(new_neural_daq(v));
 
 }
+
 
 void arte_session_init(int argc, char *argv[]){
 
@@ -48,20 +54,22 @@ void arte_session_init(int argc, char *argv[]){
 
   BOOST_FOREACH(ptree::value_type &v, 
 		session_pt.get_child("options.session.trodes"))
-    trode_group.push_back(new_trode(v));
+    trode_map.push_back(new_trode(v));
 		
 
 }
 
 Trode new_trode(ptree::value_type &v){
 
+  istringstream iss; // helper istream to convert text to ints, floats, etc.
+
   // check the uniquness of the new name
-  assert(trode_list.find(v->first) == trode_list.end()); // assert that finding the trode name returns map::end iterator, meaning name doesn't exist as key in list
+  assert(trode_map.find(v->first) == trode_map.end()); // assert that finding the trode name returns map::end iterator, meaning name doesn't exist as key in list
 
   Trode new_trode;
   new_trode.trode_name = v->first;
 
-  new_trode.n_chans = FIX;
+  new_trode.n_chans;
   new_trode.chan_inds = new int [new_trode.n_chans];
 
 

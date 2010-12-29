@@ -41,10 +41,26 @@ void parse_line_for_nums(std::string the_line,int n_elem, T *t){
       std::cout << "array element is: " << t[a] << std::endl;
   }
   assert(n == n_elem);
-
 }
 
+// Populate a trode's fields with either the value given by the property tree,
+// or, if property tree has no info for this trode, use the default value
+// To specify that the trode being populated _IS_ the default trode, pass NULL
+// as the last argument.
+// var is a pointer to the member variable to be set.  this_trode_ptree is a ptree
+// node corresponding to only this tetrode.  tree_key is a string key into the ptree
+// to the target parameter. default_var is NULL or a pointer to the default value to use
+// in the case that tree_key into ptree doesn't give a value.
+template <class T>
+int assign_trode_property(T *var, boost::property_tree::ptree this_trode_ptree, std::string tree_key, T *default_var){
 
+  // How do you check for failure when searching a ptree?
+  istringstream iss;
+  iss.chr(this_trode_ptree
+
+  if(default_var == NULL){  // then we're popu
+
+}
 
 
 
