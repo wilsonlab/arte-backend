@@ -67,6 +67,9 @@ Trode new_trode(ptree::value_type &v){
   assert(trode_map.find(v->first) == trode_map.end()); // assert that finding the trode name returns map::end iterator, meaning name doesn't exist as key in list
 
   Trode new_trode;
+
+  new_trode.trode_name = v.second.data();
+
   new_trode.trode_name = v->first;
 
   new_trode.n_chans;
@@ -74,11 +77,13 @@ Trode new_trode(ptree::value_type &v){
 
 
 
-  new_trode.buffer_mult_of_input = FIX;
-  new_trode.ptr_to_raw_stream = FIX;
-  new_trode.filt_buffer = FIX;
-  new_trode.raw_buffer = new float64 [FIX];
-  new_trode.raw_data_cursor = 0;
-  new_trode.filt_data_cursor = 0;
-  new_trode.raw_cursor_time = 0;
-  new_trode.filt_cursor_time = 0;
+  //new_trode.buffer_mult_of_input = FIX;
+  //new_trode.ptr_to_raw_stream = FIX;
+  //new_trode.filt_buffer = FIX;
+  //new_trode.raw_buffer = new float64 [FIX];
+  //new_trode.raw_data_cursor = 0;
+  //new_trode.filt_data_cursor = 0;
+  //new_trode.raw_cursor_time = 0; 
+  //new_trode.filt_cursor_time = 0;
+
+}
