@@ -10,8 +10,7 @@ void arte_init(int argc, char *argv[], std::string &setup_fn, std::string &sessi
   if(!setup_fn.empty())
     setup_config_filename = setup_fn.copy(); // .copy() method is the right way?
   else
-    setup_config_filename = default_setup_config_filename.copy();
-  
+    setup_config_filename = default_setup_config_filename.copy();  
   if(!session_fn.empty())
     session_config_filename = session_fn.copy();
   else
@@ -69,6 +68,7 @@ Trode new_trode(ptree::value_type &v){
   Trode new_trode;
 
   new_trode.trode_name = v.second.data();
+
 
   new_trode.trode_name = v->first;
 
