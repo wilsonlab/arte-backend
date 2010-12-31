@@ -7,6 +7,7 @@
 #include <vector>
 #include "trode.h"
 #include <NIDAQmx.h>
+#include <map>
 
 std::string setup_config_filename;
 std::string session_config_filename;
@@ -19,6 +20,8 @@ std::string session_config_filename;
 // But will lookup be slow?  It will only happen during init.
 // During init, each trode will hold a pointer into the buffer that gets filled by the daq card
 // rather than the daq card having to look up the trode repeatedly on each buffer cycle
+
+Trode test_t;
 
 std::map<std::string, Trode> trode_map;
 
@@ -47,8 +50,8 @@ void arte_setup_init(int argc, char *argv[]);
 void arte_session_init(int argc, char *argv[]);
 void arte_setup_daq_cards();  // eg tasks, virtual chans, callback attachment
 
-Trode new_trode(ptree::value_type &v); // ptree_value_type &v copied from recipe, don't quite understand this
-neural_daq new_neural_daq(ptree::value_type &v);
+Trode new_trode(boost::property_tree::ptree::value_type &v); // ptree_value_type &v copied from recipe, don't quite understand this
+neural_daq new_neural_daq(boost::property_tree::ptree::value_type &v);
 
 int save_setup_config(std::string &);
 int save_session_config(std::string &);

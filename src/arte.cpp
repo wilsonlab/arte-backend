@@ -7,10 +7,11 @@
 int main(int argc, char *argv[]){
 
   // implement in arteopt.  (global vars there for setup_opt, session_opt)
-  arte_init(argc, argv);
+  arte_init(argc, argv, defualt_setup_config_filename, default_session_config_filename);
 
   // this will call gtk_main(), main loop for gui.  Nothing beyond that
   // point will be executed until the gui is closed
-  arte_build_gui(argc, argv);
+  
+  //arte_build_gui(argc, argv);
 
 }
