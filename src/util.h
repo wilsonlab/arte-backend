@@ -55,10 +55,10 @@ template <class T>
 int assign_trode_property(T *var, boost::property_tree::ptree this_trode_ptree, std::string tree_key, T *default_var){
 
   // How do you check for failure when searching a ptree?
-  istringstream iss;
-  iss.chr(this_trode_ptree
+  //  istringstream iss;
+  //iss.chr(this_trode_ptree
 
-  if(default_var == NULL){  // then we're popu
+  //if(default_var == NULL){  // then we're popu
 
 }
 
