@@ -10,28 +10,29 @@ enum trig_mode_t {CENTER_ON_THRESH=0, CENTER_ON_NEXT_MAX=1};
 // this way has less overhead.
 // fn gets pointer to trode, so it has access
 // to all the public member variables
-void trode_filter_data(Trode *, float64 *, int);  // trode_filter_data(trode_to_process, raw buffer, timestamp at buffer start)
-void trode_process_data(Trode *); // only need access to this trode's buffers (filtered data is there)
 
-Class Trode{
+//void trode_filter_data(Trode *, float64 *, int);  // trode_filter_data(trode_to_process, raw buffer, timestamp at buffer start)
+//void trode_process_data(Trode *); // only need access to this trode's buffers (filtered data is there)
+
+class Trode{
 
  public:
   // Constructor will be called by arteopt.cpp itself, to avoid this class having
   // an include for arteopt.h (prefer arte opt includes trode, for scope reasons;
   // arteopt now does all the initialization stuff, and needs a std::vector<Trode>
-  Trode::Trode();
-  Trode::Trode(std::string name, int n_chans, float64 *thresholds, int samps_pre, int samps_post, int trig_mode,
+  Trode();
+  Trode(std::string name, int n_chans, float64 *thresholds, int samps_pre, int samps_post, int trig_mode,
 	       std::string filt_name);
 
   // The old idea: constructor just takes a tetrode name and the options structure. 
-  Trode::Trode(char *, opt *)   // override constructor, take just a name and opt object
+  //Trode(char *, opt *)   // override constructor, take just a name and opt object
                                 // then let the trode finish initializing
 
-  virtual Trode::~Trode();
+  virtual ~Trode();
 
   void set_filter();
   void set_trig_params();
-  void set_n_chans;
+  void set_n_chans();
   void set_n_samps_per_chan();
   int get_n_chans;
   int get_n_samps_per_chan();
@@ -45,7 +46,7 @@ Class Trode{
   // NB: we'll prob use the fn's trode_filter_data & trode_process_data instead of this method
   // to save overhead.  But let's keep this member fn and implement it so we can compare the execution time
 
-  string trode_name;
+  std::string trode_name;
   float64 *ptr_to_raw_stream;
   int buffer_mult_of_input; // how many input buffers do we keep for this trode?
   float64 *raw_buffer;
@@ -63,6 +64,9 @@ Class Trode{
   float64 *thresholds;        // array of threshold voltages, 1 per chan
   int samps_before_trig;      // how many samps to collect before trig ind
   int samps_after_trig;       // hom many samps to collect after trig ind (total samps is after + before + 1
+};
 
+void trode_filter_data(Trode *, float64 *, int); // trode_filter_data(trode_to_prosess, raw buffer, timestamp at buffer start)
+void trode_process_data(Trode *); // only need access to this trode's buffers (filtered data is there)
 
 #endif

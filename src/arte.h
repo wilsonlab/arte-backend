@@ -9,5 +9,5 @@
 // so they're declared and handled in arteopt
 
 bool raw_dump;
-string raw_dump_filename;
+std::string raw_dump_filename;
 

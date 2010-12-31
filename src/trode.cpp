@@ -4,6 +4,8 @@
 
 #include "trode.h"
 
+void trode_filter_data(Trode *, float64 *, int);
+
 Trode::Trode(){
 }
 
@@ -14,4 +16,3 @@ Trode::Trode(char *tn, ArteOpt *opt){
 Trode::~Trode(){
 
 }
-
