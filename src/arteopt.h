@@ -44,7 +44,7 @@ std::map <std::string, neural_daq> neural_daq_map;
 boost::property_tree::ptree setup_pt;
 boost::property_tree::ptree session_pt;
 
-void arte_init(int argc,char *argv[], std::string &, std::string &); // argc, argv, setup filename, session filename 
+void arte_init(int argc,char *argv[], std::string, std::string); // argc, argv, setup filename, session filename 
 
 void arte_setup_init(int argc, char *argv[]);
 void arte_session_init(int argc, char *argv[]);

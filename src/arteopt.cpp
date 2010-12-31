@@ -1,24 +1,32 @@
 #include "arteopt.h"
 #include "timer.h"
 #include <boost/foreach.hpp>
+#include <boost/property_tree/xml_parser.hpp>
+#include <boost/property_tree/exceptions.hpp>
 #include <assert.h>
+#include "global_defs.h"
 
-using boost::property_tree;
+using namespace boost::property_tree;
 
 void arte_init(int argc, char *argv[], std::string &setup_fn, std::string &session_fn){
 
   if(!setup_fn.empty())
-    setup_config_filename = setup_fn.copy(); // .copy() method is the right way?
+    setup_config_filename = setup_fn.data();
+  //setup_config_filename.str(setup_fn.str()) // copy contents of setup_fn argument into setup_config_filename
   else
-    setup_config_filename = default_setup_config_filename.copy();  
+    setup_config_filename = default_setup_config_filename.data();
+  // setup_config_filename.str(default_setup_config_filename.str());  
   if(!session_fn.empty())
-    session_config_filename = session_fn.copy();
+    session_config_filename = session_fn;    
+  //session_config_filename.str(session.fn.str());
   else
-    session_config_filename = default_session_config_filename.copy();
+    session_config_filename = session_fn;
+  //    session_config_filename.str(default_session_config_filename.str());
 
   try{
-    read_xml(setup_config_filename,   setup_pt,   boost::property_tree::ptree::trim_whitespace); // check where this flag actually lives
-    read_xml(session_config_filename, session_pt, boost::property_tree::ptree::trim_whitespace); // can/should put 2 possible fails in one try block?
+    read_xml(setup_fn, setup_pt);
+    read_xml(setup_config_filename,   setup_pt,   boost::property_tree::xml_parser::trim_whitespace); // check where this flag actually lives
+    read_xml(session_config_filename, session_pt, boost::property_tree::xml_parser::trim_whitespace); // can/should put 2 possible fails in one try block?
   }
   catch(...){  // find out where the xml_parse_error lives, & how to handle it
     std::cout << "XML read error was thrown - from arteopt.cpp" << std::endl;
@@ -26,9 +34,9 @@ void arte_init(int argc, char *argv[], std::string &setup_fn, std::string &sessi
 
   arte_setup_init(argc, argv); // Use the property_tree to set global vars
   arte_session_init(argc, argv); // Use property_tree to set up trode list, trode/eeg view vars
-  arte_init_timer();  // in timer.h
-  arte_start_clock(); // in timer.h 
-  arte_setup_daq_cards(); // No args. Setup task, virtual chans for trodes, callbacks.
+  //arte_init_timer();  // in timer.h
+  //arte_start_clock(); // in timer.h 
+  //arte_setup_daq_cards(); // No args. Setup task, virtual chans for trodes, callbacks.
 
   // after this, the main loop will start the gui.
 
@@ -40,8 +48,8 @@ void arte_setup_init(int argc, char *argv[]){
   // could be initialized here, too.
 
   BOOST_FOREACH(ptree::value_type &v,
-		setup_pt.get_child("options.setup.neural_daq_list"))
-    neural_daq_map.push_back(new_neural_daq(v));
+		setup_pt.get_child("options.setup.neural_daq_list")) {};
+    //neural_daq_map.push_back(new_neural_daq(v));
 
 }
 
@@ -52,25 +60,27 @@ void arte_session_init(int argc, char *argv[]){
 
 
   BOOST_FOREACH(ptree::value_type &v, 
-		session_pt.get_child("options.session.trodes"))
-    trode_map.push_back(new_trode(v));
+		session_pt.get_child("options.session.trodes")){
+    trode_map.insert( std::pair<std::string, Trode> ( v.second.data(), new_trode(v)) );
+    //trode_map.push_back(new_trode(v));
+  }
 		
 
 }
 
 Trode new_trode(ptree::value_type &v){
 
-  istringstream iss; // helper istream to convert text to ints, floats, etc.
+  std::istringstream iss; // helper istream to convert text to ints, floats, etc.
 
   // check the uniquness of the new name
-  assert(trode_map.find(v->first) == trode_map.end()); // assert that finding the trode name returns map::end iterator, meaning name doesn't exist as key in list
+  assert(trode_map.find(v.second.data()) == trode_map.end()); // assert that finding the trode name returns map::end iterator, meaning name doesn't exist as key in list
 
   Trode new_trode;
 
   new_trode.trode_name = v.second.data();
 
 
-  new_trode.trode_name = v->first;
+  new_trode.trode_name = v.second.data();
 
   new_trode.n_chans;
   new_trode.chan_inds = new int [new_trode.n_chans];

@@ -4,15 +4,15 @@
 
 #include "trode.h"
 
-void trode_filter_data(Trode *, float64 *, int);
-
 Trode::Trode(){
 }
 
-Trode::Trode(char *tn, ArteOpt *opt){
+Trode::Trode(std::string & name, int n_chans, float64 *thresholds, int samps_pre, int samps_post, int trig_mode, std::string &filt_name){
 
 }
 
 Trode::~Trode(){
 
 }
+
+void trode_filter_data(Trode *, float64 *, int);

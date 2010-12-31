@@ -9,6 +9,8 @@
 #include <vector>
 #include "assert.h"
 #include <stdio.h>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/exceptions.hpp>
 
 // Template functions can't have their interface and implementation separated.
 // So please don't move these fns to util.cpp
@@ -68,15 +70,15 @@ void parse_line_for_vals(std::string the_line,T *t, int n_elem){
 // to the target parameter. default_var is NULL or a pointer to the default value to use
 // in the case that tree_key into ptree doesn't give a value.
 template <class T>
-int assign_trode_property(std::string tree_key, boost::property_tree::ptree this_trode_pt, T *t, boost::property_tree::ptree default_trode_pt, int n_elem){
+int assign_trode_property(std::string &tree_key, boost::property_tree::ptree this_trode_pt, T *t, boost::property_tree::ptree default_trode_pt, int n_elem){
 
   // How do you check for failure when searching a ptree?
   std::istringstream iss;
   try{
-    iss.str(this_trode_pt.second.get<std::string>(tree_key));
+    iss.str(this_trode_pt.get<std::string>(tree_key));
   }
   catch(...){
-    iss.str(default_trode_pt.second.get<std::string>(tree_key));
+    iss.str(default_trode_pt.get<std::string>(tree_key));
   }
 
   parse_line_for_vals(iss.str(), t, n_elem); 

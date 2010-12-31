@@ -1,3 +1,6 @@
+#include "global_defs.h"
+#include <NIDAQmx.h>
+
 // a struct to pass spike data
 // spike.source_trode      which trode did spike come from (id num?  or name string?)
 // spike.n_chans           how many chans in the source trode
@@ -9,8 +12,8 @@
 
 struct spike{
   char source_trode[MAX_TRODE_NAME_LENGTH];
-  int spike.n_chans;
+  int n_chans;
   int n_samps_per_chan;
   float64 *tt;
   float64 *parms;
-}
+};

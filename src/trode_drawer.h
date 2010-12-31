@@ -11,8 +11,8 @@
 // * for each trode, other preferences (line color, overlay mode, etc.)
 
 #include <iostream>
-#include "opts.h"
 #include "spike.h"
+#include "trode.h"
 // include opengl stuff
 
 class TrodeDrawer{
@@ -24,12 +24,12 @@ class TrodeDrawer{
   void remove_all_drawingareas();
   void attach_drawingarea();
 
-  void new_spike(Spike); // Make a spike struct 
+  void new_spike(spike); // Make a spike struct 
 
 
  private:
-  n_chans;
-  n_samps_per_chan;
+  int n_chans;
+  int n_samps_per_chan;
 
   // add vars for display options
 

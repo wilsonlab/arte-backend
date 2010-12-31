@@ -21,8 +21,8 @@ class Trode{
   // an include for arteopt.h (prefer arte opt includes trode, for scope reasons;
   // arteopt now does all the initialization stuff, and needs a std::vector<Trode>
   Trode();
-  Trode(std::string name, int n_chans, float64 *thresholds, int samps_pre, int samps_post, int trig_mode,
-	       std::string filt_name);
+  Trode(std::string &name, int n_chans, float64 *thresholds, int samps_pre, int samps_post, int trig_mode,
+	       std::string &filt_name);
 
   // The old idea: constructor just takes a tetrode name and the options structure. 
   //Trode(char *, opt *)   // override constructor, take just a name and opt object
