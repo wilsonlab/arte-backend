@@ -1,5 +1,5 @@
-#ifndef ARTEOPT_H_
-#define ARTEOPT_H_
+#ifndef ARTEOPT_H
+#define ARTEOPT_H
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
@@ -9,8 +9,8 @@
 #include <NIDAQmx.h>
 #include <map>
 
-std::string setup_config_filename;
-std::string session_config_filename;
+extern std::string setup_config_filename;
+extern std::string session_config_filename;
 
 // map of tetrode objects { string name, trode object }
 // the syntax here is very wrong - need to read about std::map

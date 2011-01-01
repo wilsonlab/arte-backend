@@ -11,14 +11,14 @@ using namespace boost::property_tree;
 
 void arte_init(int argc, char *argv[], const std::string &setup_fn, const std::string &session_fn){
 
-  if(!setup_fn.empty())
-    setup_config_filename = setup_fn.data();
-  else
-    setup_config_filename = default_setup_config_filename.data();  
-  if(!session_fn.empty())
-    session_config_filename = session_fn;    
-  else
-    session_config_filename = session_fn;
+  //if(!setup_fn.empty())
+  //setup_config_filename = setup_fn.data();
+  //else
+  //setup_config_filename = default_setup_config_filename.data();  
+  //if(!session_fn.empty()) {};
+  //session_config_filename = session_fn;    
+  //else {};
+  //session_config_filename = session_fn;
 
   std::string t2 = "test.conf";
   read_xml(t2, setup_pt);
@@ -26,9 +26,9 @@ void arte_init(int argc, char *argv[], const std::string &setup_fn, const std::s
   try{
     const std::string ts= "/home/greghale/arte-ephys/conf/arte_setup_default.conf";
     std::cout << setup_fn << std::endl;
-    read_xml(&ts, setup_pt);
-    read_xml(&setup_config_filename,   setup_pt,   boost::property_tree::xml_parser::trim_whitespace); // check where this flag actually lives
-    read_xml(&session_config_filename, session_pt, boost::property_tree::xml_parser::trim_whitespace); // can/should put 2 possible fails in one try block?
+    read_xml(ts, setup_pt);
+    read_xml(setup_config_filename,   setup_pt,   boost::property_tree::xml_parser::trim_whitespace); // check where this flag actually lives
+    read_xml(session_config_filename, session_pt, boost::property_tree::xml_parser::trim_whitespace); // can/should put 2 possible fails in one try block?
   }
   catch(...){  // find out where the xml_parse_error lives, & how to handle it
     std::cout << "XML read error was thrown - from arteopt.cpp" << std::endl;
