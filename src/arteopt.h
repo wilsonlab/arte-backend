@@ -21,9 +21,9 @@ extern std::string session_config_filename;
 // During init, each trode will hold a pointer into the buffer that gets filled by the daq card
 // rather than the daq card having to look up the trode repeatedly on each buffer cycle
 
-Trode test_t;
+extern Trode test_t;
 
-std::map<std::string, Trode> trode_map;
+extern std::map<std::string, Trode> trode_map;
 
 // struct to represent a daq card for neural data
 struct neural_daq{
@@ -34,15 +34,15 @@ struct neural_daq{
 };
 
 // map list for daq cards
-std::map <std::string, neural_daq> neural_daq_map;
+extern std::map <std::string, neural_daq> neural_daq_map;
 
 // vector of display ports (prob not to include 'main' window)
 // but 'tetrode banks' and eeg windows
 
 // std::map <std::string, Gtk/Window> window_map;  DON"T FORGET TO UNCOMMENT THIS WHEN ITS GUI TIME :)
 
-boost::property_tree::ptree setup_pt;
-boost::property_tree::ptree session_pt;
+extern boost::property_tree::ptree setup_pt;
+extern boost::property_tree::ptree session_pt;
 
 void arte_init(int argc,char *argv[], const std::string &, const std::string &); // argc, argv, setup filename, session filename 
 

@@ -7,7 +7,16 @@
 #include "global_defs.h"
 #include <iostream>
 
-using namespace boost::property_tree;
+//using namespace boost::property_tree;
+
+std::string setup_config_filename;
+std::string session_config_filename;
+std::map<std::string, Trode> trode_map;
+Trode test_t;
+std::map<std::string, neural_daq> neural_daq_map;
+boost::property_tree::ptree setup_pt;
+boost::property_tree::ptree session_pt;
+
 
 void arte_init(int argc, char *argv[], const std::string &setup_fn, const std::string &session_fn){
 
@@ -49,7 +58,7 @@ void arte_setup_init(int argc, char *argv[]){
   // Mostly for initializing the neural daq cards.  But other global state stuff
   // could be initialized here, too.
 
-  BOOST_FOREACH(ptree::value_type &v,
+  BOOST_FOREACH(boost::property_tree::ptree::value_type &v,
 		setup_pt.get_child("options.setup.neural_daq_list")) {};
     //neural_daq_map.push_back(new_neural_daq(v));
 
@@ -61,7 +70,7 @@ void arte_session_init(int argc, char *argv[]){
   Trode trode_default(); // store the default settings here
 
 
-  BOOST_FOREACH(ptree::value_type &v, 
+  BOOST_FOREACH(boost::property_tree::ptree::value_type &v, 
 		session_pt.get_child("options.session.trodes")){
     trode_map.insert( std::pair<std::string, Trode> ( v.second.data(), new_trode(v)) );
     //trode_map.push_back(new_trode(v));
@@ -70,7 +79,7 @@ void arte_session_init(int argc, char *argv[]){
 
 }
 
-Trode new_trode(ptree::value_type &v){
+Trode new_trode(boost::property_tree::ptree::value_type &v){
 
   std::istringstream iss; // helper istream to convert text to ints, floats, etc.
 
@@ -97,5 +106,6 @@ Trode new_trode(ptree::value_type &v){
   //new_trode.filt_data_cursor = 0;
   //new_trode.raw_cursor_time = 0; 
   //new_trode.filt_cursor_time = 0;
+  return new_trode;
 
 }
