@@ -6,8 +6,6 @@
 
 int main(int argc, char *argv[]){
 
-  std::cout << default_setup_config_filename << std::endl;
-
   // implement in arteopt.  (global vars there for setup_opt, session_opt)
   arte_init(argc, argv, default_setup_config_filename, default_session_config_filename);
 

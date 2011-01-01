@@ -6,6 +6,7 @@
 #include <assert.h>
 #include "global_defs.h"
 #include <iostream>
+#include "util.h"
 
 //using namespace boost::property_tree;
 
@@ -20,22 +21,22 @@ boost::property_tree::ptree session_pt;
 
 void arte_init(int argc, char *argv[], const std::string &setup_fn, const std::string &session_fn){
 
-  //if(!setup_fn.empty())
-  //setup_config_filename = setup_fn.data();
-  //else
-  //setup_config_filename = default_setup_config_filename.data();  
-  //if(!session_fn.empty()) {};
-  //session_config_filename = session_fn;    
-  //else {};
-  //session_config_filename = session_fn;
+  if(!setup_fn.empty())
+    setup_config_filename = setup_fn.data();
+  else
+    setup_config_filename = default_setup_config_filename.data();  
+  if(!session_fn.empty())
+    session_config_filename = session_fn;    
+  else
+    session_config_filename = session_fn;
 
-  std::string t2 = "test.conf";
-  read_xml(t2, setup_pt);
+  //std::string t2 = "test.conf";
+  //read_xml(t2, setup_pt);
 
   try{
-    const std::string ts= "/home/greghale/arte-ephys/conf/arte_setup_default.conf";
-    std::cout << setup_fn << std::endl;
-    read_xml(ts, setup_pt);
+    //const std::string ts= "/home/greghale/arte-ephys/conf/arte_setup_default.conf";
+    //std::cout << setup_fn << std::endl;
+    //read_xml(ts, setup_pt);
     read_xml(setup_config_filename,   setup_pt,   boost::property_tree::xml_parser::trim_whitespace); // check where this flag actually lives
     read_xml(session_config_filename, session_pt, boost::property_tree::xml_parser::trim_whitespace); // can/should put 2 possible fails in one try block?
   }
@@ -71,10 +72,8 @@ void arte_session_init(int argc, char *argv[]){
 
 
   BOOST_FOREACH(boost::property_tree::ptree::value_type &v, 
-		session_pt.get_child("options.session.trodes")){
+		session_pt.get_child("options.session.trodes"))
     trode_map.insert( std::pair<std::string, Trode> ( v.second.data(), new_trode(v)) );
-    //trode_map.push_back(new_trode(v));
-  }
 		
 
 }
@@ -82,16 +81,22 @@ void arte_session_init(int argc, char *argv[]){
 Trode new_trode(boost::property_tree::ptree::value_type &v){
 
   std::istringstream iss; // helper istream to convert text to ints, floats, etc.
+  std::string str;
 
   // check the uniquness of the new name
   assert(trode_map.find(v.second.data()) == trode_map.end()); // assert that finding the trode name returns map::end iterator, meaning name doesn't exist as key in list
 
   Trode new_trode;
 
-  new_trode.trode_name = v.second.data();
+  boost::property_tree::ptree this_trode_pt;
+  boost::property_tree::ptree default_pt;
 
+  this_trode_pt = v.second;
+  default_pt = session_pt.get_child("options.session.trode_default");
+  new_trode.trode_name = this_trode_pt.data();
 
-  new_trode.trode_name = v.second.data();
+  str = "n_chans";
+  assign_trode_property <int> (str, &(new_trode.n_chans), this_trode_pt, default_pt,1);
 
   new_trode.n_chans;
   new_trode.chan_inds = new int [new_trode.n_chans];
