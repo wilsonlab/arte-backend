@@ -33,17 +33,24 @@ void parse_line_for_vals(std::string the_line,T *t, int n_elem){
   // instead of having us do it here?
   // If we're doing it, how does the caller's scope know
   // how big this array should have been?
-  if(n_elem > 0)
-    t = new T [n_elem];
-  else
-    t = new T [1];
+  //if(n_elem > 0)
+  //  t = new T [n_elem];
+  //else
+  //  t = new T [1];
+  // UPDATE:  You CAN'T do this.  It seems to set up memory that's out of scope
+  // and gets overwritten as soon as we leave this fn.  Uncomment to see this happen
 
   // counting this way seems to be sensitive to white spaces at 
   // beginning and end of string.  Can this be fixed?
   // (try it with test_util.cpp)
+
+  //std::cout << "iss content is: " << iss.str() << std::endl;
+
   int n = 0;
   while(! iss.eof()){
+    //std::cout << "iss.str = " << iss.str() << std::endl;
     iss >> t[n];
+    //std::cout << "n = " << n << " and t[t] = " << t[n] << std::endl;
     n+=1;
   }
 
@@ -82,7 +89,11 @@ int assign_trode_property(std::string &tree_key, T * t,  boost::property_tree::p
     iss.str(default_trode_pt.get<std::string>(tree_key));
   }
 
-  parse_line_for_vals(iss.str(), t, n_elem); 
+  std::cout << "about to pass the string: " << iss.str() << std::endl;
+
+  parse_line_for_vals <T> (iss.str(), t, n_elem); 
+
+  std::cout << "returned from the call, now n_chans is " << *t << std::endl;
 
   //iss.chr(this_trode_ptree
 

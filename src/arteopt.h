@@ -27,6 +27,7 @@ extern std::map<std::string, Trode> trode_map;
 
 // struct to represent a daq card for neural data
 struct neural_daq{
+  int id;
   std::string dev_name;
   int n_samps_per_buffer;
   int n_chans;
@@ -34,7 +35,7 @@ struct neural_daq{
 };
 
 // map list for daq cards
-extern std::map <std::string, neural_daq> neural_daq_map;
+extern std::map <int, neural_daq> neural_daq_map;
 
 // vector of display ports (prob not to include 'main' window)
 // but 'tetrode banks' and eeg windows

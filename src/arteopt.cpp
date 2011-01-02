@@ -98,10 +98,43 @@ Trode new_trode(boost::property_tree::ptree::value_type &v){
   str = "n_chans";
   assign_trode_property <int> (str, &(new_trode.n_chans), this_trode_pt, default_pt,1);
 
+  std::cout << "Trode: " << new_trode.trode_name << " has " << new_trode.n_chans << " chans." << std::endl;
+
   new_trode.n_chans;
   new_trode.chan_inds = new int [new_trode.n_chans];
 
+  str = "thresholds";
+  new_trode.thresholds = new float64 [new_trode.n_chans];
+  assign_trode_property <float64> (str, new_trode.thresholds, this_trode_pt, default_pt, new_trode.n_chans);
 
+  str = "channels";
+  new_trode.channels = new int [new_trode.n_chans];
+  assign_trode_property <int> (str, new_trode.channels, this_trode_pt, default_pt, new_trode.n_chans);
+
+  str = "daq_id";
+  assign_trode_property <int> (str, &(new_trode.daq_id), this_trode_pt, default_pt, 1);
+
+  str = "samps_before_trig";
+  assign_trode_property <int> (str, &(new_trode.samps_before_trig), this_trode_pt, default_pt, 1);
+
+  str = "samps_after_trig";
+  assign_trode_property <int> (str, &(new_trode.samps_after_trig), this_trode.pt, default_pt, 1);
+
+  str = "spike_time";
+  assign_trode_property <std::string> (str, &(new_trode.spike_mode), this_trode.pt, default_pt, 1);
+
+  str = "win_heights";
+  assign_trode_property <float64> (str, new_trode.win_heights, this_trode.pt, default_pt, new_trode.n_chans);
+
+  
+
+  new_trode.n_samps_per_chan = 1 + new_trode.samps_before_trig + new_trode.samps_after_trig;
+  //new_trode.buffer_mult_of_input = 
+
+  //std::cout << "Thresholds: ";
+  //for(int n = 0; n< new_trode.n_chans; n++)
+  //  std::cout << new_trode.thresholds[n] << " ";
+  //std::cout << std::endl;
 
   //new_trode.buffer_mult_of_input = FIX;
   //new_trode.ptr_to_raw_stream = FIX;

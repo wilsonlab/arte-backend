@@ -57,13 +57,23 @@ class Trode{
   int filt_cursor_time;
 
   int n_chans;                // num of chans for this trode
-  int n_samps_per_chan;       // num of samps per chan
+  int n_samps_per_chan;       // num of samps per chan (derived from samps_after_trig & samps_before_chan)
   int *chan_inds;             // ptr is to 32-chan signal.  Which rows belong to this trode?
 
-  trig_mode_t trig_mode;      // instruction on how to center spike events, on trigger crossing or next local max?
+  int daq_id;                 // id number of neural daq card that this trode sees
+  //neural_daq_card daq_card; // data struct of that daq card
+  //can't do that b/c neural_daq_card defined in arteopt, which includes trode.h
+  int stream_samps_per_chan;  // how many samps come in with each raw buffer?
+  int stream_n_chan;          // how many chans come in with each raw buffer? (this will almost always be 32)
+
+  std::string spike_mode;     // instructions for centering spikes.  'thresh' means center spikes on xing. 'peak' means on next local max
   float64 *thresholds;        // array of threshold voltages, 1 per chan
   int samps_before_trig;      // how many samps to collect before trig ind
   int samps_after_trig;       // hom many samps to collect after trig ind (total samps is after + before + 1
+
+  float64 *win_heights;       // array of display ranges. I know, we should separate this data structure from
+                              // the visualization, but it's hugely convenient to store this tetrode-by-tetrode data here
+
 };
 
 void trode_filter_data(Trode *, float64 *, int); // trode_filter_data(trode_to_prosess, raw buffer, timestamp at buffer start)
