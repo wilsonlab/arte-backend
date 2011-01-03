@@ -31,6 +31,8 @@ struct neural_daq{
   std::string dev_name;
   int n_samps_per_buffer;
   int n_chans;
+  std::string in_filename;
+  std::string raw_dump_filename;
   float64 *data_ptr;
 };
 

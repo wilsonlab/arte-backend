@@ -14,7 +14,7 @@ std::string setup_config_filename;
 std::string session_config_filename;
 std::map<std::string, Trode> trode_map;
 Trode test_t;
-std::map<std::string, neural_daq> neural_daq_map;
+std::map<int, neural_daq> neural_daq_map;
 boost::property_tree::ptree setup_pt;
 boost::property_tree::ptree session_pt;
 
@@ -60,8 +60,28 @@ void arte_setup_init(int argc, char *argv[]){
   // could be initialized here, too.
 
   BOOST_FOREACH(boost::property_tree::ptree::value_type &v,
-		setup_pt.get_child("options.setup.neural_daq_list")) {};
-    //neural_daq_map.push_back(new_neural_daq(v));
+		setup_pt.get_child("options.setup.neural_daq_list")){
+    neural_daq this_neural_daq;
+    std::string str = "id";
+    boost::property_tree::ptree ndaq_pt;
+    ndaq_pt = v.second;
+    assign_trode_property <int> (str, &(this_neural_daq.id), ndaq_pt, ndaq_pt, 1);
+    str = "n_samps_per_buffer";
+    assign_trode_property <int> (str, &(this_neural_daq.n_samps_per_buffer), ndaq_pt, ndaq_pt, 1);
+    str = "n_chans";
+    assign_trode_property <int> (str, &(this_neural_daq.n_chans), ndaq_pt, ndaq_pt, 1);
+    str = "dev_name";
+    assign_trode_property <std::string> (str, &(this_neural_daq.dev_name), ndaq_pt, ndaq_pt, 1);
+    str = "in_filename";
+    assign_trode_property <std::string> (str, &(this_neural_daq.in_filename), ndaq_pt, ndaq_pt, 1);
+    str = "raw_dump_filename";
+    assign_trode_property <std::string> (str, &(this_neural_daq.raw_dump_filename), ndaq_pt, ndaq_pt, 1);
+    neural_daq_map.insert( std::pair <int, neural_daq > ( this_neural_daq.id, this_neural_daq));
+    // setup an array to use as the input stream from this daq card
+    data_ptr = new float64 [ this_neural_daq.n_chans * this_neural_daq.n_samps_per_buffer ];
+    for(int m = 0; m < (this_neural_daq.n_chans * this_neural_daq.n_samps_per_buffer); m++)
+      this_neural_daq.data_ptr[m] = 0.0;
+  }
 
 }
 

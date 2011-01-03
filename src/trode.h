@@ -58,7 +58,7 @@ class Trode{
 
   int n_chans;                // num of chans for this trode
   int n_samps_per_chan;       // num of samps per chan (derived from samps_after_trig & samps_before_chan)
-  int *chan_inds;             // ptr is to 32-chan signal.  Which rows belong to this trode?
+  int *channels;              // ptr is to 32-chan signal.  Which rows belong to this trode?
 
   int daq_id;                 // id number of neural daq card that this trode sees
   //neural_daq_card daq_card; // data struct of that daq card
