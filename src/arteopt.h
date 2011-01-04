@@ -53,7 +53,7 @@ void arte_setup_init(int argc, char *argv[]);
 void arte_session_init(int argc, char *argv[]);
 void arte_setup_daq_cards();  // eg tasks, virtual chans, callback attachment
 
-Trode new_trode(boost::property_tree::ptree::value_type &v); // ptree_value_type &v copied from recipe, don't quite understand this
+int init_new_trode(boost::property_tree::ptree::value_type &v, Trode &new_trode); // ptree_value_type &v copied from recipe, don't quite understand this
 neural_daq new_neural_daq(boost::property_tree::ptree::value_type &v);
 
 int save_setup_config(std::string &);

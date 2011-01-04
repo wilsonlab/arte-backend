@@ -81,23 +81,30 @@ void parse_line_for_vals(std::string the_line,T *t, int n_elem){
 // to the target parameter. default_var is NULL or a pointer to the default value to use
 // in the case that tree_key into ptree doesn't give a value.
 template <class T>
-int assign_property(std::string &tree_key, T * t,  boost::property_tree::ptree &this_trode_pt, boost::property_tree::ptree &default_trode_pt, int n_elem){
+int assign_property(std::string &tree_key, T * t, const boost::property_tree::ptree &this_trode_pt, const boost::property_tree::ptree &default_trode_pt, int n_elem){
 
   // How do you check for failure when searching a ptree?
   std::istringstream iss;
-  try{
-    iss.str(this_trode_pt.get<std::string>(tree_key));
-  }
-  catch(...){
-    std::cout << "found no key: " << tree_key << " so using default: " << default_trode_pt.get<std::string>(tree_key) << std::endl;
-    iss.str(default_trode_pt.get<std::string>(tree_key));
-  }
+  std::string the_result;
+  //try{
+  the_result = this_trode_pt.get<std::string>(tree_key, default_trode_pt.get<std::string>(tree_key) );
+  iss.str(the_result);
+  //the_result = this_trode_pt.get<std::string>(tree_key);
+  //iss.str(the_result);
+  //}  
+  //iss.str(the_result);
+  //iss.str(this_trode_pt.get<std::string>(tree_key));
+  //}
+  //catch(...){
+  //  std::cout << "found no key: " << tree_key << " so using default: " << default_trode_pt.get<std::string>(tree_key) << std::endl;
+  //  iss.str(default_trode_pt.get<std::string>(tree_key));
+  //}
 
   std::cout << "about to pass the string: " << iss.str() << std::endl;
 
   parse_line_for_vals <T> (iss.str(), t, n_elem); 
 
-  std::cout << "returned from the call, now n_chans is " << *t << std::endl;
+  std::cout << "returned from the call, *t is " << *t << std::endl;
 
   //iss.chr(this_trode_ptree
 

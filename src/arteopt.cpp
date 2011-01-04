@@ -92,13 +92,15 @@ void arte_session_init(int argc, char *argv[]){
   Trode trode_default(); // store the default settings here
 
   BOOST_FOREACH(boost::property_tree::ptree::value_type &v, 
-		session_pt.get_child("options.session.trodes"))
-    trode_map.insert( std::pair<std::string, Trode> ( v.second.data(), new_trode(v)) );
-		
+		session_pt.get_child("options.session.trodes")){
+    Trode this_trode;
+    init_new_trode(v,this_trode);
+    trode_map.insert( std::pair<std::string, Trode> ( v.second.data(), this_trode ));
+  }
 }
 
 
-Trode new_trode(boost::property_tree::ptree::value_type &v){
+int init_new_trode(boost::property_tree::ptree::value_type &v, Trode &new_trode){
 
   std::istringstream iss; // helper istream to convert text to ints, floats, etc.
   std::string str;
@@ -106,7 +108,7 @@ Trode new_trode(boost::property_tree::ptree::value_type &v){
   // check the uniquness of the new name
   assert(trode_map.find(v.second.data()) == trode_map.end()); // assert that finding the trode name returns map::end iterator, meaning name doesn't exist as key in list
 
-  Trode new_trode;
+  //Trode new_trode;
 
   boost::property_tree::ptree this_trode_pt;
   boost::property_tree::ptree default_pt;
@@ -135,13 +137,16 @@ Trode new_trode(boost::property_tree::ptree::value_type &v){
   str = "spike_mode";
   assign_property <std::string> (str, &(new_trode.spike_mode), this_trode_pt, default_pt, 1);
   str = "win_heights";
+  new_trode.win_heights = new float64 [new_trode.n_chans];
   assign_property <float64> (str, new_trode.win_heights, this_trode_pt, default_pt, new_trode.n_chans);
+  str = "spike_mode";
+  assign_property <std::string> (str, &(new_trode.spike_mode), this_trode_pt, default_pt, 1); // CAN delete this line, just testing smthg
 
   // Now the derived parts
 
   //neural_daq my_daq = (neural_daq_map.find(new_trode.daq_id)).second;
 
-  new_trode.n_samps_per_chan = 1 + new_trode.samps_before_trig + new_trode.samps_after_trig;
+  //  new_trode.n_samps_per_chan = 1 + new_trode.samps_before_trig + new_trode.samps_after_trig;
   //new_trode.buffer_mult_of_input = 
 
   //std::cout << "Thresholds: ";
@@ -157,6 +162,6 @@ Trode new_trode(boost::property_tree::ptree::value_type &v){
   //new_trode.filt_data_cursor = 0;
   //new_trode.raw_cursor_time = 0; 
   //new_trode.filt_cursor_time = 0;
-  return new_trode;
+  return 0;
 
 }
