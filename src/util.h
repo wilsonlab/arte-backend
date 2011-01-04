@@ -39,6 +39,10 @@ void parse_line_for_vals(std::string the_line,T *t, int n_elem){
   //  t = new T [1];
   // UPDATE:  You CAN'T do this.  It seems to set up memory that's out of scope
   // and gets overwritten as soon as we leave this fn.  Uncomment to see this happen
+  // So: why doesn't this happen when we're packing stl containers? (greghale@mit.edu if you can explain, thanks!)
+  // (I mean, new_trode fn in arteopt.h calls new float64 [], assigns that to a member of a new trode object,
+  // packs that trode object into trode_map, then leavs the fn.  Why doesn't leaving scope jeopardize that memory block?
+  // Or, maybe it does! :)  I haven't tested the buffers set up that way yet.
 
   // counting this way seems to be sensitive to white spaces at 
   // beginning and end of string.  Can this be fixed?
@@ -77,7 +81,7 @@ void parse_line_for_vals(std::string the_line,T *t, int n_elem){
 // to the target parameter. default_var is NULL or a pointer to the default value to use
 // in the case that tree_key into ptree doesn't give a value.
 template <class T>
-int assign_trode_property(std::string &tree_key, T * t,  boost::property_tree::ptree &this_trode_pt, boost::property_tree::ptree &default_trode_pt, int n_elem){
+int assign_property(std::string &tree_key, T * t,  boost::property_tree::ptree &this_trode_pt, boost::property_tree::ptree &default_trode_pt, int n_elem){
 
   // How do you check for failure when searching a ptree?
   std::istringstream iss;
