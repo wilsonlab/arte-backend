@@ -7,9 +7,6 @@
 Trode::Trode(){
 }
 
-Trode::Trode(std::string & name, int n_chans, float64 *thresholds, int samps_pre, int samps_post, int trig_mode, std::string &filt_name){
-
-}
 
 Trode::~Trode(){
 

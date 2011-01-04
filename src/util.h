@@ -72,6 +72,7 @@ void parse_line_for_vals(std::string the_line,T *t, int n_elem){
   }
 }
 
+
 // Populate a trode's fields with either the value given by the property tree,
 // or, if property tree has no info for this trode, use the default value
 // To specify that the trode being populated _IS_ the default trode, pass NULL
@@ -80,39 +81,27 @@ void parse_line_for_vals(std::string the_line,T *t, int n_elem){
 // node corresponding to only this tetrode.  tree_key is a string key into the ptree
 // to the target parameter. default_var is NULL or a pointer to the default value to use
 // in the case that tree_key into ptree doesn't give a value.
+
 template <class T>
 int assign_property(std::string &tree_key, T * t, const boost::property_tree::ptree &this_trode_pt, const boost::property_tree::ptree &default_trode_pt, int n_elem){
 
-  // How do you check for failure when searching a ptree?
   std::istringstream iss;
   std::string the_result;
-  //try{
+
   the_result = this_trode_pt.get<std::string>(tree_key, default_trode_pt.get<std::string>(tree_key) );
   iss.str(the_result);
-  //the_result = this_trode_pt.get<std::string>(tree_key);
-  //iss.str(the_result);
-  //}  
-  //iss.str(the_result);
-  //iss.str(this_trode_pt.get<std::string>(tree_key));
-  //}
-  //catch(...){
-  //  std::cout << "found no key: " << tree_key << " so using default: " << default_trode_pt.get<std::string>(tree_key) << std::endl;
-  //  iss.str(default_trode_pt.get<std::string>(tree_key));
-  //}
 
-  std::cout << "about to pass the string: " << iss.str() << std::endl;
-
-  parse_line_for_vals <T> (iss.str(), t, n_elem); 
-
-  std::cout << "returned from the call, *t is " << *t << std::endl;
-
-  //iss.chr(this_trode_ptree
-
-  //if(default_var == NULL){  // then we're popu
+  parse_line_for_vals <T> (iss.str(), t, n_elem);
 
 }
 
+// override for passing a char[] instead of a full std::string object.  maybe or maybe not we should just make this
+// the default parameter list?
+template <class T>
+int assign_property(const char *tree_key, T * t, const boost::property_tree::ptree &this_trode_pt, const boost::property_tree::ptree &default_trode_pt, int n_elem){
 
-
+  std::string tk = tree_key;
+  assign_property <T> (tk, t, this_trode_pt, default_trode_pt, n_elem);
+}
 
 #endif

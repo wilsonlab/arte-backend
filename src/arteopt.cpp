@@ -62,20 +62,14 @@ void arte_setup_init(int argc, char *argv[]){
   BOOST_FOREACH(boost::property_tree::ptree::value_type &v,
 		setup_pt.get_child("options.setup.neural_daq_list")){
     neural_daq this_neural_daq;
-    std::string str = "id";
     boost::property_tree::ptree ndaq_pt;
     ndaq_pt = v.second;
-    assign_property <int> (str, &(this_neural_daq.id), ndaq_pt, ndaq_pt, 1);
-    str = "n_samps_per_buffer";
-    assign_property <int> (str, &(this_neural_daq.n_samps_per_buffer), ndaq_pt, ndaq_pt, 1);
-    str = "n_chans";
-    assign_property <int> (str, &(this_neural_daq.n_chans), ndaq_pt, ndaq_pt, 1);
-    str = "dev_name";
-    assign_property <std::string> (str, &(this_neural_daq.dev_name), ndaq_pt, ndaq_pt, 1);
-    str = "in_filename";
-    assign_property <std::string> (str, &(this_neural_daq.in_filename), ndaq_pt, ndaq_pt, 1);
-    str = "raw_dump_filename";
-    assign_property <std::string> (str, &(this_neural_daq.raw_dump_filename), ndaq_pt, ndaq_pt, 1);
+    assign_property <int> ("id", &(this_neural_daq.id), ndaq_pt, ndaq_pt, 1);
+    assign_property <int> ("n_samps_per_buffer", &(this_neural_daq.n_samps_per_buffer), ndaq_pt, ndaq_pt, 1);
+    assign_property <int> ("n_chans", &(this_neural_daq.n_chans), ndaq_pt, ndaq_pt, 1);
+    assign_property <std::string> ("dev_name", &(this_neural_daq.dev_name), ndaq_pt, ndaq_pt, 1);
+    assign_property <std::string> ("in_filename", &(this_neural_daq.in_filename), ndaq_pt, ndaq_pt, 1);
+    assign_property <std::string> ("raw_dump_filename", &(this_neural_daq.raw_dump_filename), ndaq_pt, ndaq_pt, 1);
     neural_daq_map.insert( std::pair <int, neural_daq > ( this_neural_daq.id, this_neural_daq));
     // setup an array to use as the input stream from this daq card
     this_neural_daq.data_ptr = new float64 [ this_neural_daq.n_chans * this_neural_daq.n_samps_per_buffer ];
@@ -116,43 +110,26 @@ int init_new_trode(boost::property_tree::ptree::value_type &v, Trode &new_trode)
   this_trode_pt = v.second;
   default_pt = session_pt.get_child("options.session.trode_default");
   new_trode.trode_name = this_trode_pt.data();
-
-  str = "n_chans";
-  assign_property <int> (str, &(new_trode.n_chans), this_trode_pt, default_pt,1);
-
-  //std::cout << "Trode: " << new_trode.trode_name << " has " << new_trode.n_chans << " chans." << std::endl;
-
-  str = "thresholds";
+  assign_property <int> ("n_chans", &(new_trode.n_chans), this_trode_pt, default_pt,1);
   new_trode.thresholds = new float64 [new_trode.n_chans];
-  assign_property <float64> (str, new_trode.thresholds, this_trode_pt, default_pt, new_trode.n_chans);
-  str = "channels";
+  assign_property <float64> ("thresholds", new_trode.thresholds, this_trode_pt, default_pt, new_trode.n_chans);
   new_trode.channels = new int [new_trode.n_chans];
-  assign_property <int> (str, new_trode.channels, this_trode_pt, default_pt, new_trode.n_chans);
-  str = "daq_id";
-  assign_property <int> (str, &(new_trode.daq_id), this_trode_pt, default_pt, 1);
-  str = "samps_before_trig";
-  assign_property <int> (str, &(new_trode.samps_before_trig), this_trode_pt, default_pt, 1);
-  str = "samps_after_trig";
-  assign_property <int> (str, &(new_trode.samps_after_trig), this_trode_pt, default_pt, 1);
-  str = "spike_mode";
-  assign_property <std::string> (str, &(new_trode.spike_mode), this_trode_pt, default_pt, 1);
-  str = "win_heights";
+  assign_property <int> ("channels", new_trode.channels, this_trode_pt, default_pt, new_trode.n_chans);
+  assign_property <int> ("daq_id", &(new_trode.daq_id), this_trode_pt, default_pt, 1);
+  assign_property <int> ("samps_before_trig", &(new_trode.samps_before_trig), this_trode_pt, default_pt, 1);
+  assign_property <int> ("samps_after_trig", &(new_trode.samps_after_trig), this_trode_pt, default_pt, 1);
+  assign_property <std::string> ("spike_mode", &(new_trode.spike_mode), this_trode_pt, default_pt, 1);
   new_trode.win_heights = new float64 [new_trode.n_chans];
-  assign_property <float64> (str, new_trode.win_heights, this_trode_pt, default_pt, new_trode.n_chans);
-  str = "spike_mode";
-  assign_property <std::string> (str, &(new_trode.spike_mode), this_trode_pt, default_pt, 1); // CAN delete this line, just testing smthg
+  assign_property <float64> ("win_heights", new_trode.win_heights, this_trode_pt, default_pt, new_trode.n_chans);
 
   // Now the derived parts
 
-  //neural_daq my_daq = (neural_daq_map.find(new_trode.daq_id)).second;
+  neural_daq my_daq = (neural_daq_map.find(new_trode.daq_id))->second;
 
-  //  new_trode.n_samps_per_chan = 1 + new_trode.samps_before_trig + new_trode.samps_after_trig;
-  //new_trode.buffer_mult_of_input = 
-
-  //std::cout << "Thresholds: ";
-  //for(int n = 0; n< new_trode.n_chans; n++)
-  //  std::cout << new_trode.thresholds[n] << " ";
-  //std::cout << std::endl;
+  new_trode.n_samps_per_chan = 1 + new_trode.samps_before_trig + new_trode.samps_after_trig;
+  new_trode.buffer_mult_of_input = new_trode.n_samps_per_chan / my_daq.n_samps_per_buffer;
+  if((new_trode.n_samps_per_chan % my_daq.n_samps_per_buffer) >0)
+    new_trode.buffer_mult_of_input += 1;
 
   //new_trode.buffer_mult_of_input = FIX;
   //new_trode.ptr_to_raw_stream = FIX;
