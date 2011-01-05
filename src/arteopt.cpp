@@ -89,7 +89,7 @@ void arte_setup_init(int argc, char *argv[]){
     assign_property <std::string> ("type", &(this_filt.type), filt_pt, filt_pt, 1);
     assign_property <int> ("order", &(this_filt.order), filt_pt, filt_pt, 1);
     assign_property <bool> ("filtfilt", &(this_filt.filtfilt),filt_pt,filt_pt,1);
-    assign_property <int> ("filtfilt_wait_n_buffer", &(this_filt.filtfilt_wait_n_buffers), filt_pt, filt_pt,1);
+    assign_property <int> ("filtfilt_wait_n_buffers", &(this_filt.filtfilt_wait_n_buffers), filt_pt, filt_pt,1);
     this_filt.data_cursor = 0;
     // derive properties for fir filter if fir
     if( this_filt.type.compare("fir") == 0){
@@ -161,7 +161,33 @@ int init_new_trode(boost::property_tree::ptree::value_type &v, Trode &new_trode)
   if((new_trode.n_samps_per_chan % my_daq.n_samps_per_buffer) >0)
     new_trode.buffer_mult_of_input += 1;
 
-  new_trode.my_filt = (filt_map.find("filt_name"))->second;
+  if(filt_map.find(new_trode.filt_name) == filt_map.end())
+    std::cerr << "In arteopt.cpp, didn't find filt name: " << new_trode.filt_name << std::endl;
+  assert(filt_map.find(new_trode.filt_name) != filt_map.end());
+
+  new_trode.my_filt = (filt_map.find(new_trode.filt_name))->second;
+
+  int min_samps_for_filt = new_trode.my_filt.order;
+
+  new_trode.my_filt.buffer_mult_of_input = min_samps_for_filt / my_daq.n_samps_per_buffer;
+  if( min_samps_for_filt % my_daq.n_samps_per_buffer > 0)
+    new_trode.my_filt.buffer_mult_of_input += 1;
+  new_trode.my_filt.buffer_mult_of_input += new_trode.my_filt.filtfilt_wait_n_buffers;
+
+  new_trode.my_filt.n_samps_per_chan = my_daq.n_samps_per_buffer * new_trode.my_filt.buffer_mult_of_input;
+
+  //  new_trode.test =                new float64 [new_trode.n_chans * new_trode.my_filt.n_samps_per_chan];
+  //new_trode.unfiltered_buffer =   new float64 [new_trode.n_chans * new_trode.my_filt.n_samps_per_chan];
+  new_trode.filtered_buffer =     new float64 [new_trode.n_chans * new_trode.my_filt.n_samps_per_chan];
+  new_trode.filtfiltered_buffer = new float64 [new_trode.n_chans * new_trode.my_filt.n_samps_per_chan];
+
+
+
+  new_trode.ptr_to_raw_stream = my_daq.data_ptr;
+  new_trode.raw_data_cursor = 0;
+  new_trode.filt_data_cursor = 0;
+  new_trode.raw_cursor_time = 0;
+  new_trode.filt_cursor_time = 0;
 
   //new_trode.buffer_mult_of_input = FIX;
   //new_trode.ptr_to_raw_stream = FIX;

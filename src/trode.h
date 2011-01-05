@@ -27,33 +27,35 @@ class Trode{
   std::string trode_name;
   std::string filt_name;
   float64 *ptr_to_raw_stream;
-  int buffer_mult_of_input; // how many input buffers do we keep for this trode?
-  float64 *raw_buffer;
-  float64 *filt_buffer;
+  int buffer_mult_of_input;     // how many input buffers do we keep for this trode?
+  float64 *test;
+  float64 *unfiltered_buffer;   // 
+  float64 *filtered_buffer;       //
+  float64 *filtfiltered_buffer;
   int raw_data_cursor;
   int filt_data_cursor;
   int raw_cursor_time;
   int filt_cursor_time;
 
-  int n_chans;                // num of chans for this trode
-  int n_samps_per_chan;       // num of samps per chan (derived from samps_after_trig & samps_before_chan)
-  int *channels;              // ptr is to 32-chan signal.  Which rows belong to this trode?
+  int n_chans;                  // num of chans for this trode
+  int n_samps_per_chan;         // num of samps per chan (derived from samps_after_trig & samps_before_chan)
+  int *channels;                // ptr is to 32-chan signal.  Which rows belong to this trode?
 
-  int daq_id;                 // id number of neural daq card that this trode sees
-  //neural_daq_card daq_card; // data struct of that daq card
+  int daq_id;                   // id number of neural daq card that this trode sees
+  //neural_daq_card daq_card;   // data struct of that daq card
   //can't do that b/c neural_daq_card defined in arteopt, which includes trode.h
-  int stream_samps_per_chan;  // how many samps come in with each raw buffer?
-  int stream_n_chan;          // how many chans come in with each raw buffer? (this will almost always be 32)
+  int stream_samps_per_chan;    // how many samps come in with each raw buffer?
+  int stream_n_chan;            // how many chans come in with each raw buffer? (this will almost always be 32)
 
-  Filt my_filt;               // a Filt instance to hold filter parameters
+  Filt my_filt;                 // a Filt instance to hold filter parameters
 
-  std::string spike_mode;     // instructions for centering spikes.  'thresh' means center spikes on xing. 'peak' means on next local max
-  float64 *thresholds;        // array of threshold voltages, 1 per chan
-  int samps_before_trig;      // how many samps to collect before trig ind
-  int samps_after_trig;       // hom many samps to collect after trig ind (total samps is after + before + 1
+  std::string spike_mode;       // instructions for centering spikes.  'thresh' means center spikes on xing. 'peak' means on next local max
+  float64 *thresholds;          // array of threshold voltages, 1 per chan
+  int samps_before_trig;        // how many samps to collect before trig ind
+  int samps_after_trig;         // hom many samps to collect after trig ind (total samps is after + before + 1
 
-  float64 *win_heights;       // array of display ranges. I know, we should separate this data structure from
-                              // the visualization, but it's hugely convenient to store this tetrode-by-tetrode data here
+  float64 *win_heights;         // array of display ranges. I know, we should separate this data structure from
+                                // the visualization, but it's hugely convenient to store this tetrode-by-tetrode data here
 
 };
 
