@@ -39,6 +39,9 @@ struct neural_daq{
 // map list for daq cards
 extern std::map <int, neural_daq> neural_daq_map;
 
+// map list for filter objects
+extern std::map <std::string, Filt> filt_map;
+
 // vector of display ports (prob not to include 'main' window)
 // but 'tetrode banks' and eeg windows
 

@@ -43,6 +43,8 @@ class Trode{
   int stream_samps_per_chan;  // how many samps come in with each raw buffer?
   int stream_n_chan;          // how many chans come in with each raw buffer? (this will almost always be 32)
 
+  Filt my_filt;               // a Filt instance to hold filter parameters
+
   std::string spike_mode;     // instructions for centering spikes.  'thresh' means center spikes on xing. 'peak' means on next local max
   float64 *thresholds;        // array of threshold voltages, 1 per chan
   int samps_before_trig;      // how many samps to collect before trig ind

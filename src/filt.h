@@ -9,8 +9,8 @@ class Filt{
   std::string filt_name;
   std::string type;               // iir or fir.  Determines how to interpret long lists of numerators and denominators
                                   // (iir case, they're treated as second-order sections.  fir case, one long kernel).
-  float64 *b;                     // numerators.
-  float64 *a;                     // denominators. We don't calculate these.  I get them from matlab filter design tool.
+  float64 *num_coefs;                     // numerators.
+  float64 *denom_coefs;                     // denominators. We don't calculate these.  I get them from matlab filter design tool.
 
   int order;                      // order of iir, or tap count of fir
   float64 *input_gains;           // must multiply feedforward samples by this to get unity outupt gain in passband (djargonz!)

@@ -15,6 +15,7 @@ std::string session_config_filename;
 std::map<std::string, Trode> trode_map;
 Trode test_t;
 std::map<int, neural_daq> neural_daq_map;
+std::map<std::string, Filt> filt_map;
 boost::property_tree::ptree setup_pt;
 boost::property_tree::ptree session_pt;
 
@@ -78,6 +79,27 @@ void arte_setup_init(int argc, char *argv[]){
       this_neural_daq.data_ptr[m] = 0.0;
   }
 
+  BOOST_FOREACH(boost::property_tree::ptree::value_type &v,
+		setup_pt.get_child("options.setup.filter_list")){
+    Filt this_filt;
+    boost::property_tree::ptree filt_pt;
+    filt_pt = v.second;
+    this_filt.filt_name = filt_pt.data();
+    assign_property <std::string> ("filt_tpye", &(this_filt.filt_type), filt_pt, filt_pt, 1);
+    assign_property <int> ("order", &(this_filt.order), filt_pt, filt_pt, 1);
+    assign_property <int> ("filtfilt", &(this_filt.filtfilt),filt_pt,filt_pt,1);
+    assign_property <int> ("filtfilt_wait_n_buffers", &(this_filt.filtfilt_wait_n_buffers), filt_pt, filt_pt,1);
+    this_filt.data_cursor = 0;
+    // derive properties for fir filter if fir
+    if( this_filt.type.compare("fir") == 0){
+      this_filt.num_coefs = new float64 [this_filt.order];
+      this_filt.denom_coefs = new float64[this_filt.order];
+    } // or for iir filter
+    elseif( (this_filt.type.compare("iir") == 0) ){
+      this_filt.filt_num_sos = this_filt.order / 2;
+      int n_coefs = this_filt.order * 3;
+      this_filt.num_coefs = new float64 [n_coefs];
+      this_filt.denom_coefs = new float64 [n_coefs];
 }
 
 
@@ -91,6 +113,7 @@ void arte_session_init(int argc, char *argv[]){
     init_new_trode(v,this_trode);
     trode_map.insert( std::pair<std::string, Trode> ( v.second.data(), this_trode ));
   }
+
 }
 
 
@@ -139,6 +162,9 @@ int init_new_trode(boost::property_tree::ptree::value_type &v, Trode &new_trode)
   //new_trode.filt_data_cursor = 0;
   //new_trode.raw_cursor_time = 0; 
   //new_trode.filt_cursor_time = 0;
+
+  // fix this to return an error code (better yet, throw exception?) if
+  // there's a memory problem or some kind of illegal parameter setting
   return 0;
 
 }
