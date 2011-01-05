@@ -13,7 +13,6 @@
 std::string setup_config_filename;
 std::string session_config_filename;
 std::map<std::string, Trode> trode_map;
-Trode test_t;
 std::map<int, neural_daq> neural_daq_map;
 std::map<std::string, Filt> filt_map;
 boost::property_tree::ptree setup_pt;
@@ -31,13 +30,7 @@ void arte_init(int argc, char *argv[], const std::string &setup_fn, const std::s
   else
     session_config_filename = session_fn;
 
-  //std::string t2 = "test.conf";
-  //read_xml(t2, setup_pt);
-
   try{
-    //const std::string ts= "/home/greghale/arte-ephys/conf/arte_setup_default.conf";
-    //std::cout << setup_fn << std::endl;
-    //read_xml(ts, setup_pt);
     read_xml(setup_config_filename,   setup_pt,   boost::property_tree::xml_parser::trim_whitespace); // check where this flag actually lives
     read_xml(session_config_filename, session_pt, boost::property_tree::xml_parser::trim_whitespace); // can/should put 2 possible fails in one try block?
   }
@@ -52,7 +45,8 @@ void arte_init(int argc, char *argv[], const std::string &setup_fn, const std::s
   //arte_setup_daq_cards(); // No args. Setup task, virtual chans for trodes, callbacks.
 
   // after this, the main loop will start the gui.
-
+  // EDIT:  after this, we'll sleep, waiting for n_samps callback from the cards or start/stop/configure commands from the tubes!
+  // 
 }
 
 void arte_setup_init(int argc, char *argv[]){

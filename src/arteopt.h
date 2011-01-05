@@ -13,17 +13,6 @@
 extern std::string setup_config_filename;
 extern std::string session_config_filename;
 
-// map of tetrode objects { string name, trode object }
-// the syntax here is very wrong - need to read about std::map
-// key will be name string; data will be Trode object
-// Why map, not vector or array?  b/c tetrodes aren't inherently ordered
-// During initialization, we may need to refer to trodes by name (for assigning trodes into windows)
-// But will lookup be slow?  It will only happen during init.
-// During init, each trode will hold a pointer into the buffer that gets filled by the daq card
-// rather than the daq card having to look up the trode repeatedly on each buffer cycle
-
-extern Trode test_t;
-
 extern std::map<std::string, Trode> trode_map;
 
 // struct to represent a daq card for neural data

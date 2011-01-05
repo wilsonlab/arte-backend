@@ -29,32 +29,9 @@ void parse_line_for_vals(std::string the_line,T *t, int n_elem){
 
   iss.str(the_line);
 
-  // I'm confused about this.  Should the caller do it
-  // instead of having us do it here?
-  // If we're doing it, how does the caller's scope know
-  // how big this array should have been?
-  //if(n_elem > 0)
-  //  t = new T [n_elem];
-  //else
-  //  t = new T [1];
-  // UPDATE:  You CAN'T do this.  It seems to set up memory that's out of scope
-  // and gets overwritten as soon as we leave this fn.  Uncomment to see this happen
-  // So: why doesn't this happen when we're packing stl containers? (greghale@mit.edu if you can explain, thanks!)
-  // (I mean, new_trode fn in arteopt.h calls new float64 [], assigns that to a member of a new trode object,
-  // packs that trode object into trode_map, then leavs the fn.  Why doesn't leaving scope jeopardize that memory block?
-  // Or, maybe it does! :)  I haven't tested the buffers set up that way yet.
-
-  // counting this way seems to be sensitive to white spaces at 
-  // beginning and end of string.  Can this be fixed?
-  // (try it with test_util.cpp)
-
-  //std::cout << "iss content is: " << iss.str() << std::endl;
-
   int n = 0;
   while(! iss.eof()){
-    //std::cout << "iss.str = " << iss.str() << std::endl;
     iss >> t[n];
-    //std::cout << "n = " << n << " and t[t] = " << t[n] << std::endl;
     n+=1;
   }
 
