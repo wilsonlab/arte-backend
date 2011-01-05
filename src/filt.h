@@ -1,4 +1,8 @@
+#ifndef FILT_H_
+#define FILT_H_
+
 #include <NIDAQmx.h>
+#include <string>
 
 class Filt{
 
@@ -31,8 +35,7 @@ class Filt{
   // buffers are kept within invidivual tetrode or eeg_channel objects.
   //float64 *x_buffer;
   //float64 *y_buffer;
-
-  int filt_num_sos;  // how many biquad sections (should 1 be if FIR)
-
+};
 
 
+#endif

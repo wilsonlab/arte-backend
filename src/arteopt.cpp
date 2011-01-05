@@ -71,12 +71,13 @@ void arte_setup_init(int argc, char *argv[]){
     assign_property <std::string> ("dev_name", &(this_neural_daq.dev_name), ndaq_pt, ndaq_pt, 1);
     assign_property <std::string> ("in_filename", &(this_neural_daq.in_filename), ndaq_pt, ndaq_pt, 1);
     assign_property <std::string> ("raw_dump_filename", &(this_neural_daq.raw_dump_filename), ndaq_pt, ndaq_pt, 1);
-    neural_daq_map.insert( std::pair <int, neural_daq > ( this_neural_daq.id, this_neural_daq));
+    
     // setup an array to use as the input stream from this daq card
     this_neural_daq.data_ptr = new float64 [ this_neural_daq.n_chans * this_neural_daq.n_samps_per_buffer ];
     // consider replacing this coming loop with a memset call?
     for(int m = 0; m < (this_neural_daq.n_chans * this_neural_daq.n_samps_per_buffer); m++)
       this_neural_daq.data_ptr[m] = 0.0;
+    neural_daq_map.insert( std::pair <int, neural_daq> (this_neural_daq.id, this_neural_daq));
   }
 
   BOOST_FOREACH(boost::property_tree::ptree::value_type &v,
@@ -85,21 +86,26 @@ void arte_setup_init(int argc, char *argv[]){
     boost::property_tree::ptree filt_pt;
     filt_pt = v.second;
     this_filt.filt_name = filt_pt.data();
-    assign_property <std::string> ("filt_tpye", &(this_filt.filt_type), filt_pt, filt_pt, 1);
+    assign_property <std::string> ("type", &(this_filt.type), filt_pt, filt_pt, 1);
     assign_property <int> ("order", &(this_filt.order), filt_pt, filt_pt, 1);
-    assign_property <int> ("filtfilt", &(this_filt.filtfilt),filt_pt,filt_pt,1);
-    assign_property <int> ("filtfilt_wait_n_buffers", &(this_filt.filtfilt_wait_n_buffers), filt_pt, filt_pt,1);
+    assign_property <bool> ("filtfilt", &(this_filt.filtfilt),filt_pt,filt_pt,1);
+    assign_property <int> ("filtfilt_wait_n_buffer", &(this_filt.filtfilt_wait_n_buffers), filt_pt, filt_pt,1);
     this_filt.data_cursor = 0;
     // derive properties for fir filter if fir
     if( this_filt.type.compare("fir") == 0){
       this_filt.num_coefs = new float64 [this_filt.order];
       this_filt.denom_coefs = new float64[this_filt.order];
     } // or for iir filter
-    elseif( (this_filt.type.compare("iir") == 0) ){
+    else if( (this_filt.type.compare("iir") == 0) ){
       this_filt.filt_num_sos = this_filt.order / 2;
       int n_coefs = this_filt.order * 3;
       this_filt.num_coefs = new float64 [n_coefs];
       this_filt.denom_coefs = new float64 [n_coefs];
+    } else{
+      std::cerr << "Can't use the filt type: " << this_filt.type << std::endl;
+    }
+    filt_map.insert( std::pair<std::string, Filt>(this_filt.filt_name, this_filt) );
+  }
 }
 
 
@@ -139,6 +145,7 @@ int init_new_trode(boost::property_tree::ptree::value_type &v, Trode &new_trode)
   new_trode.channels = new int [new_trode.n_chans];
   assign_property <int> ("channels", new_trode.channels, this_trode_pt, default_pt, new_trode.n_chans);
   assign_property <int> ("daq_id", &(new_trode.daq_id), this_trode_pt, default_pt, 1);
+  assign_property <std::string> ("filt_name", &(new_trode.filt_name), this_trode_pt, default_pt, 1);
   assign_property <int> ("samps_before_trig", &(new_trode.samps_before_trig), this_trode_pt, default_pt, 1);
   assign_property <int> ("samps_after_trig", &(new_trode.samps_after_trig), this_trode_pt, default_pt, 1);
   assign_property <std::string> ("spike_mode", &(new_trode.spike_mode), this_trode_pt, default_pt, 1);
@@ -153,6 +160,8 @@ int init_new_trode(boost::property_tree::ptree::value_type &v, Trode &new_trode)
   new_trode.buffer_mult_of_input = new_trode.n_samps_per_chan / my_daq.n_samps_per_buffer;
   if((new_trode.n_samps_per_chan % my_daq.n_samps_per_buffer) >0)
     new_trode.buffer_mult_of_input += 1;
+
+  new_trode.my_filt = (filt_map.find("filt_name"))->second;
 
   //new_trode.buffer_mult_of_input = FIX;
   //new_trode.ptr_to_raw_stream = FIX;

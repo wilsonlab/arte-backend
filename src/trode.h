@@ -3,6 +3,7 @@
 
 #include <NIDAQmx.h>
 #include <string>
+#include "filt.h"
 
 class Trode{
 
@@ -24,6 +25,7 @@ class Trode{
   // to save overhead.  But let's keep this member fn and implement it so we can compare the execution time
 
   std::string trode_name;
+  std::string filt_name;
   float64 *ptr_to_raw_stream;
   int buffer_mult_of_input; // how many input buffers do we keep for this trode?
   float64 *raw_buffer;

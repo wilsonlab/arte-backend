@@ -8,6 +8,7 @@
 #include "trode.h"
 #include <NIDAQmx.h>
 #include <map>
+#include "filt.h"
 
 extern std::string setup_config_filename;
 extern std::string session_config_filename;
