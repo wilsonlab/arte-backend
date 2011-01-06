@@ -49,7 +49,7 @@ void arte_setup_daq_cards();  // eg tasks, virtual chans, callback attachment
 
 int arte_setup_comm(); // set up the networking stuff
 
-int init_new_trode(boost::property_tree::ptree::value_type &v, Trode &new_trode); // ptree_value_type &v copied from recipe, don't quite understand this
+//int init_new_trode(boost::property_tree::ptree::value_type &v, Trode &new_trode); // ptree_value_type &v copied from recipe, don't quite understand this
 neural_daq new_neural_daq(boost::property_tree::ptree::value_type &v);
 
 int save_setup_config(std::string &);

@@ -32,6 +32,10 @@ class Trode{
 
   int init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptree &default_pt,
 	   std::map<int, neural_daq> &neural_daq_map, std::map<std::string, Filt> &filt_map);
+
+  void print_options(void);
+  void print_buffers(void);
+  void print_spikes(void);
   //add_data(prt_to_array, n_chans, n_samps_per_chan, time_at_beginning_of_buffer)
   void add_data(float64 *,int,int,long int);
   // NB: we'll prob use the fn's trode_filter_data & trode_process_data instead of this method

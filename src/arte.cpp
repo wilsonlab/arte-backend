@@ -4,6 +4,8 @@
 #include <iostream>
 #include "global_defs.h"
 
+//std::map<std::string, Trode> trode_map;
+
 int main(int argc, char *argv[]){
 
   // implement in arteopt.  (global vars there for setup_opt, session_opt)
@@ -13,5 +15,6 @@ int main(int argc, char *argv[]){
   // point will be executed until the gui is closed
   
   //arte_build_gui(argc, argv);
-
+  //std::map<std::string,Trode> trode_map;
+  std::cout << "size: " << trode_map.size() << std::endl;
 }

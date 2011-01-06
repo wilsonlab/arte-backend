@@ -6,13 +6,15 @@
 #include "util.h"
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/property_tree/exceptions.hpp>
+#include <iostream>
 
 Trode::Trode(){
+  //std::cout << "In a trode constructor" << std::endl;
 }
 
 
 Trode::~Trode(){
-
+  //std::cout << "In destructor of tetrode object for tetrode: " << trode_name << std::endl;
 }
 
 //std::map <int, neural_daq> neural_daq_map;
@@ -59,6 +61,34 @@ int Trode::init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptr
 
 }
 
+
 void trode_filter_data(Trode *, float64 *, int){
+
+}
+
+
+void Trode::print_options(void){
+  std::cout << "********Trode: " << trode_name << "********" << std::endl
+	    << "n_chans:      " << trode_opt.n_chans << std::endl
+	    << "channels: ";
+  for (int a = 0; a < trode_opt.n_chans; a++)
+    std::cout << trode_opt.channels[a] << " ";
+  std::cout << std::endl
+	    << "thresholds:   ";
+  for(int a = 0; a < trode_opt.n_chans; a++)
+    std::cout << trode_opt.thresholds[a] << " ";
+  std:: cout << std::endl
+	     << "daq_id:      " << trode_opt.daq_id << std::endl
+	     << "filt_name:   " << trode_opt.filt_name << std::endl
+	     << "filt.order:  " << trode_opt.my_filt.order << std::endl
+	     << "spike_nsamps:" << trode_opt.n_samps_per_spike << std::endl << std::endl;
+}
+
+
+void Trode::print_buffers(void){
+}
+
+
+void Trode::print_spikes(void){
 
 }
