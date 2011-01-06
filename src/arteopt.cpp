@@ -106,11 +106,17 @@ void arte_setup_init(int argc, char *argv[]){
 void arte_session_init(int argc, char *argv[]){
 
   Trode trode_default(); // store the default settings here
+  boost::property_tree::ptree default_trode_pt;
+  boost::property_tree::ptree this_trode_pt;
+
+  default_trode_pt = session_pt.get_child("options.session.trode_default");
 
   BOOST_FOREACH(boost::property_tree::ptree::value_type &v, 
 		session_pt.get_child("options.session.trodes")){
     Trode this_trode;
-    init_new_trode(v,this_trode);
+    this_trode_pt = v.second;
+    init_new_trode(v, this_trode);
+    this_trode.init(this_trode_pt, default_trode_pt, neural_daq_map, filt_map);
     trode_map.insert( std::pair<std::string, Trode> ( v.second.data(), this_trode ));
   }
 
@@ -143,8 +149,8 @@ int init_new_trode(boost::property_tree::ptree::value_type &v, Trode &new_trode)
   assign_property <int> ("samps_before_trig", &(new_trode.samps_before_trig), this_trode_pt, default_pt, 1);
   assign_property <int> ("samps_after_trig", &(new_trode.samps_after_trig), this_trode_pt, default_pt, 1);
   assign_property <std::string> ("spike_mode", &(new_trode.spike_mode), this_trode_pt, default_pt, 1);
-  new_trode.win_heights = new float64 [new_trode.n_chans];
-  assign_property <float64> ("win_heights", new_trode.win_heights, this_trode_pt, default_pt, new_trode.n_chans);
+  //  new_trode.win_heights = new float64 [new_trode.n_chans];
+  //assign_property <float64> ("win_heights", new_trode.win_heights, this_trode_pt, default_pt, new_trode.n_chans);
 
   // Now the derived parts
 
@@ -196,4 +202,8 @@ int init_new_trode(boost::property_tree::ptree::value_type &v, Trode &new_trode)
   // there's a memory problem or some kind of illegal parameter setting
   return 0;
 
+}
+
+void arte_setup_daq_cards(){
+  
 }

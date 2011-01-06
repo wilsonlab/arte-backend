@@ -81,4 +81,14 @@ int assign_property(const char *tree_key, T * t, const boost::property_tree::ptr
   assign_property <T> (tk, t, this_trode_pt, default_trode_pt, n_elem);
 }
 
+// simple template class to simply array initialization?
+template <class T>
+void init_array(T * t, T init_value, int num_el){
+  T zero_val = 0;
+  if( init_value == zero_val)
+    memset(t, (int)init_value,  sizeof(init_value) * num_el);
+  else
+    for (int n = 0; n < num_el; n++)
+      t[n] = init_value;}
+
 #endif
