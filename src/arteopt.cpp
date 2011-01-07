@@ -103,6 +103,7 @@ void arte_setup_init(int argc, char *argv[]){
     } else{
       std::cerr << "Can't use the filt type: " << this_filt.type << std::endl;
     }
+    this_filt.init(filt_pt);
     filt_map.insert( std::pair<std::string, Filt>(this_filt.filt_name, this_filt) );
   }
 }

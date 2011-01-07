@@ -3,12 +3,15 @@
 
 #include <NIDAQmx.h>
 #include <string>
+#include <boost/property_tree/ptree.hpp>
 
 class Filt{
 
  public:
   Filt();
   virtual ~Filt();
+
+  void init(boost::property_tree::ptree &filt_pt);
 
   std::string filt_name;
   std::string type;               // iir or fir.  Determines how to interpret long lists of numerators and denominators

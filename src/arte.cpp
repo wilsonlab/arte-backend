@@ -3,8 +3,7 @@
 #include "arteopt.h"
 #include <iostream>
 #include "global_defs.h"
-
-//std::map<std::string, Trode> trode_map;
+#include <boost/foreach.hpp>
 
 int main(int argc, char *argv[]){
 
@@ -15,6 +14,10 @@ int main(int argc, char *argv[]){
   // point will be executed until the gui is closed
   
   //arte_build_gui(argc, argv);
-  //std::map<std::string,Trode> trode_map;
-  //std::cout << "size: " << trode_map.size() << std::endl;
+
+  std::pair<std::string,Trode> v;
+  std::cout << "size: " << trode_map.size() << std::endl;
+  BOOST_FOREACH(v, trode_map){
+    v.second.print_options();
+  }
 }
