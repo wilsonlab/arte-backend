@@ -84,25 +84,6 @@ void arte_setup_init(int argc, char *argv[]){
     Filt this_filt;
     boost::property_tree::ptree filt_pt;
     filt_pt = v.second;
-    this_filt.filt_name = filt_pt.data();
-    assign_property <std::string> ("type", &(this_filt.type), filt_pt, filt_pt, 1);
-    assign_property <int> ("order", &(this_filt.order), filt_pt, filt_pt, 1);
-    assign_property <bool> ("filtfilt", &(this_filt.filtfilt),filt_pt,filt_pt,1);
-    assign_property <int> ("filtfilt_wait_n_buffers", &(this_filt.filtfilt_wait_n_buffers), filt_pt, filt_pt,1);
-    this_filt.data_cursor = 0;
-    // derive properties for fir filter if fir
-    if( this_filt.type.compare("fir") == 0){
-      this_filt.num_coefs = new float64 [this_filt.order];
-      this_filt.denom_coefs = new float64[this_filt.order];
-    } // or for iir filtern
-    else if( (this_filt.type.compare("iir") == 0) ){
-      this_filt.filt_num_sos = this_filt.order / 2;
-      int n_coefs = this_filt.order * 3;
-      this_filt.num_coefs = new float64 [n_coefs];
-      this_filt.denom_coefs = new float64 [n_coefs];
-    } else{
-      std::cerr << "Can't use the filt type: " << this_filt.type << std::endl;
-    }
     this_filt.init(filt_pt);
     filt_map.insert( std::pair<std::string, Filt>(this_filt.filt_name, this_filt) );
   }
@@ -129,13 +110,10 @@ void arte_session_init(int argc, char *argv[]){
 }
 
 
-
 int arte_setup_daq_cards(){
   int32 daqErr = 0;
   char clk_src[256], channel_name[256], trig_name[256];
   neural_daq this_nd;
-  //TaskHandle masterTaskHandle = 0;
-  //TaskHandle slaveTaskHandle = 0;
   std::map<int, neural_daq>::iterator it;
   for(it = neural_daq_map.begin(); it != neural_daq_map.end(); it++){
     this_nd = (*it).second;
