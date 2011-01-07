@@ -140,6 +140,9 @@ int arte_setup_daq_cards(){
     this_nd = (*it).second;
     this_nd.task_handle = 0;
     daq_err_check ( DAQmxCreateTask("",&(this_nd.task_handle)) );
+
+    // Do this: DAQmxCfgSampClkTiming(this_nd.task_handle, ..., ...)
+
     for(int n = 0; n < this_nd.n_chans; n++){
       sprintf(channel_name, "%s/ai%d", this_nd.dev_name.c_str(), n);
       daq_err_check ( DAQmxCreateAIVoltageChan( this_nd.task_handle,channel_name,"",DAQmx_Val_RSE, -10.0, 10.0, DAQmx_Val_Volts, NULL) ); 
