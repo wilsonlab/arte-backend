@@ -1,5 +1,5 @@
 // object represents 1 tetrode.  Takes raw data in full buffers, filters the needed channels,
-// stores the filtered data, scans it for spikes, sends the spikes to a drawing object, and to
+// stores the filtered data, scans it for spikes, sends the spikes to the tubes, and to
 // central file-saving object
 
 #include "trode.h"
@@ -14,10 +14,9 @@ Trode::Trode(){
 
 
 Trode::~Trode(){
-  //std::cout << "In destructor of tetrode object for tetrode: " << trode_name << std::endl;
+  //std::cout << "In destructor of tetrode object for tetrode: " << trode_name << std::endl; (<- interesting experiment)
 }
 
-//std::map <int, neural_daq> neural_daq_map;
 
 int Trode::init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptree &default_pt, 
 		std::map<int,neural_daq> &neural_daq_map, std::map<std::string,Filt> &filt_map){

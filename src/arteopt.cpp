@@ -18,6 +18,7 @@ std::map<std::string, Filt> filt_map;
 boost::property_tree::ptree setup_pt;
 boost::property_tree::ptree session_pt;
 
+std::vector<TaskHandle> task_handle_vector;
 
 void arte_init(int argc, char *argv[], const std::string &setup_fn, const std::string &session_fn){
 
@@ -47,12 +48,11 @@ void arte_init(int argc, char *argv[], const std::string &setup_fn, const std::s
   // after this, the main loop will start the gui.
   // EDIT:  after this, we'll sleep, waiting for n_samps callback from the cards or start/stop/configure commands from the tubes!
   // 
-
-  //std::cout 
-  std::pair<std::string, Trode> it;
-  BOOST_FOREACH(it, trode_map){
-    it.second.print_options();
-  }
+ 
+  //  std::pair<std::string, Trode> it;
+  //BOOST_FOREACH(it, trode_map){
+  //  it.second.print_options();
+  //}
 }
 
 void arte_setup_init(int argc, char *argv[]){
@@ -93,7 +93,7 @@ void arte_setup_init(int argc, char *argv[]){
     if( this_filt.type.compare("fir") == 0){
       this_filt.num_coefs = new float64 [this_filt.order];
       this_filt.denom_coefs = new float64[this_filt.order];
-    } // or for iir filter
+    } // or for iir filtern
     else if( (this_filt.type.compare("iir") == 0) ){
       this_filt.filt_num_sos = this_filt.order / 2;
       int n_coefs = this_filt.order * 3;
@@ -128,6 +128,10 @@ void arte_session_init(int argc, char *argv[]){
 
 
 
-void arte_setup_daq_cards(){
-  
+int arte_setup_daq_cards(){
+  int32 daqErr = 0;
+  //TaskHandle masterTaskHandle = 0;
+  //TaskHandle slaveTaskHandle = 0;
+  masterTaskHandle = 0;
+  daqErr = DAQmxCreateTask("",&masterTaskHandle);
 }

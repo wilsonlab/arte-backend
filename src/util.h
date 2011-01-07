@@ -91,4 +91,17 @@ void init_array(T * t, T init_value, int num_el){
     for (int n = 0; n < num_el; n++)
       t[n] = init_value;}
 
+void daq_err_check(int32 error){
+  char errBuff[2048] = {'\0'};
+  if( DAQmxFailed(error) ){
+    DAQmxGetExtendedErrorInfo(errBuff,2048);
+    std::cout << "util.h daq_err_check saw error num: " << error << std::endl
+	      << "  message: " << errBuff << std::endl;
+  }
+}
+
+
+
+
+
 #endif

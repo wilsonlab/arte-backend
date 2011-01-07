@@ -16,5 +16,5 @@ int main(int argc, char *argv[]){
   
   //arte_build_gui(argc, argv);
   //std::map<std::string,Trode> trode_map;
-  std::cout << "size: " << trode_map.size() << std::endl;
+  //std::cout << "size: " << trode_map.size() << std::endl;
 }
