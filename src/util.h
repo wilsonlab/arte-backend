@@ -11,15 +11,9 @@
 #include <stdio.h>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/exceptions.hpp>
+#include <NIDAQmx.h>
 
-// Template functions can't have their interface and implementation separated.
-// So please don't move these fns to util.cpp
-// Thanks
-
-// take a string which haz between 1 and n space-delimited values
-// that need to get written into an array.
-// pass the string to parse as arg 1, a pointer to the array to populate as t
-// pass expected number of elements in n_elem, or -1 to tell the function not to check
+// parse string "val1 val2 etc" into array.  set n_elem = -1 to avoid checking the count
 template <class T> 
 void parse_line_for_vals(std::string the_line,T *t, int n_elem){
   
@@ -34,7 +28,6 @@ void parse_line_for_vals(std::string the_line,T *t, int n_elem){
     iss >> t[n];
     n+=1;
   }
-
   // only do this check if we care about the n_elem specification
   if(n_elem == -1){
     if(n != n_elem){
@@ -49,16 +42,8 @@ void parse_line_for_vals(std::string the_line,T *t, int n_elem){
   }
 }
 
-
-// Populate a trode's fields with either the value given by the property tree,
-// or, if property tree has no info for this trode, use the default value
-// To specify that the trode being populated _IS_ the default trode, pass NULL
-// as the last argument.
-// var is a pointer to the member variable to be set.  this_trode_ptree is a ptree
-// node corresponding to only this tetrode.  tree_key is a string key into the ptree
-// to the target parameter. default_var is NULL or a pointer to the default value to use
-// in the case that tree_key into ptree doesn't give a value.
-
+// template class to set a trode's field to a value specified in that trode's property tree, or to that of the default trode propetry tree.
+// if there is no default property tree, easiest thing to do is just pass the trode's property tree twice
 template <class T>
 int assign_property(std::string &tree_key, T * t, const boost::property_tree::ptree &this_trode_pt, const boost::property_tree::ptree &default_trode_pt, int n_elem){
 
@@ -87,21 +72,24 @@ void init_array(T * t, T init_value, int num_el){
   T zero_val = 0;
   if( init_value == zero_val)
     memset(t, (int)init_value,  sizeof(init_value) * num_el);
-  else
+  else{
     for (int n = 0; n < num_el; n++)
-      t[n] = init_value;}
-
-void daq_err_check(int32 error){
-  char errBuff[2048] = {'\0'};
-  if( DAQmxFailed(error) ){
-    DAQmxGetExtendedErrorInfo(errBuff,2048);
-    std::cout << "util.h daq_err_check saw error num: " << error << std::endl
-	      << "  message: " << errBuff << std::endl;
+      t[n] = init_value;
   }
 }
 
-
-
+void daq_err_check(int32 error);
+//{
+//  char errBuff[2048] = {'\0'};
+//  if( DAQmxFailed(error) ){
+//    std::cout << "Got a daqmx error..." << std::endl;
+//    DAQmxGetExtendedErrorInfo(errBuff,2048);
+//    std::cout << "util.h daq_err_check saw error num: " << error << std::endl << "  message: " << errBuff << std::endl;
+//  }
+//  if(error == 0){
+//    std::cout << "No nidaqmx error." << std::endl;
+//  }
+//}
 
 
 #endif

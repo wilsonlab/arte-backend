@@ -43,7 +43,7 @@ void arte_init(int argc, char *argv[], const std::string &setup_fn, const std::s
   arte_session_init(argc, argv); // Use property_tree to set up trode list, trode/eeg view vars
   //arte_init_timer();  // in timer.h
   //arte_start_clock(); // in timer.h 
-  //arte_setup_daq_cards(); // No args. Setup task, virtual chans for trodes, callbacks.
+  arte_setup_daq_cards(); // No args. Setup task, virtual chans for trodes, callbacks.
 
   // after this, the main loop will start the gui.
   // EDIT:  after this, we'll sleep, waiting for n_samps callback from the cards or start/stop/configure commands from the tubes!
@@ -76,6 +76,7 @@ void arte_setup_init(int argc, char *argv[]){
     this_neural_daq.data_ptr = new float64 [ this_neural_daq.n_chans * this_neural_daq.n_samps_per_buffer ];
     init_array<float64>(this_neural_daq.data_ptr,0.0, this_neural_daq.n_chans * this_neural_daq.n_samps_per_buffer); 
     neural_daq_map.insert( std::pair <int, neural_daq> (this_neural_daq.id, this_neural_daq));
+
   }
 
   BOOST_FOREACH(boost::property_tree::ptree::value_type &v,
@@ -130,8 +131,20 @@ void arte_session_init(int argc, char *argv[]){
 
 int arte_setup_daq_cards(){
   int32 daqErr = 0;
+  char clk_src[256], channel_name[256], trig_name[256];
+  neural_daq this_nd;
   //TaskHandle masterTaskHandle = 0;
   //TaskHandle slaveTaskHandle = 0;
-  masterTaskHandle = 0;
-  daqErr = DAQmxCreateTask("",&masterTaskHandle);
+  std::map<int, neural_daq>::iterator it;
+  for(it = neural_daq_map.begin(); it != neural_daq_map.end(); it++){
+    this_nd = (*it).second;
+    this_nd.task_handle = 0;
+    daq_err_check ( DAQmxCreateTask("",&(this_nd.task_handle)) );
+    for(int n = 0; n < this_nd.n_chans; n++){
+      sprintf(channel_name, "%s/ai%d", this_nd.dev_name.c_str(), n);
+      daq_err_check ( DAQmxCreateAIVoltageChan( this_nd.task_handle,channel_name,"",DAQmx_Val_RSE, -10.0, 10.0, DAQmx_Val_Volts, NULL) ); 
+    }
+    
+  }
+  //test_daq_err_check ( DAQmxCreateTask("",&masterTaskHandle) );
 }

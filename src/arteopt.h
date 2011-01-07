@@ -9,6 +9,7 @@
 #include <NIDAQmx.h>
 #include <map>
 #include "filt.h"
+#include <vector>
 
 extern std::string setup_config_filename;
 extern std::string session_config_filename;
@@ -16,6 +17,7 @@ extern std::string session_config_filename;
 extern std::map<std::string, Trode> trode_map;
 
 extern std::map <std::string, Filt> filt_map;
+extern std::map <int, neural_daq> neural_daq_map;
 
 extern boost::property_tree::ptree setup_pt;
 extern boost::property_tree::ptree session_pt;

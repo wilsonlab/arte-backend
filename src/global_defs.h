@@ -3,6 +3,7 @@
 
 #include <string>
 #include <iostream>
+#include <NIDAQmx.h>
 
 const int MAX_TRODE_NAME_LENGTH = 50;
 const std::string default_setup_config_filename ("/home/greghale/arte-ephys/conf/arte_setup_default.conf");
@@ -16,6 +17,7 @@ struct neural_daq{
   std::string in_filename;
   std::string raw_dump_filename;
   double *data_ptr;
+  TaskHandle task_handle;
 };
 
 
