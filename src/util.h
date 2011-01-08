@@ -79,6 +79,7 @@ void init_array(T * t, T init_value, int num_el){
 }
 
 void daq_err_check(int32 error);
+void daq_err_check(int32 error, TaskHandle *task_handle_array, int n_tasks);
 
 int32 GetTerminalNameWithDevPrefix(TaskHandle taskHandle, const char terminalName[], char triggerName[]);
 

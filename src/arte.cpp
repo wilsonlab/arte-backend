@@ -20,4 +20,5 @@ int main(int argc, char *argv[]){
   //BOOST_FOREACH(v, trode_map){
   //  v.second.print_options();
   //}
+  getchar();
 }

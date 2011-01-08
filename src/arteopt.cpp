@@ -111,7 +111,12 @@ void arte_session_init(int argc, char *argv[]){
 
 
 int arte_setup_daq_cards(){
+  int samp_rate = (int)1e6/32;
+  int buffer_samps_per_chan = 32;
+  int buffer_size;
   int n_daq = neural_daq_map.size();
+  int n_tasks_started = 0;
+  TaskHandle task_handle_array[10]; // a reasonable upper bound on number of tasks we'll have running
   int32 daqErr = 0;
   char clk_src[256], channel_name[256], trig_name[256];
   float64 clkRate;
@@ -121,6 +126,7 @@ int arte_setup_daq_cards(){
   for(it = neural_daq_map.begin(); it != neural_daq_map.end(); it++){  // for each daq:
     this_nd = (*it).second;
     this_nd.task_handle = 0;
+    buffer_size = buffer_samps_per_chan * this_nd.n_chans;
     daq_err_check ( DAQmxCreateTask("",&(this_nd.task_handle)) );  // create task
 
     for(int n = 0; n < this_nd.n_chans; n++){
@@ -128,15 +134,19 @@ int arte_setup_daq_cards(){
       daq_err_check ( DAQmxCreateAIVoltageChan( this_nd.task_handle,channel_name,"",DAQmx_Val_RSE, -10.0, 10.0, DAQmx_Val_Volts, NULL) ); 
     }
     
-    daq_err_check ( DAQmxCfgSampClkTiming(this_nd.task_handle, "", 32000.0, DAQmx_Val_Rising, DAQmx_Val_ContSamps, 32)) ; // CgfClkTiming
+    daq_err_check ( DAQmxCfgSampClkTiming(this_nd.task_handle, "", samp_rate, DAQmx_Val_Rising, DAQmx_Val_ContSamps, buffer_size)) ; // CgfClkTiming
 
     if( it == neural_daq_map.begin() ){
       std::cout << "Processing first daq." << std::endl;
       master_daq = this_nd;
       daq_err_check ( DAQmxSetRefClkSrc( master_daq.task_handle, "OnboardClock" ) );  // set master task clock source to onboard
-      daq_err_check ( DAQmxGetRefClkSrc( master_daq.task_handle, clk_src, 256) ); // get master task clock source
+      if(n_daq > 1){
+	daq_err_check ( DAQmxGetRefClkSrc( master_daq.task_handle, clk_src, 256) ); // get master task clock source
+      }
       daq_err_check ( DAQmxGetRefClkRate( master_daq.task_handle, &clkRate) );      // set the clkRate variable to master's value
-      daq_err_check ( GetTerminalNameWithDevPrefix(master_daq.task_handle, "ai/StartTrigger",trig_name) );
+      if(n_daq > 1){
+	daq_err_check ( GetTerminalNameWithDevPrefix(master_daq.task_handle, "ai/StartTrigger",trig_name) );
+      }
       daq_err_check ( DAQmxRegisterEveryNSamplesEvent( master_daq.task_handle, DAQmx_Val_Acquired_Into_Buffer, 32, 0, EveryNCallback, (void *)&neural_daq_map) ); // attach "new data" callback
       daq_err_check ( DAQmxRegisterDoneEvent( master_daq.task_handle, 0, DoneCallback, (void *)&master_daq) ); // attach done callback
       // start task?  Not yet?  we'll defer starting the master till slaves are started, as in ContinuousAI.c example
@@ -153,8 +163,10 @@ int arte_setup_daq_cards(){
     } // end slave config
     
   } // finished for loop.  Now start the master task.
+  // DEBUGGING: commented out start task.
+
   daq_err_check ( DAQmxStartTask( master_daq.task_handle ) );
-  //test_daq_err_check ( DAQmxCreateTask("",&masterTaskHandle) );
+  
 }
 
 int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNsamplesEventType, uInt32 nSamples, void *callbackData){

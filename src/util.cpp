@@ -13,6 +13,15 @@ void daq_err_check(int32 error){
   }
 }
 
+void daq_err_check(int32 error, TaskHandle *task_handle_array, int n_tasks){
+  for (int n = 0; n < n_tasks; n++){
+    std::cout << "Checking for errors while stopping task " << n << std::endl;
+    daq_err_check( DAQmxStopTask(task_handle_array[n]) );
+  }
+  std::cout << "The original error check:" << std::endl;
+  daq_err_check(error);
+}
+
 // this is copied from ContinuousAI.c  Not fully sure how it works.
 int32 GetTerminalNameWithDevPrefix(TaskHandle taskHandle, const char terminalName[], char triggerName[])
 {
