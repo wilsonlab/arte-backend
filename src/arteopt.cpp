@@ -163,8 +163,8 @@ int arte_setup_daq_cards(){
     } // end slave config
     
   } // finished for loop.  Now start the master task.
-  // DEBUGGING: commented out start task.
 
+  // This task start will usually happen in response to a 'start' request, not automatically.  Auto for debugging purposes.
   daq_err_check ( DAQmxStartTask( master_daq.task_handle ) );
   
 }

@@ -3,13 +3,14 @@
 // general utility functions 
 
 void daq_err_check(int32 error){
-  char errBuff[2048] = {'\0'};
+  char errBuff[2048];
   if( DAQmxFailed(error) ){
     std::cout << "Caught a DAQmx error..." << std::endl;
     DAQmxGetExtendedErrorInfo(errBuff,2048);
     std::cout << "util.cpp saw the daqmx error num: " << error << " with message: " << errBuff << std::endl;
+    printf("Trying again to print err string: %s\n", errBuff);
   }else{
-    std::cout << "No daqmx error." << std::endl;
+    //    std::cout << "No daqmx error." << std::endl;
   }
 }
 
@@ -37,4 +38,5 @@ int32 GetTerminalNameWithDevPrefix(TaskHandle taskHandle, const char terminalNam
     strcat(strcat(strcpy(triggerName,chan),"/"),terminalName);
   } else
     strcpy (triggerName, terminalName);
+  return 0;
 }
