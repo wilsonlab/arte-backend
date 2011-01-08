@@ -128,7 +128,6 @@ int arte_setup_daq_cards(){
     this_nd.task_handle = 0;
     buffer_size = buffer_samps_per_chan * this_nd.n_chans;
     daq_err_check ( DAQmxCreateTask("",&(this_nd.task_handle)) );  // create task
-
     for(int n = 0; n < this_nd.n_chans; n++){
       sprintf(channel_name, "%s/ai%d", this_nd.dev_name.c_str(), n); // create virtual chan
       daq_err_check ( DAQmxCreateAIVoltageChan( this_nd.task_handle,channel_name,"",DAQmx_Val_RSE, -10.0, 10.0, DAQmx_Val_Volts, NULL) ); 
@@ -139,7 +138,9 @@ int arte_setup_daq_cards(){
     if( it == neural_daq_map.begin() ){
       std::cout << "Processing first daq." << std::endl;
       master_daq = this_nd;
-      daq_err_check ( DAQmxSetRefClkSrc( master_daq.task_handle, "OnboardClock" ) );  // set master task clock source to onboard
+      daq_err_check ( DAQmxSetRefClkSrc( this_nd.task_handle, "OnboardClock" ) );  // set master task clock source to onboard
+      master_daq = this_nd;
+      
       if(n_daq > 1){
 	daq_err_check ( DAQmxGetRefClkSrc( master_daq.task_handle, clk_src, 256) ); // get master task clock source
       }
@@ -158,10 +159,14 @@ int arte_setup_daq_cards(){
       // RegisterEveryNSamples?  No.  A single function will tell all cards to read into all daq buffers.
       // Only the master card getting n samples will trigger a read from all cards.  This prevents
       // us from having to send the 'update' signal only to trodes attached to the card raising EveryNSamples
+      // This of course ASSUMES 2 things: (1) sample clocks are synchronized. (2) equal sized buffers on all cards  
       daq_err_check ( DAQmxRegisterDoneEvent( this_nd.task_handle, 0, DoneCallback, (void *)&this_nd) );
       daq_err_check ( DAQmxStartTask( this_nd.task_handle ) );
     } // end slave config
     
+    // If we don't re_insert this_nd, the task handle doesn't get back into the map, and map value is (wrongly) uninitialized for later StopTask call!
+    neural_daq_map[this_nd.id] = this_nd;
+
   } // finished for loop.  Now start the master task.
 
   // This task start will usually happen in response to a 'start' request, not automatically.  Auto for debugging purposes.
@@ -170,7 +175,7 @@ int arte_setup_daq_cards(){
 }
 
 int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNsamplesEventType, uInt32 nSamples, void *callbackData){
-  std::cout << "EveryNCallback called.";
+  //std::cout << "EveryNCallback called.";
 }
 
 int32 CVICALLBACK DoneCallback(TaskHandle taskHandle, int32 status, void *callbackData){

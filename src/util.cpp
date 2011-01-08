@@ -8,7 +8,6 @@ void daq_err_check(int32 error){
     std::cout << "Caught a DAQmx error..." << std::endl;
     DAQmxGetExtendedErrorInfo(errBuff,2048);
     std::cout << "util.cpp saw the daqmx error num: " << error << " with message: " << errBuff << std::endl;
-    printf("Trying again to print err string: %s\n", errBuff);
   }else{
     //    std::cout << "No daqmx error." << std::endl;
   }
