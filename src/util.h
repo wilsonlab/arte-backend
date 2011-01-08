@@ -79,17 +79,7 @@ void init_array(T * t, T init_value, int num_el){
 }
 
 void daq_err_check(int32 error);
-//{
-//  char errBuff[2048] = {'\0'};
-//  if( DAQmxFailed(error) ){
-//    std::cout << "Got a daqmx error..." << std::endl;
-//    DAQmxGetExtendedErrorInfo(errBuff,2048);
-//    std::cout << "util.h daq_err_check saw error num: " << error << std::endl << "  message: " << errBuff << std::endl;
-//  }
-//  if(error == 0){
-//    std::cout << "No nidaqmx error." << std::endl;
-//  }
-//}
 
+int32 GetTerminalNameWithDevPrefix(TaskHandle taskHandle, const char terminalName[], char triggerName[]);
 
 #endif

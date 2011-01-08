@@ -111,22 +111,56 @@ void arte_session_init(int argc, char *argv[]){
 
 
 int arte_setup_daq_cards(){
+  int n_daq = neural_daq_map.size();
   int32 daqErr = 0;
   char clk_src[256], channel_name[256], trig_name[256];
+  float64 clkRate;
   neural_daq this_nd;
+  neural_daq master_daq;  // we'll set this in the loop
   std::map<int, neural_daq>::iterator it;
-  for(it = neural_daq_map.begin(); it != neural_daq_map.end(); it++){
+  for(it = neural_daq_map.begin(); it != neural_daq_map.end(); it++){  // for each daq:
     this_nd = (*it).second;
     this_nd.task_handle = 0;
-    daq_err_check ( DAQmxCreateTask("",&(this_nd.task_handle)) );
-
-    // Do this: DAQmxCfgSampClkTiming(this_nd.task_handle, ..., ...)
+    daq_err_check ( DAQmxCreateTask("",&(this_nd.task_handle)) );  // create task
 
     for(int n = 0; n < this_nd.n_chans; n++){
-      sprintf(channel_name, "%s/ai%d", this_nd.dev_name.c_str(), n);
+      sprintf(channel_name, "%s/ai%d", this_nd.dev_name.c_str(), n); // create virtual chan
       daq_err_check ( DAQmxCreateAIVoltageChan( this_nd.task_handle,channel_name,"",DAQmx_Val_RSE, -10.0, 10.0, DAQmx_Val_Volts, NULL) ); 
     }
     
-  }
+    daq_err_check ( DAQmxCfgSampClkTiming(this_nd.task_handle, "", 32000.0, DAQmx_Val_Rising, DAQmx_Val_ContSamps, 32)) ; // CgfClkTiming
+
+    if( it == neural_daq_map.begin() ){
+      std::cout << "Processing first daq." << std::endl;
+      master_daq = this_nd;
+      daq_err_check ( DAQmxSetRefClkSrc( master_daq.task_handle, "OnboardClock" ) );  // set master task clock source to onboard
+      daq_err_check ( DAQmxGetRefClkSrc( master_daq.task_handle, clk_src, 256) ); // get master task clock source
+      daq_err_check ( DAQmxGetRefClkRate( master_daq.task_handle, &clkRate) );      // set the clkRate variable to master's value
+      daq_err_check ( GetTerminalNameWithDevPrefix(master_daq.task_handle, "ai/StartTrigger",trig_name) );
+      daq_err_check ( DAQmxRegisterEveryNSamplesEvent( master_daq.task_handle, DAQmx_Val_Acquired_Into_Buffer, 32, 0, EveryNCallback, (void *)&neural_daq_map) ); // attach "new data" callback
+      daq_err_check ( DAQmxRegisterDoneEvent( master_daq.task_handle, 0, DoneCallback, (void *)&master_daq) ); // attach done callback
+      // start task?  Not yet?  we'll defer starting the master till slaves are started, as in ContinuousAI.c example
+    }else{
+      std::cout << "Processing subsequent daq." << std::endl;
+      daq_err_check ( DAQmxSetRefClkSrc( this_nd.task_handle, clk_src) );
+      daq_err_check ( DAQmxSetRefClkRate(this_nd.task_handle, clkRate) );
+      daq_err_check ( DAQmxCfgDigEdgeStartTrig( this_nd.task_handle, trig_name, DAQmx_Val_Rising) );
+      // RegisterEveryNSamples?  No.  A single function will tell all cards to read into all daq buffers.
+      // Only the master card getting n samples will trigger a read from all cards.  This prevents
+      // us from having to send the 'update' signal only to trodes attached to the card raising EveryNSamples
+      daq_err_check ( DAQmxRegisterDoneEvent( this_nd.task_handle, 0, DoneCallback, (void *)&this_nd) );
+      daq_err_check ( DAQmxStartTask( this_nd.task_handle ) );
+    } // end slave config
+    
+  } // finished for loop.  Now start the master task.
+  daq_err_check ( DAQmxStartTask( master_daq.task_handle ) );
   //test_daq_err_check ( DAQmxCreateTask("",&masterTaskHandle) );
+}
+
+int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNsamplesEventType, uInt32 nSamples, void *callbackData){
+  std::cout << "EveryNCallback called.";
+}
+
+int32 CVICALLBACK DoneCallback(TaskHandle taskHandle, int32 status, void *callbackData){
+  std::cout << "DoneCallback called." ;
 }

@@ -13,3 +13,19 @@ void daq_err_check(int32 error){
   }
 }
 
+// this is copied from ContinuousAI.c  Not fully sure how it works.
+int32 GetTerminalNameWithDevPrefix(TaskHandle taskHandle, const char terminalName[], char triggerName[])
+{
+  int32 error = 0;
+  char chan[256];
+  char *slash;
+
+  daq_err_check( DAQmxGetNthTaskChannel(taskHandle, 1, chan, 256) );
+  daq_err_check( DAQmxGetPhysicalChanName(taskHandle, chan, chan, 256) );
+  if( (slash =strchr(chan,'/')) != NULL){
+    *slash = '\0';
+    *triggerName++ = '/';
+    strcat(strcat(strcpy(triggerName,chan),"/"),terminalName);
+  } else
+    strcpy (triggerName, terminalName);
+}

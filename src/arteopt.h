@@ -27,6 +27,10 @@ void arte_init(int argc,char *argv[], const std::string &, const std::string &);
 void arte_setup_init(int argc, char *argv[]);
 void arte_session_init(int argc, char *argv[]);
 int  arte_setup_daq_cards();  // eg tasks, virtual chans, callback attachment
+//this is now declared & implemented in util.h and util.cpp
+//static int32 GetTerminalNameWithDevPrefix(TaskHandle taskHandle, const char terminalName[], char triggerName[]);
+int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNsamplesEventType, uInt32 nSamples, void *callbackData);
+int32 CVICALLBACK DoneCallback(TaskHandle taskHandle, int32 status, void *callbackData);
 
 extern std::vector<TaskHandle> task_handle_vector;
 

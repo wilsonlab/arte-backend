@@ -17,7 +17,7 @@ int main(int argc, char *argv[]){
 
   std::pair<std::string,Trode> v;
   std::cout << "size: " << trode_map.size() << std::endl;
-  BOOST_FOREACH(v, trode_map){
-    v.second.print_options();
-  }
+  //BOOST_FOREACH(v, trode_map){
+  //  v.second.print_options();
+  //}
 }
