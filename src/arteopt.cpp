@@ -8,12 +8,9 @@
 #include <iostream>
 #include "util.h"
 
-//using namespace boost::property_tree;
-
 std::string setup_config_filename;
 std::string session_config_filename;
 std::map<std::string, Trode> trode_map;
-//std::map<int, neural_daq> neural_daq_map;
 std::map<std::string, Filt> filt_map;
 boost::property_tree::ptree setup_pt;
 boost::property_tree::ptree session_pt;
@@ -43,16 +40,7 @@ void arte_init(int argc, char *argv[], const std::string &setup_fn, const std::s
   arte_session_init(argc, argv); // Use property_tree to set up trode list, trode/eeg view vars
   //arte_init_timer();  // in timer.h
   //arte_start_clock(); // in timer.h 
-  //  arte_setup_daq_cards(); // No args. Setup task, virtual chans for trodes, callbacks.
-
-  // after this, the main loop will start the gui.
-  // EDIT:  after this, we'll sleep, waiting for n_samps callback from the cards or start/stop/configure commands from the tubes!
-  // 
- 
-  //  std::pair<std::string, Trode> it;
-  //BOOST_FOREACH(it, trode_map){
-  //  it.second.print_options();
-  //}
+  
 }
 
 void arte_setup_init(int argc, char *argv[]){
@@ -82,7 +70,6 @@ void arte_session_init(int argc, char *argv[]){
 		session_pt.get_child("options.session.trodes")){
     Trode this_trode;
     this_trode_pt = v.second;
-    //init_new_trode(v, this_trode);
     this_trode.init(this_trode_pt, default_trode_pt, neural_daq_map, filt_map);
     trode_map.insert( std::pair<std::string, Trode> ( v.second.data(), this_trode ));
   }

@@ -115,6 +115,7 @@ void neural_daq_stop_all(void){
 int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEventType, uInt32 nSamples, void *callbackData){
   buffer_count++;
   printf("%d\r",buffer_count);
+  fflush(stdout); // cause I wanna see the number grawing FAST ^^
 }
 
 int32 CVICALLBACK DoneCallback(TaskHandle taskHandle, int32 status, void *callbackData){
