@@ -8,7 +8,8 @@
 #include <map>
 
 extern int master_id;
-extern int buffer_count;
+extern int32 buffer_count;
+extern int32 buffer_size;
 
 void neural_daq_init(boost::property_tree::ptree &setup_ptree);
 

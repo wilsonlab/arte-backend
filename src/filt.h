@@ -38,7 +38,13 @@ class Filt{
   // buffers are kept within invidivual tetrode or eeg_channel objects.
   //float64 *x_buffer;
   //float64 *y_buffer;
+
 };
+
+int rel_pt(int pos, int curs, int buf_len);
+
+void filter_data(float64 *in_buf, Filt filt, int *chans, int n_chans, int in_buf_len, 
+		  int out_buf_len, int *u_curs, int *f_curs, int *ff_curs, float64* u_buf, float64 *f_buf, float64 *ff_buf);
 
 
 #endif

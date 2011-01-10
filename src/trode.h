@@ -37,7 +37,7 @@ class Trode{
   void print_buffers(void);
   void print_spikes(void);
   //add_data(prt_to_array, n_chans, n_samps_per_chan, time_at_beginning_of_buffer)
-  void add_data(float64 *,int,int,long int);
+  //void process_data();
   // NB: we'll prob use the fn's trode_filter_data & trode_process_data instead of this method
   // to save overhead.  But let's keep this member fn and implement it so we can compare the execution time
 
@@ -46,13 +46,14 @@ class Trode{
   float64 *ptr_to_raw_stream;
   int buffer_mult_of_input;     // how many input buffers do we keep for this trode?
   float64 *test;
-  float64 *unfiltered_buffer;   // 
-  float64 *filtered_buffer;       //
-  float64 *filtfiltered_buffer;
-  int raw_data_cursor;
-  int filt_data_cursor;
-  int raw_cursor_time;
-  int filt_cursor_time;
+  float64 *u_buf;                // unfiltered data buffer 
+  float64 *f_buf;                // filtered data buffer
+  float64 *ff_buf;              // filtfiltered data buffer
+  int u_curs;
+  int f_curs;
+  int ff_curs;
+  int u_curs_time;
+  int f_curs_time;
 
   int n_chans;                  // num of chans for this trode
   int n_samps_per_chan;         // num of samps per chan (derived from samps_after_trig & samps_before_chan)
@@ -77,7 +78,9 @@ class Trode{
                                 // the visualization program
 };
 
-void trode_filter_data(Trode *, float64 *, int); // trode_filter_data(trode_to_prosess, raw buffer, timestamp at buffer start)
+extern std::map<std::string, Trode> trode_map;
+
+void trode_filter_data(Trode *); // trode_filter_data(trode_to_prosess, raw buffer, timestamp at buffer start)
 void trode_process_data(Trode *); // only need access to this trode's buffers (filtered data is there)
 
 #endif

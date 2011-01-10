@@ -1,7 +1,9 @@
 #include "neural_daq.h"
+#include "trode.h"
 
 int master_id;
-int buffer_count;
+int32 buffer_count = 0;
+int32 buffer_size;
 std::map <int, neural_daq> neural_daq_map;
 
 void neural_daq_init(boost::property_tree::ptree &setup_pt){
@@ -16,7 +18,7 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
   // temp vars for nidaqmx initialization
   int samp_rate = (int)1e6/32;  // this is the card's max: 31250 Hz per channel, 32 channels
   int buffer_samps_per_chan = 32; // hard-coded for now, input data chunk width: 32 samples
-  int buffer_size;
+  //int buffer_size;
   int32 daqErr = 0;
   char clk_src[256], channel_name[256], trig_name[256]; // strings to be set by nidaqmx fn's
   float64 clkRate;
@@ -95,6 +97,7 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
 
 void neural_daq_start_all(void){
   // start all slave tasks first, so that they don't miss the start trigger from the master
+  buffer_count = 0;
   for(int n = 0; n < neural_daq_map.size(); n++){
     if(n != master_id){
       daq_err_check ( DAQmxStartTask( (neural_daq_map.find(n)->second).task_handle ) );
@@ -113,9 +116,14 @@ void neural_daq_stop_all(void){
 }
 
 int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEventType, uInt32 nSamples, void *callbackData){
-  buffer_count++;
+  buffer_count = 0;
+  //buffer_count++;
   printf("%d\r",buffer_count);
   fflush(stdout); // cause I wanna see the number grawing FAST ^^
+  for(std::map<int,neural_daq>::iterator it = neural_daq_map.begin(); it != neural_daq_map.end(); it++){
+    daq_err_check ( DAQmxReadAnalogF64( (*it).second.task_handle, 32, 10.0, DAQmx_Val_GroupByChannel, (*it).second.data_ptr, buffer_size, &buffer_count,NULL) );
+  }
+  trode_filter_data(&(*(trode_map.begin())).second);
 }
 
 int32 CVICALLBACK DoneCallback(TaskHandle taskHandle, int32 status, void *callbackData){
