@@ -108,6 +108,7 @@ void neural_daq_start_all(void){
 }
 
 void neural_daq_stop_all(void){
+  sleep(1);
   for(std::map<int,neural_daq>::iterator it = neural_daq_map.begin(); it != neural_daq_map.end(); it++){
     std::cout << "About to try to stop task_handle: " << (*it).second.task_handle << std::endl;
     daq_err_check ( DAQmxStopTask( (*it).second.task_handle ) );
@@ -121,9 +122,11 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
   printf("%d\r",buffer_count);
   fflush(stdout); // cause I wanna see the number grawing FAST ^^
   for(std::map<int,neural_daq>::iterator it = neural_daq_map.begin(); it != neural_daq_map.end(); it++){
-    daq_err_check ( DAQmxReadAnalogF64( (*it).second.task_handle, 32, 10.0, DAQmx_Val_GroupByChannel, (*it).second.data_ptr, buffer_size, &buffer_count,NULL) );
+        daq_err_check ( DAQmxReadAnalogF64( (*it).second.task_handle, 32, 10.0, DAQmx_Val_GroupByChannel, (*it).second.data_ptr, buffer_size, &buffer_count,NULL) );
   }
-  trode_filter_data(&(*(trode_map.begin())).second);
+  Trode this_trode = (*(trode_map.begin())).second;
+  trode_filter_data(&this_trode);
+  //this_trode.print_options();
 }
 
 int32 CVICALLBACK DoneCallback(TaskHandle taskHandle, int32 status, void *callbackData){

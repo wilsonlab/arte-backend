@@ -58,6 +58,8 @@ int Trode::init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptr
 
   trode_opt.my_filt.n_samps_per_chan = my_daq.n_samps_per_buffer * trode_opt.my_filt.buffer_mult_of_input;
 
+  ptr_to_raw_stream = my_daq.data_ptr;
+
   u_buf = new float64 [trode_opt.my_filt.n_samps_per_chan * trode_opt.n_chans];
   f_buf = new float64 [trode_opt.my_filt.n_samps_per_chan * trode_opt.n_chans];
   ff_buf = new float64 [trode_opt.my_filt.n_samps_per_chan * trode_opt.n_chans];
@@ -74,7 +76,7 @@ int Trode::init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptr
 
 void trode_filter_data(Trode *trode){
   std::cout << "About to call filter_data from the trode." << std::endl;
-  filter_data(trode->ptr_to_raw_stream, trode->trode_opt.my_filt, trode->trode_opt.channels, trode->trode_opt.n_chans, trode->trode_opt.stream_n_samps_per_chan, trode->my_filt.n_samps_per_chan, &(trode->u_curs), &(trode->f_curs), &(trode->ff_curs),trode->u_buf, trode->f_buf, trode->ff_buf);
+  //filter_data(trode->ptr_to_raw_stream, trode->trode_opt.my_filt, trode->trode_opt.channels, trode->trode_opt.n_chans, trode->trode_opt.stream_n_samps_per_chan, trode->trode_opt.my_filt.n_samps_per_chan, &(trode->u_curs), &(trode->f_curs), &(trode->ff_curs),trode->u_buf, trode->f_buf, trode->ff_buf);
 }
 
 
