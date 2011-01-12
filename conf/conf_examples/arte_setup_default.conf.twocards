@@ -34,7 +34,7 @@
     <order> 4 </order>
     <num_coefs> 1 0 -1 1 0 -1</num_coefs>
     <denom_coefs>1 -1.836862309113 0.8518118599507 1 -0.5700451111919 0.2781110329573</denom_coefs>
-    <input_gain> 0.3976567316501 0.3976567316501</input_gain>
+    <input_gains> 0.3976567316501 0.3976567316501</input_gains>
     <filtfilt> 0 </filtfilt>
     <filtfilt_wait_n_buffers> 0 </filtfilt_wait_n_buffers>
    </filter>
@@ -43,7 +43,7 @@
     <order> 4 </order>
     <num_coefs> 1 0 -1 1 0 -1</num_coefs>
     <denom_coefs> 1 -1.999972231984  0.999972232369 1 -1.8683272138 0.8764792036923 </denom_coefs>
-    <input_gain>0.04514386898425 0.04514386898425 </input_gain>
+    <input_gains>0.04514386898425 0.04514386898425 </input_gains>
     <filtfilt> 0 </filtfilt>
     <filtfilt_wait_n_buffers> 0 </filtfilt_wait_n_buffers>
    </filter>
@@ -52,7 +52,7 @@
     <order> 4 </order>
     <num_coefs>  1 0 -1 1 0 -1 </num_coefs>
     <denom_coefs>  1 -1.999722324596  0.9997223633057 1 -1.868794178511 0.8769173924242 </denom_coefs>
-    <input_gain> 0.04506100708119 0.04506100708119  </input_gain>
+    <input_gains> 0.04506100708119 0.04506100708119  </input_gains>
     <filtfilt> 0 </filtfilt>
     <filtfilt_wait_n_buffers> 0  </filtfilt_wait_n_buffers>
    </filter>
@@ -61,7 +61,7 @@
     <order> 4 </order>
     <num_coefs>  1 0 -1 1 0 -1 </num_coefs>
     <denom_coefs>  1 -1.914804487308 0.921308861706 1 -1.977584179735 0.9780739013684 </denom_coefs>
-    <input_gain> 0.03588570362389  </input_gain>
+    <input_gains> 0.03588570362389  </input_gains>
     <filtfilt>  0  </filtfilt>
     <filtfilt_wait_n_buffers> 0 </filtfilt_wait_n_buffers>
    </filter>
