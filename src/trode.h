@@ -76,6 +76,9 @@ class Trode{
                                 // the visualization, but it's hugely convenient to store this tetrode-by-tetrode data here
                                 // ACTUALLY nevermind.  we'll store this where it actually belongs.  A trode_disp_map in
                                 // the visualization program
+
+  int tmp;
+
 };
 
 extern std::map<std::string, Trode> trode_map;

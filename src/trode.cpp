@@ -8,6 +8,8 @@
 #include <boost/property_tree/exceptions.hpp>
 #include <iostream>
 
+int tmp;
+
 Trode::Trode(){
   //std::cout << "In a trode constructor" << std::endl;
 }
@@ -35,6 +37,7 @@ int Trode::init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptr
 
   neural_daq my_daq = neural_daq_map.find(trode_opt.daq_id)->second;
 
+  trode_opt.stream_n_samps_per_chan = my_daq.n_samps_per_buffer;
   trode_opt.n_samps_per_spike = 1 + trode_opt.samps_before_trig + trode_opt.samps_after_trig;
   trode_opt.buffer_mult_of_input = trode_opt.n_samps_per_spike / my_daq.n_samps_per_buffer;
   if((trode_opt.n_samps_per_spike % my_daq.n_samps_per_buffer) > 0 )
@@ -67,7 +70,7 @@ int Trode::init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptr
   u_curs = 0;
   f_curs = 0;
   ff_curs = 0;
-
+  tmp = 0;
 }
 
 //void Trode:: process_data(){
@@ -76,7 +79,12 @@ int Trode::init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptr
 
 void trode_filter_data(Trode *trode){
   std::cout << "About to call filter_data from the trode." << std::endl;
-  //filter_data(trode->ptr_to_raw_stream, trode->trode_opt.my_filt, trode->trode_opt.channels, trode->trode_opt.n_chans, trode->trode_opt.stream_n_samps_per_chan, trode->trode_opt.my_filt.n_samps_per_chan, &(trode->u_curs), &(trode->f_curs), &(trode->ff_curs),trode->u_buf, trode->f_buf, trode->ff_buf);
+  if(tmp == 0){
+  filter_data(trode->ptr_to_raw_stream, trode->trode_opt.my_filt, trode->trode_opt.channels, trode->trode_opt.n_chans, trode->trode_opt.stream_n_samps_per_chan, trode->trode_opt.my_filt.n_samps_per_chan, &(trode->u_curs), &(trode->f_curs), &(trode->ff_curs),trode->u_buf, trode->f_buf, trode->ff_buf);
+  tmp = 1;
+  } else{
+    std::cout << "skip";
+  }
 }
 
 

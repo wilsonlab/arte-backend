@@ -5,6 +5,9 @@
 
 // wrap coordinate for circular buffer
 int rel_pt(int pos, int curs, int buf_len){
+  int r = (( curs + pos) % buf_len);
+  while (r < 0)                 // funny situation - our implementation of c returns mod
+    r += buf_len;               // with the same sign of the numerator.  tricky! 
   return ( (curs+pos) % buf_len );
 }
 
