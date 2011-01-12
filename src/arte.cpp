@@ -26,6 +26,7 @@ int main(int argc, char *argv[]){
   std::cout << "Hit return to stop acquisition." << std::endl;
   getchar();
   neural_daq_stop_all();
+  std::cout << "After call to neural_daq_stop_all()" << std::endl;
   //std::map<int, neural_daq>::iterator w;
   //for(w = neural_daq_map.begin(); w != neural_daq_map.end(); w++){
   //  std::cout << "before stopping, task handle " << (*w).second.id << " is: " << (*w).second.task_handle << std::endl;
@@ -35,4 +36,5 @@ int main(int argc, char *argv[]){
     //daq_err_check ( DAQmxClearTask((*w).second.task_handle) );
     //daq_err_check
   //}
+  return 0;
 }

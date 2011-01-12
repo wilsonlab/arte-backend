@@ -118,19 +118,21 @@ void Filt::init(boost::property_tree::ptree &filt_pt){
     n_coefs = order;
     num_coefs = new float64 [order];
     denom_coefs = new float64 [order];
+    input_gains = new float64 [1];
     filt_num_sos = 1; // second-order-sections is the wrong term here; we mean one plain-old-section (full filter order)
   }
   else if( (type.compare("iir") == 0) ){
     filt_num_sos = order / 2;
-    n_coefs = order * 3;
+    n_coefs = filt_num_sos * 3;
     num_coefs = new float64 [n_coefs];
     denom_coefs = new float64 [n_coefs];
+    input_gains = new float64 [filt_num_sos];
   } else{
     std::cerr << "Can't use filt type: " << type << std::endl;
   }
   assign_property<float64>("num_coefs", num_coefs, filt_pt, filt_pt,n_coefs);
   assign_property<float64>("denom_coefs", denom_coefs, filt_pt, filt_pt, n_coefs);
-  if(type.compare("fil") == 0) 
+  if(type.compare("fir") == 0) 
     assign_property<float64>("input_gains", input_gains, filt_pt, filt_pt, 1);
   else
     assign_property<float64>("input_gains", input_gains, filt_pt, filt_pt, filt_num_sos);
