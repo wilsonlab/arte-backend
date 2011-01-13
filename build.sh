@@ -1,1 +1,1 @@
-g++ src/*.cpp -pthread -ldl -lnidaqmx -I /usr/local/boost_1_45_0/ -g -o test6
+g++ src/*.cpp -lnidaqmx -I /usr/local/boost_1_45_0/ -g -o test6

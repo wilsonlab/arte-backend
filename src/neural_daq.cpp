@@ -32,17 +32,17 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
 		setup_pt.get_child("options.setup.neural_daq_list")){
     // bring in properties from the config file
     ndaq_pt= v.second;
-    assign_property <int> ("id", &(this_neural_daq.id), ndaq_pt, ndaq_pt, 1);
-    assign_property <int> ("n_samps_per_buffer", &(this_neural_daq.n_samps_per_buffer), ndaq_pt, ndaq_pt, 1);
-    assign_property <int> ("n_chans", &(this_neural_daq.n_chans), ndaq_pt, ndaq_pt, 1);
-    assign_property <std::string> ("dev_name", &(this_neural_daq.dev_name), ndaq_pt, ndaq_pt, 1);
-    assign_property <std::string> ("in_filename", &(this_neural_daq.in_filename), ndaq_pt, ndaq_pt, 1);
-    assign_property <std::string> ("raw_dump_filename", &(this_neural_daq.raw_dump_filename), ndaq_pt, ndaq_pt, 1);
+    assign_property <int> ("id", &(this_nd.id), ndaq_pt, ndaq_pt, 1);
+    assign_property <int> ("n_samps_per_buffer", &(this_nd.n_samps_per_buffer), ndaq_pt, ndaq_pt, 1);
+    assign_property <int> ("n_chans", &(this_nd.n_chans), ndaq_pt, ndaq_pt, 1);
+    assign_property <std::string> ("dev_name", &(this_nd.dev_name), ndaq_pt, ndaq_pt, 1);
+    assign_property <std::string> ("in_filename", &(this_nd.in_filename), ndaq_pt, ndaq_pt, 1);
+    assign_property <std::string> ("raw_dump_filename", &(this_nd.raw_dump_filename), ndaq_pt, ndaq_pt, 1);
 
     // set up a buffer to use as this daq's input stream
-    this_neural_daq.data_ptr = new float64 [this_neural_daq.n_chans * this_neural_daq.n_samps_per_buffer];
-    init_array <float64>(this_neural_daq.data_ptr, 0.0, (this_neural_daq.n_chans * this_neural_daq.n_samps_per_buffer) );
-    neural_daq_map.insert( std::pair<int,neural_daq> (this_neural_daq.id, this_neural_daq) );
+    this_nd.data_ptr = new float64 [this_nd.n_chans * this_nd.n_samps_per_buffer];
+    init_array <float64>(this_nd.data_ptr, 0.0, (this_nd.n_chans * this_nd.n_samps_per_buffer) );
+    neural_daq_map.insert( std::pair<int,neural_daq> (this_nd.id, this_nd) );
   }
 
   int n_daq = neural_daq_map.size();
@@ -162,7 +162,7 @@ void neural_daq_stop_all(void){
 }
 
 int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEventType, uInt32 nSamples, void *callbackData){
-  buffer_count = 0;
+  //buffer_count = 0;
   //buffer_count++;
   //  printf("%d\r",buffer_count);
   //fflush(stdout); // cause I wanna see the number grawing FAST ^^
@@ -170,12 +170,12 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
   //      daq_err_check ( DAQmxReadAnalogF64( (*it).second.task_handle, 32, 10.0, DAQmx_Val_GroupByChannel, (*it).second.data_ptr, buffer_size, &buffer_count,NULL) );
   //}
 
-  std::map<std::string, Trode>::iterator it = trode_map.begin();
-  for(int n = 0; n < 5; n++){
-    Trode this_trode = (*it).second;
-    trode_filter_data(&this_trode);
-    it++;
-  }
+  //std::map<std::string, Trode>::iterator it = trode_map.begin();
+  //for(int n = 0; n < 5; n++){
+  //  Trode this_trode = (*it).second;
+  //  trode_filter_data(&this_trode);
+  //  it++;
+  // }
   //this_trode.print_options();
 }
 
