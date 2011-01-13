@@ -60,7 +60,7 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
 
     this_nd.task_handle = 0; // dunno why, but most examples do this 0 init
     buffer_size = buffer_samps_per_chan * this_nd.n_chans;
-    daq_err_check( (DAQmxCreateTask("", &(this_nd.task_handle))) );
+    daq_err_check( (DAQmxCreateTask(this_nd.dev_name.c_str(), &(this_nd.task_handle))) );
     for (int c = 0; c < this_nd.n_chans; c++){
       sprintf(channel_name, "%s/ai%d", this_nd.dev_name.c_str(), c);
       daq_err_check ( DAQmxCreateAIVoltageChan(this_nd.task_handle,channel_name,"",DAQmx_Val_RSE,-10.0,10.0,DAQmx_Val_Volts,NULL) );
@@ -117,22 +117,43 @@ void neural_daq_start_all(void){
 void neural_daq_stop_all(void){
   sleep(1);  // why sleep?  b/c for some reason hitting immediately after running program hangs the computer (threads' fault?)
   std::map<int, neural_daq>::iterator it;
-  //it--;
+  
+  bool32 isDone;
   for(it = neural_daq_map.begin(); it != neural_daq_map.end(); it++){
     std::cout << "About to try to stop task_handle: " << (*it).second.task_handle << " on dev: " << (*it).second.dev_name << std::endl;
-    //daq_err_check ( DAQmxStopTask( (*it).second.task_handle ) );
-    //daq_err_check ( DAQmxClearTask((*it).second.task_handle ) );
+    daq_err_check ( DAQmxIsTaskDone((*it).second.task_handle, &isDone) );
+    std::cout << "In stop task loop.  Task handle " << (*it).second.task_handle << " is done: " << isDone << std::endl;
+    daq_err_check ( DAQmxStopTask( (*it).second.task_handle ) );
+
+
+    daq_err_check ( DAQmxIsTaskDone((*it).second.task_handle, &isDone) );
+    std::cout << "In stop task loop.  Task handle: " << (*it).second.task_handle << " is done: " << isDone << std::endl;
+    std::cout << "About to clear task: " << (*it).second.task_handle << std::endl;
+
+    daq_err_check ( DAQmxClearTask( (*it).second.task_handle) );
+
+  //daq_err_check ( DAQmxClearTask((*it).second.task_handle ) );
   }
   std::cout << "Finished attempt to stop all tasks. Now clear all tasks." << std::endl;
+  sleep(1);
   for(it = neural_daq_map.begin(); it != neural_daq_map.end(); it++){
+
+
+    //    daq_err_check ( DAQmxIsTaskDone((*it).second.task_handle, &isDone) );
+    //std::cout << "In clear task loop.  Task handle: " << (*it).second.task_handle << " is done: " << isDone << std::endl;
     //it--;
     //daq_err_check ( DAQmxClearTask( (*it).second.task_handle) );
+
+
+    //daq_err_check ( DAQmxIsTaskDone((*it).second.task_handle, &isDone) );
+    //std::cout << "In clear task loop.  Task handle: " << (*it).second.task_handle << " is done: " << isDone << std::endl;
+
     //it--;
     //--it;
-    std::cout << "Test text." << std::endl;
+    //std::cout << "Test text." << std::endl;
   }
   it = neural_daq_map.begin();
-  daq_err_check ( DAQmxClearTask( (*it).second.task_handle) );
+  //daq_err_check ( DAQmxClearTask( (*it).second.task_handle) );
   std::cout << "Finished attempt to clear all tasks." << std::endl;
 
   //  std::cout << "About to try to stop task_handle: " << (*it).second.task_handle << std::endl;
@@ -143,11 +164,11 @@ void neural_daq_stop_all(void){
 int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEventType, uInt32 nSamples, void *callbackData){
   buffer_count = 0;
   //buffer_count++;
-  printf("%d\r",buffer_count);
-  fflush(stdout); // cause I wanna see the number grawing FAST ^^
-  for(std::map<int,neural_daq>::iterator it = neural_daq_map.begin(); it != neural_daq_map.end(); it++){
-        daq_err_check ( DAQmxReadAnalogF64( (*it).second.task_handle, 32, 10.0, DAQmx_Val_GroupByChannel, (*it).second.data_ptr, buffer_size, &buffer_count,NULL) );
-  }
+  //  printf("%d\r",buffer_count);
+  //fflush(stdout); // cause I wanna see the number grawing FAST ^^
+  //for(std::map<int,neural_daq>::iterator it = neural_daq_map.begin(); it != neural_daq_map.end(); it++){
+  //      daq_err_check ( DAQmxReadAnalogF64( (*it).second.task_handle, 32, 10.0, DAQmx_Val_GroupByChannel, (*it).second.data_ptr, buffer_size, &buffer_count,NULL) );
+  //}
 
   std::map<std::string, Trode>::iterator it = trode_map.begin();
   for(int n = 0; n < 5; n++){
