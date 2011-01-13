@@ -90,6 +90,7 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
       // Register every n samples?  No.  we only want the master card to do this.
       daq_err_check ( DAQmxRegisterDoneEvent(this_nd.task_handle, 0, DoneCallback, (void *)&this_nd) );
     }
+    this_nd.status = 0;
     neural_daq_map[this_nd.id] = this_nd; // we gained a task handle for each nd. must re-insert into the map for that value to persist
     n_completed++;
   }
@@ -97,10 +98,16 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
 
 void neural_daq_start_all(void){
   // start all slave tasks first, so that they don't miss the start trigger from the master
+  std::map<int, neural_daq>::iterator it;
   buffer_count = 0;
   for(int n = 0; n < neural_daq_map.size(); n++){
     if(n != master_id){
       daq_err_check ( DAQmxStartTask( (neural_daq_map.find(n)->second).task_handle ) );
+      it = neural_daq_map.find(n);
+      neural_daq nd;
+      nd = (*it).second;
+      nd.status= 1;
+      neural_daq_map[nd.id] = nd;
     }
   }
   // then start the master task
@@ -108,12 +115,29 @@ void neural_daq_start_all(void){
 }
 
 void neural_daq_stop_all(void){
-  sleep(1);
-  for(std::map<int,neural_daq>::iterator it = neural_daq_map.begin(); it != neural_daq_map.end(); it++){
-    std::cout << "About to try to stop task_handle: " << (*it).second.task_handle << std::endl;
-    daq_err_check ( DAQmxStopTask( (*it).second.task_handle ) );
-    daq_err_check ( DAQmxClearTask((*it).second.task_handle ) );
+  sleep(1);  // why sleep?  b/c for some reason hitting immediately after running program hangs the computer (threads' fault?)
+  std::map<int, neural_daq>::iterator it;
+  //it--;
+  for(it = neural_daq_map.begin(); it != neural_daq_map.end(); it++){
+    std::cout << "About to try to stop task_handle: " << (*it).second.task_handle << " on dev: " << (*it).second.dev_name << std::endl;
+    //daq_err_check ( DAQmxStopTask( (*it).second.task_handle ) );
+    //daq_err_check ( DAQmxClearTask((*it).second.task_handle ) );
   }
+  std::cout << "Finished attempt to stop all tasks. Now clear all tasks." << std::endl;
+  for(it = neural_daq_map.begin(); it != neural_daq_map.end(); it++){
+    //it--;
+    //daq_err_check ( DAQmxClearTask( (*it).second.task_handle) );
+    //it--;
+    //--it;
+    std::cout << "Test text." << std::endl;
+  }
+  it = neural_daq_map.begin();
+  daq_err_check ( DAQmxClearTask( (*it).second.task_handle) );
+  std::cout << "Finished attempt to clear all tasks." << std::endl;
+
+  //  std::cout << "About to try to stop task_handle: " << (*it).second.task_handle << std::endl;
+  //daq_err_check ( DAQmxStopTask( (*it).second.task_handle) );
+  //daq_err_check ( DAQmxClearTask((*it).second.task_handle) );
 }
 
 int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEventType, uInt32 nSamples, void *callbackData){
@@ -124,11 +148,34 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
   for(std::map<int,neural_daq>::iterator it = neural_daq_map.begin(); it != neural_daq_map.end(); it++){
         daq_err_check ( DAQmxReadAnalogF64( (*it).second.task_handle, 32, 10.0, DAQmx_Val_GroupByChannel, (*it).second.data_ptr, buffer_size, &buffer_count,NULL) );
   }
-  Trode this_trode = (*(trode_map.begin())).second;
-  trode_filter_data(&this_trode);
+
+  std::map<std::string, Trode>::iterator it = trode_map.begin();
+  for(int n = 0; n < 5; n++){
+    Trode this_trode = (*it).second;
+    trode_filter_data(&this_trode);
+    it++;
+  }
   //this_trode.print_options();
 }
 
 int32 CVICALLBACK DoneCallback(TaskHandle taskHandle, int32 status, void *callbackData){
   std::cout << "DoneCallback Called." << std::endl;
+  neural_daq nd = find_neural_daq_by_taskhandle(taskHandle);
+  print_neural_daq(nd);
+  fflush(stdout);
+}
+
+void print_neural_daq(neural_daq nd){
+  std::cout << "id: " << nd.id << std::endl << "dev_name: " << nd.dev_name <<
+    "status: " << nd.status << std::endl;
+}
+
+neural_daq find_neural_daq_by_taskhandle(TaskHandle taskhandle){
+  std::map<int, neural_daq>::iterator it;
+  for(it = neural_daq_map.begin(); it != neural_daq_map.end(); it++){
+    if( (*it).second.task_handle = taskhandle){
+      return (*it).second;
+    }
+  }
+  std::cout << "Couldn't find the taskhandle: " << taskhandle << std::endl;
 }

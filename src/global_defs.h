@@ -18,6 +18,7 @@ struct neural_daq{
   std::string raw_dump_filename;
   double *data_ptr;
   TaskHandle task_handle;
+  int status;
 };
 
 

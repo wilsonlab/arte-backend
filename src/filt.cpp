@@ -92,7 +92,15 @@ void filter_data(float64 *in_buf, Filt filt, int *chans, int n_chans, int in_buf
       } //end loop over points in this input chuckn
     }  // end loop over segs
   } // end if iir
-
+  u_curs += in_buf_len;
+  f_curs += in_buf_len;
+  if( u_curs > out_buf_len || f_curs > out_buf_len){
+    std::cout << "Strange: u_curs or f_curs is greater than it's supposed to be allowed to get." << std::endl;
+  }
+  if(u_curs == out_buf_len)
+    u_curs = 0;
+  if(f_curs == in_buf_len)
+    f_curs = 0;
   // Still need to do the filtfilt work
 
 }
@@ -137,3 +145,18 @@ void Filt::init(boost::property_tree::ptree &filt_pt){
   else
     assign_property<float64>("input_gains", input_gains, filt_pt, filt_pt, filt_num_sos);
 }
+
+void print_array(float64 *buf, int n_chans, int buf_len, int curs)
+{
+  std::cout.precision(2);
+  for (int c = 0; c < n_chans; c++){
+    std::cout << "c" << c << " ";
+    for (int p = 0; p < buf_len; p++){
+      if(p == curs)
+	std::cout << " : ";
+      std::cout << buf[c*buf_len + p] << " ";
+    }
+    std::cout << std::endl;
+  }
+}
+

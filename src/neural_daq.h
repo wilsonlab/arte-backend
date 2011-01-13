@@ -21,4 +21,8 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
 
 int32 CVICALLBACK DoneCallback(TaskHandle taskHandle, int32 status, void *callbackData);
 
+neural_daq find_neural_daq_by_taskhandle(TaskHandle taskHandle);
+
+void print_neural_daq(neural_daq nd);
+
 #endif
