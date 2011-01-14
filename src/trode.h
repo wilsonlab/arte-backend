@@ -41,11 +41,11 @@ class Trode{
   // NB: we'll prob use the fn's trode_filter_data & trode_process_data instead of this method
   // to save overhead.  But let's keep this member fn and implement it so we can compare the execution time
 
-  std::string trode_name;
-  std::string filt_name;
+  //  std::string trode_name;
+  //std::string filt_name;
   float64 *ptr_to_raw_stream;
-  int buffer_mult_of_input;     // how many input buffers do we keep for this trode?
-  float64 *test;
+  //int buffer_mult_of_input;     // how many input buffers do we keep for this trode?
+  //float64 *test;
   float64 *u_buf;                // unfiltered data buffer 
   float64 *f_buf;                // filtered data buffer
   float64 *ff_buf;              // filtfiltered data buffer
@@ -55,29 +55,29 @@ class Trode{
   int u_curs_time;
   int f_curs_time;
 
-  int n_chans;                  // num of chans for this trode
-  int n_samps_per_chan;         // num of samps per chan (derived from samps_after_trig & samps_before_chan)
-  int *channels;                // ptr is to 32-chan signal.  Which rows belong to this trode?
+  //int n_chans;                  // num of chans for this trode
+  //int n_samps_per_chan;         // num of samps per chan (derived from samps_after_trig & samps_before_chan)
+  //int *channels;                // ptr is to 32-chan signal.  Which rows belong to this trode?
 
-  int daq_id;                   // id number of neural daq card that this trode sees
+  //int daq_id;                   // id number of neural daq card that this trode sees
   //neural_daq_card daq_card;   // data struct of that daq card
   //can't do that b/c neural_daq_card defined in arteopt, which includes trode.h
-  int stream_samps_per_chan;    // how many samps come in with each raw buffer?
-  int stream_n_chan;            // how many chans come in with each raw buffer? (this will almost always be 32)
+  //int stream_samps_per_chan;    // how many samps come in with each raw buffer?
+  //int stream_n_chan;            // how many chans come in with each raw buffer? (this will almost always be 32)
 
   //Filt my_filt;                 // a Filt instance to hold filter parameters
 
-  std::string spike_mode;       // instructions for centering spikes.  'thresh' means center spikes on xing. 'peak' means on next local max
-  float64 *thresholds;          // array of threshold voltages, 1 per chan
-  int samps_before_trig;        // how many samps to collect before trig ind
-  int samps_after_trig;         // hom many samps to collect after trig ind (total samps is after + before + 1
+  //std::string spike_mode;       // instructions for centering spikes.  'thresh' means center spikes on xing. 'peak' means on next local max
+  //float64 *thresholds;          // array of threshold voltages, 1 per chan
+  //int samps_before_trig;        // how many samps to collect before trig ind
+  //int samps_after_trig;         // hom many samps to collect after trig ind (total samps is after + before + 1
 
   //float64 *win_heights;       // array of display ranges. I know, we should separate this data structure from
                                 // the visualization, but it's hugely convenient to store this tetrode-by-tetrode data here
                                 // ACTUALLY nevermind.  we'll store this where it actually belongs.  A trode_disp_map in
                                 // the visualization program
 
-  int tmp;
+  //int tmp;
 
 };
 

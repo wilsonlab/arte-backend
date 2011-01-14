@@ -1,13 +1,15 @@
 #include "neural_daq.h"
 #include "trode.h"
 
+bool acquiring;
 int master_id;
-int32 buffer_count = 0;
+int buffer_count = 0;
 int32 buffer_size;
 std::map <int, neural_daq> neural_daq_map;
 
 void neural_daq_init(boost::property_tree::ptree &setup_pt){
 
+  acquiring = false;
   master_id = 0; // arbitrarily pick a card to be master. maybe later user can choose this through conf file?
   buffer_count = 0;
 
@@ -97,6 +99,15 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
 }
 
 void neural_daq_start_all(void){
+  
+  std::cout << "Print from start_all" << std::endl;
+  std::map<std::string, Trode>::iterator a;
+  for(a = trode_map.begin(); a != trode_map.end(); a++){
+    (*a).second.print_options();
+  }
+  std::cout << "Finished print from start_all" << std::endl;
+  fflush(stdout);
+
   // start all slave tasks first, so that they don't miss the start trigger from the master
   std::map<int, neural_daq>::iterator it;
   buffer_count = 0;
@@ -111,11 +122,13 @@ void neural_daq_start_all(void){
     }
   }
   // then start the master task
+  acquiring = true;
   daq_err_check ( DAQmxStartTask( neural_daq_map.find(master_id)->second.task_handle) );
 }
 
 void neural_daq_stop_all(void){
-  sleep(1);  // why sleep?  b/c for some reason hitting immediately after running program hangs the computer (threads' fault?)
+  acquiring = false;
+  //sleep(1);  // why sleep?  b/c for some reason hitting immediately after running program hangs the computer (threads' fault?)
   std::map<int, neural_daq>::iterator it;
   
   bool32 isDone;
@@ -132,51 +145,42 @@ void neural_daq_stop_all(void){
 
     daq_err_check ( DAQmxClearTask( (*it).second.task_handle) );
 
-  //daq_err_check ( DAQmxClearTask((*it).second.task_handle ) );
   }
-  std::cout << "Finished attempt to stop all tasks. Now clear all tasks." << std::endl;
-  sleep(1);
-  for(it = neural_daq_map.begin(); it != neural_daq_map.end(); it++){
-
-
-    //    daq_err_check ( DAQmxIsTaskDone((*it).second.task_handle, &isDone) );
-    //std::cout << "In clear task loop.  Task handle: " << (*it).second.task_handle << " is done: " << isDone << std::endl;
-    //it--;
-    //daq_err_check ( DAQmxClearTask( (*it).second.task_handle) );
-
-
-    //daq_err_check ( DAQmxIsTaskDone((*it).second.task_handle, &isDone) );
-    //std::cout << "In clear task loop.  Task handle: " << (*it).second.task_handle << " is done: " << isDone << std::endl;
-
-    //it--;
-    //--it;
-    //std::cout << "Test text." << std::endl;
-  }
-  it = neural_daq_map.begin();
-  //daq_err_check ( DAQmxClearTask( (*it).second.task_handle) );
-  std::cout << "Finished attempt to clear all tasks." << std::endl;
-
-  //  std::cout << "About to try to stop task_handle: " << (*it).second.task_handle << std::endl;
-  //daq_err_check ( DAQmxStopTask( (*it).second.task_handle) );
-  //daq_err_check ( DAQmxClearTask((*it).second.task_handle) );
 }
 
 int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEventType, uInt32 nSamples, void *callbackData){
-  //buffer_count = 0;
-  //buffer_count++;
-  //  printf("%d\r",buffer_count);
-  //fflush(stdout); // cause I wanna see the number grawing FAST ^^
-  //for(std::map<int,neural_daq>::iterator it = neural_daq_map.begin(); it != neural_daq_map.end(); it++){
-  //      daq_err_check ( DAQmxReadAnalogF64( (*it).second.task_handle, 32, 10.0, DAQmx_Val_GroupByChannel, (*it).second.data_ptr, buffer_size, &buffer_count,NULL) );
-  //}
-
-  //std::map<std::string, Trode>::iterator it = trode_map.begin();
-  //for(int n = 0; n < 5; n++){
-  //  Trode this_trode = (*it).second;
-  //  trode_filter_data(&this_trode);
-  //  it++;
-  // }
-  //this_trode.print_options();
+  if(acquiring){
+    std::cout << "First EveryNCallback" << std::endl; 
+   //buffer_count = 0;
+    buffer_count++;
+    int32 read;
+    printf("%d\r",buffer_count);
+    fflush(stdout); // cause I wanna see the number grawing FAST ^^
+    for(std::map<int,neural_daq>::iterator it = neural_daq_map.begin(); it != neural_daq_map.end(); it++){
+      daq_err_check ( DAQmxReadAnalogF64( (*it).second.task_handle, 32, 10.0, DAQmx_Val_GroupByChannel, (*it).second.data_ptr, buffer_size, &read,NULL) );
+    }
+    Trode tt01;
+    Trode tt02;
+    Trode tt03;
+    Trode tt04;
+    std::cout << "trode_map.size(): " << trode_map.size() << std::endl;
+    std::map<std::string, Trode>::iterator tmp = trode_map.begin();
+    for(std::map<std::string, Trode>::iterator it = trode_map.begin(); it != trode_map.end(); it++){
+      Trode this_trode = (*it).second;
+      Trode next_trode = (*(it++)).second;
+      tt01 = trode_map["tt01"];      
+      tt02 = trode_map["tt02"];
+      tt03 = trode_map["tt03"];
+      tt04 = trode_map["tt04"];
+      //this_trode.print_options();
+      //fflush(stdout);
+      trode_filter_data(&this_trode);
+      //it = trode_map.find("tt03");
+      //std::cout << "trode_map.size(): " << trode_map.size() << std::endl;
+      //it++;
+     }
+    //this_trode.print_options();
+  }
 }
 
 int32 CVICALLBACK DoneCallback(TaskHandle taskHandle, int32 status, void *callbackData){

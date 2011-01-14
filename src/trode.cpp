@@ -23,7 +23,7 @@ Trode::~Trode(){
 int Trode::init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptree &default_pt, 
 		std::map<int,neural_daq> &neural_daq_map, std::map<std::string,Filt> &filt_map){
 
-  trode_name = trode_pt.data();
+  trode_opt.trode_name = trode_pt.data();
   assign_property<int> ("n_chans", &(trode_opt.n_chans), trode_pt, default_pt, 1);
   trode_opt.thresholds = new double [trode_opt.n_chans];
   assign_property<double>("thresholds", trode_opt.thresholds, trode_pt, default_pt,trode_opt.n_chans);
@@ -80,7 +80,8 @@ int Trode::init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptr
 void trode_filter_data(Trode *trode){
   //  std::cout << "About to call filter_data from the trode." << std::endl;
   if(tmp == 0){
-    //std::cout << "About to call filter_data from the trode." << std::endl;
+    std::cout << "About to call filter_data from the trode: " << trode->trode_opt.trode_name << std::endl;
+    fflush(stdout);
     filter_data(trode->ptr_to_raw_stream, trode->trode_opt.my_filt, trode->trode_opt.channels, 
 		trode->trode_opt.n_chans, trode->trode_opt.stream_n_samps_per_chan, 
 		trode->trode_opt.my_filt.n_samps_per_chan, &(trode->u_curs), &(trode->f_curs), 
@@ -95,7 +96,7 @@ void trode_filter_data(Trode *trode){
 
 
 void Trode::print_options(void){
-  std::cout << "********Trode: " << trode_name << "********" << std::endl
+  std::cout << "********Trode: " << trode_opt.trode_name << "********" << std::endl
 	    << "n_chans:      " << trode_opt.n_chans << std::endl
 	    << "channels: ";
   for (int a = 0; a < trode_opt.n_chans; a++)

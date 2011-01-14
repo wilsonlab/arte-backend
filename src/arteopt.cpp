@@ -71,7 +71,13 @@ void arte_session_init(int argc, char *argv[]){
     Trode this_trode;
     this_trode_pt = v.second;
     this_trode.init(this_trode_pt, default_trode_pt, neural_daq_map, filt_map);
+    //this_trode.print_options();
     trode_map.insert( std::pair<std::string, Trode> ( v.second.data(), this_trode ));
   }
-
+  std::cout << "Printing from session_init" << std::endl;
+  for(std::map<std::string, Trode>::iterator it = trode_map.begin(); it != trode_map.end(); it++){
+    (*it).second.print_options();
+  }
+  std::cout << "Done session init." << std::endl;
+  fflush(stdout);
 }
