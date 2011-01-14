@@ -35,10 +35,10 @@ void filter_data(float64 *in_buf, Filt filt, int *chans, int n_chans, int in_buf
 
       in_pt = chans[c]*in_buf_len + n;
       out_pt = c * out_buf_len + n + u_curs;  
-      //u_buf[in_pt] = in_buf[in_pt];
-      //u_buf[c*out_buf_len + n + u_curs] = in_buf[chans[c]*in_buf_len + n];                           // don't need rel_pt here.
-      //f_buf[c*out_buf_len + n + u_curs] = 0.0;
-      //     ff_buf[c*out_buf_len + n + ff_curs] = 0.0;                                         // CHECK these indices. When do cursor positions get updated?
+      u_buf[out_pt] = in_buf[in_pt];
+      u_buf[c*out_buf_len + n + u_curs] = in_buf[chans[c]*in_buf_len + n];                           // don't need rel_pt here.
+      f_buf[c*out_buf_len + n + u_curs] = 0.0;
+      ff_buf[c*out_buf_len + n + ff_curs] = 0.0;                                         // CHECK these indices. When do cursor positions get updated?
 
 
     }
@@ -49,19 +49,19 @@ void filter_data(float64 *in_buf, Filt filt, int *chans, int n_chans, int in_buf
     // single-segment IIR filters, too, as long as the first last denom
     // coefficient is set to 0.
 
-//     for(int n = 0; n < in_buf_len; n++){                                           // process in_buf_len points
-//       out_pt = n + u_curs;
-//       for(int p = 0; p <= filt.order; p++){                                        // iterate over history points (we need order of them)
-// 	h = -1*filt.order + p;                                 // history index should be -order, -order+1, ..., 0
-// 	in_pt = rel_pt(h, n+u_curs, in_buf_len);
-// 	for(int c = 0; c < n_chans; c++){
-// 	  f_buf[c*out_buf_len + out_pt] += 
-// 	    ( in_buf[c*in_buf_len + in_pt]*filt.num_coefs[p]*filt.input_gains[0] -    // feedforward path
-// 	      f_buf[c*out_buf_len + in_pt]*filt.denom_coefs[p]);                       // feedback path
-// 	} // end loop over chans chan                                                                         // 
-//       } // end loop over history points
-//     } //end loop over point in out_buf to compute                                       // viola.  Check the sign conventions. 
-   } // end if block for sos == 1
+     for(int n = 0; n < in_buf_len; n++){                                           // process in_buf_len points
+       out_pt = n + u_curs;
+       for(int p = 0; p <= filt.order; p++){                                        // iterate over history points (we need order of them)
+ 	h = -1*filt.order + p;                                 // history index should be -order, -order+1, ..., 0
+ 	in_pt = rel_pt(h, n+u_curs, in_buf_len);
+ 	for(int c = 0; c < n_chans; c++){
+ 	  f_buf[c*out_buf_len + out_pt] += 
+ 	    ( in_buf[c*in_buf_len + in_pt]*filt.num_coefs[p]*filt.input_gains[0] -    // feedforward path
+ 	      f_buf[c*out_buf_len + in_pt]*filt.denom_coefs[p]);                       // feedback path
+ 	} // end loop over chans chan                                                                         // 
+       } // end loop over history points
+     } //end loop over point in out_buf to compute                                       // viola.  Check the sign conventions. 
+  } // end if block for sos == 1
     
   else {
     // then we have biquad sections, and can dispense with the for loop over p
@@ -71,8 +71,8 @@ void filter_data(float64 *in_buf, Filt filt, int *chans, int n_chans, int in_buf
       if(s > 0){
 	for(int n = 0; n < in_buf_len; n++){                                         // copy f_buf into u_buf if this is any run of the filter but the first.
 	  for(int c = 0; c < n_chans; c++){                                          // so that the second section gets the output of the first as its 'raw'
-// 	    //value = f_buf[c*out_buf_len + n];                                          // so that the second section gets the output of the first as its 'raw'
-// 	    	    u_buf[c*out_buf_len + n] = f_buf[c*out_buf_len + n];
+ 	    //value = f_buf[c*out_buf_len + n];                                          // so that the second section gets the output of the first as its 'raw'
+	    u_buf[c*out_buf_len + n] = f_buf[c*out_buf_len + n];
 
 	  }
 	}
@@ -84,12 +84,12 @@ void filter_data(float64 *in_buf, Filt filt, int *chans, int n_chans, int in_buf
 	in_pt_h2 = rel_pt(-2,n+u_curs, out_buf_len);
 	for(int c = 0; c < n_chans; c++){
 
-// 	  f_buf[c*out_buf_len + out_pt] =
-// 	    ( u_buf[c*out_buf_len + in_pt_c]*b[s*3 + 0]*filt.input_gains[s] +
-// 	      u_buf[c*out_buf_len + in_pt_h1]*b[s*3 + 1]*filt.input_gains[s] +
-// 	      u_buf[c*out_buf_len + in_pt_h2]*b[s* + 2]*filt.input_gains[s] -
-// 	      f_buf[c*n_chans + in_pt_h1]*a[s*3 + 1] -
-// 	      f_buf[c*n_chans + in_pt_h2]*a[s*3 + 2] );  
+ 	  f_buf[c*out_buf_len + out_pt] =
+ 	    ( u_buf[c*out_buf_len + in_pt_c]*b[s*3 + 0]*filt.input_gains[s] +
+ 	      u_buf[c*out_buf_len + in_pt_h1]*b[s*3 + 1]*filt.input_gains[s] +
+ 	      u_buf[c*out_buf_len + in_pt_h2]*b[s* + 2]*filt.input_gains[s] -
+ 	      f_buf[c*n_chans + in_pt_h1]*a[s*3 + 1] -
+ 	      f_buf[c*n_chans + in_pt_h2]*a[s*3 + 2] );  
 
 	} // end loop over chans
       } //end loop over points in this input chuckn

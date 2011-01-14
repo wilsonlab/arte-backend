@@ -46,9 +46,9 @@ class Trode{
   float64 *ptr_to_raw_stream;
   //int buffer_mult_of_input;     // how many input buffers do we keep for this trode?
   //float64 *test;
-  float64 *u_buf;                // unfiltered data buffer 
-  float64 *f_buf;                // filtered data buffer
-  float64 *ff_buf;              // filtfiltered data buffer
+  float64 u_buf [MAX_BUFFER_3];                // unfiltered data buffer 
+  float64 f_buf [MAX_BUFFER_3];                // filtered data buffer
+  float64 ff_buf [MAX_BUFFER_3];             // filtfiltered data buffer
   int u_curs;
   int f_curs;
   int ff_curs;

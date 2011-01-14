@@ -63,9 +63,9 @@ int Trode::init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptr
 
   ptr_to_raw_stream = my_daq.data_ptr;
 
-  u_buf = new float64 [trode_opt.my_filt.n_samps_per_chan * trode_opt.n_chans];
-  f_buf = new float64 [trode_opt.my_filt.n_samps_per_chan * trode_opt.n_chans];
-  ff_buf = new float64 [trode_opt.my_filt.n_samps_per_chan * trode_opt.n_chans];
+  //  u_buf = new float64 [trode_opt.my_filt.n_samps_per_chan * trode_opt.n_chans];
+  //f_buf = new float64 [trode_opt.my_filt.n_samps_per_chan * trode_opt.n_chans];
+  //ff_buf = new float64 [trode_opt.my_filt.n_samps_per_chan * trode_opt.n_chans];
 
   u_curs = 0;
   f_curs = 0;
@@ -80,8 +80,8 @@ int Trode::init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptr
 void trode_filter_data(Trode *trode){
   //  std::cout << "About to call filter_data from the trode." << std::endl;
   if(tmp == 0){
-    std::cout << "About to call filter_data from the trode: " << trode->trode_opt.trode_name << std::endl;
-    fflush(stdout);
+    //std::cout << "About to call filter_data from the trode: " << trode->trode_opt.trode_name << std::endl;
+    //fflush(stdout);
     filter_data(trode->ptr_to_raw_stream, trode->trode_opt.my_filt, trode->trode_opt.channels, 
 		trode->trode_opt.n_chans, trode->trode_opt.stream_n_samps_per_chan, 
 		trode->trode_opt.my_filt.n_samps_per_chan, &(trode->u_curs), &(trode->f_curs), 

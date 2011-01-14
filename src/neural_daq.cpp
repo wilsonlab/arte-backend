@@ -128,7 +128,7 @@ void neural_daq_start_all(void){
 
 void neural_daq_stop_all(void){
   acquiring = false;
-  //sleep(1);  // why sleep?  b/c for some reason hitting immediately after running program hangs the computer (threads' fault?)
+  sleep(1);  // why sleep?  b/c for some reason hitting immediately after running program hangs the computer (threads' fault?)
   std::map<int, neural_daq>::iterator it;
   
   bool32 isDone;
@@ -150,31 +150,31 @@ void neural_daq_stop_all(void){
 
 int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEventType, uInt32 nSamples, void *callbackData){
   if(acquiring){
-    std::cout << "First EveryNCallback" << std::endl; 
+    //std::cout << "First EveryNCallback" << std::endl; 
    //buffer_count = 0;
     buffer_count++;
     int32 read;
-    printf("%d\r",buffer_count);
-    fflush(stdout); // cause I wanna see the number grawing FAST ^^
+    //printf("%d\r",buffer_count);
+    //fflush(stdout); // cause I wanna see the number grawing FAST ^^
     for(std::map<int,neural_daq>::iterator it = neural_daq_map.begin(); it != neural_daq_map.end(); it++){
       daq_err_check ( DAQmxReadAnalogF64( (*it).second.task_handle, 32, 10.0, DAQmx_Val_GroupByChannel, (*it).second.data_ptr, buffer_size, &read,NULL) );
     }
-    Trode tt01;
-    Trode tt02;
-    Trode tt03;
-    Trode tt04;
-    std::cout << "trode_map.size(): " << trode_map.size() << std::endl;
-    std::map<std::string, Trode>::iterator tmp = trode_map.begin();
+    //Trode tt01;    //  <--- INTERESTING (for me at least) - making these variable declarations
+    //Trode tt02;    //       when the MAX_BUFFER is large ate up > 50% of the CPU
+    //Trode tt03;    //       Major CPU savings by declaring a pointer to trode instead of trode!
+    //Trode tt04;
+    //std::cout << "trode_map.size(): " << trode_map.size() << std::endl;
+    //std::map<std::string, Trode>::iterator tmp = trode_map.begin();
     for(std::map<std::string, Trode>::iterator it = trode_map.begin(); it != trode_map.end(); it++){
-      Trode this_trode = (*it).second;
-      Trode next_trode = (*(it++)).second;
-      tt01 = trode_map["tt01"];      
-      tt02 = trode_map["tt02"];
-      tt03 = trode_map["tt03"];
-      tt04 = trode_map["tt04"];
+      Trode *this_trode = &((*it).second);
+      //Trode next_trode = (*(it++)).second;
+      //tt01 = trode_map["tt01"];      // <-- This was for degubbing.  I leave it for a couple
+      //tt02 = trode_map["tt02"];      //     commits in case you want to see the effect of this
+      //tt03 = trode_map["tt03"];      //     repeated assignment on CPU usage.
+      //tt04 = trode_map["tt04"];
       //this_trode.print_options();
       //fflush(stdout);
-      trode_filter_data(&this_trode);
+      trode_filter_data(this_trode);
       //it = trode_map.find("tt03");
       //std::cout << "trode_map.size(): " << trode_map.size() << std::endl;
       //it++;
