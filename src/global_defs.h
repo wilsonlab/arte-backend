@@ -10,7 +10,7 @@ const std::string default_setup_config_filename ("/home/greghale/arte-ephys/conf
 const std::string default_session_config_filename ("/home/greghale/arte-ephys/conf/arte_session_default.conf");
 
 const int MAX_TRODE_N_CHANS = 32;      // 32 chanels
-const int MAX_TRODE_BUFFER_LEN = 3200; // 3200 samps = about 0.1 seconds
+const int MAX_TRODE_BUFFER_LEN = 320; // 3200 samps = about 0.01 seconds
 const int MAX_TRODE_BUFFER = MAX_TRODE_N_CHANS * MAX_TRODE_BUFFER_LEN;
 
 struct neural_daq{
