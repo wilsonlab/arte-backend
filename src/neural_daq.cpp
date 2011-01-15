@@ -42,7 +42,9 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
     assign_property <std::string> ("raw_dump_filename", &(this_nd.raw_dump_filename), ndaq_pt, ndaq_pt, 1);
 
     // set up a buffer to use as this daq's input stream
-    this_nd.data_ptr = new float64 [this_nd.n_chans * this_nd.n_samps_per_buffer];
+    //this_nd.data_ptr = new float64 [this_nd.n_chans * this_nd.n_samps_per_buffer];
+    // WHY don't we call new in the above line?  b/c we're replacing dynamic memory with pre-allocated arrays.
+    // See global_defs.h
     init_array <float64>(this_nd.data_ptr, 0.0, (this_nd.n_chans * this_nd.n_samps_per_buffer) );
     neural_daq_map.insert( std::pair<int,neural_daq> (this_nd.id, this_nd) );
   }

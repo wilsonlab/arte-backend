@@ -38,7 +38,7 @@ void filter_data(float64 *in_buf, Filt filt, int *chans, int n_chans, int in_buf
        in_pt = chans[c]*in_buf_len + n;
        out_pt = c * out_buf_len + n + u_curs;  
        //        u_buf[out_pt] = in_buf[in_pt];
-        u_buf[c*out_buf_len + n + u_curs] = f_buf[chans[c]*in_buf_len + n];                           // don't need rel_pt here.
+        u_buf[c*out_buf_len + n + u_curs] = in_buf[chans[c]*in_buf_len + n];                           // don't need rel_pt here.
         f_buf[c*out_buf_len + n + u_curs] = 0.0;
 	        ff_buf[c*out_buf_len + n + ff_curs] = 0.0;                                         // CHECK these indices. When do cursor positions get updated?
 
