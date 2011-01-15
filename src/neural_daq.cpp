@@ -100,13 +100,13 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
 
 void neural_daq_start_all(void){
   
-  std::cout << "Print from start_all" << std::endl;
-  std::map<std::string, Trode>::iterator a;
-  for(a = trode_map.begin(); a != trode_map.end(); a++){
-    (*a).second.print_options();
-  }
-  std::cout << "Finished print from start_all" << std::endl;
-  fflush(stdout);
+//   std::cout << "Print from start_all" << std::endl;
+//   std::map<std::string, Trode>::iterator a;
+//   for(a = trode_map.begin(); a != trode_map.end(); a++){
+//     (*a).second.print_options();
+//   }
+//   std::cout << "Finished print from start_all" << std::endl;
+//   fflush(stdout);
 
   // start all slave tasks first, so that they don't miss the start trigger from the master
   std::map<int, neural_daq>::iterator it;
@@ -150,57 +150,18 @@ void neural_daq_stop_all(void){
 
 int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEventType, uInt32 nSamples, void *callbackData){
   if(acquiring){
-    //std::cout << "First EveryNCallback" << std::endl; 
-   //buffer_count = 0;
-    buffer_count++;
     int32 read;
-    neural_daq *tmp;
-    //printf("%d\r",buffer_count);
-    //fflush(stdout); // cause I wanna see the number grawing FAST ^^
+    buffer_count++;
     for(std::map<int,neural_daq>::iterator it = neural_daq_map.begin(); it != neural_daq_map.end(); it++){
-      if(it == neural_daq_map.begin()){
-	tmp = &((*it).second);
-      }
+      
       daq_err_check ( DAQmxReadAnalogF64( (*it).second.task_handle, 32, 10.0, DAQmx_Val_GroupByChannel, (*it).second.data_ptr, buffer_size, &read,NULL) );
     }
-    //Trode tt01;    //  <--- INTERESTING (for me at least) - making these variable declarations
-    //Trode tt02;    //       when the MAX_BUFFER is large ate up > 50% of the CPU
-    //Trode tt03;    //       Major CPU savings by declaring a pointer to trode instead of trode!
-    //Trode tt04;
-    //std::cout << "trode_map.size(): " << trode_map.size() << std::endl;
-    //std::map<std::string, Trode>::iterator tmp = trode_map.begin();
-    
-    
-    // std::cout << buffer_count << ": ";
-//     std::cout.precision(3);
-//     for( int i = 0; i < tmp->n_samps_per_buffer; i++){
-//       std::cout << tmp->data_ptr[i] << " ";
-//     }
-//     for( int i = 0; i < 10; i++){
-//       printf(" ");
-//     }
-//     printf("\r");
-//     fflush(stdout);
-//     printf("\r\r");
-//     fflush(stdout);
-    
     for(std::map<std::string, Trode>::iterator it = trode_map.begin(); it != trode_map.end(); it++){
       Trode *this_trode = &((*it).second);
-      //Trode next_trode = (*(it++)).second;
-      //tt01 = trode_map["tt01"];      // <-- This was for degubbing.  I leave it for a couple
-      //tt02 = trode_map["tt02"];      //     commits in case you want to see the effect of this
-      //tt03 = trode_map["tt03"];      //     repeated assignment on CPU usage.
-      //tt04 = trode_map["tt04"];
-      //this_trode.print_options();
-      //fflush(stdout);
       trode_filter_data(this_trode);
-      if( it == trode_map.begin() && (buffer_count % 10 == 1))
-	this_trode->print_buffers(1, 10);
-      //it = trode_map.find("tt03");
-      //std::cout << "trode_map.size(): " << trode_map.size() << std::endl;
-      //it++;
-     }
-    //this_trode.print_options();
+      //      if( it == trode_map.begin() && (buffer_count % 10 == 1))
+      //	this_trode->print_buffers(1, 10);
+    }
   }
 }
 

@@ -79,5 +79,12 @@ void arte_session_init(int argc, char *argv[]){
     (*it).second.print_options();
   }
   std::cout << "Done session init." << std::endl;
+  
+  std::map<std::string, Trode>::iterator it;
+  for(it = trode_map.begin(); it != trode_map.end(); it++){
+    std::cout << "Trode " << (*it).second.trode_opt.trode_name << " addr: " << &((*it).second) << std::endl;
+  }
+  std::cout << "sizeof(Trode): " << sizeof(Trode) << " sizeof Trode pair: " << sizeof(*it) << std::endl;
+
   fflush(stdout);
 }
