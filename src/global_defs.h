@@ -24,10 +24,10 @@ struct neural_daq{
   int n_chans;
   std::string in_filename;
   std::string raw_dump_filename;
-  float64 data_ptr[MAX_NEURAL_DAQ_BUFFER];
-  //float64 *data_ptr;
+  float64 data_ptr_copy[MAX_NEURAL_DAQ_BUFFER];
   TaskHandle task_handle;
   int status;
+  float64 *data_ptr;
 };
 
 

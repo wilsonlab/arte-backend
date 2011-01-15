@@ -61,7 +61,7 @@ int Trode::init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptr
 
   trode_opt.my_filt.n_samps_per_chan = my_daq.n_samps_per_buffer * trode_opt.my_filt.buffer_mult_of_input;
   trode_opt.buf_len = trode_opt.my_filt.n_samps_per_chan;
-  ptr_to_raw_stream = my_daq.data_ptr;
+  ptr_to_raw_stream = my_daq.data_ptr_copy;
 
   //  u_buf = new float64 [trode_opt.my_filt.n_samps_per_chan * trode_opt.n_chans];
   //f_buf = new float64 [trode_opt.my_filt.n_samps_per_chan * trode_opt.n_chans];

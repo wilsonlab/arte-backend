@@ -29,6 +29,7 @@ void filter_data(float64 *in_buf, Filt filt, int *chans, int n_chans, int in_buf
   if(u_curs == out_buf_len)
     u_curs = 0;
 
+  for(int up = 0; up < 1; up++){
 
   // first copy data into unfiltered buffer and initialize the corresponding out buffers
 
@@ -108,7 +109,7 @@ void filter_data(float64 *in_buf, Filt filt, int *chans, int n_chans, int in_buf
     //f_curs = 0;
   // Still need to do the filtfilt work
 
-
+  }
 
 }
 
