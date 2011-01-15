@@ -60,7 +60,7 @@ int Trode::init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptr
   trode_opt.my_filt.buffer_mult_of_input += trode_opt.my_filt.filtfilt_wait_n_buffers;
 
   trode_opt.my_filt.n_samps_per_chan = my_daq.n_samps_per_buffer * trode_opt.my_filt.buffer_mult_of_input;
-
+  trode_opt.buf_len = trode_opt.my_filt.n_samps_per_chan;
   ptr_to_raw_stream = my_daq.data_ptr;
 
   //  u_buf = new float64 [trode_opt.my_filt.n_samps_per_chan * trode_opt.n_chans];
@@ -83,7 +83,7 @@ void trode_filter_data(Trode *trode){
     //std::cout << "About to call filter_data from the trode: " << trode->trode_opt.trode_name << std::endl;
     //fflush(stdout);
     filter_data(trode->ptr_to_raw_stream, trode->trode_opt.my_filt, trode->trode_opt.channels, 
-		trode->trode_opt.n_chans, trode->trode_opt.stream_n_samps_per_chan, 
+		trode->trode_opt.n_chans, trode->trode_opt.buf_len, 
 		trode->trode_opt.my_filt.n_samps_per_chan, &(trode->u_curs), &(trode->f_curs), 
 		&(trode->ff_curs),trode->u_buf, trode->f_buf, trode->ff_buf);
     //tmp = 1;
@@ -113,7 +113,22 @@ void Trode::print_options(void){
 }
 
 
-void Trode::print_buffers(void){
+void Trode::print_buffers(int chan_lim, int samp_lim){
+  system("clear");
+  std::cout.precision(2);
+  printf("u_buf: ");
+  for (int s = 0; s < samp_lim; s++){
+    std::cout << u_buf[0 * trode_opt.buf_len + s] << " ";
+  }
+  printf("\nf_buf: ");
+  for (int s = 0; s < samp_lim; s++){
+    std::cout << f_buf[0 * trode_opt.buf_len + s] << " ";
+  }
+  printf("\n");
+  //fflush(stdout);
+  //printf("\b \r \b \r \b \r \b \r");
+  //system("clear");
+  
 }
 
 
