@@ -25,6 +25,7 @@ class Trode{
     std::string spike_mode;
     int buffer_mult_of_input;
     int buf_len;
+    int buf_size_bytes;
     int *channels;
     int samps_before_trig;
     int samps_after_trig;

@@ -33,7 +33,7 @@ class Filt{
   int n_samps_per_chan;
   int filt_num_sos;               // derived from order or from numerator, denominator count
   int data_cursor;                
-
+  int out_buf_size_bytes;
   // filt instances NO NOT have buffers.  This object just keeps parameters for a filter.
   // buffers are kept within invidivual tetrode or eeg_channel objects.
   //float64 *x_buffer;
@@ -43,7 +43,7 @@ class Filt{
 
 int rel_pt(int pos, int curs, int buf_len);
 
-void filter_data(float64 *in_buf, Filt filt, int *chans, int n_chans, int in_buf_len, 
+void filter_data(float64 *in_buf, Filt *filt, int *chans, int n_chans, int in_buf_len, 
 		  int out_buf_len, int *u_curs, int *f_curs, int *ff_curs, float64* u_buf, float64 *f_buf, float64 *ff_buf);
 
 void print_array(float64 *buf, int n_chans, int buf_len, int curs);
