@@ -4,6 +4,13 @@
 #include <string>
 #include <iostream>
 #include <NIDAQmx.h>
+#include <map>
+
+#define MAX_THREADS 32
+#define THREADED_
+
+#include <pthread.h>
+extern pthread_t my_threads[MAX_THREADS];
 
 const int MAX_TRODE_NAME_LENGTH = 50;
 const std::string default_setup_config_filename ("/home/greghale/arte-ephys/conf/arte_setup_default.conf");
@@ -26,9 +33,13 @@ struct neural_daq{
   std::string raw_dump_filename;
   float64 data_ptr_copy[MAX_NEURAL_DAQ_BUFFER];
   TaskHandle task_handle;
+  int total_samp_count;
+  int size_bytes;
   int status;
   float64 *data_ptr;
 };
+
+extern std::map <int, neural_daq> neural_daq_map;
 
 
 

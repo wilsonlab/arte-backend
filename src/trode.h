@@ -31,6 +31,8 @@ class Trode{
     int n_samps_per_spike;
   } trode_opt;
 
+  neural_daq *my_daq;
+
   int init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptree &default_pt,
 	   std::map<int, neural_daq> &neural_daq_map, std::map<std::string, Filt> &filt_map);
 
@@ -57,7 +59,7 @@ class Trode{
 
 extern std::map<std::string, Trode> trode_map;
 
-void trode_filter_data(Trode *); // trode_filter_data(trode_to_prosess, raw buffer, timestamp at buffer start)
+void *trode_filter_data(void *); // trode_filter_data(trode_to_prosess, raw buffer, timestamp at buffer start)
 void trode_process_data(Trode *); // only need access to this trode's buffers (filtered data is there)
 
 #endif

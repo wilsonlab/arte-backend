@@ -35,12 +35,12 @@ int Trode::init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptr
   assign_property<int>("samps_after_trig", &(trode_opt.samps_after_trig), trode_pt, default_pt, 1);
   assign_property<std::string> ("spike_mode", &(trode_opt.spike_mode), trode_pt, default_pt, 1);
 
-  neural_daq my_daq = neural_daq_map.find(trode_opt.daq_id)->second;
+  my_daq = &(neural_daq_map[trode_opt.daq_id]);
 
-  trode_opt.stream_n_samps_per_chan = my_daq.n_samps_per_buffer;
+  trode_opt.stream_n_samps_per_chan = my_daq->n_samps_per_buffer;
   trode_opt.n_samps_per_spike = 1 + trode_opt.samps_before_trig + trode_opt.samps_after_trig;
-  trode_opt.buffer_mult_of_input = trode_opt.n_samps_per_spike / my_daq.n_samps_per_buffer;
-  if((trode_opt.n_samps_per_spike % my_daq.n_samps_per_buffer) > 0 )
+  trode_opt.buffer_mult_of_input = trode_opt.n_samps_per_spike / my_daq->n_samps_per_buffer;
+  if((trode_opt.n_samps_per_spike % my_daq->n_samps_per_buffer) > 0 )
     trode_opt.buffer_mult_of_input += 1;
 
   if(filt_map.find(trode_opt.filt_name) == filt_map.end()){
@@ -53,15 +53,15 @@ int Trode::init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptr
   trode_opt.my_filt = filt_map.find(trode_opt.filt_name)->second;
 
   int min_samps_for_filt = trode_opt.my_filt.order;
-  trode_opt.my_filt.buffer_mult_of_input = min_samps_for_filt / my_daq.n_samps_per_buffer + 1;
-  if( min_samps_for_filt % my_daq.n_samps_per_buffer > 0)
+  trode_opt.my_filt.buffer_mult_of_input = min_samps_for_filt / my_daq->n_samps_per_buffer + 6;
+  if( min_samps_for_filt % my_daq->n_samps_per_buffer > 0)
     trode_opt.my_filt.buffer_mult_of_input += 1;
 
   trode_opt.my_filt.buffer_mult_of_input += trode_opt.my_filt.filtfilt_wait_n_buffers;
 
-  trode_opt.my_filt.n_samps_per_chan = my_daq.n_samps_per_buffer * trode_opt.my_filt.buffer_mult_of_input;
+  trode_opt.my_filt.n_samps_per_chan = my_daq->n_samps_per_buffer * trode_opt.my_filt.buffer_mult_of_input;
   trode_opt.buf_len = trode_opt.my_filt.n_samps_per_chan;
-  ptr_to_raw_stream = my_daq.data_ptr_copy;
+  ptr_to_raw_stream = my_daq->data_ptr_copy;
 
   //  u_buf = new float64 [trode_opt.my_filt.n_samps_per_chan * trode_opt.n_chans];
   //f_buf = new float64 [trode_opt.my_filt.n_samps_per_chan * trode_opt.n_chans];
@@ -77,7 +77,8 @@ int Trode::init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptr
 //  
 //}
 
-void trode_filter_data(Trode *trode){
+void *trode_filter_data(void *t){
+  Trode *trode = (Trode *)t;
   //  std::cout << "About to call filter_data from the trode." << std::endl;
   if(tmp == 0){
     //std::cout << "About to call filter_data from the trode: " << trode->trode_opt.trode_name << std::endl;
@@ -115,14 +116,34 @@ void Trode::print_options(void){
 
 void Trode::print_buffers(int chan_lim, int samp_lim){
   system("clear");
-  std::cout.precision(2);
-  printf("u_buf: ");
+  std::cout << std::fixed << std::setprecision(1); 
+  neural_daq this_daq = neural_daq_map[trode_opt.daq_id];
+  std::cout << this_daq.dev_name << " : ";
+  for(int s = 0; s < 32; s++){
+    std::cout << std::setw(7) << this_daq.data_ptr_copy[s] << " ";
+  }
+
+  //printf("in_bf: ");
+  //for (int s = 0; s < samp_lim; s++){
+  //  std::cout << trode_opt.my_filt.data_ptr_copy[0 * trode_opt.buf_len + s] << " ";
+  // }
+  printf("\nu_buf: ");
   for (int s = 0; s < samp_lim; s++){
-    std::cout << u_buf[0 * trode_opt.buf_len + s] << " ";
+    if(s == u_curs){
+      std::cout << "\033[0;32m";
+    }else{
+      std::cout << "\033[0m";}
+    std::cout << std::setw(7) << u_buf[0 * trode_opt.buf_len + s] << " ";
+    
   }
   printf("\nf_buf: ");
+  std::cout << std::fixed << std::setprecision(1);
   for (int s = 0; s < samp_lim; s++){
-    std::cout << f_buf[0 * trode_opt.buf_len + s] << " ";
+    if(s == f_curs){
+      std::cout << "\033[0;32m";
+    }else{
+      std::cout << "\033[0m";}
+    std::cout << std::setw(7) << f_buf[0 * trode_opt.buf_len + s] << " ";
   }
   printf("\n");
   //fflush(stdout);

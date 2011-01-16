@@ -1,11 +1,15 @@
-#include "neural_daq.h"
 #include "trode.h"
+#include "neural_daq.h"
+
+#include <pthread.h>
 
 bool acquiring;
 int master_id;
 int buffer_count = 0;
 int32 buffer_size;
 std::map <int, neural_daq> neural_daq_map;
+
+pthread_t my_threads[MAX_THREADS];
 
 void neural_daq_init(boost::property_tree::ptree &setup_pt){
 
@@ -41,12 +45,14 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
     assign_property <std::string> ("in_filename", &(this_nd.in_filename), ndaq_pt, ndaq_pt, 1);
     assign_property <std::string> ("raw_dump_filename", &(this_nd.raw_dump_filename), ndaq_pt, ndaq_pt, 1);
 
+    this_nd.total_samp_count = this_nd.n_chans * this_nd.n_samps_per_buffer;
     // set up a buffer to use as this daq's input stream
-    this_nd.data_ptr = new float64 [this_nd.n_chans * this_nd.n_samps_per_buffer];
+    this_nd.data_ptr = new float64 [this_nd.total_samp_count];
     // WHY don't we call new in the above line?  b/c we're replacing dynamic memory with pre-allocated arrays.
     // See global_defs.h
     init_array <float64>(this_nd.data_ptr, 0.0, (this_nd.n_chans * this_nd.n_samps_per_buffer) );
     init_array <float64>(this_nd.data_ptr_copy, 1.0, (this_nd.n_chans * this_nd.n_samps_per_buffer) );
+    this_nd.size_bytes = this_nd.total_samp_count * sizeof(this_nd.data_ptr[0]);
     neural_daq_map.insert( std::pair<int,neural_daq> (this_nd.id, this_nd) );
   }
 
@@ -154,16 +160,28 @@ void neural_daq_stop_all(void){
 int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEventType, uInt32 nSamples, void *callbackData){
   if(acquiring){
     int32 read;
+    int rc;
+    int n;
     buffer_count++;
     for(std::map<int,neural_daq>::iterator it = neural_daq_map.begin(); it != neural_daq_map.end(); it++){
-      
       daq_err_check ( DAQmxReadAnalogF64( (*it).second.task_handle, 32, 10.0, DAQmx_Val_GroupByChannel, (*it).second.data_ptr, buffer_size, &read,NULL) );
+      memcpy( (*it).second.data_ptr_copy, (*it).second.data_ptr, (*it).second.size_bytes);
     }
+    n = 0;
     for(std::map<std::string, Trode>::iterator it = trode_map.begin(); it != trode_map.end(); it++){
       Trode *this_trode = &((*it).second);
+      
+     
+      //rc = pthread_create(&my_threads[n], NULL, trode_filter_data, this_trode);
+      //if(rc){
+      //printf("THREAD ERROR!");
+      //exit(-1);
+      //}
       trode_filter_data(this_trode);
-      if( it == trode_map.begin() && (buffer_count % 10 == 1))
-	      	this_trode->print_buffers(1, 10);
+      if( it == trode_map.begin() && (buffer_count % 10 == 1)){
+	this_trode->print_buffers(1, 40);
+      }
+      n++;
     }
   }
 }
