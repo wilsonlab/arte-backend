@@ -53,7 +53,7 @@ int Trode::init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptr
   trode_opt.my_filt = filt_map.find(trode_opt.filt_name)->second;
 
   int min_samps_for_filt = trode_opt.my_filt.order;
-  trode_opt.my_filt.buffer_mult_of_input = min_samps_for_filt / my_daq->n_samps_per_buffer + 6;
+  trode_opt.my_filt.buffer_mult_of_input = min_samps_for_filt / my_daq->n_samps_per_buffer + 1;
   if( min_samps_for_filt % my_daq->n_samps_per_buffer > 0)
     trode_opt.my_filt.buffer_mult_of_input += 1;
 
@@ -84,7 +84,7 @@ void *trode_filter_data(void *t){
     //std::cout << "About to call filter_data from the trode: " << trode->trode_opt.trode_name << std::endl;
     //fflush(stdout);
     filter_data(trode->ptr_to_raw_stream, trode->trode_opt.my_filt, trode->trode_opt.channels, 
-		trode->trode_opt.n_chans, trode->trode_opt.my_filt.n_samps_per_chan, 
+		trode->trode_opt.n_chans, trode->my_daq->n_samps_per_buffer, 
 		trode->trode_opt.buf_len, &(trode->u_curs), &(trode->f_curs), 
 		&(trode->ff_curs),trode->u_buf, trode->f_buf, trode->ff_buf);
     //tmp = 1;

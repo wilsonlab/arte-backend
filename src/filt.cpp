@@ -41,22 +41,13 @@ void filter_data(float64 *in_buf, Filt filt, int *chans, int n_chans, int in_buf
        out_pt = c * out_buf_len + n + u_curs;  
        //u_buf[out_pt] = in_buf[in_pt];
         u_buf[c*out_buf_len + n + u_curs] = in_buf[chans[c]*in_buf_len + n];                           // don't need rel_pt here.
-       //f_buf[c*out_buf_len + n + u_curs] = 0.0;
-       //ff_buf[c*out_buf_len + n + ff_curs] = 0.0;                                         // CHECK these indices. When do cursor positions get updated?
-
-	//	u_buf[c * out_buf_len + n] = in_buf[0];
-	//f_buf[c * out_buf_len + n] = in_buf[0];
 
      }
    }
-
-
-
    if(filt.filt_num_sos == 1){
      // then we most likely have an FIR.  This code will take care of FIR and 
      // single-segment IIR filters, too, as long as the first last denom
      // coefficient is set to 0.
-     
      for(int n = 0; n < in_buf_len; n++){                                           // process in_buf_len points
        out_pt = n + u_curs;
        for(int p = 0; p <= filt.order; p++){                                        // iterate over history points (we need order of them)
@@ -70,7 +61,6 @@ void filter_data(float64 *in_buf, Filt filt, int *chans, int n_chans, int in_buf
        } // end loop over history points
      } //end loop over point in out_buf to compute                                       // viola.  Check the sign conventions. 
    } // end if block for sos == 1
-   
    else {
      // then we have biquad sections, and can dispense with the for loop over p
      // b/c we know the fixed history length.
@@ -80,7 +70,7 @@ void filter_data(float64 *in_buf, Filt filt, int *chans, int n_chans, int in_buf
 	 for(int n = 0; n < in_buf_len; n++){                                         // copy f_buf into u_buf if this is any run of the filter but the first.
 	   for(int c = 0; c < n_chans; c++){                                          // so that the second section gets the output of the first as its 'raw'
 	     //value = f_buf[c*out_buf_len + n];                                          // so that the second section gets the output of the first as its 'raw'
-	     //	     u_buf[c*out_buf_len + n] = f_buf[c*out_buf_len + n];
+	     	     u_buf[c*out_buf_len + n] = f_buf[c*out_buf_len + n];
 	     
 	   }
 	 }
@@ -98,27 +88,33 @@ void filter_data(float64 *in_buf, Filt filt, int *chans, int n_chans, int in_buf
  	       u_buf[c*out_buf_len + in_pt_h2]*b[s* + 2]*filt.input_gains[s] -
  	       f_buf[c*n_chans + in_pt_h1]*a[s*3 + 1] -
  	       f_buf[c*n_chans + in_pt_h2]*a[s*3 + 2] );  
-	   f_buf[c*out_buf_len + out_pt] = -100.0;  
+	   //f_buf[c*out_buf_len + out_pt] = -100.0;  
 	 } // end loop over chans
        } //end loop over points in this input chuckn
      }  // end loop over segs
    } // end if iir
-   u_curs += in_buf_len;
-   f_curs += in_buf_len;
-   if( u_curs > out_buf_len || f_curs > out_buf_len){
-     std::cout << "Strange: u_curs or f_curs is greater than it's supposed to be allowed to get." << std::endl;
-   }
-   if(u_curs == out_buf_len)
-     u_curs = 0;
-   if(f_curs == out_buf_len)
-     f_curs = 0;
-   // Still need to do the filtfilt work
-   
-   
+  } // end 'up' loop
 
-
+  std::cout << "Begin check." << std::endl;
+  std::cout << "Before change, *u_curs_p is " << *u_curs_p << std::endl;
+  std::cout << "in_buf_len is " << in_buf_len << std::endl;
+  std::cout << "out_buf_len is " << out_buf_len << std::endl;
+  (*u_curs_p) += in_buf_len;
+  (*f_curs_p) += in_buf_len;
+  std::cout << "Before check, *u_curs_p is " << *u_curs_p << std::endl;
+  if( u_curs > out_buf_len || f_curs > out_buf_len){
+    std::cout << "Strange: u_curs or f_curs is greater than it's supposed to be allowed to get." << std::endl;
   }
+  if((*u_curs_p) == out_buf_len){
+    (*u_curs_p) = 0;
+    std::cout << "Reset u_curs_p." << std::endl;
+  }
+  if((*f_curs_p) == out_buf_len)
+    (*f_curs_p) = 0;
 
+  std::cout << "After all checking, *u_curs_p is " << (*u_curs_p) << std::endl;
+  // Still need to do the filtfilt work
+  //exit(1);
 }
 
 Filt::Filt(){
