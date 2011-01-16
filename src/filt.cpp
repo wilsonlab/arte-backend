@@ -66,17 +66,21 @@ void filter_data(float64 *in_buf, Filt *filt, int *chans, int n_chans, int in_bu
      // b/c we know the fixed history length.
      int n_segs = filt->filt_num_sos;
      for(int s = 0; s < n_segs; s++){
-       if(s > 0){
-	 for(int n = 0; n < in_buf_len; n++){                                         // copy f_buf into u_buf if this is any run of the filter but the first.
-	   for(int c = 0; c < n_chans; c++){                                          // so that the second section gets the output of the first as its 'raw'
-	     //value = f_buf[c*out_buf_len + n];
-	                                                                              // so that the second section gets the output of the first as its 'raw'
-	     //u_buf[c*out_buf_len + n] = f_buf[c*out_buf_len + n];
-	     memcpy(u_buf, f_buf, filt->out_buf_size_bytes);     
+       
+//        if(s > 0){
+// 	 for(int n = 0; n < in_buf_len; n++){                                         // copy f_buf into u_buf if this is any run of the filter but the first.
+// 	   for(int c = 0; c < n_chans; c++){                                          // so that the second section gets the output of the first as its 'raw'
+// 	     //value = f_buf[c*out_buf_len + n];
+// 	                                                                              // so that the second section gets the output of the first as its 'raw'
+// 	     //u_buf[c*out_buf_len + n] = f_buf[c*out_buf_len + n];
+// 	         
 	     
-	   }
-	 }
-       } 
+// 	   }
+// 	 }
+//        }
+       if(s > 0)
+	 memcpy(u_buf, f_buf, filt->out_buf_size_bytes);
+ 
        for(int n = 0; n < in_buf_len; n++){                                                     //the
 	 out_pt = n+u_curs;
 	 in_pt_c = n+u_curs;
