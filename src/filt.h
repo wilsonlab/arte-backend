@@ -38,7 +38,7 @@ class Filt{
   // buffers are kept within invidivual tetrode or eeg_channel objects.
   //float64 *x_buffer;
   //float64 *y_buffer;
-
+  int count;
 };
 
 int rel_pt(int pos, int curs, int buf_len);

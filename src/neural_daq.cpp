@@ -1,6 +1,7 @@
 #include "trode.h"
 #include "neural_daq.h"
-
+#include <iostream>
+#include <iomanip>
 #include <pthread.h>
 
 bool acquiring;
@@ -153,7 +154,6 @@ void neural_daq_stop_all(void){
     std::cout << "About to clear task: " << (*it).second.task_handle << std::endl;
 
     daq_err_check ( DAQmxClearTask( (*it).second.task_handle) );
-
   }
 }
 
@@ -164,8 +164,9 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
     int n;
     buffer_count++;
     for(std::map<int,neural_daq>::iterator it = neural_daq_map.begin(); it != neural_daq_map.end(); it++){
-      daq_err_check ( DAQmxReadAnalogF64( (*it).second.task_handle, 32, 10.0, DAQmx_Val_GroupByChannel, (*it).second.data_ptr, buffer_size, &read,NULL) );
+      daq_err_check ( DAQmxReadAnalogF64( (*it).second.task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, (*it).second.data_ptr, buffer_size, &read,NULL) );
       memcpy( (*it).second.data_ptr_copy, (*it).second.data_ptr, (*it).second.size_bytes);
+      //print_buffer( & (*it).second, 32, 32, 32 ); 
     }
     n = 0;
     for(std::map<std::string, Trode>::iterator it = trode_map.begin(); it != trode_map.end(); it++){
@@ -178,10 +179,11 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
       //exit(-1);
       //}
       trode_filter_data(this_trode);
-      if( it == trode_map.begin() && (buffer_count % 10 == 1)){
-	this_trode->print_buffers(1, 40);
+      if( it == trode_map.begin() && (buffer_count % 1 == 0)){
+	//this_trode->print_buffers(1, 40);
       }
       n++;
+      //neural_daq_stop_all();
     }
   }
 }
@@ -206,4 +208,15 @@ neural_daq find_neural_daq_by_taskhandle(TaskHandle taskhandle){
     }
   }
   std::cout << "Couldn't find the taskhandle: " << taskhandle << std::endl;
+}
+
+void print_buffer(neural_daq *ndp, int row_lim, int col_lim, int row_length){
+  system("clear");
+  std::cout << std::fixed << std::setprecision(1);
+  for (int r = 0; r < row_lim; r++){
+    for (int c = 0; c < row_lim; c++) {
+      std::cout << std::setw(5) << ndp->data_ptr_copy[ r*row_length + c ] << " ";
+    }
+    std::cout << std::endl;
+  }
 }

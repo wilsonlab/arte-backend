@@ -24,5 +24,6 @@ int32 CVICALLBACK DoneCallback(TaskHandle taskHandle, int32 status, void *callba
 neural_daq find_neural_daq_by_taskhandle(TaskHandle taskHandle);
 
 void print_neural_daq(neural_daq nd);
+void print_buffer(neural_daq *ndp, int row_lim, int row_length, int col_lim);
 
 #endif
