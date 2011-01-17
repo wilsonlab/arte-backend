@@ -16,7 +16,7 @@ Trode::Trode(){
 
 
 Trode::~Trode(){
-  //std::cout << "In destructor of tetrode object for tetrode: " << trode_name << std::endl; (<- interesting experiment)
+  //std::cout << "In destructor of tetrode object for tetrode: " << trode_name << std::endl; (<- interesting results)
 }
 
 
@@ -121,35 +121,41 @@ void Trode::print_buffers(int chan_lim, int samp_lim){
   system("clear");
   std::cout << std::fixed << std::setprecision(1); 
   neural_daq this_daq = neural_daq_map[trode_opt.daq_id];
-  std::cout << this_daq.dev_name << " : ";
-  for(int s = 0; s < 32; s++){
-    std::cout << std::setw(7) << this_daq.data_ptr_copy[s] << " ";
+  std::cout << "raw_stream || u_buf  ||  f_buf" << std::endl;
+
+  for (int s = 0; s < samp_lim; s++){
+
+    int neural_daq_row_offset = s * my_daq->n_chans;
+    int row_offset = s * trode_opt.n_chans;
+
+    for(int c = 0; c < chan_lim; c++){
+      int this_in_c = trode_opt.channels[c];
+      std::cout << std::setw(7) << this_daq.data_ptr_copy[this_in_c + neural_daq_row_offset] << " ";
+    }
+
+    std::cout << "  ||  ";
+
+    for (int c = 0; c < chan_lim; c++){
+      if(s == u_curs){
+	std::cout << "\033[0;32m";
+      }else{
+	std::cout << "\033[0m";}
+      std::cout << std::setw(7) << u_buf[c + row_offset] << " "; 
+    }
+
+    std::cout << "  ||  ";
+
+    std::cout << std::fixed << std::setprecision(1);
+    for (int c = 0; c < chan_lim; c++){
+      if(s == f_curs){
+	std::cout << "\033[0;32m";
+      }else{
+	std::cout << "\033[0m";}
+      std::cout << std::setw(7) << f_buf[c + row_offset] << " \033[0m";
+    }
+    std::cout << std::endl;
   }
 
-  //printf("in_bf: ");
-  //for (int s = 0; s < samp_lim; s++){
-  //  std::cout << trode_opt.my_filt.data_ptr_copy[0 * trode_opt.buf_len + s] << " ";
-  // }
-  printf("\nu_buf: ");
-  for (int s = 0; s < samp_lim; s++){
-    if(s == u_curs){
-      std::cout << "\033[0;32m";
-    }else{
-      std::cout << "\033[0m";}
-    std::cout << std::setw(7) << u_buf[0 * trode_opt.buf_len + s] << " ";
-    
-  }
-  printf("\nf_buf: ");
-  std::cout << std::fixed << std::setprecision(1);
-  for (int s = 0; s < samp_lim; s++){
-    if(s == f_curs){
-      std::cout << "\033[0;32m";
-    }else{
-      std::cout << "\033[0m";}
-    std::cout << std::setw(7) << f_buf[0 * trode_opt.buf_len + s] << " ";
-  }
-  printf("\n");
-  printf("%d\n", trode_opt.my_filt.out_buf_size_bytes);
   //fflush(stdout);
   //printf("\b \r \b \r \b \r \b \r");
   //system("clear");

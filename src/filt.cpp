@@ -3,7 +3,9 @@
 #include "util.h"
 #include <string>
 
-#define CBUF(X,L) (L+X)%L // assumes X >= -L
+#define CBUF(X,L) (L+X)%L         // assumes X >= -L
+#define S_F64 8                   // 8 bytes for a float64
+#define S_ARRAY(R,C) R*C*S_F_64   // Size of an array of float64s of row x col size 
 
 // wrap coordinate for circular buffer
 int rel_pt(int pos, int curs, int buf_len){
@@ -77,7 +79,8 @@ void filter_data(float64 *in_buf, Filt *filt, int *chans, int n_chans, int in_bu
  	     //value = f_buf[c*out_buf_len + n];
  	                                                                              // so that the second section gets the output of the first as its 'raw'
  	     u_buf[c*out_buf_len + n] = f_buf[c*out_buf_len + n];
- 	         
+	     u_buf[c*out_buf_len + n] = 0.0;
+	     f_buf[c*out_buf_len + n] = 0.0;
 	     
  	   }
  	 }
@@ -105,30 +108,30 @@ void filter_data(float64 *in_buf, Filt *filt, int *chans, int n_chans, int in_bu
    } // end if iir
   } // end 'up' loop
 
-   std::cout << "Begin check." << std::endl;
-   std::cout << "Before change, *u_curs_p is " << *u_curs_p << std::endl;
-   std::cout << "in_buf_len is " << in_buf_len << std::endl;
-   std::cout << "out_buf_len is " << out_buf_len << std::endl;
+  //   std::cout << "Begin check." << std::endl;
+  // std::cout << "Before change, *u_curs_p is " << *u_curs_p << std::endl;
+  // std::cout << "in_buf_len is " << in_buf_len << std::endl;
+  // std::cout << "out_buf_len is " << out_buf_len << std::endl;
 
   (*u_curs_p) = in_buf_len + (*u_curs_p);
-  (*f_curs_p) += in_buf_len;
-  std::cout << "Before wrap check, *u_curs_p is " << *u_curs_p << std::endl;
+  (*f_curs_p) = in_buf_len + (*f_curs_p);
+  //std::cout << "Before wrap check, *u_curs_p is " << *u_curs_p << std::endl;
   //if( u_curs > out_buf_len || f_curs > out_buf_len){
   //  std::cout << "Strange: u_curs or f_curs is greater than it's supposed to be allowed to get." << std::endl;
   //}
   if((*u_curs_p) == out_buf_len){
     (*u_curs_p) = 0;
-    std::cout << "Reset u_curs_p." << std::endl;
+    //  std::cout << "Reset u_curs_p." << std::endl;
   }
   if((*f_curs_p) == out_buf_len)
     (*f_curs_p) = 0;
 
-  std::cout << "After all checking, *u_curs_p is " << (*u_curs_p) << std::endl;
+  //std::cout << "After all checking, *u_curs_p is " << (*u_curs_p) << std::endl;
   fflush(stdout);
   
   // Still need to do the filtfilt work
-  if((filt->count)++ == 4)
-    exit(1);
+  //if((filt->count)++ == 4)
+    //exit(1);
 }
 
 Filt::Filt(){

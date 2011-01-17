@@ -178,11 +178,13 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
       //printf("THREAD ERROR!");
       //exit(-1);
       //}
+
       trode_filter_data(this_trode);
-      if( it == trode_map.begin() && (buffer_count % 1 == 0)){
-	//this_trode->print_buffers(1, 40);
+      if( it == trode_map.begin() && (buffer_count % 17 == 0)){
+	this_trode->print_buffers(4, 40);
       }
       n++;
+
       //neural_daq_stop_all();
     }
   }
