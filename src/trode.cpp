@@ -86,7 +86,7 @@ void *trode_filter_data(void *t){
   if(tmp == 0){
     //std::cout << "About to call filter_data from the trode: " << trode->trode_opt.trode_name << std::endl;
     //fflush(stdout);
-    filter_data(trode->ptr_to_raw_stream, &(trode->trode_opt.my_filt), trode->trode_opt.channels, 
+    filter_data(trode->ptr_to_raw_stream, &(trode->trode_opt.my_filt), trode->my_daq, trode->trode_opt.channels, 
 		trode->trode_opt.n_chans, trode->my_daq->n_samps_per_buffer, 
 		trode->trode_opt.buf_len, &(trode->u_curs), &(trode->f_curs), 
 		&(trode->ff_curs),trode->u_buf, trode->f_buf, trode->ff_buf);
@@ -119,6 +119,7 @@ void Trode::print_options(void){
 
 void Trode::print_buffers(int chan_lim, int samp_lim){
   system("clear");
+  std::cout << "*********" << trode_opt.trode_name << "*************" << std::endl;
   std::cout << std::fixed << std::setprecision(1); 
   neural_daq this_daq = neural_daq_map[trode_opt.daq_id];
   std::cout << "raw_stream || u_buf  ||  f_buf" << std::endl;
@@ -140,7 +141,7 @@ void Trode::print_buffers(int chan_lim, int samp_lim){
 	std::cout << "\033[0;32m";
       }else{
 	std::cout << "\033[0m";}
-      std::cout << std::setw(7) << u_buf[c + row_offset] << " "; 
+      std::cout << std::setw(7) << u_buf[c + row_offset] << " \033[0m"; 
     }
 
     std::cout << "  ||  ";

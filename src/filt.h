@@ -4,6 +4,7 @@
 #include <NIDAQmx.h>
 #include <string>
 #include <boost/property_tree/ptree.hpp>
+#include "global_defs.h"
 
 class Filt{
 
@@ -43,7 +44,7 @@ class Filt{
 
 int rel_pt(int pos, int curs, int buf_len);
 
-void filter_data(float64 *in_buf, Filt *filt, int *chans, int n_chans, int in_buf_len, 
+void filter_data(float64 *in_buf, Filt *filt, neural_daq *nd,  int *chans, int n_chans, int in_buf_len, 
 		  int out_buf_len, int *u_curs, int *f_curs, int *ff_curs, float64* u_buf, float64 *f_buf, float64 *ff_buf);
 
 void print_array(float64 *buf, int n_chans, int buf_len, int curs);
