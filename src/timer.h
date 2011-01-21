@@ -1,32 +1,11 @@
-#include <nidaqmx.h>
+#include <NIDAQmx.h>
 #include <stdint.h>
 #include <string>
 class Timer {
 
- public:
-
-  Timer(string deviceID);
-
-  virtual ~Timer();
-
-  int startTimer();
-  int stopTimer();
-
-  int setInitCount(uint16_t initCount);
-  uint32_t getCount();
-  uint64_t getTimestamp();
-
-  int setTimerID(int8_t newId);
-  int8_t getTimerID();
-
-  const int N_MASTER_SYNC_TX = 10;
-  const int N_SLAVE_SYNC_TX =1;
-
  private:
 
   //Methods
-  int txSyncCount(uint32_t syncCount, int nPacket);
-  uint32_t rxSyncCount();
   int becomeMaster();
   int armTimer();
 
@@ -35,11 +14,16 @@ class Timer {
   int armCounterTask();
  
   //naming syntax required for the  NIDaqMx signalChange
-  int32 CVICALLBACK digitalChangeCallback(TaskHandel taskHandle, int32 signalID, void *callbackData);
+//  int32 CVICALLBACK digitalChangeCallback(TaskHandle taskHandle, int32 signalID, void *callbackData);
 
  //Variables
-  string niDevice;
-  int8_t timerId;
+
+  char niDev[256];
+  char niCtr[256];
+  char niArm[256];
+  char niSync[256];
+
+  int timerID;
  
   bool running;
   bool armed;
@@ -53,10 +37,35 @@ class Timer {
   int txSyncPort;
   int rxSyncPort;
 
-  uint32_t prevSyncCount;
-  uint32_t curSyncCount;
+  uint32_t syncCount;
 
   TaskHandle counterTask;
   TaskHandle diPulseTask;
 
-}
+ public:
+  Timer();
+
+  virtual ~Timer();
+
+  int txSyncCount(uint32_t syncCount, int nPacket);
+  uint32_t rxSyncCount();
+
+  bool isMaster();
+  int becomeMaster(bool isMaster);
+  int setDevStrs(std::string const& dev, std::string const& ctr, 
+std::string const& arm, std::string const& sync);
+ 
+  int start();
+  int stop();
+
+  int setInitCount(uint32_t initCount);
+  uint32_t getCount();
+  uint64_t getTimestamp();
+
+  int setTimerID(int newId);
+  int getTimerID();
+
+  uint32_t getSyncCount();
+  int 	setSyncCount(uint32_t count);
+
+};
