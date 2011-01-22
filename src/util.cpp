@@ -1,4 +1,5 @@
 #include "util.h"
+#include "timer.h"
 
 // general utility functions 
 
@@ -39,3 +40,5 @@ int32 GetTerminalNameWithDevPrefix(TaskHandle taskHandle, const char terminalNam
     strcpy (triggerName, terminalName);
   return 0;
 }
+
+

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <NIDAQmx.h>
 #include <map>
+#include <stdint.h>
 
 #define MAX_THREADS 32
 #define THREADED_
