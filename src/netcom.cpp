@@ -50,10 +50,9 @@ NetComDat NetCom::initUdpRx(char host[], int portIn){
         memset(&hints, 0, sizeof hints);
         hints.ai_family = AF_UNSPEC; // set to AF_INET to force IPv4
         hints.ai_socktype = SOCK_DGRAM;
-        hints.ai_flags = AI_PASSIVE; // use my IP
+        hints.ai_flags = AI_CANONNAME; // use my IP
 
-//	host = "10.121.43.255";
-	std::cout<<"Listening to port:"<<port<<" from IP:"<< host<<std::endl;
+	std::cout<<"Listening to port:"<<port<<" from IP:"<<host<<std::endl;
         if ((rv = getaddrinfo(host, port, &hints, &servinfo)) != 0) {
                 fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
                 return net;
@@ -61,6 +60,8 @@ NetComDat NetCom::initUdpRx(char host[], int portIn){
 
         // loop through all the results and bind to the first we can
         for(p = servinfo; p != NULL; p = p->ai_next) {
+//		std::cout<<"\t"<< p->ai_canonname<<"----"<<std::endl;
+//		std::cout<<"\t"<< p->ai_addr<<"----"<<std::endl;
                 if ((sockfd = socket(p->ai_family, p->ai_socktype,
                                 p->ai_protocol)) == -1) {
                         perror("listener: socket");
@@ -90,13 +91,15 @@ NetComDat NetCom::initUdpRx(char host[], int portIn){
 }
 
 int NetCom::txSyncCount(NetComDat net, uint32_t count, int nTx){
-
+	std::cout<<"NetCom::txSyncCount"<<std::endl;
 	count = hton32(count);
 	char* msg = (char*) &count;	
 
 	for (int i=0; i<nTx; i++){
+		std::cout<<i<<" ";
 		sendto(net.sockfd, msg, strlen(msg), 0, (struct sockaddr *)&net.addr_in, sizeof net.addr_in);
 	}	
+	std::cout<<std::endl;
 }
 
 uint32_t NetCom::rxSyncCount(NetComDat net){
@@ -109,12 +112,6 @@ uint32_t NetCom::rxSyncCount(NetComDat net){
         socklen_t addr_len = sizeof (their_addr);
 
 	sockaddr_in sa = *(struct sockaddr_in *)&their_addr;
-
-	inet_pton(AF_INET, "10.121.43.255", &(sa.sin_addr));
-
-
-	printf("waiting on data from %s\n", inet_ntop(their_addr.ss_family,get_in_addr((struct sockaddr *)&their_addr),
-                        s, sizeof s));
 
 	if ((numbytes = recvfrom(net.sockfd, buf, MAXBUFLEN-1 , 0,
                 (struct sockaddr *)&their_addr, &addr_len)) == -1) {

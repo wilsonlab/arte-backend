@@ -9,7 +9,7 @@ int main(){
 	for (int i=0; i<10; i++)
 	{
 		NetComDat net = NetCom::initUdpTx(host,4000);
-		NetCom::txSyncCount(net, i*1000, i);
+		NetCom::txSyncCount(net, i*1000, 1);
 	}
 
 	return 0;

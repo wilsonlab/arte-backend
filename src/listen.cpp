@@ -2,9 +2,9 @@
 
 int main(){
 
-	std::cout<<"NetComUdpRx Text"<<std::endl;	
-//	NetComDat net = NetCom::initUdpRx("10.121.43.255", 4000);
-	NetComDat net = NetCom::initUdpRx("localhost", 4000);
+	char host[] = "10.121.43.255";
+	std::cout<<"Listening for packets on: "<<host<<std::endl;	
+	NetComDat net = NetCom::initUdpRx(host, 4000);
 	NetCom::rxSyncCount(net);
 
 	return 0;
