@@ -92,14 +92,17 @@ NetComDat NetCom::initUdpRx(char host[], int portIn){
 
 int NetCom::txSyncCount(NetComDat net, uint32_t count, int nTx){
 	std::cout<<"NetCom::txSyncCount"<<std::endl;
+	std::cout<<"count:\t:"<< count <<" size of count:\t" << sizeof count<< std::endl;
 	count = hton32(count);
 	char* msg = (char*) &count;	
+	memcpy(msg,const count,4);
+	
+//	msg = "298";
+//	std::count<<"msg:\t:"<<msg<<" size of msg:\t"<<sizeof msg<<std::endl;
 
 	for (int i=0; i<nTx; i++){
-		std::cout<<i<<" ";
 		sendto(net.sockfd, msg, strlen(msg), 0, (struct sockaddr *)&net.addr_in, sizeof net.addr_in);
 	}	
-	std::cout<<std::endl;
 }
 
 uint32_t NetCom::rxSyncCount(NetComDat net){
@@ -113,7 +116,7 @@ uint32_t NetCom::rxSyncCount(NetComDat net){
 
 	sockaddr_in sa = *(struct sockaddr_in *)&their_addr;
 
-	if ((numbytes = recvfrom(net.sockfd, buf, MAXBUFLEN-1 , 0,
+	if ((numbytes = recvfrom(net.sockfd, &buf, MAXBUFLEN-1 , 0,
                 (struct sockaddr *)&their_addr, &addr_len)) == -1) {
                 perror("recvfrom");
                 exit(1);
