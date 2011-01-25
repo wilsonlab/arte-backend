@@ -23,7 +23,8 @@ const int MAX_NEURAL_DAQ_BUFFER = MAX_NEURAL_DAQ_N_CHANS * MAX_NEURAL_DAQ_N_SAMP
 
 const int MAX_TRODE_N_CHANS = 32;      // 32 chanels
 const int MAX_TRODE_BUFFER_LEN = 320; // 3200 samps = about 0.01 seconds
-const int MAX_TRODE_BUFFER = MAX_TRODE_N_CHANS * MAX_TRODE_BUFFER_LEN;
+const int MAX_N_INTERMEDIATE_BUFFERS = 10;
+const int MAX_TRODE_BUFFER = MAX_TRODE_N_CHANS * MAX_TRODE_BUFFER_LEN * (MAX_N_INTERMEDIATE_BUFFERS + 2);
 
 struct neural_daq{
   int id;
@@ -33,6 +34,7 @@ struct neural_daq{
   std::string in_filename;
   std::string raw_dump_filename;
   float64 data_ptr_copy[MAX_NEURAL_DAQ_BUFFER];
+  float64 *copy_flexptr;
   TaskHandle task_handle;
   int total_samp_count;
   int size_bytes;

@@ -48,11 +48,14 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
 
     this_nd.total_samp_count = this_nd.n_chans * this_nd.n_samps_per_buffer;
     // set up a buffer to use as this daq's input stream
-    this_nd.data_ptr = new float64 [this_nd.total_samp_count];
+    
+    //this_nd.data_ptr = new float64 [this_nd.total_samp_count];
+    this_nd.data_ptr = this_nd.data_ptr_copy;
     // WHY don't we call new in the above line?  b/c we're replacing dynamic memory with pre-allocated arrays.
     // See global_defs.h
-    init_array <float64>(this_nd.data_ptr, 0.0, (this_nd.n_chans * this_nd.n_samps_per_buffer) );
-    init_array <float64>(this_nd.data_ptr_copy, 1.0, (this_nd.n_chans * this_nd.n_samps_per_buffer) );
+    init_array <float64>(this_nd.data_ptr, 4.0, (this_nd.n_chans * this_nd.n_samps_per_buffer) );
+    init_array <float64>(this_nd.data_ptr_copy, 8.0, (this_nd.n_chans * this_nd.n_samps_per_buffer) );
+    //this_nd.copy_flexptr = this_nd.data_ptr_copy;
     this_nd.size_bytes = this_nd.total_samp_count * sizeof(this_nd.data_ptr[0]);
     neural_daq_map.insert( std::pair<int,neural_daq> (this_nd.id, this_nd) );
   }
@@ -165,7 +168,7 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
     buffer_count++;
     for(std::map<int,neural_daq>::iterator it = neural_daq_map.begin(); it != neural_daq_map.end(); it++){
       daq_err_check ( DAQmxReadAnalogF64( (*it).second.task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, (*it).second.data_ptr, buffer_size, &read,NULL) );
-      memcpy( (*it).second.data_ptr_copy, (*it).second.data_ptr, (*it).second.size_bytes);
+      //memcpy( (*it).second.data_ptr_copy, (*it).second.data_ptr, (*it).second.size_bytes);
       //print_buffer( & (*it).second, 32, 32, 32 ); 
     }
     n = 0;
@@ -180,8 +183,8 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
       //}
 
       trode_filter_data(this_trode);
-      if( it == trode_map.begin() && (buffer_count % 17 == 0)){
-	this_trode->print_buffers(4, 65);
+      if( it == trode_map.begin() && (buffer_count % 37 == 0)){
+	this_trode->print_buffers(4, 97);
       }
       n++;
 

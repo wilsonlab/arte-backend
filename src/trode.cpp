@@ -53,7 +53,7 @@ int Trode::init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptr
   trode_opt.my_filt = filt_map.find(trode_opt.filt_name)->second;
 
   int min_samps_for_filt = trode_opt.my_filt.order;
-  trode_opt.my_filt.buffer_mult_of_input = min_samps_for_filt / my_daq->n_samps_per_buffer + 1;
+  trode_opt.my_filt.buffer_mult_of_input = min_samps_for_filt / my_daq->n_samps_per_buffer + 2;
   if( min_samps_for_filt % my_daq->n_samps_per_buffer > 0)
     trode_opt.my_filt.buffer_mult_of_input += 1;
 
@@ -64,7 +64,8 @@ int Trode::init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptr
   trode_opt.buf_size_bytes = trode_opt.my_filt.n_samps_per_chan * trode_opt.n_chans * sizeof(u_buf[0]);
   trode_opt.my_filt.out_buf_size_bytes = trode_opt.buf_size_bytes;
   filt_map[trode_opt.filt_name] = trode_opt.my_filt;
-  ptr_to_raw_stream = my_daq->data_ptr_copy;
+  //pp_to_raw_stream = &(my_daq->copy_flexptr);
+  ptr_to_raw_stream = my_daq->data_ptr;
 
   //  u_buf = new float64 [trode_opt.my_filt.n_samps_per_chan * trode_opt.n_chans];
   //f_buf = new float64 [trode_opt.my_filt.n_samps_per_chan * trode_opt.n_chans];
@@ -131,7 +132,10 @@ void Trode::print_buffers(int chan_lim, int samp_lim){
 
     for(int c = 0; c < chan_lim; c++){
       int this_in_c = trode_opt.channels[c];
-      std::cout << std::setw(7) << this_daq.data_ptr_copy[this_in_c + neural_daq_row_offset] << " ";
+      //      std::cout << std::setw(7) << ptr_to_raw_stream[this_in_c + neural_daq_row_offset] << " "; // correct output
+      std::cout << std::setw(7) << my_daq->data_ptr[this_in_c + neural_daq_row_offset] << " "; // correct output
+      //       std::cout << std::setw(7) << my_daq->data_ptr_copy[this_in_c + neural_daq_row_offset] << " ";  // all 8.0's
+      //      std::cout << std::setw(7) << this_daq.data_ptr_copy[this_in_c + neural_daq_row_offset] << " ";  // all 8.0's
     }
 
     std::cout << "  ||  ";
@@ -152,15 +156,29 @@ void Trode::print_buffers(int chan_lim, int samp_lim){
 	std::cout << "\033[0;32m";
       }else{
 	std::cout << "\033[0m";}
-      std::cout << std::setw(7) << f_buf[c + row_offset] << " \033[0m";
+      std::cout << std::setw(7) << u_buf[c + row_offset + (trode_opt.n_chans * trode_opt.buf_len)] << " \033[0m";
     }
-    std::cout << std::endl;
+
+    std::cout << "  ||  ";
+  
+    std::cout << std::fixed << std::setprecision(1);
+    for (int c = 0; c < chan_lim; c++){
+      if(s == f_curs){
+	std::cout << "\033[0;32m";
+      } else{
+	std::cout << "\033[0m";}
+      std::cout << std::setw(7) << f_buf[c + row_offset] << "  \033[0m";
+    }
+
+
+    std::cout <<std::endl;
+
   }
 
   //fflush(stdout);
   //printf("\b \r \b \r \b \r \b \r");
   //system("clear");
-  
+  //exit(1);
 }
 
 

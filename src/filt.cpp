@@ -24,8 +24,8 @@ void filter_data(float64 *in_buf, Filt *filt, neural_daq *nd, int *chans, int n_
   int out_pt; // an index to use in the for loop.
   int n_segs;
   int in_pt, in_pt_c, in_pt_h1, in_pt_h2;  
-  int h,n,c,p,s;  // various counters for for loops
-  h = n = c = p = s = 0;
+  int h,n,c,p,s,i,i_offset_this, i_offset_last;  // various counters for for loops
+  h = n = c = p = s = i = i_offset_this = i_offset_last = 0;
   float64 *a, *b;
   float64 value;
   int in_n_chans = nd->n_chans;
@@ -58,11 +58,12 @@ void filter_data(float64 *in_buf, Filt *filt, neural_daq *nd, int *chans, int n_
     } // a test to make sure indexing is working as expected
 
 
-
-    if(filt->filt_num_sos == 1){  // THIS FIR STUFF ISN'T CAREFULLY CHECKED YET, NOR UPDATED FOR IN_BUF TRANSPOSE
+    // FOR NOW I'm BLOCKING the FIR section.  So I can test iir's with a single s.o.s. with the primary IIR code
+    if((filt->filt_num_sos == 1) && (false)){  // THIS FIR STUFF ISN'T CAREFULLY CHECKED YET, NOR UPDATED FOR IN_BUF TRANSPOSE
      // then we most likely have an FIR.  This code will take care of FIR and 
      // single-segment IIR filters, too, as long as the first last denom
      // coefficient is set to 0.
+      printf("/a");
       for(n = 0; n < in_buf_len; n++){                                           // process in_buf_len points
 	out_pt = n + u_curs;
 	for(p = 0; p <= filt->order; p++){                                        // iterate over history points (we need order of them)
@@ -82,35 +83,52 @@ void filter_data(float64 *in_buf, Filt *filt, neural_daq *nd, int *chans, int n_
       // b/c we know the fixed history length.
       n_segs = filt->filt_num_sos;
       for(p = 0; p < n_segs; p++){
-        if(p > 0){  // then copy an in_buf sized slice from f_buf (starting at f_curs) to u_buf (starting at u_curs)
-	  //memcpy( (u_buf + S_ARRAY(u_curs,n_chans))+3, (f_buf + S_ARRAY(f_curs,n_chans)),  S_ARRAY(in_buf_len,n_chans) );
-	  //memset( (u_buf + S_ARRAY(u_curs,n_chans))+3, 0, 3);
-	  
-	  //memcpy( (u_buf + u_curs*n_chans*8), (f_buf + f_curs*n_chans*8), in_buf_len*n_chans*8);
-	  
-	  //memset( (u_buf + u_curs*n_chans), 0, (1)*n_chans*8);
-	  for(s = 0; s < in_buf_len; s++){
-	    h = (s+u_curs)*n_chans;
-	    for(c = 0; c < n_chans; c++){
-	      u_buf[h + c] = f_buf[h + c];
-	      if(u_buf[h + c] != f_buf[h + c]){
-		printf("\a");
-	      }
-	      //u_buf[h + c] = f_buf[h + c];
-	    }
-	  } // end copy loop
-	} // end copy if
+	i_offset_this = (p+1) * n_chans * out_buf_len;  // write to the (p+1)th part of the u_buf
+        i_offset_last = (p)   * n_chans * out_buf_len;  // get vals from  (p)th part of the u_buf
+	i_offset_this = n_chans * out_buf_len;
+	i_offset_last = 0;
 
+// 	if(p > 0){  // then copy an in_buf sized slice from f_buf (starting at f_curs) to u_buf (starting at u_curs)
+// 	  //memcpy( (u_buf + S_ARRAY(u_curs,n_chans))+3, (f_buf + S_ARRAY(f_curs,n_chans)),  S_ARRAY(in_buf_len,n_chans) );
+// 	  //memset( (u_buf + S_ARRAY(u_curs,n_chans))+3, 0, 3);
+	  
+// 	  //memcpy( (u_buf + u_curs*n_chans*8), (f_buf + f_curs*n_chans*8), in_buf_len*n_chans*8);
+	  
+// 	  //memset( (u_buf + u_curs*n_chans), 0, (1)*n_chans*8);
+	  
+// 	  for(s = -1*filt->order; s < 0; s++){
+// 	    h = ( CBUF(u_curs - s, out_buf_len) * n_chans );
+// 	    for(c = 0; c < n_chans; c++){
+// 	      u_buf[h + c] = f_buf[h + c];
+// 	    }
+// 	  }
+// 	  for(s = 0; s < in_buf_len; s++){
+// 	    h = (s+u_curs)*n_chans;
+// 	    for(c = 0; c < n_chans; c++){
+// 	      u_buf[h + c] = f_buf[h + c];
+// 	      if(u_buf[h + c] == f_buf[h + c]){
+// 		printf("\a");
+// 	      }
+// 	      //u_buf[h + c] = f_buf[h + c];
+// 	    }
+// 	  } // end copy loop
+// 	} // end copy if
+	printf("\a");
+	
 	for(s = 0; s < in_buf_len; s++){  // loop over samples
 	  
-	  out_pt =   (s+u_curs) * n_chans; 
-	  in_pt_c =  (s+f_curs) * n_chans;
-	  in_pt_h1 = (CBUF( -1+f_curs+s, out_buf_len )) * n_chans;
-	  in_pt_h2 = (CBUF( -2+f_curs+s, out_buf_len )) * n_chans;
+	  out_pt =   (s+u_curs) * n_chans + i_offset_this; 
+	  in_pt_c =  (s+f_curs) * n_chans + i_offset_last;
+	  in_pt_h1 = (CBUF( -1+f_curs+s, out_buf_len )) * n_chans + i_offset_last;
+	  in_pt_h2 = (CBUF( -2+f_curs+s, out_buf_len )) * n_chans + i_offset_last;
 	  
 	  for(c = 0; c < n_chans; c++){ //loop over chans
 	    
-	    f_buf[out_pt + c] =
+	    //if(p > 0){
+	    //  u_buf[in_pt_c + c] = f_buf[out_pt + c];
+	    //}
+
+	    u_buf[out_pt + c] =
 	      ( u_buf[in_pt_c + c] * b[p*3 + 0] * filt->input_gains[p] +
 		u_buf[in_pt_h1 +c] * b[p*3 + 1] * filt->input_gains[p] +
 		u_buf[in_pt_h2 +c] * b[p*3 + 2] * filt->input_gains[p] -
@@ -122,8 +140,18 @@ void filter_data(float64 *in_buf, Filt *filt, neural_daq *nd, int *chans, int n_
 
 	    //f_buf[c*out_buf_len + out_pt] = -100.0;  
 	  } // end loop over chans
-	} //end loop over points in this input chuckn
+	} //end loop over points in this input chucnk
       }  // end loop over segs
+
+      // copy the end of u_buf (the result of the run of the last SOS) to f_buf
+      for(s = 0; s < in_buf_len; s++){
+	h = (s+u_curs)*n_chans;
+	for(c = 0; c  < n_chans; c++){
+	  f_buf[h + c] = u_buf[h + c + i_offset_this];
+	}
+      }
+
+
     } // end if iir
   } // end 'up' loop
 
