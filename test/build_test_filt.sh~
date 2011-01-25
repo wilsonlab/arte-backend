@@ -1,0 +1,1 @@
+g++ ../src/filt.cpp ../src/trode.cpp test_filt.cpp ../src/arteopt.cpp ../src/neural_daq.cpp -lnidaqmx -I ../src -g -o test_filt
