@@ -219,27 +219,3 @@ int32 CVICALLBACK timerDigTrigCallback(TaskHandle taskHandle, int32 signalID, vo
 	return 0;
 }
 
-int maine()
-{
-	std::cout<<"main() Starting"<<std::endl;
-
-	timespec ts;
-        ts.tv_nsec = (long int)5e8;
-        ts.tv_sec = (long int)0;
-        const timespec ts2 = ts;
-
-	Timer t;
-	t.becomeMaster(true);
-	t.start();
-
-	while(true)
-	{
-//		t.getCount();
-		nanosleep(&ts2,NULL);
-	}
-
-
-	t.stop();
-	std::cout<<"main() Ending"<<std::endl;
-	return 0;
-}
