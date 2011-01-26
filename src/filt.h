@@ -6,6 +6,8 @@
 #include <boost/property_tree/ptree.hpp>
 #include "global_defs.h"
 
+#define CBUF(X,L) (L+X)%L // assumes X >= -L
+
 class Filt{
 
  public:

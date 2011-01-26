@@ -3,7 +3,6 @@
 #include "util.h"
 #include <string>
 
-#define CBUF(X,L) (L+X)%L         // assumes X >= -L
 #define S_F64 8                   // 8 bytes for a float64
 #define S_ARRAY(R,C) R*C*S_F64   // Size of an array of float64s of row x col size 
 
@@ -23,7 +22,8 @@ void filter_data(float64 *in_buf, Filt *filt, neural_daq *nd, int *chans, int n_
   int ff_curs = *ff_curs_p;
   int out_pt; // an index to use in the for loop.
   int n_segs;
-  int in_pt, in_pt_c, in_pt_h1, in_pt_h2;  
+  int in_pt, in_pt_c, in_pt_h1, in_pt_h2;
+  int in_pt_c_f, in_pt_h1_f, in_pt_h2_f, out_pt_f;  
   int h,n,c,p,s,i,i_offset_this, i_offset_last;  // various counters for for loops
   h = n = c = p = s = i = i_offset_this = i_offset_last = 0;
   float64 *a, *b;
@@ -122,6 +122,11 @@ void filter_data(float64 *in_buf, Filt *filt, neural_daq *nd, int *chans, int n_
 	  in_pt_h1 = (CBUF( -1+f_curs+s, out_buf_len )) * n_chans + i_offset_last;
 	  in_pt_h2 = (CBUF( -2+f_curs+s, out_buf_len )) * n_chans + i_offset_last;
 	  
+	  out_pt_f = (s + u_curs) * n_chans;
+	  in_pt_c_f = (s+f_curs) * n_chans;
+	  in_pt_h1_f = ( CBUF( -1+f_curs+s, out_buf_len) ) * n_chans;
+	  in_pt_h2_f = ( CBUF( -2+f_curs+s, out_buf_len) ) * n_chans;
+	  
 	  for(c = 0; c < n_chans; c++){ //loop over chans
 	    
 	    //if(p > 0){
@@ -132,10 +137,10 @@ void filter_data(float64 *in_buf, Filt *filt, neural_daq *nd, int *chans, int n_
 	      ( u_buf[in_pt_c + c] * b[p*3 + 0] * filt->input_gains[p] +
 		u_buf[in_pt_h1 +c] * b[p*3 + 1] * filt->input_gains[p] +
 		u_buf[in_pt_h2 +c] * b[p*3 + 2] * filt->input_gains[p] -
-		f_buf[in_pt_h1 +c] * a[p*3 + 1] -
-		f_buf[in_pt_h2 +c] * a[p*3 + 2] );
+		f_buf[in_pt_h1_f +c] * a[p*3 + 1] -
+		f_buf[in_pt_h2_f +c] * a[p*3 + 2] );
 
-	    //f_buf[out_pt + c] = u_buf[in_pt_c + c];
+	    f_buf[out_pt_f + c] = u_buf[out_pt + c];
 	    //f_buf[out_pt + c] = 1.1;
 
 	    //f_buf[c*out_buf_len + out_pt] = -100.0;  

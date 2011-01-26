@@ -129,13 +129,28 @@ void Trode::print_buffers(int chan_lim, int samp_lim){
 
     int neural_daq_row_offset = s * my_daq->n_chans;
     int row_offset = s * trode_opt.n_chans;
+    int last_curs = CBUF( (u_curs - my_daq->n_samps_per_buffer), trode_opt.buf_len);
+    int adjusted_u_curs;
+    if(u_curs == 0){
+      adjusted_u_curs = trode_opt.buf_len;
+    }
+    else{
+      adjusted_u_curs = u_curs;
+    }
 
-    for(int c = 0; c < chan_lim; c++){
-      int this_in_c = trode_opt.channels[c];
-      //      std::cout << std::setw(7) << ptr_to_raw_stream[this_in_c + neural_daq_row_offset] << " "; // correct output
-      std::cout << std::setw(7) << my_daq->data_ptr[this_in_c + neural_daq_row_offset] << " "; // correct output
-      //       std::cout << std::setw(7) << my_daq->data_ptr_copy[this_in_c + neural_daq_row_offset] << " ";  // all 8.0's
-      //      std::cout << std::setw(7) << this_daq.data_ptr_copy[this_in_c + neural_daq_row_offset] << " ";  // all 8.0's
+    if( s < last_curs || s >= adjusted_u_curs){
+      for(int c = 0; c < chan_lim; c++){
+	std::cout << "\033[0;32m" << std::setw(7) << 0.0 << " " << "\033[0m";
+      }
+    }
+    else{
+      for(int c = 0; c < chan_lim; c++){
+	int this_in_c = trode_opt.channels[c];
+	//      std::cout << std::setw(7) << ptr_to_raw_stream[this_in_c + neural_daq_row_offset] << " "; // correct output
+	std::cout << std::setw(7) << my_daq->data_ptr[(this_in_c + neural_daq_row_offset) - (last_curs * my_daq->n_chans)] << " "; // correct output
+	//       std::cout << std::setw(7) << my_daq->data_ptr_copy[this_in_c + neural_daq_row_offset] << " ";  // all 8.0's
+	//      std::cout << std::setw(7) << this_daq.data_ptr_copy[this_in_c + neural_daq_row_offset] << " ";  // all 8.0's
+      }
     }
 
     std::cout << "  ||  ";
