@@ -3,8 +3,8 @@
 NetComDat NetCom::initUdpTx(char host[], int port){
 
 	int sockfd; 
-	struct sockaddr_in addr;
-	struct hostent *he;
+	sockaddr_in addr;
+	hostent *he;
 	int numbytes;
 	int broadcast = 1;
 	
@@ -32,6 +32,7 @@ NetComDat NetCom::initUdpTx(char host[], int port){
 	net.addr_in =  addr;
 	return net;
 }
+
 NetComDat NetCom::initUdpRx(char host[], int portIn){
 
 	std::stringstream ss;
@@ -94,12 +95,11 @@ int NetCom::txSyncCount(NetComDat net, uint32_t count, int nTx){
 	std::cout<<"NetCom::txSyncCount"<<std::endl;
 	std::cout<<"count:\t:"<< count <<" size of count:\t" << sizeof count<< std::endl;
 	count = hton32(count);
-	char* msg = (char*) &count;	
-	memcpy(msg,const count,4);
-	
-//	msg = "298";
-//	std::count<<"msg:\t:"<<msg<<" size of msg:\t"<<sizeof msg<<std::endl;
 
+	char* msg = new char[6];
+	syncCountToBuffer(count, msg, sizeof msg);	
+//	memcpy(msg, count,4);
+	
 	for (int i=0; i<nTx; i++){
 		sendto(net.sockfd, msg, strlen(msg), 0, (struct sockaddr *)&net.addr_in, sizeof net.addr_in);
 	}	
@@ -131,7 +131,6 @@ uint32_t NetCom::rxSyncCount(NetComDat net){
         printf("listener: packet contains \"%s\"\n", buf);
 
         return 0;
-
 }
 
 void *get_in_addr(struct sockaddr *sa)
@@ -143,4 +142,37 @@ void *get_in_addr(struct sockaddr *sa)
         return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
+
+void NetCom::syncCountToBuffer(uint32_t count, char *buff, unsigned int blen){
+
+	if (blen<6){
+		std::cout<<"Netcom::sync2Buffer(), Buffer length is too short, ERROR!"<<blen<<std::endl;
+		return;
+	}
+	buff[0] = (char) typeToChar(NETCOM_UDP_SYNC);
+	buff[1] = '\0';
+
+	count = hton32(count);
+        char* msg = (char*) (&count);
+
+	for(int i=0; i<4; i++)
+		buff[2+i] = msg[i];
+
+}
+
+uint32_t NetCom::bufferToSyncCount(char *buff, unsigned int blen){
+	if (blen<6){
+                std::cout<<"Netcom::buffer2Sync(), Buffer length is too short, ERROR!"<<std::endl;
+                return 0;
+        }
+	char msg[4] = "\0";
+	for (int i=0; i<4; i++)
+		msg[i] = buff[2+i];
+
+
+	int32_t count = *((int32_t*) &msg);
+	count = ntoh32(count);
+	return count;	
+
+}
 
