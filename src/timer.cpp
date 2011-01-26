@@ -219,7 +219,7 @@ int32 CVICALLBACK timerDigTrigCallback(TaskHandle taskHandle, int32 signalID, vo
 	return 0;
 }
 
-int main()
+int maine()
 {
 	std::cout<<"main() Starting"<<std::endl;
 

@@ -50,11 +50,10 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
     // set up a buffer to use as this daq's input stream
     
     //this_nd.data_ptr = new float64 [this_nd.total_samp_count];
-    this_nd.data_ptr = this_nd.data_ptr_copy;
+    this_nd.data_ptr = this_nd.data_buffer;
     // WHY don't we call new in the above line?  b/c we're replacing dynamic memory with pre-allocated arrays.
     // See global_defs.h
     init_array <float64>(this_nd.data_ptr, 4.0, (this_nd.n_chans * this_nd.n_samps_per_buffer) );
-    init_array <float64>(this_nd.data_ptr_copy, 8.0, (this_nd.n_chans * this_nd.n_samps_per_buffer) );
     //this_nd.copy_flexptr = this_nd.data_ptr_copy;
     this_nd.size_bytes = this_nd.total_samp_count * sizeof(this_nd.data_ptr[0]);
     neural_daq_map.insert( std::pair<int,neural_daq> (this_nd.id, this_nd) );
@@ -220,7 +219,7 @@ void print_buffer(neural_daq *ndp, int row_lim, int col_lim, int row_length){
   std::cout << std::fixed << std::setprecision(1);
   for (int r = 0; r < row_lim; r++){
     for (int c = 0; c < row_lim; c++) {
-      std::cout << std::setw(5) << ndp->data_ptr_copy[ r*row_length + c ] << " ";
+      std::cout << std::setw(5) << ndp->data_ptr[ r*row_length + c ] << " ";
     }
     std::cout << std::endl;
   }

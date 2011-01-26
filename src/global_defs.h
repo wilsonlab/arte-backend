@@ -33,13 +33,12 @@ struct neural_daq{
   int n_chans;
   std::string in_filename;
   std::string raw_dump_filename;
-  float64 data_ptr_copy[MAX_NEURAL_DAQ_BUFFER];
-  float64 *copy_flexptr;
+  float64 data_buffer[MAX_NEURAL_DAQ_BUFFER];
+  float64 *data_ptr;
   TaskHandle task_handle;
   int total_samp_count;
   int size_bytes;
   int status;
-  float64 *data_ptr;
 };
 
 extern std::map <int, neural_daq> neural_daq_map;

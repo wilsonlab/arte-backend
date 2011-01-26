@@ -25,9 +25,9 @@ int Trode::init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptr
 
   trode_opt.trode_name = trode_pt.data();
   assign_property<int> ("n_chans", &(trode_opt.n_chans), trode_pt, default_pt, 1);
-  trode_opt.thresholds = new double [trode_opt.n_chans];
+  //trode_opt.thresholds = new double [trode_opt.n_chans];    // <-- no no no :)  these can't be dynamic memory, or else the trode packing into trode_map will give problems
   assign_property<double>("thresholds", trode_opt.thresholds, trode_pt, default_pt,trode_opt.n_chans);
-  trode_opt.channels = new int[trode_opt.n_chans];
+  //trode_opt.channels = new int[trode_opt.n_chans];          // <-- no no - see comment 2 lines above.  These will be deleted soon.  
   assign_property<int>("channels", trode_opt.channels, trode_pt, default_pt, trode_opt.n_chans);
   assign_property<int>("daq_id", &(trode_opt.daq_id), trode_pt,default_pt, 1);
   assign_property<std::string>("filt_name", &(trode_opt.filt_name), trode_pt, default_pt, 1);
@@ -65,7 +65,7 @@ int Trode::init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptr
   trode_opt.my_filt.out_buf_size_bytes = trode_opt.buf_size_bytes;
   filt_map[trode_opt.filt_name] = trode_opt.my_filt;
   //pp_to_raw_stream = &(my_daq->copy_flexptr);
-  ptr_to_raw_stream = my_daq->data_ptr;
+  ptr_to_raw_stream = &(my_daq->data_ptr);
 
   //  u_buf = new float64 [trode_opt.my_filt.n_samps_per_chan * trode_opt.n_chans];
   //f_buf = new float64 [trode_opt.my_filt.n_samps_per_chan * trode_opt.n_chans];
@@ -87,7 +87,7 @@ void *trode_filter_data(void *t){
   if(tmp == 0){
     //std::cout << "About to call filter_data from the trode: " << trode->trode_opt.trode_name << std::endl;
     //fflush(stdout);
-    filter_data(trode->ptr_to_raw_stream, &(trode->trode_opt.my_filt), trode->my_daq, trode->trode_opt.channels, 
+    filter_data(*(trode->ptr_to_raw_stream), &(trode->trode_opt.my_filt), trode->my_daq, trode->trode_opt.channels, 
 		trode->trode_opt.n_chans, trode->my_daq->n_samps_per_buffer, 
 		trode->trode_opt.buf_len, &(trode->u_curs), &(trode->f_curs), 
 		&(trode->ff_curs),trode->u_buf, trode->f_buf, trode->ff_buf);
@@ -148,16 +148,18 @@ void Trode::print_buffers(int chan_lim, int samp_lim){
       std::cout << std::setw(7) << u_buf[c + row_offset] << " \033[0m"; 
     }
 
-    std::cout << "  ||  ";
 
-    std::cout << std::fixed << std::setprecision(1);
-    for (int c = 0; c < chan_lim; c++){
-      if(s == f_curs){
-	std::cout << "\033[0;32m";
-      }else{
-	std::cout << "\033[0m";}
-      std::cout << std::setw(7) << u_buf[c + row_offset + (trode_opt.n_chans * trode_opt.buf_len)] << " \033[0m";
-    }
+//     std::cout << "  ||  ";
+
+//     std::cout << std::fixed << std::setprecision(1);
+//     for (int c = 0; c < chan_lim; c++){
+//       if(s == f_curs){
+// 	std::cout << "\033[0;32m";
+//       }else{
+// 	std::cout << "\033[0m";}
+//       std::cout << std::setw(7) << u_buf[c + row_offset + (trode_opt.n_chans * trode_opt.buf_len)] << " \033[0m";
+//     }
+
 
     std::cout << "  ||  ";
   

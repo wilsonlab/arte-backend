@@ -17,7 +17,7 @@ class Trode{
     std::string trode_name;
     std::string filt_name;
     int n_chans;
-    double *thresholds;
+    double thresholds[MAX_TRODE_N_CHANS];
     int daq_id;
     int stream_n_samps_per_chan;
     int stream_n_chan;
@@ -26,7 +26,7 @@ class Trode{
     int buffer_mult_of_input;
     int buf_len;
     int buf_size_bytes;
-    int *channels;
+    int channels[MAX_TRODE_N_CHANS];
     int samps_before_trig;
     int samps_after_trig;
     int n_samps_per_spike;
@@ -42,11 +42,7 @@ class Trode{
   void print_spikes(void);
 
 
-  //  std::string trode_name;
-  //std::string filt_name;
-  float64 *ptr_to_raw_stream;
-  //int buffer_mult_of_input;     // how many input buffers do we keep for this trode?
-  //float64 *test;
+  float64 **ptr_to_raw_stream;
   float64 u_buf [MAX_TRODE_BUFFER];                // unfiltered data buffer 
   float64 f_buf [MAX_TRODE_BUFFER];                // filtered data buffer
   float64 ff_buf [MAX_TRODE_BUFFER];             // filtfiltered data buffer
