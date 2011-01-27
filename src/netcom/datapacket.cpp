@@ -3,17 +3,8 @@
 #include <iostream>
 
 
-
-//Global Buffer Layout
-//buff[0] = packet type
-//buff[1] = 0 leave open for use in future systems
-
-
-
-//Sync Buffer Layout:
-//Global Header
-//buff[2-6] uint32_t timestamp count
-void tsToBuff(timestamp_t * t, char *buff, int blen){
+/*------------- TIME ------------*/
+void tsToBuff(timestamp_t* t, char *buff, int blen){
 	
 	buff[0] = typeToChar(NETCOM_UDP_SYNC);
 	buff[1] = 0;
@@ -27,11 +18,35 @@ timestamp_t buffToTs(char *buff, int blen){
 
 	if (blen<6)
 		std::cout<<"Error buffer is too short"<<std::endl;
-	timestamp_t s;
 
-	memcpy(&s, buff+2, 4);
-	
+	timestamp_t s;
+	memcpy(&s, buff+2, 4);	
 	s = ntoh32(s);
 
 	return s;
 }
+/*------------- SPIKE ------------*/
+void spikeToBuff(spike_t* s, char* buff, int blen){
+//TODO IMPLEMENT
+}
+
+spike_t buffToSpike(char* buff, int blen){
+//TODO IMPLEMENT
+
+	spike_t s;
+	return s;
+}
+
+/*------------- WAVE ------------*/
+void waveToBuff(wave_t* w, char* buff, int blen){
+//TODO IMPLEMENT
+
+}
+
+wave_t buffToWave(char* buff, int blen){
+//TODO IMPLEMENT
+
+	wave_t w;
+	return w;
+}
+ 
