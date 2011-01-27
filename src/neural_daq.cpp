@@ -183,7 +183,7 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
 
       trode_filter_data(this_trode);
       if( it == trode_map.begin() && (buffer_count % 37 == 0)){
-	this_trode->print_buffers(4, 97);
+	//this_trode->print_buffers(4, 97);
       }
       n++;
 

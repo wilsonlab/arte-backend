@@ -113,7 +113,7 @@ void filter_data(float64 *in_buf, Filt *filt, neural_daq *nd, int *chans, int n_
 // 	    }
 // 	  } // end copy loop
 // 	} // end copy if
-	printf("\a");
+	//printf("\a");
 	
 	for(s = 0; s < in_buf_len; s++){  // loop over samples
 	  
