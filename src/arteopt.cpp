@@ -74,17 +74,17 @@ void arte_session_init(int argc, char *argv[]){
     //this_trode.print_options();
     trode_map.insert( std::pair<std::string, Trode> ( v.second.data(), this_trode ));
   }
-  std::cout << "Printing from session_init" << std::endl;
-  for(std::map<std::string, Trode>::iterator it = trode_map.begin(); it != trode_map.end(); it++){
-    (*it).second.print_options();
-  }
+  //  std::cout << "Printing from session_init" << std::endl;
+  //for(std::map<std::string, Trode>::iterator it = trode_map.begin(); it != trode_map.end(); it++){
+  //  (*it).second.print_options();
+  //}
   std::cout << "Done session init." << std::endl;
   
-  std::map<std::string, Trode>::iterator it;
-  for(it = trode_map.begin(); it != trode_map.end(); it++){
-    std::cout << "Trode " << (*it).second.trode_opt.trode_name << " addr: " << &((*it).second) << std::endl;
-  }
-  std::cout << "sizeof(Trode): " << sizeof(Trode) << " sizeof Trode pair: " << sizeof(*it) << std::endl;
+  //std::map<std::string, Trode>::iterator it;
+  //for(it = trode_map.begin(); it != trode_map.end(); it++){
+  //  std::cout << "Trode " << (*it).second.trode_opt.trode_name << " addr: " << &((*it).second) << std::endl;
+  //}
+  //std::cout << "sizeof(Trode): " << sizeof(Trode) << " sizeof Trode pair: " << sizeof(*it) << std::endl;
 
-  fflush(stdout);
+  //fflush(stdout);
 }

@@ -41,4 +41,11 @@ int32 GetTerminalNameWithDevPrefix(TaskHandle taskHandle, const char terminalNam
   return 0;
 }
 
-
+FILE *try_fopen( const char *filename, const char *mode){
+  FILE *fp = fopen( filename, mode );
+  if(fp == NULL){
+    printf("From try_fopen: file error while opening %s .  Exiting now.", filename);
+    exit(1);
+  }
+  return fp;
+}

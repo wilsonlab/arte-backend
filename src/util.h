@@ -84,9 +84,31 @@ void daq_err_check(int32 error, TaskHandle *task_handle_array, int n_tasks);
 int32 GetTerminalNameWithDevPrefix(TaskHandle taskHandle, const char terminalName[], char triggerName[]);
 int32 CVICALLBACK timerDigTrigCallback(TaskHandle taskHandle, int32 signalID, void *callbackData);
 
-void check_file( const char *filename, 
+FILE *try_fopen( const char *filename, const char *mode);
 
+template <class T>
+void try_freadb( T *ptr, size_t count, FILE * stream){
+  if(stream == NULL){
+    printf("try_fread error: bad file\n");
+    exit(1);
+  }
+  size_t result = fread( ptr, sizeof(ptr[0]), count, stream);
+  if( result != count ){
+    printf("size mismatch error.\n");
+  }
+}
 
+template <class T>
+void try_fwrite( T *ptr, size_t count, FILE * stream){
+  if( stream == NULL){
+    printf("try_fwrite error: bad file \n");
+    exit(1);
+  }
+  size_t result = fwrite(ptr, sizeof(ptr[0]), count, stream);
+  if (result != count){
+    printf("try_fwrite: size mismatch \n");
+  }
+}
 
 #endif
 

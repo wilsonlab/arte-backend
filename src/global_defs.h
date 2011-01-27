@@ -29,8 +29,8 @@ const int MAX_TRODE_BUFFER = MAX_TRODE_N_CHANS * MAX_TRODE_BUFFER_LEN * (MAX_N_I
 struct neural_daq{
   int id;
   std::string dev_name;
-  int32_t n_samps_per_buffer;
-  int32_t n_chans;
+  uint16_t n_samps_per_buffer;
+  uint16_t n_chans;
   std::string in_filename;
   FILE *in_file;
   std::string raw_dump_filename;
@@ -42,12 +42,12 @@ struct neural_daq{
   int size_bytes;
   int status;
   double buffer_time_interval;  // inter-buffer-interval (sec)
-  int32_t buffer_count;
-  //long this_read;
+  uint32_t buffer_count;
+  long this_buffer;
 };
 
-extern bool daqs_reading;
-extern bool daqs_writing;
+extern bool daqs_reading; // Daq's read in unison.  No simultaneous mixing between file and card in allowed.
+extern bool daqs_writing; // <-- prob won't be used.  Some daq's may write while others don't.
 
 extern std::map <int, neural_daq> neural_daq_map;
 
