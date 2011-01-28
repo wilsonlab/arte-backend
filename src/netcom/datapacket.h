@@ -37,6 +37,7 @@ struct spike_t{
 	uint8_t filt;
 	uint8_t nChan;
 	uint8_t nSamp;
+	uint16_t thold[];
 	uint16_t data[];
 };
 
