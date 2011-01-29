@@ -8,7 +8,7 @@ int main(){
 	std::cout<<"Broadcasting to:"<<host<<std::endl;
 
 	NetComDat net = NetCom::initUdpTx(host,4000);
-	NetCom::txSyncCount(net, 1000, 1);
+	NetCom::txTs(net, 1000, 1);
 
 	return 0;
 }
