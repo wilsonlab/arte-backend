@@ -1,5 +1,5 @@
 #include "netcom.h"
-
+#include "datapacket.h"
 NetComDat NetCom::initUdpTx(char host[], int port){
 
 	int sockfd; 
@@ -91,24 +91,24 @@ NetComDat NetCom::initUdpRx(char host[], int portIn){
 	return net;
 }
 
-int NetCom::txSyncCount(NetComDat net, uint32_t count, int nTx){
-	std::cout<<"NetCom::txSyncCount"<<std::endl;
+int NetCom::txTs(NetComDat net, timestamp_t count, int nTx){
+	std::cout<<"NetCom::txTs"<<std::endl;
 	std::cout<<"count:\t:"<< count <<" size of count:\t" << sizeof count<< std::endl;
-	count = hton32(count);
 
-	char* msg = new char[6];
-	syncCountToBuffer(count, msg, sizeof msg);	
-//	memcpy(msg, count,4);
-	
-	for (int i=0; i<nTx; i++){
+	char msg[6];
+	timestamp_t ts = count;
+	std::cout<<count<<"<-------- COUNT"<<std::endl;	
+	tsToBuff(&ts, msg, 6);
+
+//	char msg[] = "STR";
+	for (int i=0; i<nTx; i++)
 		sendto(net.sockfd, msg, strlen(msg), 0, (struct sockaddr *)&net.addr_in, sizeof net.addr_in);
-	}	
 }
 
-uint32_t NetCom::rxSyncCount(NetComDat net){
+timestamp_t NetCom::rxTs(NetComDat net){
 
 	char s[INET6_ADDRSTRLEN];
-        char buf[MAXBUFLEN];
+        char buf[MAX_BUF_LEN];
 
         int numbytes;
 	sockaddr_storage their_addr = net.their_addr;
@@ -116,12 +116,12 @@ uint32_t NetCom::rxSyncCount(NetComDat net){
 
 	sockaddr_in sa = *(struct sockaddr_in *)&their_addr;
 
-	if ((numbytes = recvfrom(net.sockfd, &buf, MAXBUFLEN-1 , 0,
+	if ((numbytes = recvfrom(net.sockfd, &buf, MAX_BUF_LEN-1 , 0,
                 (struct sockaddr *)&their_addr, &addr_len)) == -1) {
                 perror("recvfrom");
                 exit(1);
         }
-
+	/// Below this line is undeeded
         printf("listener: got packet from %s\n",
                 inet_ntop(their_addr.ss_family,get_in_addr((struct sockaddr *)&their_addr),
                         s, sizeof s));
@@ -141,37 +141,4 @@ void *get_in_addr(struct sockaddr *sa){
         return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
-
-void NetCom::syncCountToBuffer(uint32_t count, char *buff, unsigned int blen){
-
-	if (blen<6){
-		std::cout<<"Netcom::sync2Buffer(), Buffer length is too short, ERROR!"<<blen<<std::endl;
-		return;
-	}
-	buff[0] = (char) typeToChar(NETCOM_UDP_SYNC);
-	buff[1] = '\0';
-
-	count = hton32(count);
-        char* msg = (char*) (&count);
-
-	for(int i=0; i<4; i++)
-		buff[2+i] = msg[i];
-
-}
-
-uint32_t NetCom::bufferToSyncCount(char *buff, unsigned int blen){
-	if (blen<6){
-                std::cout<<"Netcom::buffer2Sync(), Buffer length is too short, ERROR!"<<std::endl;
-                return 0;
-        }
-	char msg[4] = "\0";
-	for (int i=0; i<4; i++)
-		msg[i] = buff[2+i];
-
-
-	int32_t count = *((int32_t*) &msg);
-	count = ntoh32(count);
-	return count;	
-
-}
 
