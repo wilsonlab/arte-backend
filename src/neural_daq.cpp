@@ -183,7 +183,6 @@ void read_data_from_file(void){ // the file-reading version of EveryNCallback
   neural_daq *nd;
   buffer_count++;
   for (int n = 0; n < neural_daq_map.size(); n++){
-    printf("In new for loop of read_data_from_file.\n");
     nd = & (neural_daq_map[n]);
     buffer_size = nd->n_chans * nd->n_samps_per_buffer;
     try_fread<float64>( nd->data_ptr, buffer_size, nd->in_file );
@@ -211,7 +210,6 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
     int rc;
     int n;
     buffer_count++;
-    printf("EveryNCallback was called.\n");
     for(n = 0; n < neural_daq_map.size(); n++){
       nd = &(neural_daq_map[n]);
       daq_err_check ( DAQmxReadAnalogF64( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
@@ -284,7 +282,8 @@ void init_files(void){
       daqs_reading = true;
     }
 
-    if(! (nd->out_file == NULL) ){
+
+    if(! (nd->raw_dump_filename.empty()) ){
       nd->out_file = try_fopen( nd->raw_dump_filename.c_str(), "wb" );
       try_fwrite( &(nd->buffer_count),     1, nd->out_file );
       try_fwrite( &(nd->n_chans),          1, nd->out_file );
