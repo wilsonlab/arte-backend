@@ -27,4 +27,7 @@ neural_daq find_neural_daq_by_taskhandle(TaskHandle taskHandle);
 void print_neural_daq(neural_daq nd);
 void print_buffer(neural_daq *ndp, int row_lim, int row_length, int col_lim);
 
+void init_files(void);
+void finalize_files(void);
+
 #endif
