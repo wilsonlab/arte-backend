@@ -17,6 +17,7 @@ void neural_daq_start_all(void);
 
 void neural_daq_stop_all(void);
 
+void read_data_from_file(void);
 int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEventType, uInt32 nSamples, void *callbackData);
 
 int32 CVICALLBACK DoneCallback(TaskHandle taskHandle, int32 status, void *callbackData);

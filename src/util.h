@@ -87,7 +87,7 @@ int32 CVICALLBACK timerDigTrigCallback(TaskHandle taskHandle, int32 signalID, vo
 FILE *try_fopen( const char *filename, const char *mode);
 
 template <class T>
-void try_freadb( T *ptr, size_t count, FILE * stream){
+void try_fread( T *ptr, size_t count, FILE * stream){
   if(stream == NULL){
     printf("try_fread error: bad file\n");
     exit(1);

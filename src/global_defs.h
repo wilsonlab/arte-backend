@@ -43,7 +43,7 @@ struct neural_daq{
   int status;
   double buffer_time_interval;  // inter-buffer-interval (sec)
   uint32_t buffer_count;
-  long this_buffer;
+  uint32_t this_buffer;
 };
 
 extern bool daqs_reading; // Daq's read in unison.  No simultaneous mixing between file and card in allowed.

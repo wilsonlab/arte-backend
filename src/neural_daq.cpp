@@ -54,22 +54,12 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
     if( ! (this_nd.in_filename).empty() )
       daqs_reading = true;
 
-    // but this isn't true of data dumps.  Cards might do that independently
-    //if( ! (daq_pt->raw_dump_filename).empty() )
-    //  daqs_writing = true;
-
     // TODO: Error-checking - make sure all daqs in conf specify unique in_filename's and/or unique raw_dump_filename's
     //       And that if we're in read mode (or write mode), that every daq has an in_filename (or raw_dump_filename)
 
     this_nd.total_samp_count = this_nd.n_chans * this_nd.n_samps_per_buffer;
-    // set up a buffer to use as this daq's input stream
-    
-    //this_nd.data_ptr = new float64 [this_nd.total_samp_count];
     this_nd.data_ptr = this_nd.data_buffer;
-    // WHY don't we call new in the above line?  b/c we're replacing dynamic memory with pre-allocated arrays.
-    // See global_defs.h
     init_array <float64>(this_nd.data_ptr, 4.0, (this_nd.n_chans * this_nd.n_samps_per_buffer) );
-    //this_nd.copy_flexptr = this_nd.data_ptr_copy;
     this_nd.size_bytes = this_nd.total_samp_count * sizeof(this_nd.data_ptr[0]);
     this_nd.buffer_count = 0;
     this_nd.this_buffer = 0;
@@ -170,8 +160,36 @@ void neural_daq_start_all(void){
     acquiring = true;      
     daq_err_check ( DAQmxStartTask( neural_daq_map[master_id].task_handle) );
   } else {  // then daqs are getting their data from files
+    acquiring = true;
     printf("Reading from file %s\n", neural_daq_map[0].in_filename.c_str());
-  }
+    neural_daq *nd = &(neural_daq_map[0]);
+    uint32_t n_buffers;
+    uint16_t n_chans, buff_len;
+    try_fread<uint32_t>( &n_buffers, 1, nd->in_file );
+    try_fread<uint16_t>( &n_chans, 1, nd->in_file );
+    try_fread<uint16_t>( &buff_len, 1, nd->in_file );
+    for( int n = 0; n < neural_daq_map.size(); n++){
+      nd = &(neural_daq_map[n]);
+      if( ! (nd->out_file == NULL) ){
+	try_fwrite<uint32_t>( &(nd->buffer_count),       1, nd->out_file);
+	try_fwrite<uint16_t>( &(nd->n_chans),            1, nd->out_file);
+	try_fwrite<uint16_t>( &(nd->n_samps_per_buffer), 1, nd->out_file);
+      }
+    }
+    std::cout << "n_buffers: " << n_buffers << "  n_chans: " << n_chans << "  buff_len: " << buff_len << std::endl;
+    while (neural_daq_map[0].this_buffer < n_buffers){
+      printf("in while loop, this_buffer = ");
+      std::cout << neural_daq_map[0].this_buffer << std::endl;
+      int32 dummyVar = 0;
+      uInt32 dummyVar2 = 0;
+      TaskHandle dummyTaskHandle = 0;
+      //EveryNCallback(dummyTaskHandle, dummyVar, dummyVar2, NULL); // just call EveryNCallback, which ignores all the
+      read_data_from_file();
+      //nanosleep( nd->buffer_time_interval * 1000000000.0);  // <-- commented b/c I still have to read the docs
+    }
+    // we're finished reading, so exit
+    //neural_daq_stop_all();
+  } // end if for reading from file
 
 }
 void neural_daq_stop_all(void){
@@ -179,18 +197,16 @@ void neural_daq_stop_all(void){
   sleep(1);  // why sleep?  b/c for some reason hitting immediately after running program hangs the computer (threads' fault?)
   neural_daq *nd;
 
-  if(! daqs_reading){
+  if(! daqs_reading ){ // we're reading from card, so stop the card.  And if writing to files, finalize and close the files.
     std::map<int, neural_daq>::iterator it;
     
     bool32 isDone;
     for(int n = 0; n < neural_daq_map.size(); n++){
-      //for(it = neural_daq_map.begin(); it != neural_daq_map.end(); it++){
       nd = &(neural_daq_map[n]);
       std::cout << "About to try to stop task_handle: " << nd->task_handle << " on dev: " << nd->dev_name << std::endl;
       daq_err_check ( DAQmxIsTaskDone(nd->task_handle, &isDone) );
       std::cout << "In stop task loop.  Task handle " << nd->task_handle << " is done: " << isDone << std::endl;
       daq_err_check ( DAQmxStopTask( nd->task_handle ) );
-      
       
       daq_err_check ( DAQmxIsTaskDone(nd->task_handle, &isDone) );
       std::cout << "In stop task loop.  Task handle: " << nd->task_handle << " is done: " << isDone << std::endl;
@@ -206,8 +222,43 @@ void neural_daq_stop_all(void){
       }
       
     }
-  } else { // we're reading from files, so finalize the files and close them.
+  } else { // we're reading from files, so close them.
+    printf("call to stop_all in read mode\n");
+    for(int n = 0; n < neural_daq_map.size(); n++){
+      nd = &(neural_daq_map[n]);
+      printf("Finalizing file %s with buffer_count %d\n", nd->raw_dump_filename.c_str(), nd->buffer_count);
+      rewind (nd->out_file);
+      printf("rewind was Ok\n");
+      try_fwrite<uint32_t>( &(nd->buffer_count), 1, nd->out_file );
+      printf("finished try_fwrite.  Now try to close...\n");
+      fclose( nd->out_file );
+      printf("finished fclose\n");
+    }
+  }
+}
 
+void read_data_from_file(void){ // the file-reading version of EveryNCallback
+  neural_daq *nd;
+  buffer_count++;
+  for (int n = 0; n < neural_daq_map.size(); n++){
+    printf("In new for loop of read_data_from_file.\n");
+    nd = & (neural_daq_map[n]);
+    buffer_size = nd->n_chans * nd->n_samps_per_buffer;
+    try_fread<float64>( nd->data_ptr, buffer_size, nd->in_file );
+    if( nd->out_file != NULL ){
+      printf("writing buffer size: %d\n", buffer_size);
+      try_fwrite<float64>( nd->data_ptr, buffer_size, nd->out_file );
+    }
+    nd->this_buffer += 1;
+    nd->buffer_count += 1;
+  }
+  Trode *this_trode;
+  for(std::map<std::string, Trode>::iterator it = trode_map.begin(); it != trode_map.end(); it++){
+    this_trode = & ( (*it).second);
+    trode_filter_data(this_trode);
+    if( it == trode_map.begin() && (buffer_count % 37 == 0)){
+      this_trode->print_buffers(4, 97);
+    }
   }
 }
 
@@ -218,17 +269,24 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
     int rc;
     int n;
     buffer_count++;
-    for(int n = 0; n < neural_daq_map.size(); n++){
-      //for(std::map<int,neural_daq>::iterator it = neural_daq_map.begin(); it != neural_daq_map.end(); it++){
-      nd = &(neural_daq_map[n]);
-      daq_err_check ( DAQmxReadAnalogF64( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
-     
-      if( nd->out_file != NULL){
-	try_fwrite<float64>( nd->data_ptr, buffer_size, nd->out_file);
+    printf("EveryNCallback was called.\n");
+    if (! daqs_reading ){ // getting data from the cards.  Use ReadAnalog to grab the data;
+      for(n = 0; n < neural_daq_map.size(); n++){
+	nd = &(neural_daq_map[n]);
+	daq_err_check ( DAQmxReadAnalogF64( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
+	
+	if( nd->out_file != NULL){
+	  try_fwrite<float64>( nd->data_ptr, buffer_size, nd->out_file);
+	}
+	nd->buffer_count = nd->buffer_count + 1; 
       }
-      nd->buffer_count = nd->buffer_count + 1;
-	//memcpy( (*it).second.data_ptr_copy, (*it).second.data_ptr, (*it).second.size_bytes);
-      //print_buffer( & (*it).second, 32, 32, 32 ); 
+    } else {            // we're reading from a file.  Get the data from fread;
+      for(n = 0; n < neural_daq_map.size(); n++){
+	printf("In for loop within EveryNCallback in read mode\n");
+	nd = &(neural_daq_map[n]);
+	try_fread<float64>( nd->data_ptr, buffer_size, nd->in_file);
+	nd->this_buffer = nd->this_buffer + 1;
+      }
     }
     n = 0;
     for(std::map<std::string, Trode>::iterator it = trode_map.begin(); it != trode_map.end(); it++){
@@ -243,7 +301,7 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
 
       trode_filter_data(this_trode);
       if( it == trode_map.begin() && (buffer_count % 37 == 0)){
-	//this_trode->print_buffers(4, 97);
+	this_trode->print_buffers(4, 97);
       }
       n++;
 
