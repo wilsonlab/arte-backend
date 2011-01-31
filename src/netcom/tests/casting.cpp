@@ -4,13 +4,13 @@
 
 int main(){
 
-	timestamp_t ts = 100;
+	timestamp_t ts = 1234123;
 
-	char buff[6] = "\0";
+	unsigned char buff[6] = "\0";
 
 	tsToBuff(&ts, buff, 6);
 	
 	timestamp_t tt;
 	tt = buffToTs(buff, 6);
-	std::cout<<ts<<" "<<tt<<std::endl;	
+	std::cout<<ts<<" "<<buff<<" "<<tt<<std::endl;	
 }

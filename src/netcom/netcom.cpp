@@ -92,23 +92,29 @@ NetComDat NetCom::initUdpRx(char host[], int portIn){
 }
 
 int NetCom::txTs(NetComDat net, timestamp_t count, int nTx){
-	std::cout<<"NetCom::txTs"<<std::endl;
-	std::cout<<"count:\t:"<< count <<" size of count:\t" << sizeof count<< std::endl;
+	std::cout<<"NetCom::txTs  ";
+	std::cout<<"count:"<< count << std::endl;
 
-	char msg[6];
+	char* msg = new char[6];
+	*msg = typeToChar(NETCOM_UDP_TIME);
+	*(msg+1) = ':';
+
 	timestamp_t ts = count;
-	std::cout<<count<<"<-------- COUNT"<<std::endl;	
 	tsToBuff(&ts, msg, 6);
-
+	
+//	std::cout<count<<" "<<((char*) &count)<<std::endl;
+	
 //	char msg[] = "STR";
 	for (int i=0; i<nTx; i++)
-		sendto(net.sockfd, msg, strlen(msg), 0, (struct sockaddr *)&net.addr_in, sizeof net.addr_in);
+		sendto(net.sockfd, msg, strlen((char*)msg), 0, (struct sockaddr 
+*)&net.addr_in, sizeof net.addr_in);
+	delete msg;
 }
 
 timestamp_t NetCom::rxTs(NetComDat net){
 
 	char s[INET6_ADDRSTRLEN];
-        char buf[MAX_BUF_LEN];
+        char buff[6] = {'\0'};;
 
         int numbytes;
 	sockaddr_storage their_addr = net.their_addr;
@@ -116,19 +122,23 @@ timestamp_t NetCom::rxTs(NetComDat net){
 
 	sockaddr_in sa = *(struct sockaddr_in *)&their_addr;
 
-	if ((numbytes = recvfrom(net.sockfd, &buf, MAX_BUF_LEN-1 , 0,
+	if ((numbytes = recvfrom(net.sockfd, &buff, MAX_BUF_LEN-1 , 0,
                 (struct sockaddr *)&their_addr, &addr_len)) == -1) {
                 perror("recvfrom");
                 exit(1);
         }
-	/// Below this line is undeeded
-        printf("listener: got packet from %s\n",
-                inet_ntop(their_addr.ss_family,get_in_addr((struct sockaddr *)&their_addr),
-                        s, sizeof s));
 
-        printf("listener: packet is %d bytes long\n", numbytes);
-        buf[numbytes] = '\0';
-        printf("listener: packet contains \"%s\"\n", buf);
+	std::cout<<"Buffer Type:"<<charToType(*buff)<<std::endl;
+	/// Below this line is undeeded
+        printf("listener: got packet from %s\n", 
+		inet_ntop(their_addr.ss_family,get_in_addr((struct sockaddr *)&their_addr), s, 
+		sizeof s));
+
+	timestamp_t ts = buffToTs((char*)buff+2, 6);
+	std::cout<<"Recovered Timestamp:"<<ts<<std::endl;
+//        printf("listener: packet is %d bytes long\n", numbytes);
+//        buff[10] = '\0';
+//        printf("listener: packet contains \"%s\"\n", buff);
 
         return 0;
 }

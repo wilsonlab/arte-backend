@@ -77,14 +77,14 @@ wave_t buffToWave(char* buff, int blen);
 
 enum packetType_t {NETCOM_UDP_SPIKE = 1,
                    NETCOM_UDP_LFP = 2,
-                   NETCOM_UDP_SYNC = 3,
+                   NETCOM_UDP_TIME = 3,
                    NETCOM_UNDEFINED=-1};
 
 inline char typeToChar(packetType_t x){
         switch (x){
                 case NETCOM_UDP_SPIKE:  return 1;
                 case NETCOM_UDP_LFP:    return 2;
-                case NETCOM_UDP_SYNC:   return 3;
+                case NETCOM_UDP_TIME:   return 3;
                	default:                return -1;
         }
 }
@@ -93,7 +93,7 @@ inline packetType_t charToType(char x){
         switch (x){
                 case 1: return NETCOM_UDP_SPIKE;
                 case 2: return NETCOM_UDP_LFP;
-                case 3: return NETCOM_UDP_SYNC;
+                case 3: return NETCOM_UDP_TIME;
                 default:return NETCOM_UNDEFINED;
         }
 }

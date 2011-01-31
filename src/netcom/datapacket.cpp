@@ -3,15 +3,11 @@
 
 
 /*------------- TIME ------------*/
-void tsToBuff(timestamp_t* t, char *buff, int blen){
+void tsToBuff(timestamp_t* t, char* buff, int blen){
 	if (blen<6)
 		std::cout<<"ERROR: Buffer is too short"<<std::endl;
 			
-	buff[0] = typeToChar(NETCOM_UDP_SYNC);
-	buff[1] = 0;
-	
-	timestamp_t ts = hton32(*t);
-
+	uint32_t ts = hton32(*t);	
 	memcpy(buff+2, &ts, 4);
 }
 
