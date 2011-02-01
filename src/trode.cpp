@@ -163,7 +163,6 @@ void Trode::print_buffers(int chan_lim, int samp_lim){
       std::cout << std::setw(7) << u_buf[c + row_offset] << " \033[0m"; 
     }
 
-
 //     std::cout << "  ||  ";
 
 //     std::cout << std::fixed << std::setprecision(1);
@@ -177,7 +176,6 @@ void Trode::print_buffers(int chan_lim, int samp_lim){
 
 
     std::cout << "  ||  ";
-  
     std::cout << std::fixed << std::setprecision(1);
     for (int c = 0; c < chan_lim; c++){
       if(s == f_curs){
@@ -186,16 +184,8 @@ void Trode::print_buffers(int chan_lim, int samp_lim){
 	std::cout << "\033[0m";}
       std::cout << std::setw(7) << f_buf[c + row_offset] << "  \033[0m";
     }
-
-
     std::cout <<std::endl;
-
   }
-
-  //fflush(stdout);
-  //printf("\b \r \b \r \b \r \b \r");
-  //system("clear");
-  //exit(1);
 }
 
 

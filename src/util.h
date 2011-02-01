@@ -1,6 +1,7 @@
 #ifndef UTIL_H_
 #define UTIL_H_
 
+#define _FILE_OFFSET_BITS  64
 #include <iostream>
 #include <stdio.h>
 #include <string>
