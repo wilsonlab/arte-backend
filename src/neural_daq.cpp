@@ -232,7 +232,7 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
       //}
 
       trode_filter_data(this_trode);
-      if( it == trode_map.begin() && (buffer_count % 1000 == 0)){
+      if( it == trode_map.begin() && (buffer_count % 250 == 0)){
 	this_trode->print_buffers(4, 97);
       }
       n++; // for threads
