@@ -216,7 +216,6 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
       daq_err_check ( DAQmxReadAnalogF64( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
       
       if( nd->out_file != NULL){
-	for(int m = 0; m < 4; m++)
 	  try_fwrite<float64>( nd->data_ptr, buffer_size, nd->out_file);
       }
       nd->buffer_count = nd->buffer_count + 1; 
@@ -234,10 +233,6 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
 
       trode_filter_data(this_trode);
       if( it == trode_map.begin() && (buffer_count % 1000 == 0)){
-	system("clear");
-	system("ls -lh");
-	fflush(stdout);
-	std::cout << "_FILE_OFFSET_BITS: " << _FILE_OFFSET_BITS << std::endl;
 	this_trode->print_buffers(4, 97);
       }
       n++; // for threads
