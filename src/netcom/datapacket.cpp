@@ -6,9 +6,14 @@
 void tsToBuff(timestamp_t* t, char* buff, int blen){
 	if (blen<6)
 		std::cout<<"ERROR: Buffer is too short"<<std::endl;
-			
+				
 	uint32_t ts = hton32(*t);	
 	memcpy(buff+2, &ts, 4);
+	uint32_t tt;
+	memcpy(&tt, buff+2, 4);
+
+	std::cout<<"tsToBuff() in:\t"<< *t <<" hton:\t"<<ts<<std::endl;
+	std::cout<<"tsToBuff()2in:\t"<< tt <<" hton:\t"<<ntoh32(tt)<<std::endl;
 }
 
 timestamp_t buffToTs(char *buff, int blen){
@@ -19,7 +24,7 @@ timestamp_t buffToTs(char *buff, int blen){
 	timestamp_t s;
 	memcpy(&s, buff+2, 4);	
 	s = ntoh32(s);
-
+	std::cout<<"buffToTs() \t"<<s<<std::endl;
 	return s;
 }
 /*------------- SPIKE ------------*/

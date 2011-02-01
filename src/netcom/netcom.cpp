@@ -92,22 +92,20 @@ NetComDat NetCom::initUdpRx(char host[], int portIn){
 }
 
 int NetCom::txTs(NetComDat net, timestamp_t count, int nTx){
-	std::cout<<"NetCom::txTs  ";
+	std::cout<<"NetCom::txTs ";
 	std::cout<<"count:"<< count << std::endl;
 
 	char* msg = new char[6];
 	*msg = typeToChar(NETCOM_UDP_TIME);
-	*(msg+1) = ':';
 
 	timestamp_t ts = count;
+
 	tsToBuff(&ts, msg, 6);
+
+	std::cout<<ntoh32(*(uint32_t*)(msg+2))<<"\t<--- txTs2"<<std::endl;
 	
-//	std::cout<count<<" "<<((char*) &count)<<std::endl;
-	
-//	char msg[] = "STR";
 	for (int i=0; i<nTx; i++)
-		sendto(net.sockfd, msg, strlen((char*)msg), 0, (struct sockaddr 
-*)&net.addr_in, sizeof net.addr_in);
+		sendto(net.sockfd, msg, 6, 0, (struct sockaddr *)&net.addr_in, sizeof net.addr_in);
 	delete msg;
 }
 
@@ -122,7 +120,7 @@ timestamp_t NetCom::rxTs(NetComDat net){
 
 	sockaddr_in sa = *(struct sockaddr_in *)&their_addr;
 
-	if ((numbytes = recvfrom(net.sockfd, &buff, MAX_BUF_LEN-1 , 0,
+	if ((numbytes = recvfrom(net.sockfd, &buff, 20 , 0,
                 (struct sockaddr *)&their_addr, &addr_len)) == -1) {
                 perror("recvfrom");
                 exit(1);
@@ -130,15 +128,21 @@ timestamp_t NetCom::rxTs(NetComDat net){
 
 	std::cout<<"Buffer Type:"<<charToType(*buff)<<std::endl;
 	/// Below this line is undeeded
+	std::cout<<"buff+0"<<ntoh32(*(uint32_t*)(buff+0))<<std::endl;
+	std::cout<<"buff+1"<<ntoh32(*(uint32_t*)(buff+1))<<std::endl;
+	std::cout<<"buff+2"<<ntoh32(*(uint32_t*)(buff+2))<<std::endl;
+	std::cout<<"buff+3"<<ntoh32(*(uint32_t*)(buff+3))<<std::endl;
+
+
         printf("listener: got packet from %s\n", 
 		inet_ntop(their_addr.ss_family,get_in_addr((struct sockaddr *)&their_addr), s, 
 		sizeof s));
 
-	timestamp_t ts = buffToTs((char*)buff+2, 6);
+	timestamp_t ts = buffToTs(buff+2, 6);
 	std::cout<<"Recovered Timestamp:"<<ts<<std::endl;
-//        printf("listener: packet is %d bytes long\n", numbytes);
-//        buff[10] = '\0';
-//        printf("listener: packet contains \"%s\"\n", buff);
+        printf("listener: packet is %d bytes long\n", numbytes);
+        buff[10] = '\0';
+        printf("listener: packet contains \"%s\"\n", buff);
 
         return 0;
 }
