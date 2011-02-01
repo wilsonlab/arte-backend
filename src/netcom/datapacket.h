@@ -15,6 +15,7 @@
 #define hton16(x) bswap_16(x)
 
 #define MAX_BUF_LEN 2048
+void printBuff(char* buff, int blen);
 
 // Each buffer has a 2 byte header, with the first byte corresponding to 
 // the type of data contained in the buffer, the second byte is set to 0 
@@ -41,6 +42,8 @@
 // [BYTE0 |  BYTE1 | BYTE2 | BYTE3 | BYTE4 | BYTE5 ]
 // [DTYPE |    0   | VAR1  |  VAR2 |  VAR3 | VAR3  ]
 //
+
+
 typedef uint32_t timestamp_t;
 
 struct spike_t{

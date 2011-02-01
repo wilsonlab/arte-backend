@@ -1,30 +1,32 @@
 #include <iostream>
 #include "datapacket.h"
 
+void printBuff(char* buff, int blen){
+        char val;
+        for (int i=0; i<blen; i++){
+                val = *(buff+i);
+                std::cout<<"\\"<<(int)val;           
+        }
+	std::cout<<std::endl;
+}
+
 
 /*------------- TIME ------------*/
 void tsToBuff(timestamp_t* t, char* buff, int blen){
-	if (blen<6)
-		std::cout<<"ERROR: Buffer is too short"<<std::endl;
-				
-	uint32_t ts = hton32(*t);	
+//	if (blen<6)
+//		std::cout<<"ERROR: Buffer is too short"<<std::endl;
+	timestamp_t ts = hton32(*t);	
 	memcpy(buff+2, &ts, 4);
-	uint32_t tt;
-	memcpy(&tt, buff+2, 4);
-
-	std::cout<<"tsToBuff() in:\t"<< *t <<" hton:\t"<<ts<<std::endl;
-	std::cout<<"tsToBuff()2in:\t"<< tt <<" hton:\t"<<ntoh32(tt)<<std::endl;
 }
 
 timestamp_t buffToTs(char *buff, int blen){
 
-	if (blen<6)
-		std::cout<<"Error buffer is too short"<<std::endl;
+//	if (blen<6)
+//		std::cout<<"Error buffer is too short"<<std::endl;
 
 	timestamp_t s;
 	memcpy(&s, buff+2, 4);	
 	s = ntoh32(s);
-	std::cout<<"buffToTs() \t"<<s<<std::endl;
 	return s;
 }
 /*------------- SPIKE ------------*/
