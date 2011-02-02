@@ -27,6 +27,7 @@ Timer::Timer(){
 
 	std::cout<<"Timer::Timer end"<<std::endl;
 
+
 }
 
 Timer::~Timer(){
@@ -112,7 +113,6 @@ int  Timer::setInitCount(uint32_t newCount){
 }
 
 uint32_t Timer::getCount(){
-
 	if (counterTask==0){
 		return 0;
 	}
@@ -164,7 +164,6 @@ int Timer::armCounterTask(){
 
 int Timer::txSyncCount(uint32_t syncCount, int nPackets)
 {
-	std::cout<<"Warning: Not TXing packets!!!!!!!!!!!\n";
 	return 0;
 }
 uint32_t Timer::rxSyncCount()
@@ -195,6 +194,13 @@ int Timer::setSyncCount(uint32_t count){
 	return 0;
 }
 
+void Timer::initUdpTx(std::string host, int port){
+	txDat = NetCom::initUdpTx(host.c_str(), port);	
+}
+void Timer::initUdpRx(std::string ip, int port){
+	rxDat = NetCom::initUdpRx(host.c_str(), port);
+}
+
 int32 CVICALLBACK timerDigTrigCallback(TaskHandle taskHandle, int32 signalID, void *callbackData){
 //	std::cout<<"TimerDigTrigCallback Fired"<<std::endl;
 	
@@ -211,7 +217,7 @@ int32 CVICALLBACK timerDigTrigCallback(TaskHandle taskHandle, int32 signalID, vo
 
 		uint32_t nextSyncCount = cSyncCnt + (cSyncCnt-pSyncCnt);
 		std::cout<<"\n\t predicted next sync count:"<<nextSyncCount<<std::endl;
-//		t->txSyncCount(nextSyncCount, N_MAST_SYNC_TX);
+		t->txSyncCount(nextSyncCount, N_MAST_SYNC_TX);
 	}
 	else
 		t->txSyncCount(cSyncCnt, N_SLV_SYNC_TX);

@@ -1,6 +1,8 @@
 #include <NIDAQmx.h>
 #include <stdint.h>
 #include <string>
+#include "netcom.h"
+
 class Timer {
 
  private:
@@ -42,6 +44,9 @@ class Timer {
   TaskHandle counterTask;
   TaskHandle diPulseTask;
 
+  NetComDat txDat;
+  NetComDat rxDat;
+
  public:
   Timer();
 
@@ -67,5 +72,8 @@ std::string const& arm, std::string const& sync);
 
   uint32_t getSyncCount();
   int 	setSyncCount(uint32_t count);
+
+  void initUdpTx(std::string host, int port);
+  void initUdpRx(std::string host, int port);
 
 };
