@@ -14,6 +14,19 @@ void daq_err_check(int32 error){
   }
 }
 
+void ECmx(int32 error){
+  char errBuff[2048];
+  if( DAQmxFailed(error) ){
+    std::cout << "Caught a DAQmx error..." << std::endl;
+    DAQmxGetExtendedErrorInfo(errBuff,2048);
+    std::cout << "util.cpp saw the daqmx error num: " << error << " with 
+messag$
+  }else{
+    //    std::cout << "No daqmx error." << std::endl;
+  }
+}
+
+
 void daq_err_check(int32 error, TaskHandle *task_handle_array, int n_tasks){
   for (int n = 0; n < n_tasks; n++){
     std::cout << "Checking for errors while stopping task " << n << std::endl;
