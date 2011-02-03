@@ -1,5 +1,5 @@
 #include "util.h"
-#include "timer.h"
+
 
 // general utility functions 
 
@@ -19,8 +19,7 @@ void ECmx(int32 error){
   if( DAQmxFailed(error) ){
     std::cout << "Caught a DAQmx error..." << std::endl;
     DAQmxGetExtendedErrorInfo(errBuff,2048);
-    std::cout << "util.cpp saw the daqmx error num: " << error << " with 
-messag$
+    std::cout << "util.cpp saw the daqmx error num: " << error << " with message: " << errBuff << std::endl;
   }else{
     //    std::cout << "No daqmx error." << std::endl;
   }

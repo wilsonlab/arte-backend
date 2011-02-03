@@ -1,5 +1,4 @@
 #include "arteopt.h"
-#include "timer.h"
 #include <boost/foreach.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/property_tree/exceptions.hpp>
