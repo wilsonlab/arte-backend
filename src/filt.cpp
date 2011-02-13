@@ -14,8 +14,8 @@ int rel_pt(int pos, int curs, int buf_len){
   return r;
 }
 
-void filter_data(float64 *in_buf, Filt *filt, neural_daq *nd, int *chans, int n_chans, int in_buf_len, 
-		 int out_buf_len, int *u_curs_p, int *f_curs_p, int *ff_curs_p,  float64 *u_buf, float64 *f_buf, float64 *ff_buf){
+void filter_data(rdata_t *in_buf, Filt *filt, neural_daq *nd, uint16_t *chans, uint16_t n_chans, int in_buf_len, 
+		 uint16_t out_buf_len, int *u_curs_p, int *f_curs_p, int *ff_curs_p,  rdata_t *u_buf, rdata_t *f_buf, rdata_t *ff_buf){
 
   int u_curs = *u_curs_p;
   int f_curs = *f_curs_p;
@@ -26,8 +26,8 @@ void filter_data(float64 *in_buf, Filt *filt, neural_daq *nd, int *chans, int n_
   int in_pt_c_f, in_pt_h1_f, in_pt_h2_f, out_pt_f;  
   int h,n,c,p,s,i,i_offset_this, i_offset_last;  // various counters for for loops
   h = n = c = p = s = i = i_offset_this = i_offset_last = 0;
-  float64 *a, *b;
-  float64 value;
+  double *a, *b;
+  rdata_t value;
   int in_n_chans = nd->n_chans;
 
   a = filt->denom_coefs;
@@ -44,7 +44,7 @@ void filter_data(float64 *in_buf, Filt *filt, neural_daq *nd, int *chans, int n_
       for(c = 0; c < n_chans; c++){   // loop over chans
         u_buf[h + c] = in_buf[p + chans[c] ]; // in_buf is whe whole nidaq card, so we have to index into the chan through the 'chans' field
 	                                      // which lists the channels to pick from in_buf
-	f_buf[h + c] = 0.0;
+	f_buf[h + c] = 0;
       }
     }
     //  *****   End checked portion ***********
@@ -205,30 +205,30 @@ void Filt::init(boost::property_tree::ptree &filt_pt){
 
   if(type.compare("fir") == 0){
     n_coefs = order;
-    num_coefs = new float64 [order];
-    denom_coefs = new float64 [order];
-    input_gains = new float64 [1];
+    //num_coefs = new rdata_t [order];
+    //denom_coefs = new rdata_t [order];
+    //input_gains = new rdata_t [1];
     filt_num_sos = 1; // second-order-sections is the wrong term here; we mean one plain-old-section (full filter order)
   }
   else if( (type.compare("iir") == 0) ){
     filt_num_sos = order / 2;
     n_coefs = filt_num_sos * 3;
-    num_coefs = new float64 [n_coefs];
-    denom_coefs = new float64 [n_coefs];
-    input_gains = new float64 [filt_num_sos];
+    //num_coefs = new float64 [n_coefs];
+    //denom_coefs = new float64 [n_coefs];
+    //input_gains = new float64 [filt_num_sos];
   } else{
     std::cerr << "Can't use filt type: " << type << std::endl;
   }
-  assign_property<float64>("num_coefs", num_coefs, filt_pt, filt_pt,n_coefs);
-  assign_property<float64>("denom_coefs", denom_coefs, filt_pt, filt_pt, n_coefs);
-  if(type.compare("fir") == 0) 
-    assign_property<float64>("input_gains", input_gains, filt_pt, filt_pt, 1);
-  else
-    assign_property<float64>("input_gains", input_gains, filt_pt, filt_pt, filt_num_sos);
+  assign_property_ftor<double>("num_coefs", num_coefs, filt_pt, filt_pt,n_coefs);
+  assign_property_ftor<double>("denom_coefs", denom_coefs, filt_pt, filt_pt, n_coefs);
+  if(type.compare("fir") == 0)  // in the fir case:
+    assign_property_ftor<rdata_t>("input_gains", input_gains, filt_pt, filt_pt, 1);
+  else  // in the iir case:
+    assign_property_ftor<rdata_t>("input_gains", input_gains, filt_pt, filt_pt, filt_num_sos);
   count = 0; // temporary thing for debugging
 }
 
-void print_array(float64 *buf, int n_chans, int buf_len, int curs)
+void print_array(rdata_t *buf, int n_chans, int buf_len, int curs)
 {
   std::cout.precision(2);
   for (int c = 0; c < n_chans; c++){

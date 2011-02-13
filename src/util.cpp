@@ -1,5 +1,15 @@
 #include "util.h"
+#include <stdint.h>
 
+uint16_t ftor(double f_val){
+  return  (uint16_t)  ( (f_val - -10.0)/20.0 * UINT16_MAX);
+}
+
+void ftor_a(double *f_val, uint16_t *r_value, int n_elem){
+  for(int i = 0; i < n_elem; i++){
+    r_value[i] = ftor(f_val[i]);
+  }
+}
 
 // general utility functions 
 

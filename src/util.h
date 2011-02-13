@@ -2,6 +2,7 @@
 #define UTIL_H_
 
 #define _FILE_OFFSET_BITS  64
+#define __STDC_LIMIT_MACROS
 #include <iostream>
 #include <stdio.h>
 #include <string>
@@ -14,18 +15,18 @@
 #include <boost/property_tree/exceptions.hpp>
 #include <NIDAQmx.h>
 
+// convert float64 (double) values to int16_t
+uint16_t ftor(double *f_val);         // single value
+void ftor_a(double *f_vals, uint16_t *r_vals, int n_elem);  // array
+
 // parse string "val1 val2 etc" into array.  set n_elem = -1 to avoid checking the count
 template <class T> 
 void parse_line_for_vals(std::string the_line,T *t, int n_elem){
-  
   using namespace std;
-
   istringstream iss;
-
   iss.str(the_line);
-
   int n = 0;
-  while(! iss.eof()){
+  while((! iss.eof()) && iss.good() ){
     iss >> t[n];
     n+=1;
   }
@@ -39,6 +40,7 @@ void parse_line_for_vals(std::string the_line,T *t, int n_elem){
       for(int a = 0; a < n; a++)
 	std::cout << "array element is: " << t[a] << std::endl;
     }
+    std::cout << "Requested " << n_elem << " elements and got " << n << std::endl;
     assert(n == n_elem);
   }
 }
@@ -55,6 +57,16 @@ int assign_property(std::string &tree_key, T * t, const boost::property_tree::pt
   iss.str(the_result);
 
   parse_line_for_vals <T> (iss.str(), t, n_elem);
+
+}
+
+template <class T>
+int assign_property_ftor(const char *tree_key, T * t, const boost::property_tree::ptree &this_trode_pt, const boost::property_tree::ptree &default_trode_pt, int n_elem){
+
+  std::string tk = tree_key;
+  float64 *f_vals = new float64 [n_elem];
+  assign_property<float64>(tk, f_vals, this_trode_pt, default_trode_pt, n_elem);
+  //ftor_a(f_vals, t, n_elem);
 
 }
 

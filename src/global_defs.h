@@ -11,6 +11,10 @@
 #define THREADED_
 
 #include <pthread.h>
+
+//typedef float64 rdata_t;
+typedef uint16_t rdata_t;
+
 extern pthread_t my_threads[MAX_THREADS];
 
 const int MAX_TRODE_NAME_LENGTH = 50;
@@ -26,6 +30,8 @@ const int MAX_TRODE_BUFFER_LEN = 320; // 3200 samps = about 0.01 seconds
 const int MAX_N_INTERMEDIATE_BUFFERS = 10;
 const int MAX_TRODE_BUFFER = MAX_TRODE_N_CHANS * MAX_TRODE_BUFFER_LEN * (MAX_N_INTERMEDIATE_BUFFERS + 2);
 
+const int MAX_FILT_COEFS = MAX_TRODE_BUFFER_LEN;
+
 struct neural_daq{
   int id;
   std::string dev_name;
@@ -35,8 +41,8 @@ struct neural_daq{
   FILE *in_file;
   std::string raw_dump_filename;
   FILE *out_file;
-  float64 data_buffer[MAX_NEURAL_DAQ_BUFFER];
-  float64 *data_ptr;
+  rdata_t data_buffer[MAX_NEURAL_DAQ_BUFFER];
+  rdata_t *data_ptr;
   TaskHandle task_handle;
   int total_samp_count;
   int size_bytes;

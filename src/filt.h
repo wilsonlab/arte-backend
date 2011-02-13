@@ -19,11 +19,11 @@ class Filt{
   std::string filt_name;
   std::string type;               // iir or fir.  Determines how to interpret long lists of numerators and denominators
                                   // (iir case, they're treated as second-order sections.  fir case, one long kernel).
-  float64 *num_coefs;                     // numerators.
-  float64 *denom_coefs;                     // denominators. We don't calculate these.  I get them from matlab filter design tool.
+  double num_coefs [MAX_FILT_COEFS];                     // numerators.
+  double denom_coefs [MAX_FILT_COEFS];                     // denominators. We don't calculate these.  I get them from matlab filter design tool.
 
   int order;                      // order of iir, or tap count of fir
-  float64 *input_gains;           // must multiply feedforward samples by this to get unity outupt gain in passband (djargonz!)
+  rdata_t input_gains [MAX_FILT_COEFS];           // must multiply feedforward samples by this to get unity outupt gain in passband (djargonz!)
   
   bool filtfilt;                  // should we collect future data and run the filter backwards?
   int filtfilt_wait_n_buffers;    // how much future 'history' do we collect before backwards filtering?
@@ -46,8 +46,8 @@ class Filt{
 
 int rel_pt(int pos, int curs, int buf_len);
 
-void filter_data(float64 *in_buf, Filt *filt, neural_daq *nd,  int *chans, int n_chans, int in_buf_len, 
-		  int out_buf_len, int *u_curs, int *f_curs, int *ff_curs, float64* u_buf, float64 *f_buf, float64 *ff_buf);
+void filter_data(rdata_t *in_buf, Filt *filt, neural_daq *nd,  uint16_t *chans, uint16_t n_chans, int in_buf_len, 
+		  uint16_t out_buf_len, int *u_curs, int *f_curs, int *ff_curs, rdata_t* u_buf, rdata_t *f_buf, rdata_t *ff_buf);
 
-void print_array(float64 *buf, int n_chans, int buf_len, int curs);
+void print_array(rdata_t *buf, int n_chans, int buf_len, int curs);
 #endif

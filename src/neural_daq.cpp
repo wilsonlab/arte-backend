@@ -53,7 +53,7 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
     assign_property <std::string> ("raw_dump_filename", &(this_nd.raw_dump_filename), ndaq_pt, ndaq_pt, 1);
     this_nd.total_samp_count = this_nd.n_chans * this_nd.n_samps_per_buffer;
     this_nd.data_ptr = this_nd.data_buffer;
-    init_array <float64>(this_nd.data_ptr, 4.0, (this_nd.n_chans * this_nd.n_samps_per_buffer) );
+    init_array <rdata_t>(this_nd.data_ptr, 4, (this_nd.n_chans * this_nd.n_samps_per_buffer) );
     this_nd.size_bytes = this_nd.total_samp_count * sizeof(this_nd.data_ptr[0]);
     this_nd.buffer_count = 0;
     this_nd.this_buffer = 0;
@@ -100,7 +100,7 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
 	  daq_err_check ( GetTerminalNameWithDevPrefix(master_daq.task_handle, "ai/StartTrigger", trig_name) );
 	daq_err_check ( DAQmxRegisterEveryNSamplesEvent( master_daq.task_handle, DAQmx_Val_Acquired_Into_Buffer, 32,0,EveryNCallback,(void *)&neural_daq_map) );
 	daq_err_check ( DAQmxRegisterDoneEvent(master_daq.task_handle, 0, DoneCallback, (void *)&master_daq) );
-	
+	std::cout << "Done processing master daq." << std::endl;
 	master_completed = true;
 	n = 0;
       } else {
@@ -114,9 +114,11 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
       this_nd.status = 0;
       neural_daq_map[this_nd.id] = this_nd; // we gained a task handle for each nd. must re-insert into the map for that value to persist
       n_completed++;
+      std::cout << "Done processing some daq." << std::endl;
     }
+    std::cout << "Done with daq_processing loop. " << std::endl;
   } //end if for card-read specefic stuff 
-
+  
 }
 
 void neural_daq_start_all(void){
@@ -155,6 +157,7 @@ void neural_daq_start_all(void){
 }
 void neural_daq_stop_all(void){
   acquiring = false;
+  std::cout << "neural_daq.cpp line 160 test." << std::endl;
   sleep(1);  // why sleep?  b/c for some reason hitting immediately after running program hangs the computer (threads' fault?)
   neural_daq *nd;
 
@@ -177,6 +180,7 @@ void neural_daq_stop_all(void){
     }
   }
   finalize_files();
+  std::cout << "test cout neural_daq.cpp line 182" << std::endl;
 } 
 
 
@@ -186,10 +190,10 @@ void read_data_from_file(void){ // the file-reading version of EveryNCallback
   for (int n = 0; n < neural_daq_map.size(); n++){
     nd = & (neural_daq_map[n]);
     buffer_size = nd->n_chans * nd->n_samps_per_buffer;
-    try_fread<float64>( nd->data_ptr, buffer_size, nd->in_file );
+    try_fread<rdata_t>( nd->data_ptr, buffer_size, nd->in_file );
     if( nd->out_file != NULL ){
       printf("writing buffer size: %d\n", buffer_size);
-      try_fwrite<float64>( nd->data_ptr, buffer_size, nd->out_file );
+      try_fwrite<rdata_t>( nd->data_ptr, buffer_size, nd->out_file );
     }
     nd->this_buffer += 1;
     nd->buffer_count += 1;
@@ -213,10 +217,10 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
     buffer_count++;
     for(n = 0; n < neural_daq_map.size(); n++){
       nd = &(neural_daq_map[n]);
-      daq_err_check ( DAQmxReadAnalogF64( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
-      
+      //daq_err_check ( DAQmxReadAnalogF64( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
+      daq_err_check ( DAQmxReadBinaryU16( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
       if( nd->out_file != NULL){
-	  try_fwrite<float64>( nd->data_ptr, buffer_size, nd->out_file);
+	  try_fwrite<rdata_t>( nd->data_ptr, buffer_size, nd->out_file);
       }
       nd->buffer_count = nd->buffer_count + 1; 
     }

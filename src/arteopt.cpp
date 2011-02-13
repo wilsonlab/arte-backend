@@ -54,11 +54,13 @@ void arte_setup_init(int argc, char *argv[]){
     this_filt.init(filt_pt);
     filt_map.insert( std::pair<std::string, Filt>(this_filt.filt_name, this_filt) );
   }
+  std::cout << "Finished arte_setup_init." << std::endl;
 }
 
 
 void arte_session_init(int argc, char *argv[]){
 
+  std::cout << "Starting session init." << std::endl;
   Trode trode_default(); // store the default settings here
   boost::property_tree::ptree default_trode_pt;
   boost::property_tree::ptree this_trode_pt;
@@ -69,6 +71,7 @@ void arte_session_init(int argc, char *argv[]){
 		session_pt.get_child("options.session.trodes")){
     Trode this_trode;
     this_trode_pt = v.second;
+    std::cout << "About to init a trode." << std::endl;
     this_trode.init(this_trode_pt, default_trode_pt, neural_daq_map, filt_map);
     //this_trode.print_options();
     trode_map.insert( std::pair<std::string, Trode> ( v.second.data(), this_trode ));

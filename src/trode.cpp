@@ -7,6 +7,7 @@
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/property_tree/exceptions.hpp>
 #include <iostream>
+#include <stdint.h>
 
 int tmp;
 
@@ -23,17 +24,22 @@ Trode::~Trode(){
 int Trode::init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptree &default_pt, 
 		std::map<int,neural_daq> &neural_daq_map, std::map<std::string,Filt> &filt_map){
 
+  std::cout << "Beginning of assign_property block." << std::endl;
+
   trode_opt.trode_name = trode_pt.data();
-  assign_property<int> ("n_chans", &(trode_opt.n_chans), trode_pt, default_pt, 1);
+  assign_property<uint16_t> ("n_chans", &(trode_opt.n_chans), trode_pt, default_pt, 1);
   //trode_opt.thresholds = new double [trode_opt.n_chans];    // <-- no no no :)  these can't be dynamic memory, or else the trode packing into trode_map will give problems
-  assign_property<double>("thresholds", trode_opt.thresholds, trode_pt, default_pt,trode_opt.n_chans);
+  assign_property_ftor<rdata_t>("thresholds", trode_opt.thresholds, trode_pt, default_pt,trode_opt.n_chans);
   //trode_opt.channels = new int[trode_opt.n_chans];          // <-- no no - see comment 2 lines above.  These will be deleted soon.  
-  assign_property<int>("channels", trode_opt.channels, trode_pt, default_pt, trode_opt.n_chans);
-  assign_property<int>("daq_id", &(trode_opt.daq_id), trode_pt,default_pt, 1);
+  assign_property<uint16_t>("channels", trode_opt.channels, trode_pt, default_pt, trode_opt.n_chans);
+  assign_property<uint16_t>("daq_id", &(trode_opt.daq_id), trode_pt,default_pt, 1);
   assign_property<std::string>("filt_name", &(trode_opt.filt_name), trode_pt, default_pt, 1);
-  assign_property<int>("samps_before_trig", &(trode_opt.samps_before_trig), trode_pt, default_pt, 1);
-  assign_property<int>("samps_after_trig", &(trode_opt.samps_after_trig), trode_pt, default_pt, 1);
+  assign_property<uint16_t>("samps_before_trig", &(trode_opt.samps_before_trig), trode_pt, default_pt, 1);
+  assign_property<uint16_t>("samps_after_trig", &(trode_opt.samps_after_trig), trode_pt, default_pt, 1);
   assign_property<std::string> ("spike_mode", &(trode_opt.spike_mode), trode_pt, default_pt, 1);
+  assign_property<std::string> ("buffer_dump_filename", &(trode_opt.buffer_dump_filename), trode_pt, default_pt, 1);
+
+  std::cout << "Finished assign_property block." << std::endl;
 
   my_daq = &(neural_daq_map[trode_opt.daq_id]);
 
@@ -64,17 +70,23 @@ int Trode::init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptr
   trode_opt.buf_size_bytes = trode_opt.my_filt.n_samps_per_chan * trode_opt.n_chans * sizeof(u_buf[0]);
   trode_opt.my_filt.out_buf_size_bytes = trode_opt.buf_size_bytes;
   filt_map[trode_opt.filt_name] = trode_opt.my_filt;
-  //pp_to_raw_stream = &(my_daq->copy_flexptr);
   ptr_to_raw_stream = &(my_daq->data_ptr);
 
-  //  u_buf = new float64 [trode_opt.my_filt.n_samps_per_chan * trode_opt.n_chans];
-  //f_buf = new float64 [trode_opt.my_filt.n_samps_per_chan * trode_opt.n_chans];
-  //ff_buf = new float64 [trode_opt.my_filt.n_samps_per_chan * trode_opt.n_chans];
+  if(!trode_opt.buffer_dump_filename.empty()){
+    buffer_dump_file = try_fopen( trode_opt.buffer_dump_filename.c_str(), "wb" );
+    uint32_t tmp = 0;
+    try_fwrite<uint32_t>( &tmp, 1, buffer_dump_file );
+    try_fwrite<uint16_t>( &(trode_opt.n_chans), 1, buffer_dump_file );
+    try_fwrite<uint16_t>( &(my_daq->n_samps_per_buffer), 1, buffer_dump_file );
+  }
 
   u_curs = 0;
   f_curs = 0;
   ff_curs = 0;
   tmp = 0;
+
+  print_options();
+
 }
 
 //void Trode:: process_data(){
