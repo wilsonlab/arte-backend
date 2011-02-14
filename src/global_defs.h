@@ -13,7 +13,7 @@
 #include <pthread.h>
 
 //typedef float64 rdata_t;
-typedef uint16_t rdata_t;
+typedef int16_t rdata_t;
 
 extern pthread_t my_threads[MAX_THREADS];
 

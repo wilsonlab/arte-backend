@@ -14,10 +14,11 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/exceptions.hpp>
 #include <NIDAQmx.h>
+#include "global_defs.h"
 
 // convert float64 (double) values to int16_t
-uint16_t ftor(double *f_val);         // single value
-void ftor_a(double *f_vals, uint16_t *r_vals, int n_elem);  // array
+rdata_t ftor(double *f_val);         // single value
+void ftor_a(double *f_vals,rdata_t  *r_vals, int n_elem);  // array
 
 // parse string "val1 val2 etc" into array.  set n_elem = -1 to avoid checking the count
 template <class T> 
@@ -66,7 +67,7 @@ int assign_property_ftor(const char *tree_key, T * t, const boost::property_tree
   std::string tk = tree_key;
   float64 *f_vals = new float64 [n_elem];
   assign_property<float64>(tk, f_vals, this_trode_pt, default_trode_pt, n_elem);
-  //ftor_a(f_vals, t, n_elem);
+  ftor_a(f_vals, t, n_elem);
 
 }
 

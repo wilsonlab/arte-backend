@@ -23,7 +23,7 @@ class Filt{
   double denom_coefs [MAX_FILT_COEFS];                     // denominators. We don't calculate these.  I get them from matlab filter design tool.
 
   int order;                      // order of iir, or tap count of fir
-  rdata_t input_gains [MAX_FILT_COEFS];           // must multiply feedforward samples by this to get unity outupt gain in passband (djargonz!)
+  double input_gains [MAX_FILT_COEFS];           // must multiply feedforward samples by this to get unity outupt gain in passband (djargonz!)
   
   bool filtfilt;                  // should we collect future data and run the filter backwards?
   int filtfilt_wait_n_buffers;    // how much future 'history' do we collect before backwards filtering?

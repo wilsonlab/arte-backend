@@ -58,7 +58,7 @@ class Timer {
   bool isMaster();
   int becomeMaster(bool isMaster);
   int setDevStrs(std::string const& dev, std::string const& ctr, 
-std::string const& arm, std::string const& sync);
+		 std::string const& arm, std::string const& sync);
  
   int start();
   int stop();

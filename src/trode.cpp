@@ -8,6 +8,7 @@
 #include <boost/property_tree/exceptions.hpp>
 #include <iostream>
 #include <stdint.h>
+#include "spike_detector.h"
 
 int tmp;
 
@@ -103,6 +104,8 @@ void *trode_filter_data(void *t){
 		trode->trode_opt.n_chans, trode->my_daq->n_samps_per_buffer, 
 		trode->trode_opt.buf_len, &(trode->u_curs), &(trode->f_curs), 
 		&(trode->ff_curs),trode->u_buf, trode->f_buf, trode->ff_buf);
+
+    find_spikes(trode);
     //tmp = 1;
     //print_array(trode->u_buf, trode->trode_opt.n_chans, trode->trode_opt.my_filt.n_samps_per_chan, trode->u_curs);  
   } else{

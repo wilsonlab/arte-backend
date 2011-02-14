@@ -218,7 +218,7 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
     for(n = 0; n < neural_daq_map.size(); n++){
       nd = &(neural_daq_map[n]);
       //daq_err_check ( DAQmxReadAnalogF64( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
-      daq_err_check ( DAQmxReadBinaryU16( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
+      daq_err_check ( DAQmxReadBinaryI16( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
       if( nd->out_file != NULL){
 	  try_fwrite<rdata_t>( nd->data_ptr, buffer_size, nd->out_file);
       }

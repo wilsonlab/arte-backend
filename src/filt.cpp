@@ -219,12 +219,12 @@ void Filt::init(boost::property_tree::ptree &filt_pt){
   } else{
     std::cerr << "Can't use filt type: " << type << std::endl;
   }
-  assign_property_ftor<double>("num_coefs", num_coefs, filt_pt, filt_pt,n_coefs);
-  assign_property_ftor<double>("denom_coefs", denom_coefs, filt_pt, filt_pt, n_coefs);
+  assign_property<double>("num_coefs", num_coefs, filt_pt, filt_pt,n_coefs);
+  assign_property<double>("denom_coefs", denom_coefs, filt_pt, filt_pt, n_coefs);
   if(type.compare("fir") == 0)  // in the fir case:
-    assign_property_ftor<rdata_t>("input_gains", input_gains, filt_pt, filt_pt, 1);
+    assign_property<double>("input_gains", input_gains, filt_pt, filt_pt, 1);
   else  // in the iir case:
-    assign_property_ftor<rdata_t>("input_gains", input_gains, filt_pt, filt_pt, filt_num_sos);
+    assign_property<double>("input_gains", input_gains, filt_pt, filt_pt, filt_num_sos);
   count = 0; // temporary thing for debugging
 }
 
