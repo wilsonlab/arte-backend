@@ -5,8 +5,8 @@
 
 #define S_F64 8                   // 8 bytes for a float64
 #define S_ARRAY(R,C) R*C*S_F64   // Size of an array of float64s of row x col size 
+//  wrap coordinate for circular buffer
 
-// wrap coordinate for circular buffer
 int rel_pt(int pos, int curs, int buf_len){
   int r = (( curs + pos) % buf_len);
   if (r < 0)                    // funny situation - our implementation of c returns mod
@@ -16,7 +16,7 @@ int rel_pt(int pos, int curs, int buf_len){
 
 void filter_data(rdata_t *in_buf, Filt *filt, neural_daq *nd, uint16_t *chans, uint16_t n_chans, int in_buf_len, 
 		 uint16_t out_buf_len, int *u_curs_p, int *f_curs_p, int *ff_curs_p,  rdata_t *u_buf, rdata_t *f_buf, rdata_t *ff_buf){
-
+ 
   int u_curs = *u_curs_p;
   int f_curs = *f_curs_p;
   int ff_curs = *ff_curs_p;
@@ -71,7 +71,7 @@ void filter_data(rdata_t *in_buf, Filt *filt, neural_daq *nd, uint16_t *chans, u
 	  in_pt = rel_pt(h, n+u_curs, in_buf_len);
 	  for(c = 0; c < n_chans; c++){
 	    f_buf[c*out_buf_len + out_pt] += 
-	      ( in_buf[c*in_buf_len + in_pt]*filt->num_coefs[p]*filt->input_gains[0] -    // feedforward path
+	      (rdata_t)( in_buf[c*in_buf_len + in_pt]*filt->num_coefs[p]*filt->input_gains[0] -    // feedforward path
 		f_buf[c*out_buf_len + in_pt]*filt->denom_coefs[p]);                       // feedback path
 	  } // end loop over chans chan                                                                         // 
 	} // end loop over history points
@@ -134,7 +134,7 @@ void filter_data(rdata_t *in_buf, Filt *filt, neural_daq *nd, uint16_t *chans, u
 	    //}
 
 	    u_buf[out_pt + c] =
-	      ( u_buf[in_pt_c + c] * b[p*3 + 0] * filt->input_gains[p] +
+	      (rdata_t) ( u_buf[in_pt_c + c] * b[p*3 + 0] * filt->input_gains[p] +
 		u_buf[in_pt_h1 +c] * b[p*3 + 1] * filt->input_gains[p] +
 		u_buf[in_pt_h2 +c] * b[p*3 + 2] * filt->input_gains[p] -
 		f_buf[in_pt_h1_f +c] * a[p*3 + 1] -

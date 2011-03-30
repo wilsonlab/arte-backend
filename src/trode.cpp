@@ -70,6 +70,10 @@ int Trode::init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptr
   trode_opt.buf_len = trode_opt.my_filt.n_samps_per_chan;
   trode_opt.buf_size_bytes = trode_opt.my_filt.n_samps_per_chan * trode_opt.n_chans * sizeof(u_buf[0]);
   trode_opt.my_filt.out_buf_size_bytes = trode_opt.buf_size_bytes;
+
+  // WHY DID I DO THIS?  I believe filts from map are copied into each trode, not
+  // referenced from each trode.  This is important b/c filts acquire some
+  // trode-spacefic values (and lfp specific values, in lfp_banks).
   filt_map[trode_opt.filt_name] = trode_opt.my_filt;
   ptr_to_raw_stream = &(my_daq->data_ptr);
 

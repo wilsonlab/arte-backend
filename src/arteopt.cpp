@@ -11,6 +11,7 @@ std::string setup_config_filename;
 std::string session_config_filename;
 std::map<std::string, Trode> trode_map;
 std::map<std::string, Filt> filt_map;
+std::map<std::string, Lfp_bank> lfp_bank_map;
 boost::property_tree::ptree setup_pt;
 boost::property_tree::ptree session_pt;
 
@@ -25,7 +26,7 @@ void arte_init(int argc, char *argv[], const std::string &setup_fn, const std::s
   if(!session_fn.empty())
     session_config_filename = session_fn;    
   else
-    session_config_filename = session_fn;
+    session_config_filename = default_session_config_filename.data();
 
   try{
     read_xml(setup_config_filename,   setup_pt,   boost::property_tree::xml_parser::trim_whitespace); // check where this flag actually lives
@@ -75,6 +76,12 @@ void arte_session_init(int argc, char *argv[]){
     this_trode.init(this_trode_pt, default_trode_pt, neural_daq_map, filt_map);
     //this_trode.print_options();
     trode_map.insert( std::pair<std::string, Trode> ( v.second.data(), this_trode ));
+  }
+
+  Lfp_bank this_lfp_bank;
+  BOOST_FOREACH(boost::property_tree::ptree::value_type &v,
+		session_pt.get_child("options.session.eeg_banks")){
+
   }
   //  std::cout << "Printing from session_init" << std::endl;
   //for(std::map<std::string, Trode>::iterator it = trode_map.begin(); it != trode_map.end(); it++){

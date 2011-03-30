@@ -1,8 +1,8 @@
 // this will be the arte main loop
+#include "global_defs.h"
 #include "arte.h"
 #include "arteopt.h"
 #include <iostream>
-#include "global_defs.h"
 #include <boost/foreach.hpp>
 #include "util.h"
 #include "neural_daq.h"

@@ -1,6 +1,6 @@
 #include <NIDAQmx.h>
 #include <iostream>
-#include "nichk.h"
+#include "../../src/util.h" 
 
 static TaskHandle	t1,t2;
 

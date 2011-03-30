@@ -4,9 +4,10 @@
 #define DAQmxErrChk(functionCall) if( DAQmxFailed(error=(functionCall)) ) goto Error; else
 
 int32 CVICALLBACK DoneCallback(TaskHandle th1, int32 status, void *callbackData);
-	int slow = 1;
-	int fast = 10000;
 
+int slow = 1000;
+int fast = 10000;
+        
 
 int main(void)
 {

@@ -14,6 +14,8 @@
 
 //typedef float64 rdata_t;
 typedef int16_t rdata_t;
+const rdata_t RDATA_MIN = INT16_MIN;
+const rdata_t RDATA_MAX = INT16_MAX;
 
 extern pthread_t my_threads[MAX_THREADS];
 
@@ -29,6 +31,14 @@ const int MAX_TRODE_N_CHANS = 32;      // 32 chanels
 const int MAX_TRODE_BUFFER_LEN = 320; // 3200 samps = about 0.01 seconds
 const int MAX_N_INTERMEDIATE_BUFFERS = 10;
 const int MAX_TRODE_BUFFER = MAX_TRODE_N_CHANS * MAX_TRODE_BUFFER_LEN * (MAX_N_INTERMEDIATE_BUFFERS + 2);
+
+const int MAX_LFP_BANK_N_CHANS = 32;
+const int MAX_LFP_BANK_BUFFER_LEN = 320;
+const int MAX_LFP_BANK_N_INTERMEDIATE_BUFFERS = 10;
+const int MAX_LFP_BANK_BUFFER = MAX_LFP_BANK_N_CHANS * MAX_LFP_BANK_BUFFER_LEN * MAX_LFP_BANK_N_INTERMEDIATE_BUFFERS;
+
+const double NEURAL_DAQ_V_MAX = 10.0;
+const double NEURAL_DAQ_V_MIN = -10.0;
 
 const int MAX_FILT_COEFS = MAX_TRODE_BUFFER_LEN;
 

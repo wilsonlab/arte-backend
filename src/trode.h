@@ -61,6 +61,6 @@ class Trode{
 extern std::map<std::string, Trode> trode_map;
 
 void *trode_filter_data(void *); // trode_filter_data(trode_to_prosess, raw buffer, timestamp at buffer start)
-void trode_process_data(Trode *); // only need access to this trode's buffers (filtered data is there)
+//void trode_process_data(Trode *); // only need access to this trode's buffers (filtered data is there)
 
 #endif

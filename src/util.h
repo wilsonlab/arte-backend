@@ -2,7 +2,6 @@
 #define UTIL_H_
 
 #define _FILE_OFFSET_BITS  64
-#define __STDC_LIMIT_MACROS
 #include <iostream>
 #include <stdio.h>
 #include <string>
