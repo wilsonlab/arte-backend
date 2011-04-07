@@ -11,6 +11,7 @@
 #include "filt.h"
 #include <vector>
 #include "neural_daq.h"
+#include "lfp_bank.h"
 
 extern std::string setup_config_filename;
 extern std::string session_config_filename;

@@ -75,6 +75,7 @@ int Trode::init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptr
   // referenced from each trode.  This is important b/c filts acquire some
   // trode-spacefic values (and lfp specific values, in lfp_banks).
   filt_map[trode_opt.filt_name] = trode_opt.my_filt;
+
   ptr_to_raw_stream = &(my_daq->data_ptr);
 
   if(!trode_opt.buffer_dump_filename.empty()){

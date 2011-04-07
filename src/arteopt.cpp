@@ -43,6 +43,9 @@ void arte_init(int argc, char *argv[], const std::string &setup_fn, const std::s
   
 }
 
+
+// Initialize the 'backplane' objects, such as the neural_daqs 
+//and the pre-defined filters
 void arte_setup_init(int argc, char *argv[]){
 
   neural_daq_init(setup_pt);
@@ -59,6 +62,10 @@ void arte_setup_init(int argc, char *argv[]){
 }
 
 
+// Initialize more session-specific features, such as the 
+// mapping of daq channels into tetrode groups, and 
+// of daq channels into lfp_banks (collections of eegs-channels
+// all coming from a signle daq card and sharing filter settings
 void arte_session_init(int argc, char *argv[]){
 
   std::cout << "Starting session init." << std::endl;
@@ -80,20 +87,14 @@ void arte_session_init(int argc, char *argv[]){
 
   Lfp_bank this_lfp_bank;
   BOOST_FOREACH(boost::property_tree::ptree::value_type &v,
-		session_pt.get_child("options.session.eeg_banks")){
-
+		session_pt.get_child("options.session.lfp_banks")){
+    Lfp_bank this_lfp_bank;
+    boost::property_tree::ptree lfp_bank_pt;
+    lfp_bank_pt = v.second;
+    this_lfp_bank.init(lfp_bank_pt, neural_daq_map, filt_map);
+    lfp_bank_map.insert( std::pair< std::string, Lfp_bank > (v.second.data(), this_lfp_bank) );
   }
-  //  std::cout << "Printing from session_init" << std::endl;
-  //for(std::map<std::string, Trode>::iterator it = trode_map.begin(); it != trode_map.end(); it++){
-  //  (*it).second.print_options();
-  //}
-  std::cout << "Done session init." << std::endl;
-  
-  //std::map<std::string, Trode>::iterator it;
-  //for(it = trode_map.begin(); it != trode_map.end(); it++){
-  //  std::cout << "Trode " << (*it).second.trode_opt.trode_name << " addr: " << &((*it).second) << std::endl;
-  //}
-  //std::cout << "sizeof(Trode): " << sizeof(Trode) << " sizeof Trode pair: " << sizeof(*it) << std::endl;
 
-  //fflush(stdout);
+  std::cout << "Done session init." << std::endl;
+
 }
