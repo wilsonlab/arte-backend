@@ -6,18 +6,22 @@
 #include "global_defs.h"
 #include <iostream>
 #include "util.h"
+#include "timer.h"
 
 std::string setup_config_filename;
 std::string session_config_filename;
-std::map<std::string, Trode> trode_map;
+std::map<uint16_t, Trode> trode_map;
 std::map<std::string, Filt> filt_map;
-std::map<std::string, Lfp_bank> lfp_bank_map;
+std::map<uint16_t, Lfp_bank> lfp_bank_map;
 boost::property_tree::ptree setup_pt;
 boost::property_tree::ptree session_pt;
+Timer arte_timer;
 
 std::vector<TaskHandle> task_handle_vector;
 
 void arte_init(int argc, char *argv[], const std::string &setup_fn, const std::string &session_fn){
+
+  timestamp = 0;
 
   if(!setup_fn.empty())
     setup_config_filename = setup_fn.data();
@@ -82,7 +86,7 @@ void arte_session_init(int argc, char *argv[]){
     std::cout << "About to init a trode." << std::endl;
     this_trode.init(this_trode_pt, default_trode_pt, neural_daq_map, filt_map);
     //this_trode.print_options();
-    trode_map.insert( std::pair<std::string, Trode> ( v.second.data(), this_trode ));
+    trode_map.insert( std::pair<uint16_t, Trode> ( this_trode.trode_opt.trode_name, this_trode ));
   }
 
   Lfp_bank this_lfp_bank;
@@ -92,7 +96,7 @@ void arte_session_init(int argc, char *argv[]){
     boost::property_tree::ptree lfp_bank_pt;
     lfp_bank_pt = v.second;
     this_lfp_bank.init(lfp_bank_pt, neural_daq_map, filt_map);
-    lfp_bank_map.insert( std::pair< std::string, Lfp_bank > (v.second.data(), this_lfp_bank) );
+    lfp_bank_map.insert( std::pair< uint16_t, Lfp_bank > ( this_lfp_bank.lfp_bank_name, this_lfp_bank) );
   }
 
   std::cout << "Done session init." << std::endl;

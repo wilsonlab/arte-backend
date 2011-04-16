@@ -25,6 +25,8 @@ Timer::Timer(){
 	counterTask = 0;
 	diPulseTask = 0;
 
+	toy_timestamp = 0;
+
 	std::cout<<"Timer::Timer end"<<std::endl;
 
 
@@ -122,11 +124,20 @@ uint32_t Timer::getCount(){
 	//get the count from the counter card and return it
 	return (uint32_t) count;
 }
+
+#ifndef ISTOY
 uint64_t Timer::getTimestamp(){
-	std::cout<<"Timer::getTimestamp() called!"<<std::endl;
-	//get the count from the counter card, convert to TS and return it
-	return 0;
+    std::cout<<"Timer::getTimestamp() called!"<<std::endl;
+  //get the count from the counter card, convert to TS and return it
+    return 0;
 }
+#endif
+
+#ifdef ISTOY
+uint64_t Timer::getTimestamp(){
+    return toy_timestamp;
+}
+#endif
 
 int Timer::initDAQCounterTask(){
 	std::cout<<"Timer::initDAQCounterTask() called!"<<std::endl;
@@ -195,10 +206,12 @@ int Timer::setSyncCount(uint32_t count){
 }
 
 void Timer::initUdpTx(std::string host, int port){
-	txDat = NetCom::initUdpTx(host.c_str(), port);	
+  //TEMPORARY commented by Greg b/c of error
+  //txDat = NetCom::initUdpTx(host.c_str(), port);	
 }
 void Timer::initUdpRx(std::string ip, int port){
-	rxDat = NetCom::initUdpRx(host.c_str(), port);
+  //TEMPORARY commented by Greg b/c of error
+  //rxDat = NetCom::initUdpRx(host.c_str(), port);
 }
 
 int32 CVICALLBACK timerDigTrigCallback(TaskHandle taskHandle, int32 signalID, void *callbackData){

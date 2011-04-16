@@ -6,10 +6,10 @@
 #include <boost/foreach.hpp>
 #include "global_defs.h"
 #include <map>
+#include "timer.h"
 
 extern int master_id;
-extern int32 buffer_size;
-extern int buffer_count;
+extern int32_t buffer_size;
 
 void neural_daq_init(boost::property_tree::ptree &setup_ptree);
 

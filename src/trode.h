@@ -15,7 +15,7 @@ class Trode{
   virtual ~Trode();
 
   struct trode_opt_struct{
-    std::string trode_name;
+    uint16_t trode_name;
     std::string filt_name;
     uint16_t n_chans;
     rdata_t thresholds[MAX_TRODE_N_CHANS];
@@ -58,9 +58,9 @@ class Trode{
 
 };
 
-extern std::map<std::string, Trode> trode_map;
+extern std::map<uint16_t, Trode> trode_map;
 
-void *trode_filter_data(void *); // trode_filter_data(trode_to_prosess, raw buffer, timestamp at buffer start)
+void *trode_filter_data(void *); // trode_filter_data(void * trode_to_prosess) void* will be cast to Trode* in fn definition
 //void trode_process_data(Trode *); // only need access to this trode's buffers (filtered data is there)
 
 #endif

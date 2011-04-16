@@ -1,7 +1,13 @@
+#ifndef TIMER_H_
+#define TIMER_H_
+
+// isToy option makes this a dummy counter for testing of other arte classes
+#define ISTOY true
+
 #include <NIDAQmx.h>
 #include <stdint.h>
 #include <string>
-#include "netcom.h"
+#include "netcom/netcom.h"
 
 class Timer {
 
@@ -76,4 +82,8 @@ class Timer {
   void initUdpTx(std::string host, int port);
   void initUdpRx(std::string host, int port);
 
+  //const bool isToy = ISTOY;
+  uint32_t toy_timestamp; //public settable xfake timestamp
 };
+
+#endif

@@ -5,13 +5,19 @@
 #include <iomanip>
 #include <pthread.h>
 #include <stdint.h>
+#include "arteopt.h"
 
 bool acquiring;
 int master_id;
-int buffer_count = 0;
-int32 buffer_size;
+int32_t buffer_size;
+uint32_t timestamp; // global toy timestamp defined in arteopt.h. I'm setting it to 10*buffer count every 
+                       // time we get a new buffer.
+                       // corresponds to the timer count when the last sample of the buffer was read
+                       // (just like the presumed return of a every-n-samples-triggered 'read_counter()'.)
 
 std::map <int, neural_daq> neural_daq_map;
+
+extern Timer arte_timer;
 
 bool daqs_reading = false;
 bool daqs_writing = false;
@@ -22,8 +28,7 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
 
   acquiring = false;
   master_id = 0; // arbitrarily pick a card to be master. maybe later user can choose this through conf file?
-  buffer_count = 0;
-
+  
   // temp vars for settings import
   neural_daq this_neural_daq;
   boost::property_tree::ptree ndaq_pt;
@@ -55,7 +60,7 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
     this_nd.data_ptr = this_nd.data_buffer;
     init_array <rdata_t>(this_nd.data_ptr, 4, (this_nd.n_chans * this_nd.n_samps_per_buffer) );
     this_nd.size_bytes = this_nd.total_samp_count * sizeof(this_nd.data_ptr[0]);
-    this_nd.buffer_count = 0;
+    this_nd.daq_buffer_count = 0;
     this_nd.this_buffer = 0;
     this_nd.buffer_time_interval = 0.001;
     neural_daq_map.insert( std::pair<int,neural_daq> (this_nd.id, this_nd) );
@@ -122,11 +127,12 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
 }
 
 void neural_daq_start_all(void){
+  arte_timer.toy_timestamp = 0;
   acquiring = true;
   if (! daqs_reading){
     // start all slave tasks first, so that they don't miss the start trigger from the master
     std::map<int, neural_daq>::iterator it;
-    buffer_count = 0;
+    //daq_buffer_count = 0;
     for(int n = 0; n < neural_daq_map.size(); n++){
       neural_daq *nd = &( neural_daq_map[n] );
       if(nd->id != master_id){
@@ -149,6 +155,7 @@ void neural_daq_start_all(void){
     //TODO: Sanity checks - does file n_chans & n_samps_per_buffer match those of this neural daq?
     std::cout << "file_n_buffers: " << file_n_buffers << "  file_n_chans: " << file_n_chans << "  file_buff_len: " << file_buff_len << std::endl;
     while (neural_daq_map[master_id].this_buffer < file_n_buffers){
+      arte_timer.toy_timestamp += 10; // 10 raw time units is 1 ms is 1 buffer
       read_data_from_file();
       //nanosleep( nd->buffer_time_interval * 1000000000.0);  // <-- commented b/c I still have to read the docs
     }
@@ -186,7 +193,6 @@ void neural_daq_stop_all(void){
 
 void read_data_from_file(void){ // the file-reading version of EveryNCallback
   neural_daq *nd;
-  buffer_count++;
   for (int n = 0; n < neural_daq_map.size(); n++){
     nd = & (neural_daq_map[n]);
     buffer_size = nd->n_chans * nd->n_samps_per_buffer;
@@ -196,13 +202,13 @@ void read_data_from_file(void){ // the file-reading version of EveryNCallback
       try_fwrite<rdata_t>( nd->data_ptr, buffer_size, nd->out_file );
     }
     nd->this_buffer += 1;
-    nd->buffer_count += 1;
+    nd->daq_buffer_count += 1;
   }
   Trode *this_trode;
-  for(std::map<std::string, Trode>::iterator it = trode_map.begin(); it != trode_map.end(); it++){
+  for(std::map<uint16_t, Trode>::iterator it = trode_map.begin(); it != trode_map.end(); it++){
     this_trode = & ( (*it).second);
     trode_filter_data(this_trode);
-    if( it == trode_map.begin() && (buffer_count % 37 == 0)){
+    if( it == trode_map.begin() && (arte_timer.toy_timestamp % (10 * 250) == 0)){
       this_trode->print_buffers(4, 97);
     }
   }
@@ -214,7 +220,11 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
     int32 read;
     int rc;
     int n;
-    buffer_count++;
+    arte_timer.toy_timestamp += 10;
+
+    // We may want to use a nonmember function here rather than a method.  Overhead issue when we call it at 1kHz
+    uint32_t time_now = arte_timer.getTimestamp();
+
     for(n = 0; n < neural_daq_map.size(); n++){
       nd = &(neural_daq_map[n]);
       //daq_err_check ( DAQmxReadAnalogF64( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
@@ -222,11 +232,12 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
       if( nd->out_file != NULL){
 	  try_fwrite<rdata_t>( nd->data_ptr, buffer_size, nd->out_file);
       }
-      nd->buffer_count = nd->buffer_count + 1; 
+      nd->buffer_timestamp = time_now - 10; // make time correspond to the buffer's first data point
+      nd->daq_buffer_count += 1; 
     }
    
     n = 0; // for threads
-    for(std::map<std::string, Trode>::iterator it = trode_map.begin(); it != trode_map.end(); it++){
+    for(std::map<uint16_t, Trode>::iterator it = trode_map.begin(); it != trode_map.end(); it++){
       Trode *this_trode = &((*it).second);
        
       //rc = pthread_create(&my_threads[n], NULL, trode_filter_data, this_trode);
@@ -236,7 +247,7 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
       //}
 
       trode_filter_data(this_trode);
-      if( it == trode_map.begin() && (buffer_count % 250 == 0)){
+      if( it == trode_map.begin() && (arte_timer.toy_timestamp % 250 * 10 == 0)){
 	this_trode->print_buffers(4, 97);
       }
       n++; // for threads
@@ -290,7 +301,7 @@ void init_files(void){
 
     if(! (nd->raw_dump_filename.empty()) ){
       nd->out_file = try_fopen( nd->raw_dump_filename.c_str(), "wb" );
-      try_fwrite( &(nd->buffer_count),     1, nd->out_file );
+      try_fwrite( &(nd->daq_buffer_count), 1, nd->out_file );
       try_fwrite( &(nd->n_chans),          1, nd->out_file );
       try_fwrite( &(nd->n_samps_per_buffer), 1, nd->out_file );
     }
@@ -304,7 +315,7 @@ void finalize_files(void){
 
     if(! (nd->out_file == NULL)){
       rewind(nd->out_file);
-      try_fwrite( &(nd->buffer_count), 1, nd->out_file );
+      try_fwrite( &(nd->daq_buffer_count), 1, nd->out_file );
       fclose( nd->out_file );
     }
 

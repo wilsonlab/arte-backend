@@ -19,7 +19,9 @@ int Lfp_bank::init(boost::property_tree::ptree &lfp_bank_pt,
   
   std::cout << "Beginning lfp_bank assign_property block." << std::endl;
   
-  lfp_bank_name = lfp_bank_pt.data();
+  std::istringstream iss (lfp_bank_pt.data());
+
+  iss >> lfp_bank_name;
   assign_property<uint16_t>("n_chans", &n_chans, lfp_bank_pt, lfp_bank_pt, 1);
   assign_property<uint16_t>("daq_id",  &daq_id,  lfp_bank_pt, lfp_bank_pt, 1);
   assign_property<uint16_t>("channels",channels, lfp_bank_pt, lfp_bank_pt, n_chans);
@@ -39,23 +41,31 @@ int Lfp_bank::init(boost::property_tree::ptree &lfp_bank_pt,
 
   int min_samps_for_filt = my_filt.order;
   my_filt.buffer_mult_of_input = min_samps_for_filt / my_daq->n_samps_per_buffer + 2;
+
   // usually filt needs 4 to 8 samps.  4 / about 32 samps per buffer = 0. Add 2 buffers
   // to be safe.  (having a big circular buffer probably doesn't hurt)
   my_filt.buffer_mult_of_input += my_filt.filtfilt_wait_n_buffers;
+  my_filt.n_samps_per_chan = my_filt.buffer_mult_of_input * stream_n_samps_per_chan;
 
   // if stream_n_samps_per_chan % keep_nth_samp is > 0, then the output
   // buffers will 'gallop'.  So reduce the downsampling until we reach
   // a non-galloping interval.  (should we do it this way, or throw error instead?)
   while( (stream_n_samps_per_chan % keep_nth_sample) > 0 ){
+    printf("\a");
     std::cout << "(stream_n_samps_per_chan=" << stream_n_samps_per_chan <<
       ") % (keep_nth_sample=" << keep_nth_sample << ") = " <<
       stream_n_samps_per_chan % keep_nth_sample << ".  Decrimenting by 1 to " <<
-      (--keep_nth_sample) << std::endl;
+      (keep_nth_sample - 1) << std::endl;
+    keep_nth_sample--;
   }
   
   buf_len = stream_n_samps_per_chan / keep_nth_sample;
 
   ptr_to_raw_stream = &(my_daq->data_ptr);
+
+  u_curs = 0;
+  f_curs = 0;
+  ff_curs = 0;
 
   if(!buffer_dump_filename.empty()){
     buffer_dump_file = try_fopen( buffer_dump_filename.c_str(), "wb" );
@@ -79,3 +89,33 @@ void Lfp_bank::print_options(void){
   std::cout << "still got to implement Lfp_bank::print_options()" << std::endl;
 }
 
+void *lfp_bank_filter_data(void *lfp_bank_in){    // seems this should now be called 'lfp_bank_process_buffer' b/c it does multiple things
+
+  Lfp_bank* this_bank = (Lfp_bank*) lfp_bank_in;
+  // call filter_data from filt.h  We probably should modify this function declaration b/c I think many of the arguments passed can be figured out by the fn itself)
+  // if we can just pass filter a reference to the lfp_bank object.  (can filt.cpp include lfp_bank.h I wonder?)
+  filter_data(*(this_bank->ptr_to_raw_stream), &(this_bank->my_filt), this_bank->my_daq, this_bank->channels,
+	      this_bank->n_chans, 
+	      this_bank->my_daq->n_samps_per_buffer,  // n_daq_samps_per_buffer_per_channel
+	      this_bank->my_filt.n_samps_per_chan,    // filt buff length (before downsampling)
+	      &(this_bank->u_curs),
+	      &(this_bank->f_curs),
+	      &(this_bank->ff_curs), 
+	      this_bank->u_buf, this_bank->f_buf, this_bank->ff_buf);
+
+  // Now copy from the filtered buffer into the downsampled buffer
+  for(int i = 0; i < buf_len; i++){
+    for(int c = 0; c < this_bank.n_chans; c++){
+      int samp_ind = i * this_bank.keep_nth_sample;
+      d_buf[ (i*n_chans) + c ] = f_buf[ (samp_ind*n_chans) + c ];
+    }
+  }
+
+
+}
+
+void lfp_bank_write_record(void *lfp_bank_in){
+  Lfp_bank* this_bank = (Lfp_bank*) lfp_bank_in;
+  uint16_t recordSizeBytes = 0;
+  
+}

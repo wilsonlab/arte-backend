@@ -13,6 +13,11 @@
 #include "neural_daq.h"
 #include "lfp_bank.h"
 
+extern uint32_t timestamp;
+
+extern Timer arte_timer;
+//extern uint32_t buffer_count;
+
 extern std::string setup_config_filename;
 extern std::string session_config_filename;
 

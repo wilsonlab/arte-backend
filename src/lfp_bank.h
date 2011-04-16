@@ -15,7 +15,7 @@ class Lfp_bank{
   Lfp_bank();
   virtual ~Lfp_bank();
 
-  std::string lfp_bank_name;
+  uint16_t lfp_bank_name;
   std::string filt_name;
   uint16_t n_chans;
   uint16_t daq_id;
@@ -62,5 +62,9 @@ class Lfp_bank{
 extern std::map<std::string, Lfp_bank> Lfp_bank_map;
 
 void *lfp_bank_filter_data(void *); // modeled after trode_filter_data
+// gets passed a pointffer that will be cast to Lfp_bank*  (void input b/c may be getting pointers to a base class of Lfp_bank and Trode)
+// if we make those classes derived from a common one in the future.
+void lfp_bank_write_record(void *); // 
+
 
 #endif

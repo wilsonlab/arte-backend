@@ -53,20 +53,28 @@ struct neural_daq{
   FILE *out_file;
   rdata_t data_buffer[MAX_NEURAL_DAQ_BUFFER];
   rdata_t *data_ptr;
+  uint32_t buffer_timestamp;
   TaskHandle task_handle;
   int total_samp_count;
   int size_bytes;
   int status;
   double buffer_time_interval;  // inter-buffer-interval (sec)
-  uint32_t buffer_count;
+  uint32_t daq_buffer_count;
   uint32_t this_buffer;
 };
 
 extern bool daqs_reading; // Daq's read in unison.  No simultaneous mixing between file and card in allowed.
 extern bool daqs_writing; // <-- prob won't be used.  Some daq's may write while others don't.
 
+extern uint32_t buffer_count;
+
 extern std::map <int, neural_daq> neural_daq_map;
 
-
+// hackish enumeration
+typedef uint8_t recordtype_t;
+const recordtype_t LFP_BANK_RECORD = 0;
+const recordtype_t EVENT_STRING_RECORD = 1;
+const recordtype_t SPIKE_RECORD = 2;
+const recordtype_t THRESHOLD_FRAME_RECORD = 3;
 
 #endif

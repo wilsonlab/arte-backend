@@ -97,10 +97,12 @@ int NetCom::txTs(NetComDat net, timestamp_t count, int nTx){
 	char* buff = new char[6];
 	*buff = typeToChar(NETCOM_UDP_TIME);
 
-	tsToBuff(&count, buff, 6);
+	//TEMPORARY commented by Greg because of error
+	//tsToBuff(&count, buff, 6);
 
 	std::cout<<"Buffer Out:";
-	printBuff(buff,6);
+	//TEMPORARY commented by Greg because of error
+	//printBuff(buff,6);
 
 	for (int i=0; i<nTx; i++)
 		sendto(net.sockfd, buff, 6, 0, (struct sockaddr *)&net.addr_in, sizeof net.addr_in);
@@ -125,16 +127,19 @@ timestamp_t NetCom::rxTs(NetComDat net){
         }
 
 	std::cout<<"Buffer  In:";
-	printBuff(buff, 6);
+	// TEMPORARY commented by Greg because of error
+	//	printBuff(buff, 6);
 	std::cout<<"Buffer Type:"<<charToType(*buff)<<std::endl;
 	/// Below this line is undeeded
 
         printf("listener: got packet from %s\n", 
 		inet_ntop(their_addr.ss_family,get_in_addr((struct sockaddr *)&their_addr), s, 
 		sizeof s));
-
-	timestamp_t ts = buffToTs(buff, 6);
-	std::cout<<"Recovered Timestamp:"<<ts<<std::endl;
+	
+	//TEMPORARY commented by Greg because of error
+	//timestamp_t ts = buffToTs(buff, 6);
+	//TEMPORARY commented by Greg because of error
+	//std::cout<<"Recovered Timestamp:" << ts << std::endl;
 //        printf("listener: packet is %d bytes long\n", numbytes);
 //        buff[10] = '\0';
 //        printf("listener: packet contains \"%s\"\n", buff);
