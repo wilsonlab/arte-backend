@@ -21,8 +21,6 @@ extern Timer arte_timer;
 extern std::string setup_config_filename;
 extern std::string session_config_filename;
 
-//extern std::map<std::string, Trode> trode_map;
-
 extern std::map <std::string, Filt> filt_map;
 extern std::map <int, neural_daq> neural_daq_map;
 

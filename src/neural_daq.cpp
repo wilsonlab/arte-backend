@@ -1,5 +1,6 @@
 #define _FILE_OFFSET_BITS  64
 #include "trode.h"
+#include "lfp_bank.h"
 #include "neural_daq.h"
 #include <iostream>
 #include <iomanip>
@@ -247,11 +248,16 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
       //}
 
       trode_filter_data(this_trode);
-      if( it == trode_map.begin() && (arte_timer.toy_timestamp % 250 * 10 == 0)){
-	this_trode->print_buffers(4, 97);
+      if( it == trode_map.begin() && (arte_timer.toy_timestamp % (250 * 10) == 0)){
+	//this_trode->print_buffers(4, 97);
       }
       n++; // for threads
 
+    }
+    for( std::map< uint16_t, Lfp_bank >::iterator it = lfp_bank_map.begin();
+	 it!= lfp_bank_map.end(); it++) {
+      Lfp_bank *this_bank = &((*it).second);
+      lfp_bank_filter_data( this_bank );
     }
   }
 }

@@ -59,7 +59,7 @@ class Lfp_bank{
 
 };
 
-extern std::map<std::string, Lfp_bank> Lfp_bank_map;
+extern std::map<uint16_t, Lfp_bank> lfp_bank_map;
 
 void *lfp_bank_filter_data(void *); // modeled after trode_filter_data
 // gets passed a pointffer that will be cast to Lfp_bank*  (void input b/c may be getting pointers to a base class of Lfp_bank and Trode)

@@ -91,6 +91,7 @@ void Lfp_bank::print_options(void){
 
 void *lfp_bank_filter_data(void *lfp_bank_in){    // seems this should now be called 'lfp_bank_process_buffer' b/c it does multiple things
 
+  //std::cout << "In lfp_bank_filter_data\n";
   Lfp_bank* this_bank = (Lfp_bank*) lfp_bank_in;
   // call filter_data from filt.h  We probably should modify this function declaration b/c I think many of the arguments passed can be figured out by the fn itself)
   // if we can just pass filter a reference to the lfp_bank object.  (can filt.cpp include lfp_bank.h I wonder?)
@@ -104,18 +105,30 @@ void *lfp_bank_filter_data(void *lfp_bank_in){    // seems this should now be ca
 	      this_bank->u_buf, this_bank->f_buf, this_bank->ff_buf);
 
   // Now copy from the filtered buffer into the downsampled buffer
-  for(int i = 0; i < buf_len; i++){
-    for(int c = 0; c < this_bank.n_chans; c++){
-      int samp_ind = i * this_bank.keep_nth_sample;
-      d_buf[ (i*n_chans) + c ] = f_buf[ (samp_ind*n_chans) + c ];
+  for(int i = 0; i < this_bank->buf_len; i++){
+    for(int c = 0; c < this_bank->n_chans; c++){
+      int samp_ind = i * this_bank->keep_nth_sample;
+      this_bank->d_buf[ (i*this_bank->n_chans) + c ] = this_bank->f_buf[ (samp_ind*this_bank->n_chans) + c ];
     }
   }
 
+  lfp_bank_write_record(this_bank);
 
 }
 
 void lfp_bank_write_record(void *lfp_bank_in){
+  //std::cout << "in write_record\n";
   Lfp_bank* this_bank = (Lfp_bank*) lfp_bank_in;
   uint16_t recordSizeBytes = 0;
-  
+  //std::cout << std::setw(6);
+  if(this_bank->my_daq->buffer_timestamp  % (10 * 250) == 0){
+    //std::cout << this_bank->my_daq->buffer_timestamp / 10000.0 << " ";
+    for(int s = 0; s < this_bank->buf_len; s++){
+      std::cout << this_bank->my_daq->buffer_timestamp / 10000 << " ";
+      for(int c = 0; c < this_bank->n_chans; c++){
+	std::cout << this_bank->d_buf[s * this_bank->n_chans + c] << " ";
+      }
+      std::cout << std::endl;
+    }
+  }
 }
