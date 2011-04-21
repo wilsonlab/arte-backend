@@ -12,20 +12,20 @@
 
 #include <pthread.h>
 
-
+typedef int16_t rdata_t;
 const rdata_t RDATA_MIN = INT16_MIN;
 const rdata_t RDATA_MAX = INT16_MAX;
 
 extern pthread_t my_threads[MAX_THREADS];
 
-const int MAX_NAME_STRING_LEN 64;
-const int MAX_EVENT_STRING_LEN 256;
+const int MAX_NAME_STRING_LEN  = 64;
+const int MAX_EVENT_STRING_LEN = 256;
 
 
 //typedef float64 rdata_t;
 typedef int16_t rdata_t;
-typedef char[MAX_NAME_STRING_LEN]  name_string_t;
-typedef char[MAX_EVENT_STRING_LEN] event_string_t;
+typedef char name_string_t [MAX_NAME_STRING_LEN];
+typedef char event_string_t [MAX_EVENT_STRING_LEN];
 
 const int MAX_NEURAL_DAQS = 16;
 const int MAX_TRODES = 64;
@@ -64,7 +64,7 @@ const int MAX_FILTERED_BUFFER_TOTAL_SAMPLE_COUNT = MAX_FILTERED_BUFFER_N_CHANS *
 const double NEURAL_DAQ_V_MAX = 10.0;
 const double NEURAL_DAQ_V_MIN = -10.0;
 
-const int MAX_FILT_COEFS = MAX_TRODE_BUFFER_LEN;
+const int MAX_FILT_COEFS = MAX_FILTERED_BUFFER_LEN;
 
 struct neural_daq{
   int id;

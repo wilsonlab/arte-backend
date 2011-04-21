@@ -7,6 +7,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <map>
 #include <stdint.h>
+#include "filtered_buffer.h"
 
 class Trode{
 
@@ -43,21 +44,21 @@ class Trode{
 	   std::map<int, neural_daq> &neural_daq_map, std::map<std::string, Filt> &filt_map);
 
   void print_options(void);
-  void print_buffers(int chan_lim, int samp_lim);
+  //void print_buffers(int chan_lim, int samp_lim);
   void print_spikes(void);
 
 
-  rdata_t **ptr_to_raw_stream;
-  rdata_t u_buf [MAX_TRODE_BUFFER];                // unfiltered data buffer 
-  rdata_t f_buf [MAX_TRODE_BUFFER];                // filtered data buffer
-  rdata_t ff_buf [MAX_TRODE_BUFFER];             // filtfiltered data buffer
-  int u_curs;
-  int f_curs;
-  int ff_curs;
-  int u_curs_time;
-  int f_curs_time;
+/*   rdata_t **ptr_to_raw_stream; */
+/*   rdata_t u_buf [MAX_TRODE_BUFFER];                // unfiltered data buffer  */
+/*   rdata_t f_buf [MAX_TRODE_BUFFER];                // filtered data buffer */
+/*   rdata_t ff_buf [MAX_TRODE_BUFFER];             // filtfiltered data buffer */
+/*   int u_curs; */
+/*   int f_curs; */
+/*   int ff_curs; */
+/*   int u_curs_time; */
+/*   int f_curs_time; */
 
-  FILE *buffer_dump_file;
+/*   FILE *buffer_dump_file; */
 
 };
 

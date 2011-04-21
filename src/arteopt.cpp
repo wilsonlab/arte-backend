@@ -8,17 +8,30 @@
 #include "util.h"
 #include "timer.h"
 
+Timer arte_timer;
+
 std::string setup_config_filename;
 std::string session_config_filename;
 std::map<uint16_t, Trode> trode_map;
 std::map<uint16_t, Lfp_bank> lfp_bank_map;
 
-std::map<std::string, Filt> filt_map;
+// preparing for the transition from maps to arrays
+Trode * trode_array = new Trode [ MAX_TRODES ];
+Lfp_bank * lfp_bank_array = new Lfp_bank [ MAX_LFP_BANKS ];
+Filtered_buffer * filtered_buffer_array = 
+  new Filtered_buffer [MAX_FILTERED_BUFFERS];
+
+// a cursor to fill the filtered_buffer_array
+Filtered_buffer * this_fb = &(filtered_buffer_array[0]);
+
+// this can be left as a map.  Its contents (just options) 
+// are copied in to the filtered_buffers, so we never
+// come back and make reference to this map (no overhead probs) 
+std::map<name_string_t, Filt> filt_map;
 
 
 boost::property_tree::ptree setup_pt;
 boost::property_tree::ptree session_pt;
-Timer arte_timer;
 
 std::vector<TaskHandle> task_handle_vector;
 
@@ -87,15 +100,24 @@ void arte_session_init(int argc, char *argv[]){
     Trode this_trode;
     this_trode_pt = v.second;
     std::cout << "About to init a trode." << std::endl;
+
+
+    // ****** Old Trode initializer, for trode_map *******
     this_trode.init(this_trode_pt, default_trode_pt, neural_daq_map, filt_map);
     //this_trode.print_options();
     trode_map.insert( std::pair<uint16_t, Trode> ( this_trode.trode_opt.trode_name, this_trode ));
+
+    // new initializer of trodes in array
+    istringstream iss (this_trode_pt.data()); // string corresponding to name
+    int this_ind;
+    iss >> this_ind;
+    trode_array[this_ind]->init(this_trode_pt,default_trode_pt,neural_daq_map, filt_map);
+
   }
 
   Lfp_bank this_lfp_bank;
   BOOST_FOREACH(boost::property_tree::ptree::value_type &v,
 		session_pt.get_child("options.session.lfp_banks")){
-    Lfp_bank this_lfp_bank;
     boost::property_tree::ptree lfp_bank_pt;
     lfp_bank_pt = v.second;
     this_lfp_bank.init(lfp_bank_pt, neural_daq_map, filt_map);
