@@ -16,8 +16,8 @@ class Filt{
 
   void init(boost::property_tree::ptree &filt_pt);
 
-  std::string filt_name;
-  std::string type;               // iir or fir.  Determines how to interpret long lists of numerators and denominators
+  name_strin_t filt_name;
+  name_string_t filt_type;               // iir or fir.  Determines how to interpret long lists of numerators and denominators
                                   // (iir case, they're treated as second-order sections.  fir case, one long kernel).
   double num_coefs [MAX_FILT_COEFS];                     // numerators.
   double denom_coefs [MAX_FILT_COEFS];                     // denominators. We don't calculate these.  I get them from matlab filter design tool.
@@ -37,10 +37,6 @@ class Filt{
   int filt_num_sos;               // derived from order or from numerator, denominator count
   int data_cursor;                
   int out_buf_size_bytes;
-  // filt instances NO NOT have buffers.  This object just keeps parameters for a filter.
-  // buffers are kept within invidivual tetrode or eeg_channel objects.
-  //float64 *x_buffer;
-  //float64 *y_buffer;
   int count;
 };
 

@@ -13,26 +13,29 @@ class Trode{
  public:
   Trode();
   virtual ~Trode();
-
-  struct trode_opt_struct{
-    uint16_t trode_name;
-    std::string filt_name;
-    uint16_t n_chans;
-    rdata_t thresholds[MAX_TRODE_N_CHANS];
-    uint16_t daq_id;
-    uint16_t stream_n_samps_per_chan;
-    uint16_t stream_n_chan;
-    Filt my_filt;
-    std::string spike_mode;
-    int buffer_mult_of_input;
-    int buf_len;
-    int buf_size_bytes;
-    uint16_t channels[MAX_TRODE_N_CHANS];
-    uint16_t samps_before_trig;
-    uint16_t samps_after_trig;
-    uint16_t n_samps_per_spike;
-    std::string buffer_dump_filename;
-  } trode_opt;
+  
+/*    struct trode_opt_struct{  */
+/*      uint16_t trode_name;  */
+/*      name_string_t filt_name;  */
+/*      uint16_t n_chans;  */
+/*      rdata_t thresholds[MAX_TRODE_N_CHANS];  */
+/*      uint16_t daq_id;  */
+/*      uint16_t stream_n_samps_per_chan;  */
+/*      uint16_t stream_n_chan;  */
+/*      Filt my_filt;  */
+/*      name_string_t spike_mode;  */
+/*      int buffer_mult_of_input;  */
+/*      int buf_len;  */
+/*      int buf_size_bytes;  */
+/*      uint16_t channels[MAX_TRODE_N_CHANS];  */
+/*      uint16_t samps_before_trig;  */
+/*      uint16_t samps_after_trig;  */
+/*      uint16_t n_samps_per_spike;  */
+/*    } trode_opt;  */
+  
+  uint16_t name;
+  
+  Filtered_buffer *my_buffer;
 
   neural_daq *my_daq;
 

@@ -196,32 +196,26 @@ void Filt::init(boost::property_tree::ptree &filt_pt){
   int n_coefs;
   filt_name = filt_pt.data();
 
-  assign_property<std::string>("type", &type, filt_pt, filt_pt, 1);
+  assign_property<name_string_t>("type", &type, filt_pt, filt_pt, 1);
   assign_property<int>("order", &order, filt_pt, filt_pt, 1);
   assign_property<bool>("filtfilt", &filtfilt, filt_pt, filt_pt, 1);
   assign_property<int> ("filtfilt_wait_n_buffers", &filtfilt_wait_n_buffers, filt_pt, filt_pt, 1);
 
   data_cursor = 0;
 
-  if(type.compare("fir") == 0){
+  if(strcmp(filt_type,"fir") == 0){
     n_coefs = order;
-    //num_coefs = new rdata_t [order];
-    //denom_coefs = new rdata_t [order];
-    //input_gains = new rdata_t [1];
     filt_num_sos = 1; // second-order-sections is the wrong term here; we mean one plain-old-section (full filter order)
   }
-  else if( (type.compare("iir") == 0) ){
+  else if( strcmp(filt_type,"iir") == 0 ){
     filt_num_sos = order / 2;
     n_coefs = filt_num_sos * 3;
-    //num_coefs = new float64 [n_coefs];
-    //denom_coefs = new float64 [n_coefs];
-    //input_gains = new float64 [filt_num_sos];
   } else{
     std::cerr << "Can't use filt type: " << type << std::endl;
   }
   assign_property<double>("num_coefs", num_coefs, filt_pt, filt_pt,n_coefs);
   assign_property<double>("denom_coefs", denom_coefs, filt_pt, filt_pt, n_coefs);
-  if(type.compare("fir") == 0)  // in the fir case:
+  if(strcmp(filt_type,"fir") == 0)  // in the fir case:
     assign_property<double>("input_gains", input_gains, filt_pt, filt_pt, 1);
   else  // in the iir case:
     assign_property<double>("input_gains", input_gains, filt_pt, filt_pt, filt_num_sos);

@@ -54,9 +54,9 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
     assign_property <int> ("id", &(this_nd.id), ndaq_pt, ndaq_pt, 1);
     assign_property <uint16_t> ("n_samps_per_buffer", &(this_nd.n_samps_per_buffer), ndaq_pt, ndaq_pt, 1);
     assign_property <uint16_t> ("n_chans", &(this_nd.n_chans), ndaq_pt, ndaq_pt, 1);
-    assign_property <std::string> ("dev_name", &(this_nd.dev_name), ndaq_pt, ndaq_pt, 1);
-    assign_property <std::string> ("in_filename", &(this_nd.in_filename), ndaq_pt, ndaq_pt, 1);
-    assign_property <std::string> ("raw_dump_filename", &(this_nd.raw_dump_filename), ndaq_pt, ndaq_pt, 1);
+    assign_property <name_string_t> ("dev_name", &(this_nd.dev_name), ndaq_pt, ndaq_pt, 1);
+    assign_property <name_string_t> ("in_filename", &(this_nd.in_filename), ndaq_pt, ndaq_pt, 1);
+    assign_property <name_string_t> ("raw_dump_filename", &(this_nd.raw_dump_filename), ndaq_pt, ndaq_pt, 1);
     this_nd.total_samp_count = this_nd.n_chans * this_nd.n_samps_per_buffer;
     this_nd.data_ptr = this_nd.data_buffer;
     init_array <rdata_t>(this_nd.data_ptr, 4, (this_nd.n_chans * this_nd.n_samps_per_buffer) );

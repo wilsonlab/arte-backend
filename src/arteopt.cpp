@@ -11,8 +11,11 @@
 std::string setup_config_filename;
 std::string session_config_filename;
 std::map<uint16_t, Trode> trode_map;
-std::map<std::string, Filt> filt_map;
 std::map<uint16_t, Lfp_bank> lfp_bank_map;
+
+std::map<std::string, Filt> filt_map;
+
+
 boost::property_tree::ptree setup_pt;
 boost::property_tree::ptree session_pt;
 Timer arte_timer;
