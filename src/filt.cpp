@@ -196,7 +196,7 @@ void Filt::init(boost::property_tree::ptree &filt_pt){
   int n_coefs;
   filt_name = filt_pt.data();
 
-  assign_property<name_string_t>("type", &type, filt_pt, filt_pt, 1);
+  assign_property<name_string_t>("filt_type", &filt_type, filt_pt, filt_pt, 1);
   assign_property<int>("order", &order, filt_pt, filt_pt, 1);
   assign_property<bool>("filtfilt", &filtfilt, filt_pt, filt_pt, 1);
   assign_property<int> ("filtfilt_wait_n_buffers", &filtfilt_wait_n_buffers, filt_pt, filt_pt, 1);
@@ -211,7 +211,7 @@ void Filt::init(boost::property_tree::ptree &filt_pt){
     filt_num_sos = order / 2;
     n_coefs = filt_num_sos * 3;
   } else{
-    std::cerr << "Can't use filt type: " << type << std::endl;
+    std::cerr << "Can't use filt type: " << filt_type << std::endl;
   }
   assign_property<double>("num_coefs", num_coefs, filt_pt, filt_pt,n_coefs);
   assign_property<double>("denom_coefs", denom_coefs, filt_pt, filt_pt, n_coefs);

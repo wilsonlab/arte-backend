@@ -16,7 +16,7 @@ class Filt{
 
   void init(boost::property_tree::ptree &filt_pt);
 
-  name_string_t filt_name;
+  std::string filt_name;
   name_string_t filt_type;               // iir or fir.  Determines how to interpret long lists of numerators and denominators
                                   // (iir case, they're treated as second-order sections.  fir case, one long kernel).
   double num_coefs [MAX_FILT_COEFS];                     // numerators.

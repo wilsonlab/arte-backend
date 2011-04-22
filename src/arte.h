@@ -1,13 +1,21 @@
 // this will be the header file atop the main loop
+// global variables declared here
 #include <string>
 
+#include "global_defs.h"
+#include "neural_daq.h"
+#include "filtered_buffer.h"
+#include "timer.h"
+#include "trode.h"
+#include "lfp_bank.h"
 
 
-// int daq_buffer_n_samps_per_chan;
-// int daq_n_chans;
-// these global vars are actually specific to the daq card,
-// so they're declared and handled in arteopt
+neural_daq * neural_daq_array;
+Filtered_buffer * filtered_buffer_array;
+Trode * trode_array;
+Lfp_bank * lfp_bank_array;
 
-bool raw_dump;
-std::string raw_dump_filename;
-
+int n_neural_daqs = 0;
+int n_filtered_buffers = 0;
+int n_trodes = 0;
+int n_lfp_banks = 0;

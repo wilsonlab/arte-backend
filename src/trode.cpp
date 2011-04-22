@@ -21,24 +21,31 @@ Trode::~Trode(){
   //std::cout << "In destructor of tetrode object for tetrode: " << trode_name << std::endl; (<- interesting results)
 }
 
+// Old init function using std::maps for trode_map, neural_daq_map, filt_map
+int Trode::init(boost::property_tree::ptree &trode_pt, 
+		boost::property_tree::ptree &default_pt, 
+		std::map<int,neural_daq> &neural_daq_map, 
+		std::map<std::string,Filt> &filt_map){
 
-int Trode::init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptree &default_pt, 
-		std::map<int,neural_daq> &neural_daq_map, std::map<std::string,Filt> &filt_map){
+  
 
   std::cout << "Beginning of assign_property block." << std::endl;
 
   std::istringstream iss(trode_pt.data()); // initialize istringstream with trode_pt.data() which is std::string trode name
   iss >> trode_opt.trode_name;
   //trode_opt.trode_name = trode_pt.data();
+  
+  
+
   assign_property<uint16_t> ("n_chans", &(trode_opt.n_chans), trode_pt, default_pt, 1);
   assign_property_ftor<rdata_t>("thresholds", trode_opt.thresholds, trode_pt, default_pt,trode_opt.n_chans);
   assign_property<uint16_t>("channels", trode_opt.channels, trode_pt, default_pt, trode_opt.n_chans);
   assign_property<uint16_t>("daq_id", &(trode_opt.daq_id), trode_pt,default_pt, 1);
-  assign_property<std::string>("filt_name", &(trode_opt.filt_name), trode_pt, default_pt, 1);
+  assign_property<name_string_t>("filt_name", &(trode_opt.filt_name), trode_pt, default_pt, 1);
   assign_property<uint16_t>("samps_before_trig", &(trode_opt.samps_before_trig), trode_pt, default_pt, 1);
   assign_property<uint16_t>("samps_after_trig", &(trode_opt.samps_after_trig), trode_pt, default_pt, 1);
-  assign_property<std::string> ("spike_mode", &(trode_opt.spike_mode), trode_pt, default_pt, 1);
-  assign_property<std::string> ("buffer_dump_filename", &(trode_opt.buffer_dump_filename), trode_pt, default_pt, 1);
+  assign_property<name_string_t> ("spike_mode", &(trode_opt.spike_mode), trode_pt, default_pt, 1);
+  assign_property<name_string_t> ("buffer_dump_filename", &(trode_opt.buffer_dump_filename), trode_pt, default_pt, 1);
 
   std::cout << "Finished assign_property block." << std::endl;
 
@@ -95,6 +102,28 @@ int Trode::init(boost::property_tree::ptree &trode_pt, boost::property_tree::ptr
 
 }
 
+// New init function for the global array situation
+void init2(boost::property_tree::ptree &trode_pt,
+	   boost::property_tree::ptree &default_pt,
+	   Filtered_buffer * fb_curs){
+
+  // assign trode-specific properties
+  assign_property<uint16_t>("n_chans", &n_chans, trode_pt, default_pt, 1);
+  assign_property_ftor<rdata_t>("thresholds", thresholds, trode_pt, default_pt, n_chans);
+  assign_property<uint16_t>("samps_before_trig", &samps_before_trig, trode_pt, default_pt, 1);
+  assign_property<uint16_t>("samps_after_trig" , &samps_after_trig , trode_pt, default_pt, 1);
+  assign_property<name_string_t>("spike_mode"  , spike_mode        , trode_pt, default_pt, 1); // will this work? char[]
+  n_samps_per_spike = samps_before_trig + samps_after_trig + 1;
+  my_buffer = fb_curs;
+
+  // Filtered_buffer::init() should take 2 property trees and a min sample number
+  // We need at very least n_samps_before + n_samps_after + 1 for the trig sample + 1 for padding
+  // NB check the reasoning for the above count.  Do we need a longer buffer?
+  my_buffer->init(trode_pt, default_pt, (n_samps_per_spike + 1) );
+
+
+
+}
 void *trode_filter_data(void *t){
   Trode *trode = (Trode *)t;
   //  std::cout << "About to call filter_data from the trode." << std::endl;

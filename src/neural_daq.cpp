@@ -88,9 +88,9 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
       
       this_nd.task_handle = 0; // dunno why, but most examples do this 0 init
       buffer_size = buffer_samps_per_chan * this_nd.n_chans;
-      daq_err_check( (DAQmxCreateTask(this_nd.dev_name.c_str(), &(this_nd.task_handle))) );
+      daq_err_check( (DAQmxCreateTask(this_nd.dev_name, &(this_nd.task_handle))) );
       for (int c = 0; c < this_nd.n_chans; c++){
-	sprintf(channel_name, "%s/ai%d", this_nd.dev_name.c_str(), c);
+	sprintf(channel_name, "%s/ai%d", this_nd.dev_name, c);
 	daq_err_check ( DAQmxCreateAIVoltageChan(this_nd.task_handle,channel_name,"",DAQmx_Val_RSE,NEURAL_DAQ_V_MIN,NEURAL_DAQ_V_MAX,DAQmx_Val_Volts,NULL) );
       }  
       daq_err_check ( DAQmxCfgSampClkTiming(this_nd.task_handle, "", samp_rate, DAQmx_Val_Rising, DAQmx_Val_ContSamps, buffer_size) );
@@ -146,7 +146,7 @@ void neural_daq_start_all(void){
     neural_daq_map[master_id].status = 1;
   } else {  // then daqs are getting their data from files
     
-    printf("Reading from file %s\n", neural_daq_map[0].in_filename.c_str());
+    printf("Reading from file %s\n", neural_daq_map[0].in_filename);
     neural_daq *nd = &(neural_daq_map[0]);
     uint32_t file_n_buffers;
     uint16_t file_n_chans, file_buff_len;
@@ -210,7 +210,8 @@ void read_data_from_file(void){ // the file-reading version of EveryNCallback
     this_trode = & ( (*it).second);
     trode_filter_data(this_trode);
     if( it == trode_map.begin() && (arte_timer.toy_timestamp % (10 * 250) == 0)){
-      this_trode->print_buffers(4, 97);
+      printf("Put call to trode->buffer->print_buffers here.\n");
+      //this_trode->my_filtered_buffer->print_buffers(4, 97);
     }
   }
 }
@@ -299,14 +300,14 @@ void init_files(void){
   for(int n = 0; n < neural_daq_map.size(); n++){
     neural_daq *nd = &(neural_daq_map[n]);
 
-    if (! (nd->in_filename.empty()) ){
-      nd->in_file = try_fopen( (nd->in_filename).c_str(), "rb" );
+    if (! (strcmp(nd->in_filename,"")) ){
+      nd->in_file = try_fopen( nd->in_filename, "rb" );
       daqs_reading = true;
     }
 
 
-    if(! (nd->raw_dump_filename.empty()) ){
-      nd->out_file = try_fopen( nd->raw_dump_filename.c_str(), "wb" );
+    if(! (strcmp(nd->raw_dump_filename,"") )){
+      nd->out_file = try_fopen( nd->raw_dump_filename, "wb" );
       try_fwrite( &(nd->daq_buffer_count), 1, nd->out_file );
       try_fwrite( &(nd->n_chans),          1, nd->out_file );
       try_fwrite( &(nd->n_samps_per_buffer), 1, nd->out_file );
