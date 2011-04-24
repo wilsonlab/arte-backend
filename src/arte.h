@@ -9,13 +9,14 @@
 #include "trode.h"
 #include "lfp_bank.h"
 
+// Do we really need all these arrays and counters to be declared here?
 
-neural_daq * neural_daq_array;
-Filtered_buffer * filtered_buffer_array;
-Trode * trode_array;
-Lfp_bank * lfp_bank_array;
+extern neural_daq * neural_daq_array;
+extern Filtered_buffer * filtered_buffer_array;
+extern Trode * trode_array;
+extern Lfp_bank * lfp_bank_array;
 
-int n_neural_daqs = 0;
-int n_filtered_buffers = 0;
-int n_trodes = 0;
-int n_lfp_banks = 0;
+extern int n_neural_daqs;
+extern int n_filtered_buffers;
+extern int n_trodes;
+extern int n_lfp_banks;

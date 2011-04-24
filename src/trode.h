@@ -42,6 +42,7 @@ class Trode{
 
   uint16_t n_chans;
   rdata_t thresholds[MAX_FILTERED_BUFFER_N_CHANS];
+  name_string_t spike_mode;
   uint16_t samps_before_trig;
   uint16_t samps_after_trig;
   uint16_t n_samps_per_spike;
@@ -55,13 +56,13 @@ class Trode{
 	   std::map<int, neural_daq> &neural_daq_map, 
 	   std::map<std::string, Filt> &filt_map);
 
-  int init2(boost_property_tree::ptree &trode_pt,
-	    boost_property_tree::ptree &default_pt,
-	    Filtered_buffer * filtered_buffer_curs)
+  void init2(boost::property_tree::ptree &trode_pt,
+	    boost::property_tree::ptree &default_pt,
+	    Filtered_buffer * filtered_buffer_curs);
 
-  void print_options(void);
-  //void print_buffers(int chan_lim, int samp_lim);
-  void print_spikes(void);
+  void print_options();
+  void print_buffers(int chan_lim, int samp_lim); // this should be handled by my_buffer, not trode
+  void print_spikes();
 
 
 /*   rdata_t **ptr_to_raw_stream; */

@@ -8,6 +8,7 @@
 #include <map>
 #include <stdint.h>
 #include "util.h"
+#include "filtered_buffer.h"
 
 class Lfp_bank{
 
@@ -16,7 +17,7 @@ class Lfp_bank{
   virtual ~Lfp_bank();
 
   uint16_t lfp_bank_name;
-  name_string_t filt_name;
+  //  name_string_t filt_name;
   uint16_t n_chans;
   
 /*   uint16_t daq_id; */
@@ -34,6 +35,7 @@ class Lfp_bank{
 
   //std::string buffer_dump_filename;
   
+  Filtered_buffer * my_buffer;
 
   name_string_t lfp_bank_dump_filename;
 
@@ -43,8 +45,9 @@ class Lfp_bank{
 /*                                          //(later elemnts, intermediate filt levels) */
 /*   rdata_t f_buf  [MAX_LFP_BANK_BUFFER];  //filtered buffer */
 /*   rdata_t ff_buf [MAX_LFP_BANK_BUFFER];  //filtfilted buffer */
-/*   rdata_t d_buf  [MAX_LFP_BANK_BUFFER];  //downsampled buffer */
-
+  
+  rdata_t d_buf  [MAX_FILTERED_BUFFER_TOTAL_SAMPLE_COUNT];  //downsampled buffer 
+  uint16_t d_buf_len;
 /*   FILE *buffer_dump_file; */
 
 
@@ -53,6 +56,9 @@ class Lfp_bank{
   int init(boost::property_tree::ptree &lfp_bank_ptree,
 	   std::map<int, neural_daq> &neural_daq_map,
 	   std::map<std::string, Filt> &filt_map);
+  
+  void init2(boost::property_tree::ptree &lfp_bank_ptree,
+	     Filtered_buffer * filtered_buffer_curs);
 
 /*   int u_curs; */
 /*   int f_curs; */

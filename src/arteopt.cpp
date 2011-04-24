@@ -7,6 +7,7 @@
 #include <iostream>
 #include "util.h"
 #include "timer.h"
+#include "filtered_buffer.h"
 
 Timer arte_timer;
 
@@ -16,20 +17,20 @@ std::map<uint16_t, Trode> trode_map;
 std::map<uint16_t, Lfp_bank> lfp_bank_map;
 
 // preparing for the transition from maps to arrays
-extern neural_daq *neural_daq_array;
-extern Filtered_buffer *filtered_buffer_array;
-extern Trode *trode_array;
-extern Lfp_bank *lfp_bank_array;
+neural_daq *neural_daq_array;
+Filtered_buffer *filtered_buffer_array;
+Trode *trode_array;
+Lfp_bank *lfp_bank_array;
 
-Trode * trode_array = new Trode [ MAX_TRODES ];
-Lfp_bank * lfp_bank_array = new Lfp_bank [ MAX_LFP_BANKS ];
-Filtered_buffer * filtered_buffer_array = 
-  new Filtered_buffer [MAX_FILTERED_BUFFERS];
+//Trode * trode_array = new Trode [ MAX_TRODES ];
+//Lfp_bank * lfp_bank_array = new Lfp_bank [ MAX_LFP_BANKS ];
+//Filtered_buffer * filtered_buffer_array = 
+//  new Filtered_buffer [MAX_FILTERED_BUFFERS];
 
-extern int n_neural_daqs;
-extern int n_filtered_buffers;
-extern int n_trodes;
-extern int n_lfp_banks;
+int n_neural_daqs;
+int n_filtered_buffers;
+int n_trodes;
+int n_lfp_banks;
 
 // a cursor to fill the filtered_buffer_array
 Filtered_buffer * this_fb = &(filtered_buffer_array[0]);
@@ -78,6 +79,8 @@ void arte_init(int argc, char *argv[], const std::string &setup_fn, const std::s
 //and the pre-defined filters
 void arte_setup_init(int argc, char *argv[]){
 
+  n_neural_daqs = n_filtered_buffers = n_trodes = n_lfp_banks = 0;
+  
   neural_daq_init(setup_pt);
 
   BOOST_FOREACH(boost::property_tree::ptree::value_type &v,
@@ -151,8 +154,8 @@ void arte_session_init(int argc, char *argv[]){
     std::istringstream iss (this_trode_pt.data()); // string corresponding to name
     int this_ind;
     iss >> this_ind;
-    (trode_array+this_ind)->init(this_trode_pt,default_trode_pt, filtered_buffer_curs);
-    filtered_buffer_curs++; // increment the cursor
+    (trode_array+this_ind)->init2(this_trode_pt,default_trode_pt, this_fb);
+    this_fb++; // increment the cursor
   }
 
   Lfp_bank this_lfp_bank;

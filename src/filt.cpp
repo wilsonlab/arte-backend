@@ -14,6 +14,9 @@ int rel_pt(int pos, int curs, int buf_len){
   return r;
 }
 
+// BIG NOTE: this functinon will now be defined in filtered_buffer.cpp
+// This way, it will know what a Filtered_buffer is and can access its
+// public members.  This drastically shortens the argument lis.t
 void filter_data(rdata_t *in_buf, Filt *filt, neural_daq *nd, uint16_t *chans, uint16_t n_chans, int in_buf_len, 
 		 uint16_t out_buf_len, int *u_curs_p, int *f_curs_p, int *ff_curs_p,  rdata_t *u_buf, rdata_t *f_buf, rdata_t *ff_buf){
  
