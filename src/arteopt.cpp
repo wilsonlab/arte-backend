@@ -32,9 +32,6 @@ int n_filtered_buffers;
 int n_trodes;
 int n_lfp_banks;
 
-// a cursor to fill the filtered_buffer_array
-Filtered_buffer * this_fb = &(filtered_buffer_array[0]);
-
 // this can be left as a map.  Its contents (just options) 
 // are copied in to the filtered_buffers, so we never
 // come back and make reference to this map (no overhead probs) 
@@ -142,20 +139,20 @@ void arte_session_init(int argc, char *argv[]){
 		session_pt.get_child("options.session.trodes")){
     Trode this_trode;
     this_trode_pt = v.second;
-    std::cout << "About to init a trode." << std::endl;
-
 
     // ****** Old Trode initializer, for trode_map *******
-    this_trode.init(this_trode_pt, default_trode_pt, neural_daq_map, filt_map);
+    //this_trode.init(this_trode_pt, default_trode_pt, neural_daq_map, filt_map);
     //this_trode.print_options();
-    trode_map.insert( std::pair<uint16_t, Trode> ( this_trode.name, this_trode ));
+    //trode_map.insert( std::pair<uint16_t, Trode> ( this_trode.name, this_trode ));
 
     // new initializer of trodes in array
     std::istringstream iss (this_trode_pt.data()); // string corresponding to name
     int this_ind;
     iss >> this_ind;
-    (trode_array+this_ind)->init2(this_trode_pt,default_trode_pt, this_fb);
-    this_fb++; // increment the cursor
+    
+    (trode_array+this_ind)->init2(this_trode_pt,default_trode_pt, fb_curs);
+
+    fb_curs++; // increment the cursor
   }
 
   Lfp_bank this_lfp_bank;
@@ -165,6 +162,12 @@ void arte_session_init(int argc, char *argv[]){
     lfp_bank_pt = v.second;
     this_lfp_bank.init(lfp_bank_pt, neural_daq_map, filt_map);
     lfp_bank_map.insert( std::pair< uint16_t, Lfp_bank > ( this_lfp_bank.lfp_bank_name, this_lfp_bank) );
+    
+    std::istringstream iss (lfp_bank_pt.data());
+    int this_ind;
+    iss >> this_ind;
+    (lfp_bank_array+this_ind)->init2(lfp_bank_pt, fb_curs);
+    fb_curs++;
   }
 
   std::cout << "Done session init." << std::endl;

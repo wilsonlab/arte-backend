@@ -135,10 +135,11 @@ void *lfp_bank_filter_data(void *lfp_bank_in){    // seems this should now be ca
   filter_buffer( this_bank->my_buffer );
   
   // Now copy from the filtered buffer into the downsampled buffer
-  for(i = 0; i < this_bank->my_buffer->buf_len; i++){
+  for(i = 0; i < this_bank->d_buf_len; i++){
     for(c = 0; c < this_bank->n_chans; c++){
       samp_ind = i * this_bank->keep_nth_sample;
-      this_bank->d_buf[ (i*this_bank->n_chans) + c ] = this_bank->my_buffer->f_buf[ (samp_ind*this_bank->n_chans) + c ];
+      this_bank->d_buf[ (i*this_bank->n_chans) + c ] = 
+	this_bank->my_buffer->f_buf[ (samp_ind*this_bank->n_chans) + c ];
     }
   }
 
@@ -153,8 +154,32 @@ void lfp_bank_write_record(void *lfp_bank_in){
   Lfp_bank* this_bank = (Lfp_bank*) lfp_bank_in;
   uint16_t recordSizeBytes = 0;
   //std::cout << std::setw(6);
-  if(this_bank->my_buffer->my_daq->buffer_timestamp  % (10 * 250) == 0){
+  if(this_bank->my_buffer->my_daq->buffer_timestamp  % (10 * 100) == 0){
     //std::cout << this_bank->my_daq->buffer_timestamp / 10000.0 << " ";
+    //std::cout << "u_curs is: " << this_bank->my_buffer->u_curs << std::endl;
+    //std::cout << "data ptr[0]: " << *(this_bank->my_buffer->my_daq->data_ptr) << std::endl;
+    //std::cout << "u_buf[0]   : " << this_bank->my_buffer->u_buf[0] << std::endl;
+    //std::cout << "f_buf[0]   : " << this_bank->my_buffer->f_buf[0] << std::endl;
+    // for(int s = 0; s < 10; s++){
+//       std::cout << this_bank->my_buffer->u_buf[s] << " ";
+//     }
+//     std::cout << std::endl;
+//     for(int s = 0; s < 10; s++){
+//       std::cout << this_bank->my_buffer->f_buf[s] << " ";
+//     }
+//     std::cout << "inds: " << std::endl;
+//     for(int i = 0; i < 3; i++){
+//       std::cout << this_bank->my_buffer->i_ind[i] << " ";
+//     }
+//     std::cout << std::endl;
+//     std::cout << "addys [values] there:" << std::endl;
+//     for(int i = 0; i < 3; i++){
+//       std::cout << &(this_bank->my_buffer->i_buf[ this_bank->my_buffer->i_ind[i] ]) << " [" <<
+// 	this_bank->my_buffer->i_buf[ this_bank->my_buffer->i_ind[i] ] << "]    ";
+//     }
+//     std::cout << std::endl;
+//     std::cout << "addy of f_buf: " << this_bank->my_buffer->f_buf << std::endl;
+//     std::cout << std::endl;
     for(int s = 0; s < this_bank->d_buf_len; s++){
       std::cout << this_bank->my_buffer->my_daq->buffer_timestamp / 10000 << " ";
       for(int c = 0; c < this_bank->n_chans; c++){

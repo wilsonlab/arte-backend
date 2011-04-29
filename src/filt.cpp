@@ -199,7 +199,7 @@ void Filt::init(boost::property_tree::ptree &filt_pt){
   int n_coefs;
   filt_name = filt_pt.data();
 
-  assign_property<name_string_t>("filt_type", &filt_type, filt_pt, filt_pt, 1);
+  assign_property<name_string_t>("type", &filt_type, filt_pt, filt_pt, 1);
   assign_property<int>("order", &order, filt_pt, filt_pt, 1);
   assign_property<bool>("filtfilt", &filtfilt, filt_pt, filt_pt, 1);
   assign_property<int> ("filtfilt_wait_n_buffers", &filtfilt_wait_n_buffers, filt_pt, filt_pt, 1);

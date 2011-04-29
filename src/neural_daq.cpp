@@ -9,7 +9,8 @@
 #include "arteopt.h"
 
 bool acquiring;
-int master_id;
+int master_id; // old way
+int master_ind;// new way
 int32_t buffer_size;
 uint32_t timestamp; // global toy timestamp defined in arteopt.h. I'm setting it to 10*buffer count every 
                        // time we get a new buffer.
@@ -19,6 +20,11 @@ uint32_t timestamp; // global toy timestamp defined in arteopt.h. I'm setting it
 std::map <int, neural_daq> neural_daq_map;
 
 extern Timer arte_timer;
+extern neural_daq * neural_daq_array;
+extern int n_neural_daqs;
+extern int n_trodes;
+extern int n_lfp_banks;
+
 
 bool daqs_reading = false;
 bool daqs_writing = false;
@@ -29,6 +35,7 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
 
   acquiring = false;
   master_id = 0; // arbitrarily pick a card to be master. maybe later user can choose this through conf file?
+  master_ind =0;
   
   // temp vars for settings import
   neural_daq this_neural_daq;
@@ -46,17 +53,31 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
   int n_completed = 0;
   bool master_completed = false;
 
+  int tmp_daq_count = 0;
+  BOOST_FOREACH(boost::property_tree::ptree::value_type &v,
+		setup_pt.get_child("options.setup.neural_daq_list")){
+    tmp_daq_count++;
+  }
+  
+  neural_daq_array = new neural_daq [tmp_daq_count];
+
   // import the settings
   BOOST_FOREACH(boost::property_tree::ptree::value_type &v,
 		setup_pt.get_child("options.setup.neural_daq_list")){
     // bring in properties from the config file
     ndaq_pt= v.second;
+    std::string tmp_dev_name, tmp_in_name, tmp_out_name;
     assign_property <int> ("id", &(this_nd.id), ndaq_pt, ndaq_pt, 1);
     assign_property <uint16_t> ("n_samps_per_buffer", &(this_nd.n_samps_per_buffer), ndaq_pt, ndaq_pt, 1);
     assign_property <uint16_t> ("n_chans", &(this_nd.n_chans), ndaq_pt, ndaq_pt, 1);
-    assign_property <name_string_t> ("dev_name", &(this_nd.dev_name), ndaq_pt, ndaq_pt, 1);
-    assign_property <name_string_t> ("in_filename", &(this_nd.in_filename), ndaq_pt, ndaq_pt, 1);
-    assign_property <name_string_t> ("raw_dump_filename", &(this_nd.raw_dump_filename), ndaq_pt, ndaq_pt, 1);
+    assign_property <std::string> ("dev_name", &tmp_dev_name, ndaq_pt, ndaq_pt, 1);
+    assign_property <std::string> ("in_filename", &tmp_in_name, ndaq_pt, ndaq_pt, 1);
+    assign_property <std::string> ("raw_dump_filename", &tmp_out_name, ndaq_pt, ndaq_pt, 1);
+    
+    strcpy( this_nd.dev_name, tmp_dev_name.c_str() );
+    strcpy( this_nd.in_filename, tmp_in_name.c_str() );
+    strcpy( this_nd.raw_dump_filename, tmp_out_name.c_str() );
+
     this_nd.total_samp_count = this_nd.n_chans * this_nd.n_samps_per_buffer;
     this_nd.data_ptr = this_nd.data_buffer;
     init_array <rdata_t>(this_nd.data_ptr, 4, (this_nd.n_chans * this_nd.n_samps_per_buffer) );
@@ -65,14 +86,17 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
     this_nd.this_buffer = 0;
     this_nd.buffer_time_interval = 0.001;
     neural_daq_map.insert( std::pair<int,neural_daq> (this_nd.id, this_nd) );
+    neural_daq_array[n_neural_daqs] = this_nd;
+    n_neural_daqs++;
   }
 
   init_files(); // open files for reading, files for writing, where appropriate
 
-  int n_daq = neural_daq_map.size();
-  int n = master_id;
-  //std::map<int, neural_daq>::iterator it;
- 
+  int n_daq = neural_daq_map.size(); // OLD WAY
+  n_daq = n_neural_daqs; // NEW WAY
+  int n = master_id; // old way
+  n = master_ind; // new way
+  
   if( !daqs_reading ){   // that is, if we're really using the cards, as opposed to taking data from raw_dump files
 
     while(n_completed < n_daq){
@@ -82,7 +106,8 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
 	if (n == master_id){
 	  n++;}
       }
-      this_nd = neural_daq_map[n];
+      this_nd = neural_daq_map[n];  // old way
+      this_nd = neural_daq_array[n];// new way
       //it = neural_daq_map.find(n);
       //this_nd = (*it).second;
       
@@ -119,6 +144,7 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
       }
       this_nd.status = 0;
       neural_daq_map[this_nd.id] = this_nd; // we gained a task handle for each nd. must re-insert into the map for that value to persist
+      neural_daq_array[n] = this_nd;
       n_completed++;
       std::cout << "Done processing some daq." << std::endl;
     }
@@ -163,6 +189,7 @@ void neural_daq_start_all(void){
   } // end if for reading from file
 
 }
+
 void neural_daq_stop_all(void){
   acquiring = false;
   std::cout << "neural_daq.cpp line 160 test." << std::endl;
@@ -214,10 +241,19 @@ void read_data_from_file(void){ // the file-reading version of EveryNCallback
       //this_trode->my_filtered_buffer->print_buffers(4, 97);
     }
   }
+  for(int i = 0; i < n_trodes; i++){
+    trode_filter_data( (void*) &(trode_array[i]));
+  }
+  for(int i = 0; i < n_lfp_banks; i++){
+    lfp_bank_filter_data( (void*) &(lfp_bank_array[i]) );
+  }
+
 }
 
 int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEventType, uInt32 nSamples, void *callbackData){
   if(acquiring){
+    //std::cout << "In EveryNCallback." << std::endl;
+    //fflush(stdout);
     neural_daq *nd;
     int32 read;
     int rc;
@@ -227,8 +263,11 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
     // We may want to use a nonmember function here rather than a method.  Overhead issue when we call it at 1kHz
     uint32_t time_now = arte_timer.getTimestamp();
 
-    for(n = 0; n < neural_daq_map.size(); n++){
-      nd = &(neural_daq_map[n]);
+    // for(n = 0; n < neural_daq_map.size(); n++){
+    for( n = 0; n < n_neural_daqs; n++){
+      //std::cout << "In data-probing loop for neural_daq: " << n << std::endl;
+      //fflush(stdout);
+      nd = &(neural_daq_array[n]);
       //daq_err_check ( DAQmxReadAnalogF64( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
       daq_err_check ( DAQmxReadBinaryI16( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
       if( nd->out_file != NULL){
@@ -237,28 +276,45 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
       nd->buffer_timestamp = time_now - 10; // make time correspond to the buffer's first data point
       nd->daq_buffer_count += 1; 
     }
-   
+    //std::cout << "Finished daq loop." << std::endl;
+    //fflush(stdout);
     n = 0; // for threads
-    for(std::map<uint16_t, Trode>::iterator it = trode_map.begin(); it != trode_map.end(); it++){
-      Trode *this_trode = &((*it).second);
-       
+    //for(std::map<uint16_t, Trode>::iterator it = trode_map.begin(); it != trode_map.end(); it++){
+    //  Trode *this_trode = &((*it).second);
+    for(n = 0; n < n_trodes; n++){
       //rc = pthread_create(&my_threads[n], NULL, trode_filter_data, this_trode);
       //if(rc){
       //printf("THREAD ERROR!");
       //exit(-1);
       //}
-
-      trode_filter_data(this_trode);
-      if( it == trode_map.begin() && (arte_timer.toy_timestamp % (250 * 10) == 0)){
+      //std::cout << "Before trode_filter_data" << std::endl;
+      //fflush(stdout);
+      Trode * trode_pt = &(trode_array[n]);
+      //std::cout << "Trode_pt is: " << trode_pt << std::endl;
+      trode_filter_data((void*)trode_pt);
+      //std::cout << "After filter_data call" << std::endl;
+      //fflush(stdout);
+      //if( it == trode_map.begin() && (arte_timer.toy_timestamp % (250 * 10) == 0)){
+      if(n == 0 && (arte_timer.toy_timestamp % (250 * 10) == 0) ){
 	//this_trode->print_buffers(4, 97);
       }
       n++; // for threads
 
     }
-    for( std::map< uint16_t, Lfp_bank >::iterator it = lfp_bank_map.begin();
-	 it!= lfp_bank_map.end(); it++) {
-      Lfp_bank *this_bank = &((*it).second);
-      lfp_bank_filter_data( this_bank );
+    //for( std::map< uint16_t, Lfp_bank >::iterator it = lfp_bank_map.begin();
+    //	 it!= lfp_bank_map.end(); it++) {
+    //Lfp_bank *this_bank = &((*it).second);
+    //std::cout << "About to loop lfp_banks." << std::endl;
+    //fflush(stdout);
+    for(n = 0; n < n_lfp_banks; n++){
+      Lfp_bank * this_bank = &lfp_bank_array[n];
+      //std::cout << "array assignment is Ok." << std::endl;
+      //std::cout << "n_lfp_banks is: " << n_lfp_banks << std::endl;
+      //std::cout << "n_trodes is : " << n_trodes << std::endl;
+      //fflush(stdout);
+      lfp_bank_filter_data( (void*)&lfp_bank_array[n] );
+      //std::cout << "finished one lfp bank." << std::endl;
+      //fflush(stdout);
     }
   }
 }
@@ -300,13 +356,13 @@ void init_files(void){
   for(int n = 0; n < neural_daq_map.size(); n++){
     neural_daq *nd = &(neural_daq_map[n]);
 
-    if (! (strcmp(nd->in_filename,"")) ){
+    if (! (strcmp(nd->in_filename,"none")==0) ){
       nd->in_file = try_fopen( nd->in_filename, "rb" );
       daqs_reading = true;
     }
 
 
-    if(! (strcmp(nd->raw_dump_filename,"") )){
+    if(! (strcmp(nd->raw_dump_filename,"none")==0 )){
       nd->out_file = try_fopen( nd->raw_dump_filename, "wb" );
       try_fwrite( &(nd->daq_buffer_count), 1, nd->out_file );
       try_fwrite( &(nd->n_chans),          1, nd->out_file );

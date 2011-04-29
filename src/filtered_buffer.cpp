@@ -7,6 +7,8 @@
 #include <stdint.h>
 
 Filtered_buffer::Filtered_buffer(){
+  printf("In a filtered_buffer constructor.\n");
+  fflush(stdout);
 }
 
 Filtered_buffer::~Filtered_buffer(){
@@ -26,7 +28,7 @@ Filtered_buffer::~Filtered_buffer(){
 void Filtered_buffer::init(boost::property_tree::ptree &pt,
 			   boost::property_tree::ptree &default_pt,
 			   int min_samps){
-  
+ 
   // assign values from the property tree into filtered buffer members
   std::string tmp_filt_name; // no longer a member. Temp var
   std::string tmp_buffer_filename;
@@ -36,7 +38,7 @@ void Filtered_buffer::init(boost::property_tree::ptree &pt,
   assign_property<std::string>("filt_name",           &tmp_filt_name,pt, default_pt, 1);
   assign_property<std::string>("buffer_dump_filename",&tmp_buffer_filename,pt,default_pt,1);
   strcpy( buffer_dump_filename, tmp_buffer_filename.c_str() );
-
+  
   // which neural_daq in the array has the id we want?
   for (int i = 0; i < n_neural_daqs; i++){
     if( daq_id == neural_daq_array[i].id )
@@ -46,6 +48,7 @@ void Filtered_buffer::init(boost::property_tree::ptree &pt,
   // stream_n_samps_per_chan is the number of samps per chan
   // collected during each daq card read
   stream_n_samps_per_chan = my_daq->n_samps_per_buffer;
+  stream_n_chans          = my_daq->n_chans; 
 
   // min_samps, passed by the caller, is the minimum number
   // of samples needed in the (circular) filtered buffer
@@ -92,13 +95,13 @@ void Filtered_buffer::init(boost::property_tree::ptree &pt,
 
   // set our raw pointerpointer to the daq's data pointer
   // the 2 levels of indirection is helpful in the case
-  // of reading data from a file instead of the daqs
+  // of reading data from a file instead nof the daqs
   // (see neural_daq.cpp to understand this
   ptr_to_raw_stream = &(my_daq->data_ptr);
 
   // open files if we're writing to files
   finalize_done = true; // this flag will change if we open files
-  if(! (strcmp(buffer_dump_filename,"")) )
+  if(! (strcmp(buffer_dump_filename,"none")) )
     init_files(tmp_buffer_filename);
 
   // set the cursurs to the beginning of the buffer
@@ -109,6 +112,17 @@ void Filtered_buffer::init(boost::property_tree::ptree &pt,
   u_curs =  -1*stream_n_samps_per_chan;
   f_curs =  -1*stream_n_samps_per_chan;
   ff_curs = -1*stream_n_samps_per_chan;
+
+  // initialize i_inds.  These are samp numbers of the first chan,
+  // first samp, first buffer of each of the 3 SOS superbuffers
+  // (1st is u_buf, second is an intermediate, third is f_buf)
+  // (due to order-4 iir filters going by 2 steps of
+  // second-order-section filtering
+  for(int i = 0; i < (MAX_FILTERED_BUFFER_N_INTERMEDIATE_BUFFERS + 2); i++){
+    i_ind[i] = ( i * n_chans * buf_len );
+  }
+  u_buf = &(i_buf[ i_ind[0] ]);
+  f_buf = &(i_buf[i_ind[ my_filt.filt_num_sos ] ]);
 
 }
 
