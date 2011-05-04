@@ -37,7 +37,7 @@ class Filtered_buffer{
   rdata_t **ptr_to_raw_stream;
   
   //rdata_t f_buf  [MAX_FILTERED_BUFFER_TOTAL_SAMPLE_COUNT];   // OLD WAY
-  rdata_t i_buf  [MAX_FILTERED_BUFFER_TOTAL_SAMPLE_COUNT];
+  rdata_t i_buf  [MAX_FILTERED_BUFFER_TOTAL_SAMPLE_COUNT_MULTI];
   //rdata_t u_buf  [MAX_FILTERED_BUFFER_TOTAL_SAMPLE_COUNT_MULTI];
   rdata_t ff_buf [MAX_FILTERED_BUFFER_TOTAL_SAMPLE_COUNT];
 

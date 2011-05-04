@@ -23,7 +23,6 @@ const int MAX_EVENT_STRING_LEN = 256;
 
 
 //typedef float64 rdata_t;
-typedef int16_t rdata_t;
 typedef char name_string_t [MAX_NAME_STRING_LEN];
 typedef char event_string_t [MAX_EVENT_STRING_LEN];
 

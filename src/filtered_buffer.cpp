@@ -77,6 +77,9 @@ void Filtered_buffer::init(boost::property_tree::ptree &pt,
   if( (min_samps_for_filt % stream_n_samps_per_chan) > 0 )
     my_filt.buffer_mult_of_input += 1;
 
+  if(my_filt.buffer_mult_of_input < 2)
+    my_filt.buffer_mult_of_input = 2;
+
   // filter may 'filtfilt' meaning run the same filter forward
   // and backwards on teh data.  This means we need to collect
   // more data before running the reverse filter (or else
@@ -101,7 +104,7 @@ void Filtered_buffer::init(boost::property_tree::ptree &pt,
 
   // open files if we're writing to files
   finalize_done = true; // this flag will change if we open files
-  if(! (strcmp(buffer_dump_filename,"none")) )
+  if(! ((strcmp(buffer_dump_filename,"none"))==1) )
     init_files(tmp_buffer_filename);
 
   // set the cursurs to the beginning of the buffer
@@ -109,9 +112,9 @@ void Filtered_buffer::init(boost::property_tree::ptree &pt,
   // a new buffer is sent to filtered_buffer, *_curs
   // increments by the input buffer length to 0.
   // And after filtering, 0 is the first valid sample.
-  u_curs =  -1*stream_n_samps_per_chan;
-  f_curs =  -1*stream_n_samps_per_chan;
-  ff_curs = -1*stream_n_samps_per_chan;
+  u_curs =  buf_len - stream_n_samps_per_chan;
+  f_curs =  buf_len - stream_n_samps_per_chan;
+  ff_curs = buf_len - stream_n_samps_per_chan;
 
   // initialize i_inds.  These are samp numbers of the first chan,
   // first samp, first buffer of each of the 3 SOS superbuffers
@@ -154,25 +157,29 @@ void Filtered_buffer::write_buffers(){
 
   // For now, we are ignoring filtfilt buffer
   // Just write unfiltered buffer and filtered buffer
-  try_fwrite <rdata_t>( &(u_buf[u_curs]), 
+  try_fwrite <rdata_t>( &(i_buf[i_ind[0] + u_curs * n_chans]), 
 			stream_n_samps_per_chan * n_chans,
 			buffer_dump_file_uf );
 
-  try_fwrite <rdata_t>( &(f_buf[u_curs]),
+  try_fwrite <rdata_t>( &(i_buf[i_ind[my_filt.filt_num_sos] + u_curs * n_chans]),
 			stream_n_samps_per_chan * n_chans,
 			buffer_dump_file_f );
 
 }
 
 void Filtered_buffer::finalize_files(){
+
+  if( buffer_dump_file_uf != NULL){
+    std::cout << "Finalizing Files!  file_buffer_count = " << file_buffer_count << std::endl;
   
-  rewind( buffer_dump_file_uf );
-  try_fwrite <uint32_t> ( &file_buffer_count, 1, buffer_dump_file_uf );
-
-  rewind( buffer_dump_file_f );
-  try_fwrite <uint32_t> ( &file_buffer_count, 1, buffer_dump_file_f );
-
-  finalize_done = true;
+    rewind( buffer_dump_file_uf );
+    try_fwrite <uint32_t> ( &file_buffer_count, 1, buffer_dump_file_uf );
+    
+    rewind( buffer_dump_file_f );
+    try_fwrite <uint32_t> ( &file_buffer_count, 1, buffer_dump_file_f );
+    
+    finalize_done = true;
+  }
 
 }
 

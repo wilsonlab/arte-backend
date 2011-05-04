@@ -133,16 +133,19 @@ void *lfp_bank_filter_data(void *lfp_bank_in){    // seems this should now be ca
   int i,c,samp_ind;
   
   filter_buffer( this_bank->my_buffer );
+
+  // shouldn't this be called from within filter_buffer?
+  this_bank->my_buffer->write_buffers();
   
   // Now copy from the filtered buffer into the downsampled buffer
   for(i = 0; i < this_bank->d_buf_len; i++){
     for(c = 0; c < this_bank->n_chans; c++){
       samp_ind = i * this_bank->keep_nth_sample;
-      this_bank->d_buf[ (i*this_bank->n_chans) + c ] = 
-	this_bank->my_buffer->f_buf[ (samp_ind*this_bank->n_chans) + c ];
+      this_bank->d_buf[ (i*(this_bank->n_chans)) + c ] = 
+	this_bank->my_buffer->u_buf[ (samp_ind*(this_bank->n_chans)) + c ];
     }
   }
-
+  
   lfp_bank_write_record(this_bank);
 
 }
@@ -183,7 +186,7 @@ void lfp_bank_write_record(void *lfp_bank_in){
     for(int s = 0; s < this_bank->d_buf_len; s++){
       std::cout << this_bank->my_buffer->my_daq->buffer_timestamp / 10000 << " ";
       for(int c = 0; c < this_bank->n_chans; c++){
-	std::cout << this_bank->d_buf[s * this_bank->n_chans + c] << " ";
+	std::cout << this_bank->d_buf[(s * (this_bank->n_chans) ) + c] << " ";
       }
       std::cout << std::endl;
     }

@@ -37,7 +37,7 @@ void filter_buffer( Filtered_buffer * fb ){
   ((fb->u_curs)) += n_in_samps;
   ((fb->f_curs)) += n_in_samps;
   // and reset them to the beginning if it's time to do so.
-  if( (fb->u_curs) > n_out_samps ){
+  if( (fb->u_curs) >= n_out_samps ){
     // reset cursor samp
     ((fb->u_curs)) = 0;
     ((fb->f_curs)) = 0;
@@ -50,15 +50,15 @@ void filter_buffer( Filtered_buffer * fb ){
   // first copy data from in_stream to u_buf
   for(c_out = 0; c_out < n_out_chans; c_out++){
     c_in = fb->channels[c_out];
-    for(samp = 0; samp < n_out_samps; samp++){
-      this_out = (samp * n_out_chans) + c_out; // (samp num * n_chans) + chan_num
+    for(samp = 0; samp < n_in_samps; samp++){
+      this_out = ((samp+u_curs) * n_out_chans) + c_out; // (samp num * n_chans) + chan_num
       this_in =  (samp * n_in_chans)  + c_in;  // (samp num * 
-      u_buf[this_out] = daq_buf[this_in];
+      i_buf[i_ind[0]+this_out] = daq_buf[this_in];
       
     }
   }
   
-  if((fb->my_filt.filt_num_sos == 1)){
+  if((fb->my_filt.filt_num_sos == 1) && false){
     // This is the place where FIR filtering will be implemented
     std::cout << "Tell Greg to implement the fir filter." << std::endl;
     exit(EXIT_FAILURE);
@@ -84,7 +84,7 @@ void filter_buffer( Filtered_buffer * fb ){
       pt_h1 = CBUF( (samp-1), n_out_samps ) * n_out_chans;
       pt_h2 = CBUF( (samp-2), n_out_samps ) * n_out_chans;
 
-      for( c = 0; c < n_out_chans; c++){;
+      for( c = 0; c < n_out_chans; c++){
 
 // 	f_buf[ out_pt + c ] =
 // 	  (rdata_t) ( u_buf[in_pt_c+c]* b[i*3+0] * fb->my_filt.input_gains[i] +
@@ -106,8 +106,17 @@ void filter_buffer( Filtered_buffer * fb ){
 		      i_buf[i_ind[i+1]+pt_h2+c] * a[i*3+2] );
 
 	// test if the index hit is right
-	//i_buf[ i_ind[i+1] + pt_h0 + c] = 12;
+	//i_buf[ i_ind[i+1] + pt_h0 + c] = 100;
 	// NB: it worked - I got all 12's
+	if(false){
+
+	  std::cout << 
+	    " i_buf[  i_ind[i+1]  +  pt_h0  +  c ] =" << std::endl <<
+	    " i_buf[  " << i_ind[i+1] << " + " << pt_h0 << " + " << c << " ] =" << std::endl << std::endl <<
+	    "  i_buf[ i_ind[i]+pt_h0+c] * b[i*3 + 0] + input_gains[i] " << std::endl <<
+	    "  i_buf[ " << i_ind[i] << "+" << pt_h0 << "+" << c << "] * b[" << i*3+0 << "] * gains[" << i << "]" << std::endl <<
+	    " " << i_buf[i_ind[i] + pt_h0 + c] << " * " << b[i*3 + 0] << " * " << fb->my_filt.input_gains[i] << std::endl;
+	}
       }
 
     }
