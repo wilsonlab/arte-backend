@@ -124,8 +124,8 @@ void Filtered_buffer::init(boost::property_tree::ptree &pt,
   for(int i = 0; i < (MAX_FILTERED_BUFFER_N_INTERMEDIATE_BUFFERS + 2); i++){
     i_ind[i] = ( i * n_chans * buf_len );
   }
-  u_buf = &(i_buf[ i_ind[0] ]);
-  f_buf = &(i_buf[i_ind[ my_filt.filt_num_sos ] ]);
+  //u_buf = &(i_buf[ i_ind[0] ]);
+  //f_buf = &(i_buf[i_ind[ my_filt.filt_num_sos ] ]);
 
 }
 
@@ -153,18 +153,19 @@ void Filtered_buffer::init_files(std::string &filename){
 
 void Filtered_buffer::write_buffers(){
   
-  file_buffer_count++;
+  if( buffer_dump_file_uf != NULL){
+    file_buffer_count++;
 
-  // For now, we are ignoring filtfilt buffer
-  // Just write unfiltered buffer and filtered buffer
-  try_fwrite <rdata_t>( &(i_buf[i_ind[0] + u_curs * n_chans]), 
-			stream_n_samps_per_chan * n_chans,
-			buffer_dump_file_uf );
-
-  try_fwrite <rdata_t>( &(i_buf[i_ind[my_filt.filt_num_sos] + u_curs * n_chans]),
-			stream_n_samps_per_chan * n_chans,
-			buffer_dump_file_f );
-
+    // For now, we are ignoring filtfilt buffer
+    // Just write unfiltered buffer and filtered buffer
+    try_fwrite <rdata_t>( &(i_buf[i_ind[0] + u_curs * n_chans]), 
+			  stream_n_samps_per_chan * n_chans,
+			  buffer_dump_file_uf );
+    
+    try_fwrite <rdata_t>( &(i_buf[i_ind[my_filt.filt_num_sos] + u_curs * n_chans]),
+			  stream_n_samps_per_chan * n_chans,
+			  buffer_dump_file_f );
+  }
 }
 
 void Filtered_buffer::finalize_files(){

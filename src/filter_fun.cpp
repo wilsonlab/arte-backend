@@ -23,6 +23,7 @@ void filter_buffer( Filtered_buffer * fb ){
   rdata_t * f_buf  = fb->f_buf;                 // filt buffer
   rdata_t * ff_buf = fb->ff_buf;                // filtfilt buffer
   rdata_t * i_buf  = fb->i_buf;                 // the actual long buffer
+  double  * d_buf  = fb->d_buf;
   int *i_ind  = fb->i_ind;
 
   // copy data into local vars
@@ -53,8 +54,9 @@ void filter_buffer( Filtered_buffer * fb ){
     for(samp = 0; samp < n_in_samps; samp++){
       this_out = ((samp+u_curs) * n_out_chans) + c_out; // (samp num * n_chans) + chan_num
       this_in =  (samp * n_in_chans)  + c_in;  // (samp num * 
+      d_buf[i_ind[0]+this_out] = daq_buf[this_in];
       i_buf[i_ind[0]+this_out] = daq_buf[this_in];
-      
+      u_buf[this_out] = (rdata_t) (daq_buf[this_in]);
     }
   }
   
@@ -93,18 +95,16 @@ void filter_buffer( Filtered_buffer * fb ){
 // 		      f_buf[in_pt_h1+c]*a[i*3+1] -
 // 		      f_buf[in_pt_h2+c]*a[i*3+2] );
 
-// 	std::cout << "About to compute. i_buf[ " << i_ind[i+1] + pt_h0 + c << "] is " << i_buf[i_ind[i+1]+pt_h0+c] << std::endl;
-// 	fflush(stdout);
-// 	std::cout << "i_buf[" << i_ind[i+1]+pt_h2+c << "] is " << i_buf[ i_ind[i+1] + pt_h2 + c ] << std::endl;
-// 	fflush(stdout);
+	d_buf[i_ind[i+1] + pt_h0 + c] =
+	  ( d_buf[i_ind[i]+pt_h0+c]   * b[i*3+0] * fb->my_filt.input_gains[i] +
+	    d_buf[i_ind[i]+pt_h1+c]   * b[i*3+1] * fb->my_filt.input_gains[i] +
+	    d_buf[i_ind[i]+pt_h2+c]   * b[i*3+2] * fb->my_filt.input_gains[i] -
+	    d_buf[i_ind[i+1]+pt_h1+c] * a[i*3+1] -
+	    d_buf[i_ind[i+1]+pt_h2+c] * a[i*3+2] );
 
-	i_buf[i_ind[i+1] + pt_h0 + c] =
-	  (rdata_t) ( i_buf[i_ind[i]+pt_h0+c]   * b[i*3+0] * fb->my_filt.input_gains[i] +
-		      i_buf[i_ind[i]+pt_h1+c]   * b[i*3+1] * fb->my_filt.input_gains[i] +
-		      i_buf[i_ind[i]+pt_h2+c]   * b[i*3+2] * fb->my_filt.input_gains[i] -
-		      i_buf[i_ind[i+1]+pt_h1+c] * a[i*3+1] -
-		      i_buf[i_ind[i+1]+pt_h2+c] * a[i*3+2] );
-
+	i_buf[i_ind[i+1] + pt_h0 + c] = (rdata_t) d_buf[i_ind[i+1] + pt_h0 + c];
+	// pause for debugger
+	
 	// test if the index hit is right
 	//i_buf[ i_ind[i+1] + pt_h0 + c] = 100;
 	// NB: it worked - I got all 12's
