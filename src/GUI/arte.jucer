@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="ynSYIrr" name="arte" projectType="guiapp" version="1.0.0"
+              juceLinkage="amalg_multi" buildVST="1" buildRTAS="0" buildAU="1"
+              pluginName="Juce Project" pluginDesc="Juce Project" pluginManufacturer="yourcompany"
+              pluginManufacturerCode="Manu" pluginCode="Plug" pluginChannelConfigs="{1, 1}, {2, 2}"
+              pluginIsSynth="0" pluginWantsMidiIn="0" pluginProducesMidiOut="0"
+              pluginSilenceInIsSilenceOut="0" pluginTailLength="0" pluginEditorRequiresKeys="0"
+              pluginAUExportPrefix="JuceProjectAU" pluginAUViewClass="JuceProjectAU_V1"
+              pluginRTASCategory="" bundleIdentifier="com.yourcompany.arte"
+              jucerVersion="3.0.0">
+  <EXPORTFORMATS>
+    <XCODE_MAC targetFolder="Builds/MacOSX" vstFolder="~/SDKs/vstsdk2.4" rtasFolder="~/SDKs/PT_80_SDK"
+               juceFolder="/Users/Josh/Documents/Programming/C++/juce" extraLinkerFlags="-lftdi"/>
+    <XCODE_IPHONE targetFolder="Builds/iOS" vstFolder="~/SDKs/vstsdk2.4" rtasFolder="~/SDKs/PT_80_SDK"
+                  juceFolder="/Users/Josh/Documents/Programming/C++/juce"/>
+    <MSVC6 targetFolder="Builds/MSVC6" vstFolder="c:\SDKs\vstsdk2.4" rtasFolder="c:\SDKs\PT_80_SDK"
+           libraryType="1" juceFolder="../../../../Programming/C++/juce"/>
+    <VS2005 targetFolder="Builds/VisualStudio2005" vstFolder="c:\SDKs\vstsdk2.4"
+            rtasFolder="c:\SDKs\PT_80_SDK" libraryType="1" juceFolder="../../../../Programming/C++/juce"/>
+    <VS2008 targetFolder="Builds/VisualStudio2008" vstFolder="c:\SDKs\vstsdk2.4"
+            rtasFolder="c:\SDKs\PT_80_SDK" libraryType="1" juceFolder="../../../../Programming/C++/juce"/>
+    <VS2010 targetFolder="Builds/VisualStudio2010" vstFolder="c:\SDKs\vstsdk2.4"
+            rtasFolder="c:\SDKs\PT_80_SDK" libraryType="1" juceFolder="../../../../Programming/C++/juce"/>
+    <LINUX_MAKE targetFolder="Builds/Linux" vstFolder="~/SDKs/vstsdk2.4" juceFolder="../../../../Programming/C++/juce"
+                extraLinkerFlags="-lftdi"/>
+  </EXPORTFORMATS>
+  <CONFIGURATIONS>
+    <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="arte"/>
+    <CONFIGURATION name="Release" isDebug="0" optimisation="2" targetName="arte"/>
+  </CONFIGURATIONS>
+  <MAINGROUP id="h3HbSTV" name="arte">
+    <GROUP id="ZMfWAFj" name="Source">
+      <GROUP id="ZFZoGrT" name="Dsp">
+        <FILE id="mUwiufK" name="Bessel.cpp" compile="1" resource="0" file="Source/Dsp/Bessel.cpp"/>
+        <FILE id="vZ6Kudo" name="Bessel.h" compile="0" resource="0" file="Source/Dsp/Bessel.h"/>
+        <FILE id="vwycpbo" name="Biquad.cpp" compile="1" resource="0" file="Source/Dsp/Biquad.cpp"/>
+        <FILE id="a732gXS" name="Biquad.h" compile="0" resource="0" file="Source/Dsp/Biquad.h"/>
+        <FILE id="0W6qAwa" name="Butterworth.cpp" compile="1" resource="0"
+              file="Source/Dsp/Butterworth.cpp"/>
+        <FILE id="UV5QzX8" name="Butterworth.h" compile="0" resource="0" file="Source/Dsp/Butterworth.h"/>
+        <FILE id="KClKE8" name="Cascade.cpp" compile="1" resource="0" file="Source/Dsp/Cascade.cpp"/>
+        <FILE id="ylsuRNY" name="Cascade.h" compile="0" resource="0" file="Source/Dsp/Cascade.h"/>
+        <FILE id="o3iAh3a" name="ChebyshevI.cpp" compile="1" resource="0" file="Source/Dsp/ChebyshevI.cpp"/>
+        <FILE id="WyXprJ9" name="ChebyshevI.h" compile="0" resource="0" file="Source/Dsp/ChebyshevI.h"/>
+        <FILE id="b4qha7" name="ChebyshevII.cpp" compile="1" resource="0" file="Source/Dsp/ChebyshevII.cpp"/>
+        <FILE id="LcWDNOk" name="ChebyshevII.h" compile="0" resource="0" file="Source/Dsp/ChebyshevII.h"/>
+        <FILE id="XDyWZQQ" name="Common.h" compile="0" resource="0" file="Source/Dsp/Common.h"/>
+        <FILE id="49hU2ny" name="Custom.cpp" compile="1" resource="0" file="Source/Dsp/Custom.cpp"/>
+        <FILE id="xPXCA6M" name="Custom.h" compile="0" resource="0" file="Source/Dsp/Custom.h"/>
+        <FILE id="2EpjlI" name="Design.cpp" compile="1" resource="0" file="Source/Dsp/Design.cpp"/>
+        <FILE id="ptQmM0r" name="Design.h" compile="0" resource="0" file="Source/Dsp/Design.h"/>
+        <FILE id="fAPODFz" name="Documentation.cpp" compile="1" resource="0"
+              file="Source/Dsp/Documentation.cpp"/>
+        <FILE id="JAPeScN" name="Dsp.h" compile="0" resource="0" file="Source/Dsp/Dsp.h"/>
+        <FILE id="tr30OGq" name="Elliptic.cpp" compile="1" resource="0" file="Source/Dsp/Elliptic.cpp"/>
+        <FILE id="qkR4YNx" name="Elliptic.h" compile="0" resource="0" file="Source/Dsp/Elliptic.h"/>
+        <FILE id="XXTYoH9" name="Filter.cpp" compile="1" resource="0" file="Source/Dsp/Filter.cpp"/>
+        <FILE id="ZYh8Cn" name="Filter.h" compile="0" resource="0" file="Source/Dsp/Filter.h"/>
+        <FILE id="fzaQLV" name="Layout.h" compile="0" resource="0" file="Source/Dsp/Layout.h"/>
+        <FILE id="1rzxhtw" name="Legendre.cpp" compile="1" resource="0" file="Source/Dsp/Legendre.cpp"/>
+        <FILE id="vMzVy3f" name="Legendre.h" compile="0" resource="0" file="Source/Dsp/Legendre.h"/>
+        <FILE id="Xgckbu9" name="MathSupplement.h" compile="0" resource="0"
+              file="Source/Dsp/MathSupplement.h"/>
+        <FILE id="1skPBI3" name="Param.cpp" compile="1" resource="0" file="Source/Dsp/Param.cpp"/>
+        <FILE id="AJKO8Gc" name="Params.h" compile="0" resource="0" file="Source/Dsp/Params.h"/>
+        <FILE id="m5Ywyi7" name="PoleFilter.cpp" compile="1" resource="0" file="Source/Dsp/PoleFilter.cpp"/>
+        <FILE id="yghcXOB" name="PoleFilter.h" compile="0" resource="0" file="Source/Dsp/PoleFilter.h"/>
+        <FILE id="HxU4He0" name="RBJ.cpp" compile="1" resource="0" file="Source/Dsp/RBJ.cpp"/>
+        <FILE id="LzKYXte" name="RBJ.h" compile="0" resource="0" file="Source/Dsp/RBJ.h"/>
+        <FILE id="KNsCh3Q" name="RootFinder.cpp" compile="1" resource="0" file="Source/Dsp/RootFinder.cpp"/>
+        <FILE id="5FY4DiP" name="RootFinder.h" compile="0" resource="0" file="Source/Dsp/RootFinder.h"/>
+        <FILE id="CZlsp9w" name="SmoothedFilter.h" compile="0" resource="0"
+              file="Source/Dsp/SmoothedFilter.h"/>
+        <FILE id="rj1CVK" name="State.cpp" compile="1" resource="0" file="Source/Dsp/State.cpp"/>
+        <FILE id="floABAJ" name="State.h" compile="0" resource="0" file="Source/Dsp/State.h"/>
+        <FILE id="Tnibh38" name="Types.h" compile="0" resource="0" file="Source/Dsp/Types.h"/>
+        <FILE id="74WHAi" name="Utilities.h" compile="0" resource="0" file="Source/Dsp/Utilities.h"/>
+      </GROUP>
+      <GROUP id="gRFzu0" name="Audio">
+        <FILE id="2vKx2R" name="AudioComponent.cpp" compile="1" resource="0"
+              file="Source/Audio/AudioComponent.cpp"/>
+        <FILE id="lyiexes" name="AudioComponent.h" compile="0" resource="0"
+              file="Source/Audio/AudioComponent.h"/>
+      </GROUP>
+      <GROUP id="yQmqZWk" name="Processors">
+        <FILE id="f34QY5Q" name="RecordNode.cpp" compile="1" resource="0" file="Source/Processors/RecordNode.cpp"/>
+        <FILE id="ne3WPH4" name="RecordNode.h" compile="0" resource="0" file="Source/Processors/RecordNode.h"/>
+        <FILE id="TrDHtmZ" name="SourceNodeFPGA.cpp" compile="1" resource="0"
+              file="Source/Processors/SourceNodeFPGA.cpp"/>
+        <FILE id="twFReQS" name="SourceNodeFPGA.h" compile="0" resource="0"
+              file="Source/Processors/SourceNodeFPGA.h"/>
+        <FILE id="JXxx5p" name="SignalGenerator.cpp" compile="1" resource="0"
+              file="Source/Processors/SignalGenerator.cpp"/>
+        <FILE id="6xlnGdF" name="SignalGenerator.h" compile="0" resource="0"
+              file="Source/Processors/SignalGenerator.h"/>
+        <FILE id="5xMSqrr" name="ResamplingNode.cpp" compile="1" resource="0"
+              file="Source/Processors/ResamplingNode.cpp"/>
+        <FILE id="G3kmYa" name="ResamplingNode.h" compile="0" resource="0"
+              file="Source/Processors/ResamplingNode.h"/>
+        <FILE id="y77wOVa" name="DisplayNode.cpp" compile="1" resource="0"
+              file="Source/Processors/DisplayNode.cpp"/>
+        <FILE id="RmcrIXf" name="DisplayNode.h" compile="0" resource="0" file="Source/Processors/DisplayNode.h"/>
+        <FILE id="8KOCQ0m" name="FilterNode.cpp" compile="1" resource="0" file="Source/Processors/FilterNode.cpp"/>
+        <FILE id="BLwO4vF" name="FilterNode.h" compile="0" resource="0" file="Source/Processors/FilterNode.h"/>
+        <FILE id="OakAxjJ" name="SourceNode.cpp" compile="1" resource="0" file="Source/Processors/SourceNode.cpp"/>
+        <FILE id="T6xYPnw" name="SourceNode.h" compile="0" resource="0" file="Source/Processors/SourceNode.h"/>
+        <FILE id="s8On6e" name="GenericProcessor.cpp" compile="1" resource="0"
+              file="Source/Processors/GenericProcessor.cpp"/>
+        <FILE id="tjR32I" name="GenericProcessor.h" compile="0" resource="0"
+              file="Source/Processors/GenericProcessor.h"/>
+        <FILE id="z3gsHSY" name="ProcessorGraph.cpp" compile="1" resource="0"
+              file="Source/Processors/ProcessorGraph.cpp"/>
+        <FILE id="WbqC0CB" name="ProcessorGraph.h" compile="0" resource="0"
+              file="Source/Processors/ProcessorGraph.h"/>
+      </GROUP>
+      <GROUP id="RNGb1yR" name="UI">
+        <FILE id="XxpxuUf" name="StreamViewer.cpp" compile="1" resource="0"
+              file="Source/UI/StreamViewer.cpp"/>
+        <FILE id="N98qcpo" name="StreamViewer.h" compile="0" resource="0" file="Source/UI/StreamViewer.h"/>
+        <FILE id="aX0rCd0" name="FilterViewport.cpp" compile="1" resource="0"
+              file="Source/UI/FilterViewport.cpp"/>
+        <FILE id="4X2rynr" name="FilterViewport.h" compile="0" resource="0"
+              file="Source/UI/FilterViewport.h"/>
+        <FILE id="JvNLLKA" name="FilterList.cpp" compile="1" resource="0" file="Source/UI/FilterList.cpp"/>
+        <FILE id="EZrmpZO" name="FilterList.h" compile="0" resource="0" file="Source/UI/FilterList.h"/>
+        <FILE id="we1JIPz" name="ControlPanel.cpp" compile="1" resource="0"
+              file="Source/UI/ControlPanel.cpp"/>
+        <FILE id="rCft9Ec" name="ControlPanel.h" compile="0" resource="0" file="Source/UI/ControlPanel.h"/>
+        <FILE id="Ih10hsN" name="UIComponent.cpp" compile="1" resource="0"
+              file="Source/UI/UIComponent.cpp"/>
+        <FILE id="BMY9oVw" name="UIComponent.h" compile="0" resource="0" file="Source/UI/UIComponent.h"/>
+      </GROUP>
+      <FILE id="YFtK48" name="MainWindow.cpp" compile="1" resource="0" file="Source/MainWindow.cpp"/>
+      <FILE id="JiA1GET" name="MainWindow.h" compile="0" resource="0" file="Source/MainWindow.h"/>
+      <FILE id="z41Hy7g" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
+    </GROUP>
+  </MAINGROUP>
+  <JUCEOPTIONS JUCE_FORCE_DEBUG="default" JUCE_LOG_ASSERTIONS="default" JUCE_ASIO="default"
+               JUCE_WASAPI="default" JUCE_DIRECTSOUND="default" JUCE_ALSA="default"
+               JUCE_QUICKTIME="default" JUCE_OPENGL="default" JUCE_DIRECT2D="default"
+               JUCE_USE_FLAC="default" JUCE_USE_OGGVORBIS="default" JUCE_USE_CDBURNER="default"
+               JUCE_USE_CDREADER="default" JUCE_USE_CAMERA="default" JUCE_ENABLE_REPAINT_DEBUGGING="default"
+               JUCE_USE_XINERAMA="default" JUCE_USE_XSHM="default" JUCE_USE_XRENDER="default"
+               JUCE_USE_XCURSOR="default" JUCE_PLUGINHOST_VST="default" JUCE_PLUGINHOST_AU="default"
+               JUCE_ONLY_BUILD_CORE_LIBRARY="default" JUCE_WEB_BROWSER="default"
+               JUCE_SUPPORT_CARBON="default" JUCE_CHECK_MEMORY_LEAKS="default"
+               JUCE_CATCH_UNHANDLED_EXCEPTIONS="default"/>
+</JUCERPROJECT>
