@@ -1,0 +1,81 @@
+/*
+  ==============================================================================
+
+    UIComponent.h
+    Created: 30 Apr 2011 8:33:05pm
+    Author:  jsiegle
+
+  ==============================================================================
+*/
+
+#ifndef __UICOMPONENT_H_D97C73CF__
+#define __UICOMPONENT_H_D97C73CF__
+
+#include "../../JuceLibraryCode/JuceHeader.h"
+#include "ControlPanel.h"
+#include "FilterList.h"
+#include "FilterViewport.h"
+#include "StreamViewer.h"
+#include "../Processors/DisplayNode.h"
+#include "../Processors/ProcessorGraph.h"
+
+class UIComponent : public Component,
+				    public DragAndDropContainer,
+				    public ActionBroadcaster,
+				    public Timer
+				    //public Button::Listener
+
+{
+public: 
+	UIComponent(ProcessorGraph* pgraph);
+	~UIComponent();
+
+private:
+	//ControlPanel* controlPanel;
+	Viewport* dataViewport;
+	FilterViewport* filterViewport;
+	FilterList* filterList;
+	ControlPanel* controlPanel;
+
+	ProcessorGraph* processorGraph;
+
+	Label* infoLabel;
+	Font* Miso;
+
+	const String msg;
+
+	void resized();
+
+	void timerCallback();
+
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (UIComponent);
+	
+};
+
+/*class BigBlackBox : public Component
+{
+public: 
+	BigBlackBox() {
+	
+		setBounds(0,0,500,500);
+	}
+	~BigBlackBox() {}
+
+private:
+	
+	void paint(Graphics& g) {
+	
+		g.setColour(Colours::black);
+		g.fillAll();
+		g.setColour(Colours::yellow);
+		for (int n = 0; n < 500; n+=25)
+		{
+			g.drawLine(0,500,n,n);
+		}
+		
+	}
+};*/
+
+
+
+#endif  // __UICOMPONENT_H_D97C73CF__
