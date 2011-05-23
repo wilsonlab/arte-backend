@@ -8,6 +8,7 @@
 #include <map>
 #include <stdint.h>
 #include "filtered_buffer.h"
+#include "spike_detector.h"
 
 extern neural_daq      * neural_daq_array;
 extern Filtered_buffer * filtered_buffer_array;
@@ -46,6 +47,7 @@ class Trode{
   uint16_t samps_before_trig;
   uint16_t samps_after_trig;
   uint16_t n_samps_per_spike;
+  uint16_t refractory_period_samps;
   
   Filtered_buffer *my_buffer;
 

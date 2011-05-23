@@ -65,6 +65,8 @@ const double NEURAL_DAQ_V_MIN = -10.0;
 
 const int MAX_FILT_COEFS = MAX_FILTERED_BUFFER_LEN;
 
+const int MAX_SPIKE_N_SAMPS_PER_CHAN = 128;
+
 struct neural_daq{
   int id;
   name_string_t dev_name;

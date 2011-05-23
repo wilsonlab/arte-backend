@@ -17,10 +17,11 @@ std::map<uint16_t, Trode> trode_map;
 std::map<uint16_t, Lfp_bank> lfp_bank_map;
 
 // preparing for the transition from maps to arrays
-neural_daq *neural_daq_array;
+neural_daq      *neural_daq_array;
 Filtered_buffer *filtered_buffer_array;
-Trode *trode_array;
-Lfp_bank *lfp_bank_array;
+Trode           *trode_array;
+Lfp_bank        *lfp_bank_array;
+NetCom          *netcom_array;
 
 //Trode * trode_array = new Trode [ MAX_TRODES ];
 //Lfp_bank * lfp_bank_array = new Lfp_bank [ MAX_LFP_BANKS ];
@@ -31,6 +32,7 @@ int n_neural_daqs;
 int n_filtered_buffers;
 int n_trodes;
 int n_lfp_banks;
+int n_netcoms;
 
 // this can be left as a map.  Its contents (just options) 
 // are copied in to the filtered_buffers, so we never
@@ -66,6 +68,7 @@ void arte_init(int argc, char *argv[], const std::string &setup_fn, const std::s
 
   arte_setup_init(argc, argv); // Use the property_tree to set global vars
   arte_session_init(argc, argv); // Use property_tree to set up trode list, trode/eeg view vars
+  arte_network_init(argc, argv); // look at trode_array and lfp_bank_array, make netcom for each trode or lfp_bank, and 2 for arte itself
   //arte_init_timer();  // in timer.h
   //arte_start_clock(); // in timer.h 
   
@@ -76,7 +79,7 @@ void arte_init(int argc, char *argv[], const std::string &setup_fn, const std::s
 //and the pre-defined filters
 void arte_setup_init(int argc, char *argv[]){
 
-  n_neural_daqs = n_filtered_buffers = n_trodes = n_lfp_banks = 0;
+  n_neural_daqs = n_filtered_buffers = n_trodes = n_lfp_banks = n_netcoms = 0;
   
   neural_daq_init(setup_pt);
 

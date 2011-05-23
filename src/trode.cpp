@@ -115,7 +115,8 @@ void Trode::init2(boost::property_tree::ptree &trode_pt,
   assign_property_ftor<rdata_t>("thresholds",  thresholds, trode_pt, default_pt, n_chans);
   assign_property<uint16_t>("samps_before_trig", &samps_before_trig, trode_pt, default_pt, 1);
   assign_property<uint16_t>("samps_after_trig" , &samps_after_trig , trode_pt, default_pt, 1);
-  assign_property<std::string>("spike_mode"    , &tmp_spikemode    , trode_pt, default_pt, 1); // will this work? char[]
+  assign_property<uint16_t>("refractory_period_samps",&refractory_period_samps,trode_pt,default_trode_pt,1);
+  assign_property<std::string>("spike_mode"    , &tmp_spikemode    , trode_pt, default_pt, 1);
   strcpy( spike_mode, tmp_spikemode.c_str() );
 
   n_samps_per_spike = samps_before_trig + samps_after_trig + 1;
@@ -151,6 +152,7 @@ void *trode_filter_data(void *t){
 //   }
 
   filter_buffer( ((Trode *)t)->my_buffer );
+  
 
 }
 
@@ -174,73 +176,77 @@ void Trode::print_options(void){
 
 
 void Trode::print_buffers(int chan_lim, int samp_lim){
-  system("clear");
-  std::cout << "*********" << name << "*************" << std::endl;
-  std::cout << std::fixed << std::setprecision(1); 
-  neural_daq this_daq = neural_daq_map[my_buffer->my_daq->id];
-  std::cout << "raw_stream || u_buf  ||  f_buf" << std::endl;
 
-  for (int s = 0; s < samp_lim; s++){
 
-    int neural_daq_row_offset = s * (my_buffer->my_daq)->n_chans;
-    int row_offset = s * n_chans;
-    int last_curs = CBUF( (my_buffer->u_curs - (my_buffer->my_daq)->n_samps_per_buffer), my_buffer->buf_len);
-    int adjusted_u_curs;
-    if(my_buffer->u_curs == 0){
-      adjusted_u_curs = my_buffer->buf_len;
-    }
-    else{
-      adjusted_u_curs = my_buffer->u_curs;
-    }
+//   system("clear");
+//   std::cout << "*********" << name << "*************" << std::endl;
+//   std::cout << std::fixed << std::setprecision(1); 
+//   neural_daq this_daq = neural_daq_map[my_buffer->my_daq->id];
+//   std::cout << "raw_stream || u_buf  ||  f_buf" << std::endl;
 
-    if( s < last_curs || s >= adjusted_u_curs){
-      for(int c = 0; c < chan_lim; c++){
-	std::cout << "\033[0;32m" << std::setw(7) << 0.0 << " " << "\033[0m";
-      }
-    }
-    else{
-      for(int c = 0; c < chan_lim; c++){
-	int this_in_c = (my_buffer->channels)[c];
-	//      std::cout << std::setw(7) << ptr_to_raw_stream[this_in_c + neural_daq_row_offset] << " "; // correct output
-	std::cout << std::setw(7) << (my_buffer->my_daq)->data_ptr[(this_in_c + neural_daq_row_offset) - (last_curs * (my_buffer->my_daq)->n_chans)] << " "; // correct output
-	//       std::cout << std::setw(7) << my_daq->data_ptr_copy[this_in_c + neural_daq_row_offset] << " ";  // all 8.0's
-	//      std::cout << std::setw(7) << this_daq.data_ptr_copy[this_in_c + neural_daq_row_offset] << " ";  // all 8.0's
-      }
-    }
+//   for (int s = 0; s < samp_lim; s++){
 
-    std::cout << "  ||  ";
+//     int neural_daq_row_offset = s * (my_buffer->my_daq)->n_chans;
+//     int row_offset = s * n_chans;
+//     int last_curs = CBUF( (my_buffer->u_curs - (my_buffer->my_daq)->n_samps_per_buffer), my_buffer->buf_len);
+//     int adjusted_u_curs;
+//     if(my_buffer->u_curs == 0){
+//       adjusted_u_curs = my_buffer->buf_len;
+//     }
+//     else{
+//       adjusted_u_curs = my_buffer->u_curs;
+//     }
 
-    for (int c = 0; c < chan_lim; c++){
-      if(s == (my_buffer->u_curs)){
-	std::cout << "\033[0;32m";
-      }else{
-	std::cout << "\033[0m";}
-      std::cout << std::setw(7) << my_buffer->u_buf[c + row_offset] << " \033[0m"; 
-    }
+//     if( s < last_curs || s >= adjusted_u_curs){
+//       for(int c = 0; c < chan_lim; c++){
+// 	std::cout << "\033[0;32m" << std::setw(7) << 0.0 << " " << "\033[0m";
+//       }
+//     }
+//     else{
+//       for(int c = 0; c < chan_lim; c++){
+// 	int this_in_c = (my_buffer->channels)[c];
+// 	//      std::cout << std::setw(7) << ptr_to_raw_stream[this_in_c + neural_daq_row_offset] << " "; // correct output
+// 	std::cout << std::setw(7) << (my_buffer->my_daq)->data_ptr[(this_in_c + neural_daq_row_offset) - (last_curs * (my_buffer->my_daq)->n_chans)] << " "; // correct output
+// 	//       std::cout << std::setw(7) << my_daq->data_ptr_copy[this_in_c + neural_daq_row_offset] << " ";  // all 8.0's
+// 	//      std::cout << std::setw(7) << this_daq.data_ptr_copy[this_in_c + neural_daq_row_offset] << " ";  // all 8.0's
+//       }
+//     }
 
 //     std::cout << "  ||  ";
 
-//     std::cout << std::fixed << std::setprecision(1);
 //     for (int c = 0; c < chan_lim; c++){
-//       if(s == f_curs){
+//       if(s == (my_buffer->u_curs)){
 // 	std::cout << "\033[0;32m";
 //       }else{
 // 	std::cout << "\033[0m";}
-//       std::cout << std::setw(7) << u_buf[c + row_offset + (trode_opt.n_chans * trode_opt.buf_len)] << " \033[0m";
+//       std::cout << std::setw(7) << my_buffer->u_buf[c + row_offset] << " \033[0m"; 
 //     }
 
+// //     std::cout << "  ||  ";
 
-    std::cout << "  ||  ";
-    std::cout << std::fixed << std::setprecision(1);
-    for (int c = 0; c < chan_lim; c++){
-      if(s == my_buffer->f_curs){
-	std::cout << "\033[0;32m";
-      } else{
-	std::cout << "\033[0m";}
-      std::cout << std::setw(7) << my_buffer->f_buf[c + row_offset] << "  \033[0m";
-    }
-    std::cout <<std::endl;
-  }
+// //     std::cout << std::fixed << std::setprecision(1);
+// //     for (int c = 0; c < chan_lim; c++){
+// //       if(s == f_curs){
+// // 	std::cout << "\033[0;32m";
+// //       }else{
+// // 	std::cout << "\033[0m";}
+// //       std::cout << std::setw(7) << u_buf[c + row_offset + (trode_opt.n_chans * trode_opt.buf_len)] << " \033[0m";
+// //     }
+
+
+//     std::cout << "  ||  ";
+//     std::cout << std::fixed << std::setprecision(1);
+//     for (int c = 0; c < chan_lim; c++){
+//       if(s == my_buffer->f_curs){
+// 	std::cout << "\033[0;32m";
+//       } else{
+// 	std::cout << "\033[0m";}
+//       std::cout << std::setw(7) << my_buffer->f_buf[c + row_offset] << "  \033[0m";
+//     }
+//     std::cout <<std::endl;
+//   }
+
+
 }
 
 

@@ -32,6 +32,7 @@ void arte_init(int argc,char *argv[], const std::string &, const std::string &);
 
 void arte_setup_init(int argc, char *argv[]);
 void arte_session_init(int argc, char *argv[]);
+void arte_network_init(int argc, char *argv[]);
 //int  arte_setup_daq_cards();  // eg tasks, virtual chans, callback attachment
 //this is now declared & implemented in util.h and util.cpp
 //static int32 GetTerminalNameWithDevPrefix(TaskHandle taskHandle, const char terminalName[], char triggerName[]);
