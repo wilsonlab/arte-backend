@@ -54,7 +54,7 @@
 // endif
 
 #ifdef __osf__
-@undef recv
+#undef recv
 #udef send
 #define recv(a,b,c,d)   recvfrom(a,b,c,d,0,0)
 #define send(a,b,c,d)   sendto(a,b,c,d,0,0)

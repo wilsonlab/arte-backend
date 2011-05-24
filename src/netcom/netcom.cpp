@@ -160,22 +160,23 @@ void NetCom::txBuff(NetComDat net, char *buff, int buff_len){
 
 }
 
-void NetCom::rxBuff(NetComDat net, char *buff, int &buff_len){
+void NetCom::rxBuff(NetComDat net, char *buff, int *buff_len){
   
   char s[INET6_ADDRSTRLEN];
-  int num_bytes;
+  int numbytes;
   sockaddr_storage their_addr = net.their_addr;
   socklen_t addr_len = sizeof(their_addr);
-
+  
   sockaddr_in sa = *(sockaddr_in*)&their_addr;
-
-  if ( (numbytes = recvfrom(net.sockfd, &buff, BUFFSIZE-1, 0, (SA*)their_addr, &addr_len)) == -1){
+  
+  if ( (numbytes = recvfrom(net.sockfd, &buff, BUFFSIZE-1, 0, (SA*)&their_addr, &addr_len)) == -1){
     printf("recvfrom error from rxBuff.\n");
   }
-
+  
   *buff_len = numbytes;
   
 }
+
 
 void *get_in_addr(struct sockaddr *sa){
         if (sa->sa_family == AF_INET) {
