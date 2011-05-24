@@ -17,11 +17,14 @@ std::map<uint16_t, Trode> trode_map;
 std::map<uint16_t, Lfp_bank> lfp_bank_map;
 
 // preparing for the transition from maps to arrays
-neural_daq      *neural_daq_array;
-Filtered_buffer *filtered_buffer_array;
-Trode           *trode_array;
-Lfp_bank        *lfp_bank_array;
-NetCom          *netcom_array;
+neural_daq          *neural_daq_array;
+Filtered_buffer     *filtered_buffer_array;
+Trode               *trode_array;
+Lfp_bank            *lfp_bank_array;
+NetCom a_netcom;
+std::vector<NetCom>  netcom_vector;  // netcom is vector b/c I don't know that it has a fixed size
+
+//NetCom          *netcom_array;
 
 //Trode * trode_array = new Trode [ MAX_TRODES ];
 //Lfp_bank * lfp_bank_array = new Lfp_bank [ MAX_LFP_BANKS ];
@@ -68,7 +71,7 @@ void arte_init(int argc, char *argv[], const std::string &setup_fn, const std::s
 
   arte_setup_init(argc, argv); // Use the property_tree to set global vars
   arte_session_init(argc, argv); // Use property_tree to set up trode list, trode/eeg view vars
-  arte_network_init(argc, argv); // look at trode_array and lfp_bank_array, make netcom for each trode or lfp_bank, and 2 for arte itself
+  //arte_network_init(argc, argv); // look at trode_array and lfp_bank_array, make netcom for each trode or lfp_bank, and 2 for arte itself
   //arte_init_timer();  // in timer.h
   //arte_start_clock(); // in timer.h 
   
@@ -152,7 +155,7 @@ void arte_session_init(int argc, char *argv[]){
     std::istringstream iss (this_trode_pt.data()); // string corresponding to name
     int this_ind;
     iss >> this_ind;
-    
+    (trode_array+this_ind)->name = this_ind;
     (trode_array+this_ind)->init2(this_trode_pt,default_trode_pt, fb_curs);
 
     fb_curs++; // increment the cursor

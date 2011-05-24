@@ -15,6 +15,7 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include "datapacket.h"
+#include "unp.h"
 
 
 struct NetComDat{
@@ -36,6 +37,9 @@ class NetCom{
 
 	static int txWave(NetComDat net, wave_t w, int nTx);
 	static wave_t rxWave(NetComDat net);
+
+	static void txBuff(NetComDat net, char * buff, int buff_len);
+	static void rxBuff(NetComDat net, char * buff, int &buff_len);
 };
 
 void *get_in_addr(struct sockaddr *sa);

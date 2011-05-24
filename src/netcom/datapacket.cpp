@@ -107,8 +107,49 @@ spike_t buffToSpike( char* buff, int blen){
 }
 
 /*------------- WAVE ------------*/
-void waveToBuff(wave_t* w, char* buff, int blen){
-//TODO IMPLEMENT
+void waveToBuff(lfp_bank_net_t* lfp, char* buff, int blen){
+  //TODO IMPLEMENT
+  //printf("waveToBuff\n");
+  
+  int s;
+
+  int cursor = 2;
+  int16_t name_tx =              hton16(*(lfp->name));
+  uint16_t ts_tx =               hton32(*(lfp->ts));
+  uint16_t n_chans_tx =          hton16(*(lfp->n_chans));
+  uint16_t n_samps_per_chan_tx = hton16(*(lfp->n_samps_per_chan));
+  uint16_t bytes_per_samp_tx =   hton16(*(lfp->samp_n_bytes));
+  rdata_t data_tx[8100];  // find out the right minimum size for this array
+  int16_t gain_tx[128];
+
+  // flip all the elements in data
+  // THIS ASSUMES 16 BIT SAMPLES
+  for(s = 0; s < *(lfp->n_chans) * *(lfp->n_samps_per_chan); s++){
+    data_tx[s] = hton16(lfp->data[s]);
+  }
+  for(s = 0; s < *(lfp->n_chans); s++){
+    gain_tx[s] = hton16(lfp->gains[s]);
+  }
+
+  buff[0] = typeToChar(NETCOM_UDP_LFP);
+  buff[1] = 0;
+
+  memcpy(buff+cursor, &ts_tx                          , 4);
+  cursor += 4;
+  memcpy(buff+cursor, &name_tx                        , 2);
+  cursor += 2;
+  memcpy(buff+cursor, &n_chans_tx                     , 2);
+  cursor += 2;
+  memcpy(buff+cursor, &n_samps_per_chan_tx            , 2);
+  cursor += 2;
+  memcpy(buff+cursor, &bytes_per_samp_tx, 2);
+  cursor += 2;
+  memcpy(buff+cursor, &data_tx                        , (s=(*(lfp->n_chans) * *(lfp->n_samps_per_chan) * *(lfp->samp_n_bytes))));
+  cursor += s;
+  memcpy(buff+cursor, &gain_tx                        , (s=(*(lfp->n_chans) * 2)));
+  cursor += s;
+
+  buff[cursor] = '\0';
 
 }
 

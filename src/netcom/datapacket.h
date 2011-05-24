@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <vector>
 #include <byteswap.h>
+#include "../global_defs.h"
 
 #define ntoh64(x) bswap_64(x)
 #define hton64(x) bswap_64(x)
@@ -57,6 +58,18 @@ struct spike_t{
 	std::vector<uint16_t> data;
 };
 
+// Greg's alternative for a spike pre-packet struct
+struct spike_net_t{
+  timestamp_t *ts;                  // bytes 2:5
+  uint16_t    *name;                // bytes 6:7
+  uint16_t    *n_chans;             // bytes 8:9
+  uint16_t    *n_samps_per_chan;    // bytes 10:11
+  uint16_t    *samp_n_bytes;        // bytes 11:12
+  rdata_t     *data;                // bytes 13: 13+( c * s * b )
+  int16_t     *gains;               // the next 2*c bytes
+  rdata_t     *thresh;              // the next b*c bytes
+};
+
 struct wave_t{
 	timestamp_t ts;
 	uint8_t src;
@@ -64,6 +77,17 @@ struct wave_t{
 	std::vector<uint16_t> gain;
 	std::vector<uint16_t> nSamp;
 	std::vector<uint16_t> data;
+};
+
+// Greg's alternative for a lfp_bank pre-packet struct
+struct lfp_bank_net_t{
+  timestamp_t *ts;                 // bytes 2:5
+  uint16_t    *name;               // bytes 6:7  does this field exist for lfp_banks?
+  uint16_t    *n_chans;            // bytes 8:9
+  uint16_t    *n_samps_per_chan;   // bytes 10:11
+  uint16_t    *samp_n_bytes;       // bytes 11:12
+  int16_t     *data;               // bytes 13 : 13*s*c*b
+  rdata_t     *gains;              // the next 2*c bytes
 };
 
 // The xxToBuff functions add the appropriate buffer headers, the user 
@@ -75,7 +99,7 @@ timestamp_t buffToTs(char* buff, int blen);
 void spikeToBuff(spike_t* s, char* buff, int blen);
 spike_t buffToSpike(char *buff, int blen);
 
-void waveToBuff(wave_t* w, char* buff, int blen);
+void waveToBuff(lfp_bank_net_t* lfp, char* buff, int blen);
 wave_t buffToWave(char* buff, int blen);
 
 enum packetType_t {NETCOM_UDP_SPIKE = 1,

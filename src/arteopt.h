@@ -9,10 +9,10 @@
 #include <NIDAQmx.h>
 #include <map>
 #include "filt.h"
-#include <vector>
 #include "neural_daq.h"
 #include "filtered_buffer.h"
 #include "lfp_bank.h"
+#include "netcom/netcom.h"
 
 extern uint32_t timestamp;
 

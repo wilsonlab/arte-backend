@@ -6,13 +6,16 @@
 #include "filt.h"
 #include <boost/property_tree/ptree.hpp>
 #include <map>
+#include <vector>
 #include <stdint.h>
 #include "filtered_buffer.h"
 #include "spike_detector.h"
+#include "netcom/netcom.h"
 
 extern neural_daq      * neural_daq_array;
 extern Filtered_buffer * filtered_buffer_array;
 extern std::map< std::string, Filt > filt_map;
+extern std::vector<NetCom> netcom_vector;
 
 class Trode{
 
@@ -52,6 +55,8 @@ class Trode{
   Filtered_buffer *my_buffer;
 
   neural_daq *my_daq;
+
+  NetCom * my_netcom;
 
   int init(boost::property_tree::ptree &trode_pt, 
 	   boost::property_tree::ptree &default_pt,

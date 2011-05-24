@@ -36,7 +36,7 @@ int Trode::init(boost::property_tree::ptree &trode_pt,
 //   std::istringstream iss(trode_pt.data()); // initialize istringstream with trode_pt.data() which is std::string trode name
 //   iss >> trode_opt.trode_name;
 //   //trode_opt.trode_name = trode_pt.data();
-  
+  n_chans = 1;
   
 
 //   assign_property<uint16_t> ("n_chans", &(trode_opt.n_chans), trode_pt, default_pt, 1);
@@ -115,7 +115,7 @@ void Trode::init2(boost::property_tree::ptree &trode_pt,
   assign_property_ftor<rdata_t>("thresholds",  thresholds, trode_pt, default_pt, n_chans);
   assign_property<uint16_t>("samps_before_trig", &samps_before_trig, trode_pt, default_pt, 1);
   assign_property<uint16_t>("samps_after_trig" , &samps_after_trig , trode_pt, default_pt, 1);
-  assign_property<uint16_t>("refractory_period_samps",&refractory_period_samps,trode_pt,default_trode_pt,1);
+  assign_property<uint16_t>("refractory_period_samps",&refractory_period_samps,trode_pt,default_pt,1);
   assign_property<std::string>("spike_mode"    , &tmp_spikemode    , trode_pt, default_pt, 1);
   strcpy( spike_mode, tmp_spikemode.c_str() );
 
@@ -127,9 +127,30 @@ void Trode::init2(boost::property_tree::ptree &trode_pt,
   // NB check the reasoning for the above count.  Do we need a longer buffer?
   my_buffer->init(trode_pt, default_pt, (n_samps_per_spike + 1) );
 
+  // Initialize the netcom
+  //extern std::vector<NetCom> netcom_vector;
 
+  my_netcom = new NetCom;
+  std::string net_on;
+  std::string host_ip;
+  int port_num;
+  char host_str[INET6_ADDRSTRLEN], port_str[INET6_ADDRSTRLEN];  // maybe used wrong const size here? 
+  assign_property<std::string>("host_ip", &host_ip,   trode_pt, default_pt, 1);
+  assign_property<int>("port",    &port_num, trode_pt, default_pt, 1);
+  assign_property<std::string>("network", &net_on,    trode_pt, default_pt, 1);
+  strcpy(host_str, host_ip.c_str());
+  //strcpy(port_str, port_name.c_str());
+  //netcom_vector.push_back(my_netcom);
+  //delete my_netcom;
+  //my_netcom = &(netcom_vector.back());
+  if( strcmp( "on", net_on.c_str())==0 ){
+    my_netcom->initUdpTx( host_str, port_num );
+    printf("Successfully connected tetrode %d to host_ip %s at port %d\n",
+	   name, host_ip.c_str(), port_num);
+  }
 
 }
+
 void *trode_filter_data(void *t){
 
 //   **********OLD WAY******

@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include "util.h"
 #include "filtered_buffer.h"
+#include "netcom/netcom.h"
 
 class Lfp_bank{
 
@@ -52,6 +53,9 @@ class Lfp_bank{
 
 
   FILE *lfp_bank_dump_file;
+
+  NetCom *my_netcom;
+  NetComDat my_netcomdat;
 
   int init(boost::property_tree::ptree &lfp_bank_ptree,
 	   std::map<int, neural_daq> &neural_daq_map,

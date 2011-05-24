@@ -102,4 +102,5 @@ const recordtype_t EVENT_STRING_RECORD = 1;
 const recordtype_t SPIKE_RECORD = 2;
 const recordtype_t THRESHOLD_FRAME_RECORD = 3;
 
+
 #endif

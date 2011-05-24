@@ -4,6 +4,8 @@
 #include <boost/property_tree/exceptions.hpp>
 #include <assert.h>
 #include "filter_fun.h"
+#include "netcom/netcom.h"
+#include "netcom/datapacket.h"
 
 Lfp_bank::Lfp_bank(){
   std::cout << "Lfp_bank constructor called." << std::endl;
@@ -109,6 +111,20 @@ void Lfp_bank::init2(boost::property_tree::ptree &lfp_bank_pt,
   
   d_buf_len = my_buffer->stream_n_samps_per_chan / keep_nth_sample;
   
+  // initialize network
+  my_netcom = new NetCom;
+  std::string net_on;
+  std::string host_ip;
+  int port_num;
+  char host_str[INET6_ADDRSTRLEN];
+  assign_property<std::string>("network",   &net_on,   lfp_bank_pt, lfp_bank_pt, 1);
+  assign_property<std::string>("host_ip",  &host_ip,  lfp_bank_pt, lfp_bank_pt, 1);
+  assign_property<int>        ("port", &port_num, lfp_bank_pt, lfp_bank_pt, 1);
+  strcpy( host_str, host_ip.c_str() );
+  if( strcmp("on", net_on.c_str()) == 0){
+    my_netcomdat = my_netcom->initUdpTx( host_str, port_num );
+    printf("Successfully connected lfp_bank %d to host_ip %s at port %d\n",lfp_bank_name, host_str, port_num);
+  }
 }
 
 void Lfp_bank::print_options(void){
@@ -153,11 +169,13 @@ void *lfp_bank_filter_data(void *lfp_bank_in){    // seems this should now be ca
 // I don't think that this needs to take void pointer anymore.
 // can be lfp_bank pointer.
 void lfp_bank_write_record(void *lfp_bank_in){
+
   //std::cout << "in write_record\n";
   Lfp_bank* this_bank = (Lfp_bank*) lfp_bank_in;
   uint16_t recordSizeBytes = 0;
   //std::cout << std::setw(6);
   if(this_bank->my_buffer->my_daq->buffer_timestamp  % (10 * 100) == 0){
+
     //std::cout << this_bank->my_daq->buffer_timestamp / 10000.0 << " ";
     //std::cout << "u_curs is: " << this_bank->my_buffer->u_curs << std::endl;
     //std::cout << "data ptr[0]: " << *(this_bank->my_buffer->my_daq->data_ptr) << std::endl;
@@ -183,6 +201,7 @@ void lfp_bank_write_record(void *lfp_bank_in){
 //     std::cout << std::endl;
 //     std::cout << "addy of f_buf: " << this_bank->my_buffer->f_buf << std::endl;
 //     std::cout << std::endl;
+
     for(int s = 0; s < this_bank->d_buf_len; s++){
       std::cout << this_bank->my_buffer->my_daq->buffer_timestamp / 10000 << " ";
       for(int c = 0; c < this_bank->n_chans; c++){
@@ -190,6 +209,26 @@ void lfp_bank_write_record(void *lfp_bank_in){
       }
       std::cout << std::endl;
     }
+  
   }
+    char buff[4000];
+    uint16_t temp = 2;
+    lfp_bank_net_t lfp;
+    lfp.ts = &(this_bank->my_buffer->my_daq->buffer_timestamp);
+    lfp.name = &(this_bank->lfp_bank_name);
+    lfp.n_chans = &(this_bank->n_chans);
+    lfp.n_samps_per_chan = &(this_bank->d_buf_len);
+    lfp.samp_n_bytes = &temp;
+    lfp.data = this_bank->d_buf;
+    lfp.gains = this_bank->d_buf; // temproray fix b/c don't have a gains field in lfp_bank yet.
+
+    waveToBuff(&lfp, buff, 4000);
+    NetCom::txBuff(this_bank->my_netcomdat, buff, 2400);
+    // printf("buff: ");
+    //  for(int s = 0; s < 50; s++)
+    //  printf("%c", buff[s]);
+    //printf("\n");
+  
+
 }
 

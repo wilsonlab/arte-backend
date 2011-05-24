@@ -1,6 +1,7 @@
 #ifndef SPIKE_DETECTOR_H_
 #define SPIKE_DETECTOR_H_
 
+#include "trode.h"
 #include "filtered_buffer.h"
 
 enum spikemode_t {THRESHOLD=0, LOCALMAX=1};
@@ -12,7 +13,7 @@ class SpikeDetector {
   SpikeDetector();
   virtual ~SpikeDetector();
 
-  init(Filtered_buffer *fb);
+  void init(Filtered_buffer *fb);
 
   spikemode_t mode;
   Filtered_buffer * fb;
@@ -41,7 +42,7 @@ class SpikeDetector {
 
 };  
 
-void init();
+//void init();
 
 void find_spikes(Filtered_buffer *fb);
 

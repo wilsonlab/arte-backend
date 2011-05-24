@@ -1,5 +1,6 @@
 #include "netcom.h"
 #include "datapacket.h"
+
 NetComDat NetCom::initUdpTx(char host[], int port){
 
 	int sockfd; 
@@ -9,16 +10,22 @@ NetComDat NetCom::initUdpTx(char host[], int port){
 	int broadcast = 1;
 	
 	if ((he=gethostbyname(host))==NULL){
-		perror("gethostname");
-		exit(1);
+	  perror("gethostname");
+	  printf("gethostbyname error.\n");
+	  fflush(stdout);
+	  exit(1);
 	}
 	if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1){
-		perror("socket");
-		exit(1);
+	  perror("socket");
+	  printf("socket error.\n");
+	  fflush(stdout);
+	  exit(1);
 	}
 	if (setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof broadcast) == -1) {
-	perror("setsockope (SO_BROADCAST)");
-		exit(1);
+	  perror("setsockopt (SO_BROADCAST)");
+	  printf("setsockopt error\n");
+	  fflush(stdout);
+	  exit(1);
 	}
 	
 	addr.sin_family = AF_INET;
@@ -145,6 +152,29 @@ timestamp_t NetCom::rxTs(NetComDat net){
 //        printf("listener: packet contains \"%s\"\n", buff);
 
         return 0;
+}
+
+void NetCom::txBuff(NetComDat net, char *buff, int buff_len){
+
+  sendto( net.sockfd, buff, buff_len, 0,  (sockaddr*) &net.addr_in, sizeof( net.addr_in ) );
+
+}
+
+void NetCom::rxBuff(NetComDat net, char *buff, int &buff_len){
+  
+  char s[INET6_ADDRSTRLEN];
+  int num_bytes;
+  sockaddr_storage their_addr = net.their_addr;
+  socklen_t addr_len = sizeof(their_addr);
+
+  sockaddr_in sa = *(sockaddr_in*)&their_addr;
+
+  if ( (numbytes = recvfrom(net.sockfd, &buff, BUFFSIZE-1, 0, (SA*)their_addr, &addr_len)) == -1){
+    printf("recvfrom error from rxBuff.\n");
+  }
+
+  *buff_len = numbytes;
+  
 }
 
 void *get_in_addr(struct sockaddr *sa){

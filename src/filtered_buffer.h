@@ -8,6 +8,8 @@
 #include <map>
 #include <stdint.h>
 #include "util.h"
+//#include "netcom/netcom.h"
+
 #define CBUF(X,L) (L+X)%L // assumes X >= -L
 
 class Filtered_buffer{
@@ -27,6 +29,7 @@ class Filtered_buffer{
   size_t buff_size_bytes;
   uint16_t channels[MAX_FILTERED_BUFFER_N_CHANS];
   neural_daq *my_daq;
+  
 
   name_string_t buffer_dump_filename;
   // make 2 files, one for unfiltered data, the other for filtered
