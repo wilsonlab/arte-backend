@@ -33,7 +33,7 @@ AudioComponent::AudioComponent()
 	AudioDeviceManager::AudioDeviceSetup setup;
 	getAudioDeviceSetup(setup);
 
-	setup.bufferSize = 1024; /// larger buffer = fewer empty blocks, but longer latencies
+	setup.bufferSize = 2048; /// larger buffer = fewer empty blocks, but longer latencies
 	setup.useDefaultInputChannels = false;
 	setup.inputChannels = 0;
 	setup.useDefaultOutputChannels = true;
@@ -105,6 +105,7 @@ void AudioComponent::beginCallbacks() {
 
 void AudioComponent::endCallbacks() {
 	
+	std::cout << std::endl << "Removing audio callback." << std::endl;
 	removeAudioCallback(graphPlayer);
 
 }

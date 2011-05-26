@@ -12,7 +12,8 @@
 #define __CONTROLPANEL_H_AD81E528__
 
 #include "../../JuceLibraryCode/JuceHeader.h"
-
+#include "../Audio/AudioComponent.h"
+#include "../Processors/ProcessorGraph.h"
 
 class PlayButton : public DrawableButton
 {
@@ -46,11 +47,11 @@ class Clock : public Label
 
 
 
-class ControlPanel : public Component
+class ControlPanel : public Component, public Button::Listener
 
 {
 public:
-	ControlPanel();
+	ControlPanel(ProcessorGraph* graph, AudioComponent* audio);
 	~ControlPanel();
 
 private:	
@@ -58,8 +59,11 @@ private:
 	RecordButton* recordButton;
 	Clock* masterClock;
 	CPUMeter* cpuMeter;
+	AudioComponent* audio;
+	ProcessorGraph* graph;
 
 	void resized();
+	void buttonClicked(Button* button);
 
 };
 

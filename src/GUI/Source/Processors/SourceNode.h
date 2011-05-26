@@ -32,9 +32,14 @@ public:
 
 	}
 
+void clear() {
+	
+	buffer.clear();
+}
+
 void addToBuffer(float* data, int numItems) {
 
-	int startIndex1, blockSize1, startIndex2, blockSize2;
+int startIndex1, blockSize1, startIndex2, blockSize2;
 	abstractFifo.prepareToWrite(numItems, startIndex1, blockSize1, startIndex2, blockSize2);
 
 	//if (blockSize1 > 0) {
@@ -44,11 +49,14 @@ void addToBuffer(float* data, int numItems) {
 	 for (int chan = 0; chan < 16; chan++) {
 
 		buffer.copyFrom(chan, // int destChannel
-						sampleIndex, // int destStartSample
+						startIndex1, // int destStartSample
 						data + chan,  // const float* source
 						1); // int num samples
 	 }
 	//}
+
+	//std::cout << numItems << " " << startIndex1 << " " << blockSize1 << " " << startIndex2 
+	//  << " " << blockSize2 << std::endl;
 
 
 	//if (blockSize2 > 0) {
@@ -58,6 +66,7 @@ void addToBuffer(float* data, int numItems) {
 	sampleIndex++;
 	
 	abstractFifo.finishedWrite(numItems);
+
 
 
 }
@@ -72,6 +81,7 @@ int getNumSamples() {
 int readAllFromBuffer (AudioSampleBuffer& data, int maxSize)
 {
 
+	//std::cout << "Pre num ready = " << abstractFifo.getNumReady() << std::endl;
 	// check to see if the maximum size is smaller than the total number of available ints
 	int numItems = (maxSize < abstractFifo.getNumReady()) ? 
 			maxSize : abstractFifo.getNumReady();
@@ -81,18 +91,38 @@ int readAllFromBuffer (AudioSampleBuffer& data, int maxSize)
 
 	//std::cout << buffer.getNumChannels() << std::endl;
 
-	//if (blockSize1 > 0) {
+	if (blockSize1 > 0) {
 
 		for (int chan = 0; chan < data.getNumChannels(); chan++) {
 			data.copyFrom(chan, // destChan
 						   0,    // destStartSample
 						   buffer, // source
 						   chan,  // sourceChannel
-						   0,     // sourceStartSample
-						   numItems); // numSamples
+						   startIndex1,     // sourceStartSample
+						   blockSize1); // numSamples
 		}
-	//}
+	}
 
+		if (blockSize2 > 0) {
+
+    for (int chan = 0; chan < data.getNumChannels(); chan++) {
+			data.copyFrom(chan, // destChan
+						   blockSize1,    // destStartSample
+						   buffer, // source
+						   chan,  // sourceChannel
+						   startIndex2,     // sourceStartSample
+						   blockSize2); // numSamples
+		}
+	}
+
+
+	//std::cout << "Got " << numItems << " from index " << startIndex1 << std::endl;
+
+	//std::cout << "Post num ready = " << abstractFifo.getNumReady() << std::endl;
+
+
+	std::cout << numItems << " " << startIndex1 << " " << blockSize1 << " " << startIndex2 
+	  << " " << blockSize2 << std::endl;
 
 	//if (blockSize2 > 0)
 	//	copyData(data + blockSize1, buffer + startIndex2, blockSize2);
@@ -136,6 +166,9 @@ public:
 	// real member functions:
 	SourceNode(const String name, int* nSamples, const CriticalSection& lock);
 	~SourceNode();
+
+	void start();
+	void stop();
 	
 	const String getName() const {return name;}
 	
@@ -184,6 +217,9 @@ public:
 private:
 
 	const String name;
+
+    //int playRequest;
+    bool transmitData;
 	
 	DataThread* dataThread;
 	DataBuffer* inputBuffer;
@@ -210,7 +246,8 @@ public:
 			startCode(83),
 			stopCode(115),
 			isRunning(false),
-			ch(-1)
+			ch(-1),
+			isTransmitting(false)
 
 	{
 		ftdi_init(&ftdic);
@@ -225,6 +262,8 @@ public:
 		dataBuffer = new DataBuffer(16, 4096);
 
 		startThread();
+
+		isTransmitting = true;
 
 		//thisSample = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
@@ -260,6 +299,27 @@ public:
 
 	}
 
+	void start() {
+		std::cout << "I'm gonna start now." << std::endl;
+		
+		const ScopedLock sl (lock);
+
+		//std::cout << "Created ." << std::endl;
+		
+
+		isTransmitting = true;
+		std::cout << "I started." << std::endl;
+	}
+
+	void stop() {
+
+		std::cout << "I'm gonna stop now." << std::endl;
+		
+		const ScopedLock sl (lock);
+		isTransmitting = false;
+		
+	}
+
 	DataBuffer* getBufferAddress() {
 		return dataBuffer;
 	}
@@ -269,6 +329,7 @@ private:
 	struct ftdi_context ftdic;
 	int vendorID, productID;
 	int baudrate;
+	bool isTransmitting;
 	
 	unsigned char startCode, stopCode;
 	unsigned char buffer[240]; // should be 5 samples per channel
@@ -284,14 +345,27 @@ private:
 	int ch;
 	int accumulator;
 
+	CriticalSection lock;
+
+	bool getStatus() {
+		const ScopedLock sl (lock);
+		return isTransmitting;
+		
+	}
 
 	//short int data[25][16];
 
 
 	void updateBuffer(){
 		
-		ftdi_read_data(&ftdic, buffer, sizeof(buffer));
-		sortData();
+	  
+		if (getStatus()) {
+		  ftdi_read_data(&ftdic, buffer, sizeof(buffer));
+		  sortData();
+		} else {
+			dataBuffer->clear();
+		}
+	//	lock.exit();
 	}
 
 

@@ -103,6 +103,9 @@ void DisplayNode::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessa
 	
 	//std::cout << buffer.getNumSamples() << std::endl;
 
+	//	std::cout << "Display Node sample count: " << buffer.getNumSamples() << std::endl;
+
+
 	lock.enter();
 	int nSamps = *numSamplesInThisBuffer;
 	lock.exit();

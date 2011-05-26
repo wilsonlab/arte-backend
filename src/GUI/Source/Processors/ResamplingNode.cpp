@@ -16,7 +16,8 @@ ResamplingNode::ResamplingNode (const String name_, int* nSamps,
 	: ratio (1.0), lastRatio (1.0),
 	  name (name_), numSamplesInThisBuffer(nSamps), lock(lock_),
 	  destBufferPos(0), destBufferIsTempBuffer(temp),
-	  destBufferSampleRate(44100.0), sourceBufferSampleRate(25000.0)
+	  destBufferSampleRate(44100.0), sourceBufferSampleRate(25000.0),
+	  isTransmitting(false), destBuffer(0), tempBuffer(0)
 	
 {
 
@@ -32,8 +33,6 @@ ResamplingNode::ResamplingNode (const String name_, int* nSamps,
 
 	destBufferTimebaseSecs = 1.0;
 
-	destBuffer = new AudioSampleBuffer(16, destBufferWidth);
-	tempBuffer = new AudioSampleBuffer(16, destBufferWidth);
 	
 
 	// filter->getKind()
@@ -108,6 +107,14 @@ void ResamplingNode::setParameter (int parameterIndex, float newValue)
 void ResamplingNode::prepareToPlay (double sampleRate_, int estimatedSamplesPerBlock)
 {
 
+	std::cout << "ResamplingNode preparing to play." << std::endl;
+
+	if (isTransmitting) {
+
+
+	destBuffer = new AudioSampleBuffer(16, destBufferWidth);
+	tempBuffer = new AudioSampleBuffer(16, destBufferWidth);
+
 
 	if (destBufferIsTempBuffer) {
 		destBufferSampleRate = sampleRate_;
@@ -121,6 +128,10 @@ void ResamplingNode::prepareToPlay (double sampleRate_, int estimatedSamplesPerB
 	destBuffer->clear();
 
 	updateFilter();
+
+	} else {
+		isTransmitting = true;
+	}
 
 }
 
@@ -143,12 +154,17 @@ void ResamplingNode::updateFilter() {
 
 void ResamplingNode::releaseResources() 
 {	
+	if (destBuffer != 0) {
 	deleteAndZero(destBuffer);
 	deleteAndZero(tempBuffer);
+	}
 }
 
 void ResamplingNode::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages)
 {
+
+		//std::cout << "Filter Node sample count: " << buffer.getNumSamples() << std::endl;
+
 
 	lock.enter();
 	int nSamps = *numSamplesInThisBuffer;

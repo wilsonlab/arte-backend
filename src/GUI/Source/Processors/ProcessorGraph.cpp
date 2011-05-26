@@ -18,7 +18,7 @@
 #include "SignalGenerator.h"
 #include <stdio.h>
 
-ProcessorGraph::ProcessorGraph() {
+ProcessorGraph::ProcessorGraph(int numChannels) {
 
 	//std::cout << "Processor graph created." << std::endl;
 
@@ -47,7 +47,7 @@ ProcessorGraph::ProcessorGraph() {
 	//addNode(gp2,2);
 	addNode(on,99);
 
-	for (int chan = 0; chan < 16; chan++) {
+	for (int chan = 0; chan < numChannels; chan++) {
 
 		// connect source node to filter node
 
@@ -59,10 +59,10 @@ ProcessorGraph::ProcessorGraph() {
 
 	    // connect filter node to resampling node
 
-		addConnection(3, // sourceNodeID
-				  chan, // sourceNodeChannelIndex
-				  2, // destNodeID
-				  chan); // destNodeChannelIndex
+		 addConnection(3, // sourceNodeID
+		 		  chan, // sourceNodeChannelIndex
+		 		  2, // destNodeID
+		 		  chan); // destNodeChannelIndex
 
 
 	   // connect filter node to display node

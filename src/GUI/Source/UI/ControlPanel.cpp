@@ -90,10 +90,12 @@ Clock::~Clock()
 {
 }
 
-ControlPanel::ControlPanel()
+ControlPanel::ControlPanel(ProcessorGraph* graph_, AudioComponent* audio_) : 
+			graph (graph_), audio(audio_)
 {
 
 	playButton = new PlayButton();
+	playButton->addListener (this);
 	addAndMakeVisible(playButton);
 
 	recordButton = new RecordButton();
@@ -107,16 +109,13 @@ ControlPanel::ControlPanel()
 ControlPanel::~ControlPanel()
 {
 	deleteAllChildren();
+	graph = 0;
 }
 
 void ControlPanel::resized()
 {
 	int w = getWidth();
 	int h = getHeight();
-
-
-	//std::cout << "Control panel width = " << w << std::endl;
-	//std::cout << "Control panel height = " << h << std::endl;
 
 	if (playButton != 0)
 		playButton->setBounds(w-h*5,0,h,h);
@@ -126,4 +125,49 @@ void ControlPanel::resized()
 
 	if (masterClock != 0)
 		masterClock->setBounds(w-h*3,0,h*2,h);
+}
+
+void ControlPanel::buttonClicked(Button* button) 
+
+
+{
+	//std::cout << "A button was pressed." << std::endl;
+
+	if (button == recordButton)
+	{
+		std::cout << "Record button pressed." << std::endl;
+		if (recordButton->getToggleState())
+		{
+			playButton->setToggleState(true,true);
+			//File file (File::getSpecialLocation (File::userDocumentsDirectory)
+			//	.getNonexistentChildFile ("Demo Audio Recording",".wav"));
+			//recordNode->startRecording(file);
+		} else {
+			//if (recordNode->isRecording())
+			//	recordNode->stop();
+
+		}
+
+	} else if (button == playButton) {
+		std::cout << "Play button pressed." << std::endl;
+		if (!playButton->getToggleState())
+		{
+			recordButton->setToggleState(false,true);
+		}
+
+		//playButtonWasPressed = true;
+
+	}
+
+	if (playButton->getToggleState())
+	{
+
+		audio->beginCallbacks();
+
+	} else {
+
+		audio->endCallbacks();
+
+	}
+
 }

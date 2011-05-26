@@ -11,8 +11,8 @@
 #include "UIComponent.h"
 #include <stdio.h>
 
-UIComponent::UIComponent (ProcessorGraph* pgraph) 
-	: processorGraph(pgraph), msg(T("Message string"))
+UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_) 
+	: processorGraph(pgraph), audio(audio_), msg(T("Message string"))
 
 {
 	infoLabel = 0;
@@ -51,14 +51,14 @@ UIComponent::UIComponent (ProcessorGraph* pgraph)
 	dataViewport->setViewedComponent(streamViewer);
 	addAndMakeVisible(dataViewport);
 	
-	filterViewport = new FilterViewport();
-	addAndMakeVisible(filterViewport);
+	//filterViewport = new FilterViewport();
+	//addAndMakeVisible(filterViewport);
 	
-	controlPanel = new ControlPanel();
+	controlPanel = new ControlPanel(processorGraph, audio);
 	addAndMakeVisible(controlPanel);
 
-	filterList = new FilterList();
-	addAndMakeVisible(filterList);
+	//filterList = new FilterList();
+	//addAndMakeVisible(filterList);
 
 	
 	//StreamViewer* s
@@ -76,6 +76,7 @@ UIComponent::~UIComponent()
 	deleteAllChildren();
 	delete(Miso);
 	processorGraph = 0;
+	audio = 0;
 }
 
 void UIComponent::resized()

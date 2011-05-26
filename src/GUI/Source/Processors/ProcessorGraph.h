@@ -16,7 +16,7 @@
 class ProcessorGraph : public AudioProcessorGraph
 {
 public:
-	ProcessorGraph();
+	ProcessorGraph(int numChannels);
 	~ProcessorGraph();
 
 	int numSamplesInThisBuffer;

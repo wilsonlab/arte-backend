@@ -22,7 +22,7 @@
             rtasFolder="c:\SDKs\PT_80_SDK" libraryType="1" juceFolder="../../../../Programming/C++/juce"/>
     <VS2010 targetFolder="Builds/VisualStudio2010" vstFolder="c:\SDKs\vstsdk2.4"
             rtasFolder="c:\SDKs\PT_80_SDK" libraryType="1" juceFolder="../../../../Programming/C++/juce"/>
-    <LINUX_MAKE targetFolder="Builds/Linux" vstFolder="~/SDKs/vstsdk2.4" juceFolder="../../../../Programming/C++/juce"
+    <LINUX_MAKE targetFolder="Builds/Linux" vstFolder="~/SDKs/vstsdk2.4" juceFolder="/home/jsiegle/Programming/C++/juce"
                 extraLinkerFlags="-lftdi"/>
   </EXPORTFORMATS>
   <CONFIGURATIONS>

@@ -18,6 +18,7 @@
 #include "StreamViewer.h"
 #include "../Processors/DisplayNode.h"
 #include "../Processors/ProcessorGraph.h"
+#include "../Audio/AudioComponent.h"
 
 class UIComponent : public Component,
 				    public DragAndDropContainer,
@@ -27,7 +28,7 @@ class UIComponent : public Component,
 
 {
 public: 
-	UIComponent(ProcessorGraph* pgraph);
+	UIComponent(ProcessorGraph* pgraph, AudioComponent* audio);
 	~UIComponent();
 
 private:
@@ -38,6 +39,7 @@ private:
 	ControlPanel* controlPanel;
 
 	ProcessorGraph* processorGraph;
+	AudioComponent* audio;
 
 	Label* infoLabel;
 	Font* Miso;

@@ -10,12 +10,12 @@
 
 */
 
-#ifndef __APPHEADERFILE_AA61F28__
-#define __APPHEADERFILE_AA61F28__
+#ifndef __APPHEADERFILE_47426FFB__
+#define __APPHEADERFILE_47426FFB__
 
 #include "AppConfig.h"
 #if defined (JUCER_LINUX_MAKE_7346DA2A)
- #include "../../../../../Programming/C++/juce/juce_amalgamated.h"
+ #include "/home/jsiegle/Programming/C++/juce/juce_amalgamated.h"
 #elif defined (JUCER_VS2010_78A501D)
  #include "../../../../../Programming/C++/juce/juce_amalgamated.h"
 #elif defined (JUCER_VS2008_78A5006)
@@ -37,4 +37,4 @@ namespace ProjectInfo
     const int          versionNumber  = 0x10000;
 }
 
-#endif   // __APPHEADERFILE_AA61F28__
+#endif   // __APPHEADERFILE_47426FFB__

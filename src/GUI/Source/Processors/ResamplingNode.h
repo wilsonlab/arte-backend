@@ -96,6 +96,8 @@ private:
 	// indexing objects that persist between rounds:
 	int destBufferPos;
 
+	bool isTransmitting;
+
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ResamplingNode);
 
 };
