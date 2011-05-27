@@ -1,0 +1,1 @@
+g++ *.cpp -D__STDC_LIMIT_MACROS -o toy_wave_viewer
