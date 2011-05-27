@@ -118,7 +118,7 @@ void SourceNode::processBlock (AudioSampleBuffer& outputBuffer, MidiBuffer& midi
 		//std::cout << transmitData << std::endl;
 	
 		//if (!isSuspended()) {
-			std::cout << "transmitting!" << std::endl;
+			//std::cout << "transmitting!" << std::endl;
 			int numRead = inputBuffer->readAllFromBuffer(outputBuffer,outputBuffer.getNumSamples());
 	
 	// write the total number of samples

@@ -16,6 +16,7 @@
 #include "DisplayNode.h"
 #include "ResamplingNode.h"
 #include "SignalGenerator.h"
+#include "../Network/NetworkNode.h"
 #include <stdio.h>
 
 ProcessorGraph::ProcessorGraph(int numChannels) {
@@ -27,7 +28,8 @@ ProcessorGraph::ProcessorGraph(int numChannels) {
 	numSamplesInThisBuffer = 1024;
 
 	//SignalGenerator* sg = new SignalGenerator();
-	SourceNode* sn = new SourceNode(T("Processor 1"), &numSamplesInThisBuffer, lock);
+	NetworkNode* sn = new NetworkNode(T("Processor 1"), &numSamplesInThisBuffer, lock);
+	//new SourceNode(T("Processor 1"), &numSamplesInThisBuffer, lock);
 	FilterNode* fn = new FilterNode(T("Filter Node"), &numSamplesInThisBuffer, lock);
 	DisplayNode* dn = new DisplayNode(T("Display Node"), &numSamplesInThisBuffer, lock);
 	ResamplingNode* rn = new ResamplingNode(T("Resampling Node"), &numSamplesInThisBuffer, lock, true);

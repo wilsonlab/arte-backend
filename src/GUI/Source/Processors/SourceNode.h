@@ -16,150 +16,11 @@
 #include "../../JuceLibraryCode/JuceHeader.h"
 #include <ftdi.h>
 #include <stdio.h>
+#include "DataBuffer.h"
 
 class DataThread;
 
-class DataBuffer
-{
-public:
-	DataBuffer(int chans, int size)
-	 : abstractFifo (size), buffer(chans, size), sampleIndex(0) {
-		
-	}
-	~DataBuffer() {
-		
-		//deleteAndZero(buffer);
-
-	}
-
-void clear() {
-	
-	buffer.clear();
-}
-
-void addToBuffer(float* data, int numItems) {
-
-int startIndex1, blockSize1, startIndex2, blockSize2;
-	abstractFifo.prepareToWrite(numItems, startIndex1, blockSize1, startIndex2, blockSize2);
-
-	//if (blockSize1 > 0) {
-
-		//std::cout << startIndex1 << std::endl;
-
-	 for (int chan = 0; chan < 16; chan++) {
-
-		buffer.copyFrom(chan, // int destChannel
-						startIndex1, // int destStartSample
-						data + chan,  // const float* source
-						1); // int num samples
-	 }
-	//}
-
-	//std::cout << numItems << " " << startIndex1 << " " << blockSize1 << " " << startIndex2 
-	//  << " " << blockSize2 << std::endl;
-
-
-	//if (blockSize2 > 0) {
-	//	buffer.copyFrom(chan, startIndex2, data + chan, blockSize2);
-	//}
-
-	sampleIndex++;
-	
-	abstractFifo.finishedWrite(numItems);
-
-
-
-}
-
-int getNumSamples() {
-	
-	return sampleIndex;
-
-}
-
-
-int readAllFromBuffer (AudioSampleBuffer& data, int maxSize)
-{
-
-	//std::cout << "Pre num ready = " << abstractFifo.getNumReady() << std::endl;
-	// check to see if the maximum size is smaller than the total number of available ints
-	int numItems = (maxSize < abstractFifo.getNumReady()) ? 
-			maxSize : abstractFifo.getNumReady();
-	
-	int startIndex1, blockSize1, startIndex2, blockSize2;
-	abstractFifo.prepareToRead(numItems, startIndex1, blockSize1, startIndex2, blockSize2);
-
-	//std::cout << buffer.getNumChannels() << std::endl;
-
-	if (blockSize1 > 0) {
-
-		for (int chan = 0; chan < data.getNumChannels(); chan++) {
-			data.copyFrom(chan, // destChan
-						   0,    // destStartSample
-						   buffer, // source
-						   chan,  // sourceChannel
-						   startIndex1,     // sourceStartSample
-						   blockSize1); // numSamples
-		}
-	}
-
-		if (blockSize2 > 0) {
-
-    for (int chan = 0; chan < data.getNumChannels(); chan++) {
-			data.copyFrom(chan, // destChan
-						   blockSize1,    // destStartSample
-						   buffer, // source
-						   chan,  // sourceChannel
-						   startIndex2,     // sourceStartSample
-						   blockSize2); // numSamples
-		}
-	}
-
-
-	//std::cout << "Got " << numItems << " from index " << startIndex1 << std::endl;
-
-	//std::cout << "Post num ready = " << abstractFifo.getNumReady() << std::endl;
-
-
-	std::cout << numItems << " " << startIndex1 << " " << blockSize1 << " " << startIndex2 
-	  << " " << blockSize2 << std::endl;
-
-	//if (blockSize2 > 0)
-	//	copyData(data + blockSize1, buffer + startIndex2, blockSize2);
-	
-	sampleIndex = 0;
-
-	abstractFifo.finishedRead(numItems);
-
-	return numItems;
-
-}
-
-
-	private:
-		AbstractFifo abstractFifo;
-		AudioSampleBuffer buffer;
-
-		int sampleIndex;
-
-//void copyIntoBuffer(AudioSampleBuffer* buffer, float* copyFrom, int numItems)
-//{
-//	for (int n = 0; n < numItems; n++)
-//	{
-
-//		for (int chan = 0; chan < 16; chan++) {
-//			copyTo.copyFrom(chan, startIndex1, data + chan, blockSize1);
-//	 	}
-		
-		//*(copyTo+n) = *(copyFrom+n);
-//
-//}
-
-
-};
-
 class SourceNode : public AudioProcessor
-
 {
 public:
 	
@@ -211,9 +72,6 @@ public:
 	
 	float getParameter (int parameterIndex) {return 1.0;}
 	
-
-	
-	
 private:
 
 	const String name;
@@ -264,9 +122,6 @@ public:
 		startThread();
 
 		isTransmitting = true;
-
-		//thisSample = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-
 	}
 
 	~DataThread() {
