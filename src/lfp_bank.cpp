@@ -9,11 +9,15 @@
 
 Lfp_bank::Lfp_bank(){
   std::cout << "Lfp_bank constructor called." << std::endl;
+  has_sockfd = false;
 }
 
 Lfp_bank::~Lfp_bank(){
   std::cout << "Lfp_bank destructor called." << std::endl;
   print_options();
+  if (has_sockfd)
+    close(my_netcomdat.sockfd);
+  //printf("caught an attempt to close sockfd\n");
 }
 
 int Lfp_bank::init(boost::property_tree::ptree &lfp_bank_pt,
@@ -110,16 +114,18 @@ void lfp_bank_write_record(void *lfp_bank_in){
   char buff[4000];
   uint16_t temp = 2;
   lfp_bank_net_t lfp;
-  lfp.ts = &(this_bank->my_buffer->my_daq->buffer_timestamp);
-  lfp.name = &(this_bank->lfp_bank_name);
-  lfp.n_chans = &(this_bank->n_chans);
-  lfp.n_samps_per_chan = &(this_bank->d_buf_len);
-  lfp.samp_n_bytes = &temp;
-  lfp.data = this_bank->d_buf;
-  lfp.gains = this_bank->d_buf; // temproray fix b/c don't have a gains field in lfp_bank yet.
+  int buff_size;
+  lfp.ts = this_bank->my_buffer->my_daq->buffer_timestamp;
+  lfp.name = this_bank->lfp_bank_name;
+  lfp.n_chans = this_bank->n_chans;
+  lfp.n_samps_per_chan = this_bank->d_buf_len;
+  lfp.samp_n_bytes = temp;
+  int n_bytes = lfp.n_samps_per_chan * lfp.n_chans * lfp.samp_n_bytes;
+  memcpy(lfp.data,  this_bank->d_buf, n_bytes);
+  memcpy(lfp.gains, this_bank->d_buf, (lfp.n_samps_per_chan * lfp.n_chans)); // temproray fix b/c don't have a gains field in lfp_bank yet.
   
-  waveToBuff(&lfp, buff, 4000);
-  NetCom::txBuff(this_bank->my_netcomdat, buff, 2400);
+  waveToBuff(&lfp, buff, &buff_size);
+  NetCom::txBuff(this_bank->my_netcomdat, buff, buff_size);
   // printf("buff: ");
   //  for(int s = 0; s < 50; s++)
   //  printf("%c", buff[s]);

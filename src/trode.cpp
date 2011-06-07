@@ -14,12 +14,16 @@
 int tmp;
 
 Trode::Trode(){
+  has_sockfd = false;
   //std::cout << "In a trode constructor" << std::endl;
 }
 
 
 Trode::~Trode(){
-  //std::cout << "In destructor of tetrode object for tetrode: " << trode_name << std::endl; (<- interesting results)
+  if (has_sockfd)
+    close(my_netcomdat.sockfd);
+  //printf("caught an attempt to close sockfd from a trode.\n");
+    //std::cout << "In destructor of tetrode object for tetrode: " << trode_name << std::endl; (<- interesting results)
 }
 
 // Old init function using std::maps for trode_map, neural_daq_map, filt_map
@@ -147,6 +151,7 @@ void Trode::init2(boost::property_tree::ptree &trode_pt,
     my_netcom->initUdpTx( host_str, port_num );
     printf("Successfully connected tetrode %d to host_ip %s at port %d\n",
 	   name, host_ip.c_str(), port_num);
+    has_sockfd = true;
   }
 
 }

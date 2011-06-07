@@ -57,6 +57,8 @@ class Trode{
   neural_daq *my_daq;
 
   NetCom * my_netcom;
+  NetComDat my_netcomdat;
+  bool has_sockfd;
 
   int init(boost::property_tree::ptree &trode_pt, 
 	   boost::property_tree::ptree &default_pt,

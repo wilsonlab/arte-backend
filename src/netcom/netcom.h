@@ -35,10 +35,11 @@ class NetCom{
 	static spike_t rxSpike(NetComDat net);
 
 	static int txWave(NetComDat net, wave_t w, int nTx);
-	static wave_t rxWave(NetComDat net);
+	static void rxWave(NetComDat net, lfp_bank_net_t *lfp);
 
 	static void txBuff(NetComDat net, char * buff, int buff_len);
 	static void rxBuff(NetComDat net, char * buff, int *buff_len);
+
 };
 
 void *get_in_addr(struct sockaddr *sa);

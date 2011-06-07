@@ -58,10 +58,10 @@ NetComDat NetCom::initUdpRx(char host[], int portIn){
         memset(&hints, 0, sizeof hints);
         hints.ai_family = AF_UNSPEC; // set to AF_INET to force IPv4
         hints.ai_socktype = SOCK_DGRAM;
-        hints.ai_flags = AI_CANONNAME; // use my IP
+        hints.ai_flags = AI_PASSIVE; // use my IP
 
 	std::cout<<"Listening to port:"<<port<<" from IP:"<<host<<std::endl;
-        if ((rv = getaddrinfo(host, port, &hints, &servinfo)) != 0) {
+        if ((rv = getaddrinfo(NULL, port, &hints, &servinfo)) != 0) {
                 fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
                 return net;
         }
@@ -101,7 +101,8 @@ NetComDat NetCom::initUdpRx(char host[], int portIn){
 int NetCom::txTs(NetComDat net, timestamp_t count, int nTx){
 	std::cout<<"NetCom::txTs "<<count<<std::endl;
 
-	char* buff = new char[6];
+	//char* buff = new char[6];
+	char buff[6]; //  this is much faster than using new
 	*buff = typeToChar(NETCOM_UDP_TIME);
 
 	//TEMPORARY commented by Greg because of error
@@ -113,7 +114,7 @@ int NetCom::txTs(NetComDat net, timestamp_t count, int nTx){
 
 	for (int i=0; i<nTx; i++)
 		sendto(net.sockfd, buff, 6, 0, (struct sockaddr *)&net.addr_in, sizeof net.addr_in);
-	delete buff;
+	// delete buff;
 }
 
 timestamp_t NetCom::rxTs(NetComDat net){
@@ -155,6 +156,15 @@ timestamp_t NetCom::rxTs(NetComDat net){
 }
 
 void NetCom::txBuff(NetComDat net, char *buff, int buff_len){
+  
+  if(false){  // this thing sets the buff line to all 'a'.  Kinda useful for testing listeners.
+    printf("buff len: %d   content: ",buff_len);
+    for(int c = 0; c < buff_len; c++){
+      buff[c] = 'a';
+      printf("%d: %c\n",c, buff[c]);
+    }
+    buff[buff_len-1] = '\0';
+  }
 
   sendto( net.sockfd, buff, buff_len, 0,  (sockaddr*) &net.addr_in, sizeof( net.addr_in ) );
 
@@ -169,7 +179,7 @@ void NetCom::rxBuff(NetComDat net, char *buff, int *buff_len){
   
   sockaddr_in sa = *(sockaddr_in*)&their_addr;
   
-  if ( (numbytes = recvfrom(net.sockfd, &buff, BUFFSIZE-1, 0, (SA*)&their_addr, &addr_len)) == -1){
+  if ( (numbytes = recvfrom(net.sockfd, buff, BUFFSIZE-1, 0, (SA*)&their_addr, &addr_len)) == -1){
     printf("recvfrom error from rxBuff.\n");
   }
   
@@ -177,6 +187,15 @@ void NetCom::rxBuff(NetComDat net, char *buff, int *buff_len){
   
 }
 
+void NetCom::rxWave(NetComDat net, lfp_bank_net_t *lfp){
+
+  char buff[BUFFSIZE-1];
+  int buff_len = 0;
+  rxBuff(net, buff, &buff_len);
+  
+  buffToWave(lfp, buff); 
+
+}
 
 void *get_in_addr(struct sockaddr *sa){
         if (sa->sa_family == AF_INET) {

@@ -56,6 +56,7 @@ class Lfp_bank{
 
   NetCom *my_netcom;
   NetComDat my_netcomdat;
+  bool has_sockfd;
 
   int init(boost::property_tree::ptree &lfp_bank_ptree,
 	   std::map<int, neural_daq> &neural_daq_map,
