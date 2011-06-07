@@ -3,18 +3,18 @@
 
 #include <stdint.h>
 #include <vector>
-#include <byteswap.h>
+//#include <byteswap.h>
 #include <netinet/in.h>
 #include "global_defs.h"
 
-#define ntoh64(x) bswap_64(x)
-#define hton64(x) bswap_64(x)
+//#define ntoh64(x) bswap_64(x)
+//#define hton64(x) bswap_64(x)
 
-#define ntoh32(x) bswap_32(x)
-#define hton32(x) bswap_32(x)
+//#define ntoh32(x) bswap_32(x)
+//#define hton32(x) bswap_32(x)
 
-#define ntoh16(x) bswap_16(x)
-#define hton16(x) bswap_16(x)
+//#define ntoh16(x) bswap_16(x)
+//#define hton16(x) bswap_16(x)
 
 #define MAX_BUF_LEN 2048
 void printBuff(char* buff, int blen);

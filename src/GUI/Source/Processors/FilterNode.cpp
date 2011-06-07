@@ -91,7 +91,7 @@ void FilterNode::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessag
 
 	//std::cout << "FilterNode processing." << std::endl;
 	 //std::cout << buffer.getNumSamples() << std::endl;
-	// std::cout << buffer.getNumChannels() << std::endl;
+	 //std::cout << buffer.getNumChannels() << std::endl;
 
 	//std::cout << "Filter Node sample count: " << buffer.getNumSamples() << std::endl;
 

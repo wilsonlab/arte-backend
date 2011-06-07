@@ -23,7 +23,7 @@
     <VS2010 targetFolder="Builds/VisualStudio2010" vstFolder="c:\SDKs\vstsdk2.4"
             rtasFolder="c:\SDKs\PT_80_SDK" libraryType="1" juceFolder="../../../../Programming/C++/juce"/>
     <LINUX_MAKE targetFolder="Builds/Linux" vstFolder="~/SDKs/vstsdk2.4" juceFolder="/home/greghale/programming/juce"
-                extraLinkerFlags="-lftdi"/>
+                extraLinkerFlags="-lftdi" extraCompilerFlags="-D__STDC_LIMIT_MACROS"/>
   </EXPORTFORMATS>
   <CONFIGURATIONS>
     <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="arte"/>
@@ -31,17 +31,16 @@
   </CONFIGURATIONS>
   <MAINGROUP id="h3HbSTV" name="arte">
     <GROUP id="ZMfWAFj" name="Source">
-      <GROUP id="t6XZkb" name="Network">
-        <FILE id="ZU1XXp3" name="build.sh" compile="0" resource="1" file="Source/Network/build.sh"/>
-        <FILE id="0uqCS7u" name="datapacket.cpp" compile="1" resource="0" file="Source/Network/datapacket.cpp"/>
-        <FILE id="1VUtDSM" name="datapacket.h" compile="0" resource="0" file="Source/Network/datapacket.h"/>
-        <FILE id="CdWlc10" name="global_defs.h" compile="0" resource="0" file="Source/Network/global_defs.h"/>
-        <FILE id="Vy2cvHQ" name="netcom.cpp" compile="1" resource="0" file="Source/Network/netcom.cpp"/>
-        <FILE id="vPUnYJq" name="netcom.h" compile="0" resource="0" file="Source/Network/netcom.h"/>
-        <FILE id="Hb0F678" name="NetworkNode.cpp" compile="1" resource="0"
+      <GROUP id="leJrZDi" name="Network">
+        <FILE id="GcYzg7B" name="datapacket.cpp" compile="1" resource="0" file="Source/Network/datapacket.cpp"/>
+        <FILE id="TWl0yk" name="datapacket.h" compile="0" resource="0" file="Source/Network/datapacket.h"/>
+        <FILE id="WW2DBUt" name="global_defs.h" compile="0" resource="0" file="Source/Network/global_defs.h"/>
+        <FILE id="66Xenb4" name="netcom.cpp" compile="1" resource="0" file="Source/Network/netcom.cpp"/>
+        <FILE id="n7afJpH" name="netcom.h" compile="0" resource="0" file="Source/Network/netcom.h"/>
+        <FILE id="sXXOqTA" name="unp.h" compile="0" resource="0" file="Source/Network/unp.h"/>
+        <FILE id="vlFwSEk" name="NetworkNode.cpp" compile="1" resource="0"
               file="Source/Network/NetworkNode.cpp"/>
-        <FILE id="E9iIqH" name="NetworkNode.h" compile="0" resource="0" file="Source/Network/NetworkNode.h"/>
-        <FILE id="UO98Q47" name="unp.h" compile="0" resource="0" file="Source/Network/unp.h"/>
+        <FILE id="96s2fWF" name="NetworkNode.h" compile="0" resource="0" file="Source/Network/NetworkNode.h"/>
       </GROUP>
       <GROUP id="ZFZoGrT" name="Dsp">
         <FILE id="mUwiufK" name="Bessel.cpp" compile="1" resource="0" file="Source/Dsp/Bessel.cpp"/>
@@ -96,8 +95,8 @@
               file="Source/Audio/AudioComponent.h"/>
       </GROUP>
       <GROUP id="yQmqZWk" name="Processors">
-        <FILE id="o0RqGI" name="DataBuffer.cpp" compile="1" resource="0" file="Source/Processors/DataBuffer.cpp"/>
-        <FILE id="6dQ2Yd5" name="DataBuffer.h" compile="0" resource="0" file="Source/Processors/DataBuffer.h"/>
+        <FILE id="ZVA3dKD" name="DataBuffer.cpp" compile="1" resource="0" file="Source/Processors/DataBuffer.cpp"/>
+        <FILE id="Rqn03s" name="DataBuffer.h" compile="0" resource="0" file="Source/Processors/DataBuffer.h"/>
         <FILE id="f34QY5Q" name="RecordNode.cpp" compile="1" resource="0" file="Source/Processors/RecordNode.cpp"/>
         <FILE id="ne3WPH4" name="RecordNode.h" compile="0" resource="0" file="Source/Processors/RecordNode.h"/>
         <FILE id="TrDHtmZ" name="SourceNodeFPGA.cpp" compile="1" resource="0"

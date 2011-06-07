@@ -115,22 +115,23 @@ public:
 	~NetworkThread() {
 		stopThread(500);
 		close(my_netcomdat.sockfd);
-			std::cout << "Network interface destroyed." << std::endl;
+		// need to close socket in order to reopen
+		close(my_netcomdat.sockfd);
 
-			delete dataBuffer;
-			dataBuffer = 0;
+		std::cout << "Network interface destroyed." << std::endl;
+
+		delete dataBuffer;
+		dataBuffer = 0;
 	}
 
 	void run() {
 
 		while (! threadShouldExit())
 		{
-				const MessageManagerLock mml (Thread::getCurrentThread());
-
-				if (! mml.lockWasGained())
-					return;
-
-				updateBuffer();
+			const MessageManagerLock mml (Thread::getCurrentThread());
+			if (! mml.lockWasGained())
+				return;
+			updateBuffer();
 		}
 
 	}
@@ -156,13 +157,10 @@ private:
 	 	NetCom::rxWave (my_netcomdat, &lfp);
 
 	 	for (int s = 0; s < lfp.n_samps_per_chan; s++) {
-	 		
 	 		for (int c = 0; c < lfp.n_chans; c++) {
 	 			thisSample[c] = float(lfp.data[s*lfp.n_chans + c])/500.0f;
 	 		}
-
 	 		dataBuffer->addToBuffer(thisSample,1);
-
 	 	}
 	}
 

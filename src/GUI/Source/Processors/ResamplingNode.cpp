@@ -167,8 +167,10 @@ void ResamplingNode::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMe
 
 
 	lock.enter();
-	int nSamps = *numSamplesInThisBuffer;
+	int nSamps = *numSamplesInThisBuffer - 1;
 	lock.exit();
+
+	//std::cout << nSamps << std::endl;
 
 
    // for (int n = 0; n < buffer.getNumSamples(); n+= 10)
@@ -252,7 +254,7 @@ void ResamplingNode::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMe
 
 		filter->process (tempBufferPos, tempBuffer->getArrayOfChannels());
 		// apply the filter after upsampling
-		//filter->process (totalSamples, buffer.getArrayOfChannels());
+		///////filter->process (totalSamples, buffer.getArrayOfChannels());
 	} else if (ratio <= 1.0001) {
 		
 		// no resampling is being applied, no need to filter, BUT...

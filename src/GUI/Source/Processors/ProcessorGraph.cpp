@@ -17,6 +17,7 @@
 #include "ResamplingNode.h"
 #include "SignalGenerator.h"
 #include "../Network/NetworkNode.h"
+#include "RecordNode.h"
 #include <stdio.h>
 
 ProcessorGraph::ProcessorGraph(int numChannels) {
@@ -35,6 +36,7 @@ ProcessorGraph::ProcessorGraph(int numChannels) {
 	ResamplingNode* rn = new ResamplingNode(T("Resampling Node"), &numSamplesInThisBuffer, lock, true);
 	//GenericProcessor* gp2 = new GenericProcessor(T("Processor 2"), &numSamplesInThisBuffer);
 
+	RecordNode* recn = new RecordNode(T("Record Node"), &numSamplesInThisBuffer, lock);
 	//GenericProcessor* gp3 = new GenericProcessor(T("Output Node"));
 
 	// add output node
@@ -46,6 +48,7 @@ ProcessorGraph::ProcessorGraph(int numChannels) {
 	addNode(fn,3);
 	addNode(dn,10);
 	addNode(rn,2);
+	addNode(recn,15);
 	//addNode(gp2,2);
 	addNode(on,99);
 
@@ -76,9 +79,14 @@ ProcessorGraph::ProcessorGraph(int numChannels) {
 
     }
 
+    // connect to record node
+    addConnection(2,0,15,0);
+    addConnection(2,1,15,1);
+    addConnection(2,2,15,2);
+
     //  connect resampling node to output node
     addConnection(2, // sourceNodeID
-				  1, // sourceNodeChannelIndex
+				  0, // sourceNodeChannelIndex
 				  99, // destNodeID
 				  0); // destNodeChannelIndex
 

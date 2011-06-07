@@ -24,7 +24,7 @@ MainWindow::MainWindow()
 
     // create ProcessorGraph and AudioComponent, and connect them.
     // callbacks will be set by the play button in the control panel
-    processorGraph = new ProcessorGraph(16);
+    processorGraph = new ProcessorGraph(8);
      audioComponent = new AudioComponent();
     audioComponent->connectToProcessorGraph(processorGraph);
     
