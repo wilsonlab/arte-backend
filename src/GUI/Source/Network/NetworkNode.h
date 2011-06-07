@@ -114,7 +114,7 @@ public:
 
 	~NetworkThread() {
 		stopThread(500);
-
+		close(my_netcomdat.sockfd);
 			std::cout << "Network interface destroyed." << std::endl;
 
 			delete dataBuffer;

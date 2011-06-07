@@ -65,7 +65,7 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 	addActionListener(streamViewer);
 	//sendActionMessage(msg);
 
-	startTimer(100);
+	startTimer(15);
 
 	//resized();
 	

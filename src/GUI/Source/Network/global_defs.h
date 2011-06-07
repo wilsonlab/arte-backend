@@ -1,6 +1,9 @@
 #ifndef GLOBAL_DEFS_H_
 #define GLOBAL_DEFS_H_
 
+#define INT16_MAX 190000
+#define INT16_MIN -190000
+
 #include <string>
 #include <iostream>
 #include <stdio.h>

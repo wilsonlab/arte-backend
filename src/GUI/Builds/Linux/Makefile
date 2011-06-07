@@ -20,7 +20,7 @@ ifeq ($(CONFIG),Debug)
   CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I "/usr/include" -I "/usr/include/freetype2"
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -g -ggdb -O0
   CXXFLAGS += $(CFLAGS) 
-  LDFLAGS += -L$(BINDIR) -L$(LIBDIR) -L"/usr/X11R6/lib/" -L"/home/jsiegle/Programming/C++/juce/bin" -lfreetype -lpthread -lrt -lX11 -lGL -lGLU -lXinerama -lasound -lftdi
+  LDFLAGS += -L$(BINDIR) -L$(LIBDIR) -L"/usr/X11R6/lib/" -L"/home/greghale/programming/juce/bin" -lfreetype -lpthread -lrt -lX11 -lGL -lGLU -lXinerama -lasound -lftdi
   LDDEPS :=
   RESFLAGS :=  -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I "/usr/include" -I "/usr/include/freetype2"
   TARGET := arte
@@ -35,7 +35,7 @@ ifeq ($(CONFIG),Release)
   CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I "/usr/include" -I "/usr/include/freetype2"
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -Os
   CXXFLAGS += $(CFLAGS) 
-  LDFLAGS += -L$(BINDIR) -L$(LIBDIR) -L"/usr/X11R6/lib/" -L"/home/jsiegle/Programming/C++/juce/bin" -lfreetype -lpthread -lrt -lX11 -lGL -lGLU -lXinerama -lasound -lftdi
+  LDFLAGS += -L$(BINDIR) -L$(LIBDIR) -L"/usr/X11R6/lib/" -L"/home/greghale/programming/juce/bin" -lfreetype -lpthread -lrt -lX11 -lGL -lGLU -lXinerama -lasound -lftdi
   LDDEPS :=
   RESFLAGS :=  -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I "/usr/include" -I "/usr/include/freetype2"
   TARGET := arte
@@ -43,6 +43,9 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS := \
+  $(OBJDIR)/datapacket_e79ff33c.o \
+  $(OBJDIR)/netcom_7ad18ece.o \
+  $(OBJDIR)/NetworkNode_fe7b6db0.o \
   $(OBJDIR)/Bessel_63b88b81.o \
   $(OBJDIR)/Biquad_479045c5.o \
   $(OBJDIR)/Butterworth_a752fb81.o \
@@ -61,6 +64,7 @@ OBJECTS := \
   $(OBJDIR)/RootFinder_239a995f.o \
   $(OBJDIR)/State_22979684.o \
   $(OBJDIR)/AudioComponent_521bd9c9.o \
+  $(OBJDIR)/DataBuffer_3b0b08b9.o \
   $(OBJDIR)/RecordNode_2b7a1a2.o \
   $(OBJDIR)/SourceNodeFPGA_c405d510.o \
   $(OBJDIR)/SignalGenerator_a9cf4806.o \
@@ -77,6 +81,7 @@ OBJECTS := \
   $(OBJDIR)/UIComponent_d667ba37.o \
   $(OBJDIR)/MainWindow_499ac812.o \
   $(OBJDIR)/Main_90ebc5c2.o \
+  $(OBJDIR)/BinaryData_ce4232d4.o \
   $(OBJDIR)/JuceLibraryCode1_682c927f.o \
   $(OBJDIR)/JuceLibraryCode2_683aaa00.o \
   $(OBJDIR)/JuceLibraryCode3_6848c181.o \
@@ -96,6 +101,21 @@ clean:
 	-@rm -f $(OUTDIR)/$(TARGET)
 	-@rm -rf $(OBJDIR)/*
 	-@rm -rf $(OBJDIR)
+
+$(OBJDIR)/datapacket_e79ff33c.o: ../../Source/Network/datapacket.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling datapacket.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/netcom_7ad18ece.o: ../../Source/Network/netcom.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling netcom.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/NetworkNode_fe7b6db0.o: ../../Source/Network/NetworkNode.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling NetworkNode.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/Bessel_63b88b81.o: ../../Source/Dsp/Bessel.cpp
 	-@mkdir -p $(OBJDIR)
@@ -187,6 +207,11 @@ $(OBJDIR)/AudioComponent_521bd9c9.o: ../../Source/Audio/AudioComponent.cpp
 	@echo "Compiling AudioComponent.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
+$(OBJDIR)/DataBuffer_3b0b08b9.o: ../../Source/Processors/DataBuffer.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling DataBuffer.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
 $(OBJDIR)/RecordNode_2b7a1a2.o: ../../Source/Processors/RecordNode.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling RecordNode.cpp"
@@ -265,6 +290,11 @@ $(OBJDIR)/MainWindow_499ac812.o: ../../Source/MainWindow.cpp
 $(OBJDIR)/Main_90ebc5c2.o: ../../Source/Main.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling Main.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/BinaryData_ce4232d4.o: ../../JuceLibraryCode/BinaryData.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling BinaryData.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/JuceLibraryCode1_682c927f.o: ../../JuceLibraryCode/JuceLibraryCode1.cpp
