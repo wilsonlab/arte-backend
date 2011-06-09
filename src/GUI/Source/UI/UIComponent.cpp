@@ -51,14 +51,14 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 	dataViewport->setViewedComponent(streamViewer);
 	addAndMakeVisible(dataViewport);
 	
-	//filterViewport = new FilterViewport();
-	//addAndMakeVisible(filterViewport);
+	filterViewport = new FilterViewport(processorGraph);
+	addAndMakeVisible(filterViewport);
 	
 	controlPanel = new ControlPanel(processorGraph, audio);
 	addAndMakeVisible(controlPanel);
 
-	//filterList = new FilterList();
-	//addAndMakeVisible(filterList);
+	filterList = new FilterList();
+	addAndMakeVisible(filterList);
 
 	
 	//StreamViewer* s
@@ -89,7 +89,7 @@ void UIComponent::resized()
 		infoLabel->setBounds(w-80,h-30,100,30);
 	
 	if (dataViewport != 0) {
-		dataViewport->setBounds(220,60,w-250,h-250);
+		dataViewport->setBounds(240,60,w-250,h-250);
 		Component* vc = dataViewport->getViewedComponent();
 		vc->setBounds(0,0,w-250,h-250);
 	}
@@ -101,7 +101,7 @@ void UIComponent::resized()
 		controlPanel->setBounds(20,10,w-20,25);
 
 	if (filterList != 0)
-		filterList->setBounds(20,60,160,300);
+		filterList->setBounds(20,60,192,h-300);
 
 }
 

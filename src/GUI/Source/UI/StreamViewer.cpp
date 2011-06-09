@@ -12,13 +12,13 @@
 
 StreamViewerControls::StreamViewerControls()
 {
-	slider1 = new Slider();
-	slider1->setBounds(0,0,200,20);
-	addAndMakeVisible(slider1);
+	//slider1 = new Slider();
+	//slider1->setBounds(0,0,200,20);
+	//addAndMakeVisible(slider1);
 
-	slider2 = new Slider();
-	slider2->setBounds(0,20,200,20);
-	addAndMakeVisible(slider2);
+	//slider2 = new Slider();
+	//slider2->setBounds(0,20,200,20);
+	//addAndMakeVisible(slider2);
 
 }
 

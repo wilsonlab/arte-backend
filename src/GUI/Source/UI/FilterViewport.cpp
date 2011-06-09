@@ -12,34 +12,59 @@
 
 #include "FilterViewport.h"
 
-
     //==============================================================================
-   FilterViewport::FilterViewport()
-        : message ("Drag-and-drop some rows from the top-left box onto this component!\n\n"
-                   "You can also drag-and-drop files here"),
-          somethingIsBeingDraggedOver (false)
+   FilterViewport::FilterViewport(ProcessorGraph* pgraph)
+        : message ("Drag-and-drop some rows from the top-left box onto this component!"),
+          somethingIsBeingDraggedOver (false), graph(pgraph), lastBound(5)
     {
+
+     //    table.setModel (this);
+     //    table.setColour (ListBox::outlineColourId, Colours::darkgrey);
+     //    table.setOutlineThickness (0);
+     //  //  table.getHeader().addColumn("Source",1,100,50,400,TableHeaderComponent::defaultFlags);
+     // //   table.getHeader().addColumn("Sink",2,100,50,400,TableHeaderComponent::defaultFlags);
+
+     //  //  table.getHeader().setSortColumnId (1, true);
+
+     //    table.setMultipleSelectionEnabled (false);
+     //    table.setBounds(3,3,getWidth()-6,getHeight()-6);
+     //    table.setRowHeight (66);
+     //    table.getHeader().addListener(this);
+
+     //    addAndMakeVisible (&table);
+
+      addMouseListener(this, true);
+
     }
 
     FilterViewport::~FilterViewport()
     {
+        //delete(editorArray);
+        //editorArray = 0;
     }
 
     //==============================================================================
     void FilterViewport::paint (Graphics& g)
     {
-        g.fillAll (Colours::orange.withAlpha (0.2f));
+        //g.fillAll (Colours::orange.withAlpha (0.2f));
+
+       // paintCell (g, 0, 1, 20, 20, 1);
+       // table.setBounds(3,3,getWidth()-6,getHeight()-6);
 
         // draw a red line around the comp if the user's currently dragging something over it..
         if (somethingIsBeingDraggedOver)
         {
             g.setColour (Colours::orange);
             g.drawRect (0, 0, getWidth(), getHeight(), 3);
+        } else {
+            g.setColour (Colours::grey.withAlpha(0.5f));
+            g.drawRect (0, 0, getWidth(), getHeight(), 2);
         }
 
-        g.setColour (Colours::black);
-        g.setFont (14.0f);
-        g.drawFittedText (message, 10, 0, getWidth() - 20, getHeight(), Justification::centred, 4);
+        //g.setColour (Colours::black);
+       // g.setFont (14.0f);
+       // g.drawFittedText (message, 10, 0, getWidth() - 20, getHeight(), Justification::centred, 4);
+
     }
 
     //==============================================================================
@@ -74,6 +99,54 @@
     {
         message = "last filter dropped: " + sourceDescription;
 
+        editorArray.add((const GenericEditor*) graph->createNewProcessor(sourceDescription));
+
+        
+       // Component* comp = table.getCellComponent(lastBound,1);
+        //comp->addAndMakeVisible(editorArray.getLast());
+        //lastBound++;
+       // refreshComponentForCell (1, lastBound, true, 0);
+
+        addAndMakeVisible(editorArray.getLast());
+        editorArray.getLast()->setBounds(lastBound,5,100,getHeight()-10);
+
+        lastBound+=105;
+
+
         somethingIsBeingDraggedOver = false;
         repaint();
+    }
+
+    void FilterViewport::mouseDown(const MouseEvent &e) {
+        
+      //  std::cout << "Mouse clicked in viewport!" << std::endl;
+      //   std::cout << e.getMouseDownX() << std::endl;
+       //  std::cout << e.getMouseDownY() << std::endl;
+
+        // const Point<int> p = e.getMouseDownPosition();
+
+        //GenericEditor* c = (GenericEditor*) e.eventComponent;
+
+        for (int i = 0; i < editorArray.size(); i++) {
+            
+            if (e.eventComponent == editorArray[i])
+                editorArray[i]->select();
+            else 
+                editorArray[i]->deselect();
+        }
+
+        //c->switchSelectedState();
+
+       // std::cout << "Component: " << e.eventComponent << std::endl;
+
+        // // e.eventComponent->switchSelectedState();
+
+        
+            //Rectangle<int> bounds = editorArray[i]->getBounds();
+            //std::cout << bounds.getX() << " " << bounds.getY() << " "
+            //          << bounds.getWidth() << " " << bounds.getHeight() << std::endl;
+
+            //if (bounds.contains(p))
+            
+
     }

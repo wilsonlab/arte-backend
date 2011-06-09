@@ -18,22 +18,36 @@
 //==============================================================================
 // this is the listbox containing the draggable source components..
 
-class FilterList   : public ListBox,
-                     public ListBoxModel
+class FilterList : public Component
 {
 public:
     //==============================================================================
     FilterList();
     ~FilterList();
-    int getNumRows();
 
-    void paintListBoxItem (int rowNumber,
-                           Graphics& g,
-                           int width, int height,
-                           bool rowIsSelected);
-
-    const String getDragSourceDescription (const SparseSet<int>& selectedRows);
     void paint (Graphics& g);
+private:
+   ScopedPointer <TreeView> treeView;
+   ScopedPointer <TreeViewItem> rootItem;
+
+};
+
+class ListItem : public TreeViewItem
+{
+public:
+    ListItem(const String, bool);
+    ~ListItem();
+
+    void paintItem(Graphics&, int, int);
+
+    bool mightContainSubItems();
+    const String getUniqueName();
+    const String getDragSourceDescription();
+
+private:
+    bool containsSubItems;
+    const String name;
+
 };
 
 

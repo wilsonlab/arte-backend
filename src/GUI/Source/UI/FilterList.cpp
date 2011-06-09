@@ -11,61 +11,65 @@
 
 #include "FilterList.h"
 
- FilterList::FilterList()
-        : ListBox ("Filter List", 0)
+ FilterList::FilterList() : treeView(0)
  {
-        // tells the ListBox that this object supplies the info about its rows.
-      setModel (this);
+        rootItem = new ListItem("Data Sources",true);
+        rootItem->setOpen(true);
 
-      setMultipleSelectionEnabled (false);
+        addAndMakeVisible (treeView = new TreeView());
+        treeView->setRootItem (rootItem);
+        treeView->setMultiSelectEnabled(false);
+        treeView->setBounds(0,0,200,600);
+
+
 }
 
     FilterList::~FilterList()
     {
     }
 
-    //==============================================================================
-    // The following methods implement the necessary virtual functions from ListBoxModel,
-    // telling the listbox how many rows there are, painting them, etc.
-    int FilterList::getNumRows()
-    {
-        return 20;
-    }
-
-    void FilterList::paintListBoxItem (int rowNumber,
-                           Graphics& g,
-                           int width, int height,
-                           bool rowIsSelected)
-    {
-        if (rowIsSelected)
-            g.fillAll (Colours::lightblue);
-        else
-            g.fillAll (Colours::lightgrey);
-
-        g.setColour (Colours::black);
-        g.setFont (height * 0.7f);
-
-        g.drawText ("Filter Number " + String (rowNumber + 1),
-                    5, 0, width, height,
-                    Justification::centredLeft, true);
-    }
-
-    const String FilterList::getDragSourceDescription (const SparseSet<int>& selectedRows)
-    {
-        // for our drag desctription, we'll just make a list of the selected
-        // row numbers - this will be picked up by the drag target and displayed in
-        // its box.
-        String desc;
-
-        for (int i = 0; i < selectedRows.size(); ++i)
-            desc << (selectedRows [i] + 1) << " ";
-
-        return desc.trim();
-    }
 
     //==============================================================================
     // this just fills in the background of the listbox
     void FilterList::paint (Graphics& g)
     {
-        g.fillAll (Colours::blue);
+        g.setColour (Colours::grey.withAlpha(0.5f));
+        g.drawRect (0, 0, getWidth(), getHeight(), 2);
     }
+
+
+    ListItem::ListItem(const String name_, bool containsSubItems_) 
+        : name(name_), containsSubItems(containsSubItems_) {
+
+        if (containsSubItems) {
+            addSubItem (new ListItem ("Generic Processor 1",false));
+            addSubItem (new ListItem ("Generic Processor 2",false));
+            addSubItem (new ListItem ("Generic Processor 3",false));
+        }
+
+    }
+    ListItem::~ListItem() {clearSubItems();}
+
+    void ListItem::paintItem(Graphics& g, int width, int height) {
+        if (isSelected()) {
+            g.fillAll (Colours::lightgrey.withAlpha (0.1f));
+        }
+
+        g.setColour (Colours::black);
+        g.setFont( height*0.7f);
+        g.drawText (getUniqueName(),4, 0, width-4, height, Justification::centredLeft, true);
+    }
+
+    const String ListItem::getDragSourceDescription()
+    {
+        return name;
+    }
+
+    bool ListItem::mightContainSubItems() {
+        return containsSubItems;
+    }
+
+    const String ListItem::getUniqueName() {
+        return name;
+    }
+
