@@ -22,7 +22,7 @@
             rtasFolder="c:\SDKs\PT_80_SDK" libraryType="1" juceFolder="../../../../Programming/C++/juce"/>
     <VS2010 targetFolder="Builds/VisualStudio2010" vstFolder="c:\SDKs\vstsdk2.4"
             rtasFolder="c:\SDKs\PT_80_SDK" libraryType="1" juceFolder="../../../../Programming/C++/juce"/>
-    <LINUX_MAKE targetFolder="Builds/Linux" vstFolder="~/SDKs/vstsdk2.4" juceFolder="/home/greghale/programming/juce"
+    <LINUX_MAKE targetFolder="Builds/Linux" vstFolder="~/SDKs/vstsdk2.4" juceFolder="/home/jsiegle/Programming/C++/juce"
                 extraLinkerFlags="-lftdi" extraCompilerFlags="-D__STDC_LIMIT_MACROS"/>
   </EXPORTFORMATS>
   <CONFIGURATIONS>
@@ -38,9 +38,6 @@
         <FILE id="66Xenb4" name="netcom.cpp" compile="1" resource="0" file="Source/Network/netcom.cpp"/>
         <FILE id="n7afJpH" name="netcom.h" compile="0" resource="0" file="Source/Network/netcom.h"/>
         <FILE id="sXXOqTA" name="unp.h" compile="0" resource="0" file="Source/Network/unp.h"/>
-        <FILE id="vlFwSEk" name="NetworkNode.cpp" compile="1" resource="0"
-              file="Source/Network/NetworkNode.cpp"/>
-        <FILE id="96s2fWF" name="NetworkNode.h" compile="0" resource="0" file="Source/Network/NetworkNode.h"/>
       </GROUP>
       <GROUP id="ZFZoGrT" name="Dsp">
         <FILE id="mUwiufK" name="Bessel.cpp" compile="1" resource="0" file="Source/Dsp/Bessel.cpp"/>
@@ -95,14 +92,33 @@
               file="Source/Audio/AudioComponent.h"/>
       </GROUP>
       <GROUP id="yQmqZWk" name="Processors">
-        <FILE id="ZVA3dKD" name="DataBuffer.cpp" compile="1" resource="0" file="Source/Processors/DataBuffer.cpp"/>
-        <FILE id="Rqn03s" name="DataBuffer.h" compile="0" resource="0" file="Source/Processors/DataBuffer.h"/>
+        <GROUP id="ZgsuWxi" name="DataThreads">
+          <FILE id="qqEKlVW" name="libokFrontPanel.so" compile="0" resource="1"
+                file="Source/Processors/DataThreads/libokFrontPanel.so"/>
+          <FILE id="jMwtRI1" name="okFrontPanelDLL.cpp" compile="1" resource="0"
+                file="Source/Processors/DataThreads/okFrontPanelDLL.cpp"/>
+          <FILE id="LlZ0Bjn" name="okFrontPanelDLL.h" compile="0" resource="0"
+                file="Source/Processors/DataThreads/okFrontPanelDLL.h"/>
+          <FILE id="WBgyi43" name="NetworkThread.cpp" compile="1" resource="0"
+                file="Source/Processors/DataThreads/NetworkThread.cpp"/>
+          <FILE id="7gIytex" name="NetworkThread.h" compile="0" resource="0"
+                file="Source/Processors/DataThreads/NetworkThread.h"/>
+          <FILE id="KEzbFux" name="FPGAThread.cpp" compile="1" resource="0" file="Source/Processors/DataThreads/FPGAThread.cpp"/>
+          <FILE id="6iEndcT" name="FPGAThread.h" compile="0" resource="0" file="Source/Processors/DataThreads/FPGAThread.h"/>
+          <FILE id="Qfe0ygk" name="DataBuffer.cpp" compile="1" resource="0" file="Source/Processors/DataThreads/DataBuffer.cpp"/>
+          <FILE id="VCRMcQP" name="DataBuffer.h" compile="0" resource="0" file="Source/Processors/DataThreads/DataBuffer.h"/>
+          <FILE id="yb9wXXE" name="IntanThread.cpp" compile="1" resource="0"
+                file="Source/Processors/DataThreads/IntanThread.cpp"/>
+          <FILE id="PGp9SLi" name="IntanThread.h" compile="0" resource="0" file="Source/Processors/DataThreads/IntanThread.h"/>
+          <FILE id="9JbVKlA" name="DataThread.cpp" compile="1" resource="0" file="Source/Processors/DataThreads/DataThread.cpp"/>
+          <FILE id="McgNvuR" name="DataThread.h" compile="0" resource="0" file="Source/Processors/DataThreads/DataThread.h"/>
+        </GROUP>
+        <FILE id="a9u8QTi" name="GenericEditor.cpp" compile="1" resource="0"
+              file="Source/Processors/GenericEditor.cpp"/>
+        <FILE id="o4f2Ptd" name="GenericEditor.h" compile="0" resource="0"
+              file="Source/Processors/GenericEditor.h"/>
         <FILE id="f34QY5Q" name="RecordNode.cpp" compile="1" resource="0" file="Source/Processors/RecordNode.cpp"/>
         <FILE id="ne3WPH4" name="RecordNode.h" compile="0" resource="0" file="Source/Processors/RecordNode.h"/>
-        <FILE id="TrDHtmZ" name="SourceNodeFPGA.cpp" compile="1" resource="0"
-              file="Source/Processors/SourceNodeFPGA.cpp"/>
-        <FILE id="twFReQS" name="SourceNodeFPGA.h" compile="0" resource="0"
-              file="Source/Processors/SourceNodeFPGA.h"/>
         <FILE id="JXxx5p" name="SignalGenerator.cpp" compile="1" resource="0"
               file="Source/Processors/SignalGenerator.cpp"/>
         <FILE id="6xlnGdF" name="SignalGenerator.h" compile="0" resource="0"

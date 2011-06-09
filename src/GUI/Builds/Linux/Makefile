@@ -20,7 +20,7 @@ ifeq ($(CONFIG),Debug)
   CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I "/usr/include" -I "/usr/include/freetype2"
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -g -ggdb -O0
   CXXFLAGS += $(CFLAGS) -D__STDC_LIMIT_MACROS
-  LDFLAGS += -L$(BINDIR) -L$(LIBDIR) -L"/usr/X11R6/lib/" -L"/home/greghale/programming/juce/bin" -lfreetype -lpthread -lrt -lX11 -lGL -lGLU -lXinerama -lasound -lftdi
+  LDFLAGS += -L$(BINDIR) -L$(LIBDIR) -L"/usr/X11R6/lib/" -L"/home/jsiegle/Programming/C++/juce/bin" -lfreetype -lpthread -lrt -lX11 -lGL -lGLU -lXinerama -lasound -lftdi
   LDDEPS :=
   RESFLAGS :=  -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I "/usr/include" -I "/usr/include/freetype2"
   TARGET := arte
@@ -35,7 +35,7 @@ ifeq ($(CONFIG),Release)
   CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I "/usr/include" -I "/usr/include/freetype2"
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -Os
   CXXFLAGS += $(CFLAGS) -D__STDC_LIMIT_MACROS
-  LDFLAGS += -L$(BINDIR) -L$(LIBDIR) -L"/usr/X11R6/lib/" -L"/home/greghale/programming/juce/bin" -lfreetype -lpthread -lrt -lX11 -lGL -lGLU -lXinerama -lasound -lftdi
+  LDFLAGS += -L$(BINDIR) -L$(LIBDIR) -L"/usr/X11R6/lib/" -L"/home/jsiegle/Programming/C++/juce/bin" -lfreetype -lpthread -lrt -lX11 -lGL -lGLU -lXinerama -lasound -lftdi
   LDDEPS :=
   RESFLAGS :=  -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I "/usr/include" -I "/usr/include/freetype2"
   TARGET := arte
@@ -45,7 +45,6 @@ endif
 OBJECTS := \
   $(OBJDIR)/datapacket_e79ff33c.o \
   $(OBJDIR)/netcom_7ad18ece.o \
-  $(OBJDIR)/NetworkNode_fe7b6db0.o \
   $(OBJDIR)/Bessel_63b88b81.o \
   $(OBJDIR)/Biquad_479045c5.o \
   $(OBJDIR)/Butterworth_a752fb81.o \
@@ -64,9 +63,14 @@ OBJECTS := \
   $(OBJDIR)/RootFinder_239a995f.o \
   $(OBJDIR)/State_22979684.o \
   $(OBJDIR)/AudioComponent_521bd9c9.o \
-  $(OBJDIR)/DataBuffer_3b0b08b9.o \
+  $(OBJDIR)/okFrontPanelDLL_158af498.o \
+  $(OBJDIR)/NetworkThread_276b0d43.o \
+  $(OBJDIR)/FPGAThread_a8dc34ed.o \
+  $(OBJDIR)/DataBuffer_6ae4f549.o \
+  $(OBJDIR)/IntanThread_32126b71.o \
+  $(OBJDIR)/DataThread_b2a47a13.o \
+  $(OBJDIR)/GenericEditor_3dfa9e1f.o \
   $(OBJDIR)/RecordNode_2b7a1a2.o \
-  $(OBJDIR)/SourceNodeFPGA_c405d510.o \
   $(OBJDIR)/SignalGenerator_a9cf4806.o \
   $(OBJDIR)/ResamplingNode_27a58a6b.o \
   $(OBJDIR)/DisplayNode_51f3c75f.o \
@@ -110,11 +114,6 @@ $(OBJDIR)/datapacket_e79ff33c.o: ../../Source/Network/datapacket.cpp
 $(OBJDIR)/netcom_7ad18ece.o: ../../Source/Network/netcom.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling netcom.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/NetworkNode_fe7b6db0.o: ../../Source/Network/NetworkNode.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling NetworkNode.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/Bessel_63b88b81.o: ../../Source/Dsp/Bessel.cpp
@@ -207,19 +206,44 @@ $(OBJDIR)/AudioComponent_521bd9c9.o: ../../Source/Audio/AudioComponent.cpp
 	@echo "Compiling AudioComponent.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/DataBuffer_3b0b08b9.o: ../../Source/Processors/DataBuffer.cpp
+$(OBJDIR)/okFrontPanelDLL_158af498.o: ../../Source/Processors/DataThreads/okFrontPanelDLL.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling okFrontPanelDLL.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/NetworkThread_276b0d43.o: ../../Source/Processors/DataThreads/NetworkThread.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling NetworkThread.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/FPGAThread_a8dc34ed.o: ../../Source/Processors/DataThreads/FPGAThread.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling FPGAThread.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/DataBuffer_6ae4f549.o: ../../Source/Processors/DataThreads/DataBuffer.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling DataBuffer.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/IntanThread_32126b71.o: ../../Source/Processors/DataThreads/IntanThread.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling IntanThread.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/DataThread_b2a47a13.o: ../../Source/Processors/DataThreads/DataThread.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling DataThread.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/GenericEditor_3dfa9e1f.o: ../../Source/Processors/GenericEditor.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling GenericEditor.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/RecordNode_2b7a1a2.o: ../../Source/Processors/RecordNode.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling RecordNode.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/SourceNodeFPGA_c405d510.o: ../../Source/Processors/SourceNodeFPGA.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling SourceNodeFPGA.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/SignalGenerator_a9cf4806.o: ../../Source/Processors/SignalGenerator.cpp
