@@ -16,11 +16,11 @@
 #include "DisplayNode.h"
 #include "ResamplingNode.h"
 #include "SignalGenerator.h"
-#include "../Network/NetworkNode.h"
+//#include "../Network/NetworkNode.h"
 #include "RecordNode.h"
 #include <stdio.h>
 
-ProcessorGraph::ProcessorGraph(int numChannels) {
+ProcessorGraph::ProcessorGraph(int numChannels) : currentNodeId(100) {
 
 	//std::cout << "Processor graph created." << std::endl;
 
@@ -29,8 +29,8 @@ ProcessorGraph::ProcessorGraph(int numChannels) {
 	numSamplesInThisBuffer = 1024;
 
 	//SignalGenerator* sg = new SignalGenerator();
-	NetworkNode* sn = new NetworkNode(T("Processor 1"), &numSamplesInThisBuffer, lock);
-	//new SourceNode(T("Processor 1"), &numSamplesInThisBuffer, lock);
+	//NetworkNode* sn = new NetworkNode(T("Processor 1"), &numSamplesInThisBuffer, lock);
+	SourceNode* sn = new SourceNode("Intan Demo Board", &numSamplesInThisBuffer, 16, lock);
 	FilterNode* fn = new FilterNode(T("Filter Node"), &numSamplesInThisBuffer, lock);
 	DisplayNode* dn = new DisplayNode(T("Display Node"), &numSamplesInThisBuffer, lock);
 	ResamplingNode* rn = new ResamplingNode(T("Resampling Node"), &numSamplesInThisBuffer, lock, true);
@@ -80,9 +80,9 @@ ProcessorGraph::ProcessorGraph(int numChannels) {
     }
 
     // connect to record node
-    addConnection(2,0,15,0);
-    addConnection(2,1,15,1);
-    addConnection(2,2,15,2);
+    addConnection(3,0,15,0);
+    addConnection(3,1,15,1);
+    addConnection(3,2,15,2);
 
     //  connect resampling node to output node
     addConnection(2, // sourceNodeID
@@ -97,51 +97,18 @@ ProcessorGraph::ProcessorGraph(int numChannels) {
 
     std::cout << "Processor graph created." << std::endl;
 	
-	/*SourceNode* sn = new SourceNode();
-	FilterNode* fn = new FilterNode();
-	recordNode = new RecordNode();
-
-	asb = new AudioSampleBuffer(2,1000);
-	//msg = new Message();
-	//asb.setSize(1,735);
-
-	DisplayNode* dn = new DisplayNode(*asb);
-	AudioProcessorGraph::AudioGraphIOProcessor* on = 
-		new AudioProcessorGraph::AudioGraphIOProcessor(AudioProcessorGraph::AudioGraphIOProcessor::audioOutputNode);
-
-	graph.addNode(sn,5);
-	graph.addNode(fn,7);
-	graph.addNode(dn,10);
-	graph.addNode(on,13);
-	graph.addNode(recordNode,15);
-	
-	for (int chan = 0; chan < 1; chan++) {
-	graph.addConnection(5, // sourceNodeID
-				 		chan, // sourceNodeChannelIndex
-				 		7, // destNodeID
-				 		chan); // destNodeChannelIndex
-	
-	graph.addConnection(7, // sourceNodeID
-				 		chan, // sourceNodeChannelIndex
-				 		10, // destNodeID
-				 		chan); // destNodeChannelIndex
-
-		graph.addConnection(7, // sourceNodeID
-				 		chan, // sourceNodeChannelIndex
-				 		15, // destNodeID
-				 		chan); // destNodeChannelIndex
-
-	graph.addConnection(7, // sourceNodeID
-				 		chan, // sourceNodeChannelIndex
-				 		13, // destNodeID
-				 		chan); // destNodeChannelIndex
-	}*/
-
-
 }
 
 ProcessorGraph::~ProcessorGraph() {
 	
 
 
+}
+
+void* ProcessorGraph::createNewProcessor(const String& description) {
+	
+	std::cout << "Creating new processor with description: " << description << std::endl;
+	GenericProcessor* gp = new GenericProcessor(T("Display Node"), &numSamplesInThisBuffer, 16, lock);
+	addNode(gp,currentNodeId++);
+	return gp->createEditor();
 }

@@ -56,7 +56,7 @@ void RecordNode::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessag
 	int nSamps = *numSamplesInThisBuffer;
 	lock.exit();
 
-	for (int n = 0; n < buffer.getNumSamples(); n++) {
+	for (int n = 0; n < nSamps; n++) {
 		
 		float* sample = buffer.getSampleData(1,n);
 		outputStream->writeFloat(*sample);

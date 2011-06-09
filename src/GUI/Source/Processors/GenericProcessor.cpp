@@ -8,15 +8,14 @@
   ==============================================================================
 */
 
-#include <stdio.h>
 #include "GenericProcessor.h"
 
-GenericProcessor::GenericProcessor(const String name_, int* nSamps)
-	: sampleRate (44100.0), accumulator(0), numSamplesInThisBuffer(nSamps),
-	  name (name_)
+GenericProcessor::GenericProcessor(const String name_, int* nSamps, int nChans, const CriticalSection& lock_)
+	: numSamplesInThisBuffer(nSamps),
+	  name (name_), lock(lock_)
 {
 
-	setPlayConfigDetails(16,16,44100.0,128);
+	setPlayConfigDetails(nChans,nChans,44100.0,*nSamps);
 
 }
 
@@ -27,11 +26,8 @@ GenericProcessor::~GenericProcessor()
 
 AudioProcessorEditor* GenericProcessor::createEditor( )
 {
-	//filterEditor = new FilterEditor(this);
 	
-	//std::cout << "Creating editor." << std::endl;
-	//AudioProcessorEditor* editor = new AudioProcessorEditor(this);
-	return 0;
+	return new GenericEditor (this);
 }
 
 
@@ -45,12 +41,34 @@ void GenericProcessor::setParameter (int parameterIndex, float newValue)
 void GenericProcessor::prepareToPlay (double sampleRate_, int estimatedSamplesPerBlock)
 {
 	//std::cout << "Preparing to play." << std::endl;
-	time(&lastCallbackTime);
+	//time(&lastCallbackTime);
 
 }
 
 void GenericProcessor::releaseResources() 
 {	
+}
+
+// void GenericProcessor::lock() {
+// 	myLock.enter();
+// }
+
+// void GenericProcessor::unlock(){
+// 	myLock.exit();
+// }
+
+void GenericProcessor::setNumSamples(int n) {
+	lock.enter();
+	*numSamplesInThisBuffer = n;
+	lock.exit();
+}
+
+int GenericProcessor::getNumSamples() {
+	lock.enter();
+	int numRead = *numSamplesInThisBuffer;
+	lock.exit();
+
+	return numRead;
 }
 
 void GenericProcessor::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages)

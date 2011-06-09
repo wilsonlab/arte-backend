@@ -13,15 +13,18 @@
 
 
 #include "../../JuceLibraryCode/JuceHeader.h"
+#include "GenericEditor.h"
 #include <time.h>
+#include <stdio.h>
+
+//class GenericEditor;
 
 class GenericProcessor : public AudioProcessor
 
 {
 public:
-	
-	// real member functions:
-	GenericProcessor(const String name, int* nSamples);
+
+	GenericProcessor(const String name, int* nSamples, int nChans, const CriticalSection& lock);
 	~GenericProcessor();
 	
 	const String getName() const {return name;}
@@ -31,13 +34,9 @@ public:
 	void processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages);
 	void setParameter (int parameterIndex, float newValue);
 
-	AudioProcessorEditor* createEditor( );
-	bool hasEditor() const {return false;}
-	//AudioProcessorEditor* createEditor(AudioProcessorEditor* editor);
+	AudioProcessorEditor* createEditor();
+	bool hasEditor() const {return true;}
 	
-	// end real member functions
-	
-	// quick implementations of virtual functions, to be changed later:
 	void reset() {}
 	void setCurrentProgramStateInformation(const void* data, int sizeInBytes) {}
 	void setStateInformation(const void* data, int sizeInBytes) {}
@@ -54,8 +53,8 @@ public:
 	
 	bool isInputChannelStereoPair (int index) const {return true;}
 	bool isOutputChannelStereoPair (int index) const {return true;}
-	bool acceptsMidi () const {return false;}
-	bool producesMidi () const {return false;}
+	bool acceptsMidi () const {return true;}
+	bool producesMidi () const {return true;}
 
 	bool isParameterAutomatable(int parameterIndex) {return false;}
 	bool isMetaParameter(int parameterIndex) {return false;}
@@ -66,19 +65,16 @@ public:
 	
 	float getParameter (int parameterIndex) {return 1.0;}
 
-	
+	int getNumSamples();
+	void setNumSamples(int);
+
 private:
-	double sampleRate;
+
 	const String name;
-
-	long int accumulator;
-
-	time_t lastCallbackTime, thisCallbackTime;
-
 	int* numSamplesInThisBuffer;
+	const CriticalSection& lock;
 
-	//AudioProcessorEditor* editor;
-
+	AudioProcessorEditor* editor;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GenericProcessor);
 

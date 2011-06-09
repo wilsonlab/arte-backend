@@ -27,7 +27,7 @@ ResamplingNode::ResamplingNode (const String name_, int* nSamps,
 		<Dsp::RBJ::Design::LowPass, 1> (1024);
 
 	if (destBufferIsTempBuffer) 
-		destBufferWidth = 256;
+		destBufferWidth = 1024;
 	else
 		destBufferWidth = 1000;
 

@@ -11,7 +11,7 @@
 #ifndef __DATABUFFER_H_11C6C591__
 #define __DATABUFFER_H_11C6C591__
 
-#include "../../JuceLibraryCode/JuceHeader.h"
+#include "../../../JuceLibraryCode/JuceHeader.h"
 
 class DataBuffer
 {

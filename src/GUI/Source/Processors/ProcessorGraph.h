@@ -19,7 +19,11 @@ public:
 	ProcessorGraph(int numChannels);
 	~ProcessorGraph();
 
+	void* createNewProcessor(const String& description);
+
 	int numSamplesInThisBuffer;
+
+	int currentNodeId;
 
 	const CriticalSection lock;
 
