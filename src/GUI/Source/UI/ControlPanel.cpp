@@ -29,6 +29,11 @@ PlayButton::PlayButton()
         over.setStrokeFill (Colours::black);
         over.setStrokeThickness (5.0f);
 
+        down.setPath (p);
+        down.setFill (Colours::pink);
+        down.setStrokeFill (Colours::pink);
+        down.setStrokeThickness (5.0f);
+
         setImages (&normal, &over, &over);
         setBackgroundColours(Colours::darkgrey, Colours::yellow);
         setClickingTogglesState (true);
@@ -38,8 +43,6 @@ PlayButton::PlayButton()
 PlayButton::~PlayButton()
 {	
 }
-
-
 
 RecordButton::RecordButton()
 	: DrawableButton (T("RecordButton"), DrawableButton::ImageFitted)
@@ -69,7 +72,7 @@ RecordButton::~RecordButton()
 }
 
 
-CPUMeter::CPUMeter()
+CPUMeter::CPUMeter() : Label(T("CPU Meter"),"0.0"), cpu(0.5f)
 {
 }
 
@@ -77,9 +80,48 @@ CPUMeter::~CPUMeter()
 {
 }
 
+void CPUMeter::updateCPU(float usage) {
+	cpu = usage;
+}
+
 void CPUMeter::paint(Graphics& g)
 {
-	g.fillAll(Colours::black);
+	g.fillAll(Colours::grey);
+	
+	g.setColour(Colours::orange);
+	g.fillRect(0.0f,0.0f,getWidth()*cpu,float(getHeight()));
+
+	g.setColour(Colours::black);
+	g.drawRect(0,0,getWidth(),getHeight(),1);
+
+}
+
+
+DiskSpaceMeter::DiskSpaceMeter()
+{
+}
+
+
+DiskSpaceMeter::~DiskSpaceMeter()
+{
+}
+
+void DiskSpaceMeter::updateDiskSpace(float percent)
+{
+	diskFree = percent;
+}
+
+void DiskSpaceMeter::paint(Graphics& g)
+{
+
+	g.fillAll(Colours::grey);
+	
+	g.setColour(Colours::lightgrey);
+	g.fillRect(0.0f,0.0f,getWidth()*diskFree,float(getHeight()));
+
+	g.setColour(Colours::black);
+	g.drawRect(0,0,getWidth(),getHeight(),1);
+	
 }
 
 Clock::Clock() : Label(T("Clock"),"00:00.00")
@@ -99,10 +141,17 @@ ControlPanel::ControlPanel(ProcessorGraph* graph_, AudioComponent* audio_) :
 	addAndMakeVisible(playButton);
 
 	recordButton = new RecordButton();
+	recordButton->addListener (this);
 	addAndMakeVisible(recordButton);
 
 	masterClock = new Clock();
 	addAndMakeVisible(masterClock);
+
+	cpuMeter = new CPUMeter();
+	addAndMakeVisible(cpuMeter);
+
+	diskMeter = new DiskSpaceMeter();
+	addAndMakeVisible(diskMeter);
 
 }
 
@@ -125,26 +174,34 @@ void ControlPanel::resized()
 
 	if (masterClock != 0)
 		masterClock->setBounds(w-h*3,0,h*2,h);
+	
+	if (cpuMeter != 0)
+		cpuMeter->setBounds(20,h/4,h*4,h/2);
+
+	if (diskMeter != 0)
+		diskMeter->setBounds(150,h/4,h*4,h/2);
 }
 
 void ControlPanel::buttonClicked(Button* button) 
 
-
 {
-	//std::cout << "A button was pressed." << std::endl;
-
 	if (button == recordButton)
 	{
 		std::cout << "Record button pressed." << std::endl;
 		if (recordButton->getToggleState())
 		{
 			playButton->setToggleState(true,true);
-			//File file (File::getSpecialLocation (File::userDocumentsDirectory)
-			//	.getNonexistentChildFile ("Demo Audio Recording",".wav"));
-			//recordNode->startRecording(file);
+
+			if (audio->callbacksAreActive()) {
+			//	audio->endCallbacks();
+			}
+
+			graph->getRecordNode()->setParameter(1,10.0f); // turn on recording
+
 		} else {
-			//if (recordNode->isRecording())
-			//	recordNode->stop();
+
+			//audio->endCallbacks();
+			graph->getRecordNode()->setParameter(0,10.0f); // turn off recording
 
 		}
 
@@ -155,19 +212,30 @@ void ControlPanel::buttonClicked(Button* button)
 			recordButton->setToggleState(false,true);
 		}
 
-		//playButtonWasPressed = true;
-
 	}
 
 	if (playButton->getToggleState())
 	{
 
-		audio->beginCallbacks();
+		if (!audio->callbacksAreActive()) 
+			audio->beginCallbacks();
 
 	} else {
 
-		audio->endCallbacks();
+		if (audio->callbacksAreActive())
+			audio->endCallbacks();
 
 	}
+
+}
+
+void ControlPanel::actionListenerCallback(const String & msg)
+{
+	//std::cout << "Message Received." << std::endl;
+	cpuMeter->updateCPU(audio->getCpuUsage());
+	cpuMeter->repaint();
+
+	diskMeter->updateDiskSpace(graph->getRecordNode()->getFreeSpace());
+	diskMeter->repaint();
 
 }

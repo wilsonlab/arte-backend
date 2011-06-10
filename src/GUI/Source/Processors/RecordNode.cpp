@@ -10,40 +10,55 @@
 
 #include "RecordNode.h"
 
-
-RecordNode::RecordNode(const String name_, int* nSamples, const CriticalSection& lock_)
-	: name(name_), numSamplesInThisBuffer(nSamples), lock(lock_)
+RecordNode::RecordNode(const String name_, int* nSamples, int numChans, const CriticalSection& lock_)
+	: GenericProcessor(name_, nSamples, numChans, lock_), isRecording(false)
 {
-	outputFile = File("./data");
-	outputStream = outputFile.createOutputStream();
+
 
 	setPlayConfigDetails(3,0,44100.0,128);
+
+	outputFile = File("./data");
+	outputStream = 0;
 }
 
 
 RecordNode::~RecordNode() {
 	
-	outputStream->flush();
-	delete(outputStream);
-	outputStream = 0;
+	
 
 }
 
 
 void RecordNode::setParameter (int parameterIndex, float newValue)
 {
-
-
+ 	if (parameterIndex == 1) {
+ 		isRecording = true;
+ 	} else {
+ 		isRecording = false;
+ 	}
 }
 
 
 void RecordNode::prepareToPlay (double sampleRate_, int estimatedSamplesPerBlock)
 {
-
+	
+	outputStream = outputFile.createOutputStream();
 }
 
 void RecordNode::releaseResources() 
 {	
+	
+	if (outputStream != 0) {
+		outputStream->flush();
+
+		delete(outputStream);
+		outputStream = 0;
+	}
+}
+
+float RecordNode::getFreeSpace()
+{
+	return (1.0f-float(outputFile.getBytesFreeOnVolume())/float(outputFile.getVolumeTotalSize()));
 }
 
 void RecordNode::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages)
@@ -52,21 +67,17 @@ void RecordNode::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessag
 	//std::cout << "Record node processing block." << std::endl;
 	//std::cout << "Num channels: " << buffer.getNumChannels() << std::endl;
 
-	lock.enter();
-	int nSamps = *numSamplesInThisBuffer;
-	lock.exit();
+	if (isRecording) {
 
-	for (int n = 0; n < nSamps; n++) {
+		int nSamps = getNumSamples();
+
+		for (int n = 0; n < nSamps; n++) {
 		
-		float* sample = buffer.getSampleData(1,n);
-		outputStream->writeFloat(*sample);
+			float* sample = buffer.getSampleData(1,n);
+			outputStream->writeFloat(*sample);
 			//AudioDataConverters::convertFloatToInt16BE(&sample)
 			//);
+		}
 	}
 
-	//for (int n = 0; n < 1; n++) {
-	//	outputStream->writeByte(1);
-	//}
-
 }
-	 //std::c

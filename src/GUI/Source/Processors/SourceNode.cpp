@@ -17,6 +17,7 @@ SourceNode::SourceNode(const String name_, int* nSamps, int nChans, const Critic
 	  transmitData(false), dataThread(0)
 {
 
+	// Source node type determines configuration info
 	if (getName().equalsIgnoreCase("Intan Demo Board")) {
 
 		setPlayConfigDetails(0, // numInputChannels
@@ -39,9 +40,9 @@ void SourceNode::prepareToPlay (double sampleRate_, int estimatedSamplesPerBlock
 {
 
 	if (transmitData) {
-	//	playRequest++;
 		std::cout << "Prepared to play." << std::endl;
 
+		// Source node determines type of data thread
 		if (getName().equalsIgnoreCase("Intan Demo Board")) {
 			dataThread = new IntanThread();
 			inputBuffer = dataThread->getBufferAddress();
@@ -69,12 +70,8 @@ void SourceNode::releaseResources()
 void SourceNode::processBlock (AudioSampleBuffer& outputBuffer, MidiBuffer& midiMessages)
 {
 
-	// copy from data thread buffer into outputBuffer (assumes 16 channels)
-
-		outputBuffer.clear();
-
-			int numRead = inputBuffer->readAllFromBuffer(outputBuffer,outputBuffer.getNumSamples());
-	
+	outputBuffer.clear();
+	int numRead = inputBuffer->readAllFromBuffer(outputBuffer,outputBuffer.getNumSamples());
 	// write the total number of samples
 	setNumSamples(numRead);
 

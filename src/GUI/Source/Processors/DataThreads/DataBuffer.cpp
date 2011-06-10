@@ -22,7 +22,7 @@ void DataBuffer::clear() {
 
 void DataBuffer::addToBuffer(float* data, int numItems) {
 	// writes one sample for all channels
-int startIndex1, blockSize1, startIndex2, blockSize2;
+	int startIndex1, blockSize1, startIndex2, blockSize2;
 	abstractFifo.prepareToWrite(numItems, startIndex1, blockSize1, startIndex2, blockSize2);
 
 	 for (int chan = 0; chan < numChans; chan++) {
@@ -71,9 +71,6 @@ int DataBuffer::readAllFromBuffer (AudioSampleBuffer& data, int maxSize)
 						   blockSize2); // numSamples
 		}
 	}
-
-	//std::cout << numItems << " " << startIndex1 << " " << blockSize1 << " " << startIndex2 
-	 // << " " << blockSize2 << std::endl;
 
 	abstractFifo.finishedRead(numItems);
 

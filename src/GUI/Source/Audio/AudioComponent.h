@@ -25,11 +25,15 @@ public:
 	void connectToProcessorGraph(AudioProcessorGraph* processorGraph);
 	void disconnectProcessorGraph();
 
+	bool callbacksAreActive();
+
 	// getCpuUsage
 	// addAudioCallback
 	// 
 	
 private:
+
+	bool isPlaying;
 
 	AudioProcessorPlayer* graphPlayer;
 

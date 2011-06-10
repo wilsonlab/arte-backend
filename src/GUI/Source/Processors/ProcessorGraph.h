@@ -13,6 +13,8 @@
 
 #include "../../JuceLibraryCode/JuceHeader.h"
 
+class RecordNode;
+
 class ProcessorGraph : public AudioProcessorGraph
 {
 public:
@@ -26,6 +28,8 @@ public:
 	int currentNodeId;
 
 	const CriticalSection lock;
+
+	RecordNode* getRecordNode();
 
 private:	
 

@@ -30,13 +30,13 @@ ProcessorGraph::ProcessorGraph(int numChannels) : currentNodeId(100) {
 
 	//SignalGenerator* sg = new SignalGenerator();
 	//NetworkNode* sn = new NetworkNode(T("Processor 1"), &numSamplesInThisBuffer, lock);
-	SourceNode* sn = new SourceNode("Intan Demo Board", &numSamplesInThisBuffer, 16, lock);
+	SourceNode* sn = new SourceNode("Intan Demo Board", &numSamplesInThisBuffer, numChannels, lock);
 	FilterNode* fn = new FilterNode(T("Filter Node"), &numSamplesInThisBuffer, lock);
 	DisplayNode* dn = new DisplayNode(T("Display Node"), &numSamplesInThisBuffer, lock);
 	ResamplingNode* rn = new ResamplingNode(T("Resampling Node"), &numSamplesInThisBuffer, lock, true);
 	//GenericProcessor* gp2 = new GenericProcessor(T("Processor 2"), &numSamplesInThisBuffer);
 
-	RecordNode* recn = new RecordNode(T("Record Node"), &numSamplesInThisBuffer, lock);
+	RecordNode* recn = new RecordNode(T("Record Node"), &numSamplesInThisBuffer, numChannels, lock);
 	//GenericProcessor* gp3 = new GenericProcessor(T("Output Node"));
 
 	// add output node
@@ -108,7 +108,15 @@ ProcessorGraph::~ProcessorGraph() {
 void* ProcessorGraph::createNewProcessor(const String& description) {
 	
 	std::cout << "Creating new processor with description: " << description << std::endl;
-	GenericProcessor* gp = new GenericProcessor(T("Display Node"), &numSamplesInThisBuffer, 16, lock);
+	GenericProcessor* gp = new GenericProcessor(description, &numSamplesInThisBuffer, 16, lock);
 	addNode(gp,currentNodeId++);
 	return gp->createEditor();
+}
+
+RecordNode* ProcessorGraph::getRecordNode() {
+	
+	Node* node = getNodeForId(15);
+
+	return (RecordNode*) node->getProcessor();
+
 }

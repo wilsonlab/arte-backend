@@ -20,17 +20,16 @@ MainWindow::MainWindow()
 {
     centreWithSize (500, 400);
     setResizable (true, true);
-    setResizeLimits(500, 400, 1000, 800);
+    //setResizeLimits(500, 400, 1000, 800);
 
     // create ProcessorGraph and AudioComponent, and connect them.
     // callbacks will be set by the play button in the control panel
     processorGraph = new ProcessorGraph(16);
-     audioComponent = new AudioComponent();
+    audioComponent = new AudioComponent();
     audioComponent->connectToProcessorGraph(processorGraph);
     
-
     std::cout << "Window width = " << getWidth() << std::endl;
-     std::cout << "Window height = " << getHeight() << std::endl;
+    std::cout << "Window height = " << getHeight() << std::endl;
 
     setContentComponent (new UIComponent(processorGraph, audioComponent), true, true);
 

@@ -108,9 +108,9 @@
        // refreshComponentForCell (1, lastBound, true, 0);
 
         addAndMakeVisible(editorArray.getLast());
-        editorArray.getLast()->setBounds(lastBound,5,100,getHeight()-10);
+        editorArray.getLast()->setBounds(lastBound,5,getHeight()-10,getHeight()-10);
 
-        lastBound+=105;
+        lastBound+=getHeight()-10;
 
 
         somethingIsBeingDraggedOver = false;

@@ -63,6 +63,7 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 	
 	//StreamViewer* s
 	addActionListener(streamViewer);
+	addActionListener(controlPanel);
 	//sendActionMessage(msg);
 
 	startTimer(15);
@@ -89,13 +90,13 @@ void UIComponent::resized()
 		infoLabel->setBounds(w-80,h-30,100,30);
 	
 	if (dataViewport != 0) {
-		dataViewport->setBounds(240,60,w-250,h-250);
+		dataViewport->setBounds(240,60,w-100,h-250);
 		Component* vc = dataViewport->getViewedComponent();
-		vc->setBounds(0,0,w-250,h-250);
+		vc->setBounds(0,0,w-140,h-250);
 	}
 	
 	if (filterViewport != 0)
-		filterViewport->setBounds(50,h-150,w-100,100);
+		filterViewport->setBounds(25,h-150,w-50,125);
 	
 	if (controlPanel != 0)
 		controlPanel->setBounds(20,10,w-20,25);

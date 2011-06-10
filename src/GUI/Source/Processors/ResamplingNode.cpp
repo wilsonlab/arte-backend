@@ -107,7 +107,7 @@ void ResamplingNode::setParameter (int parameterIndex, float newValue)
 void ResamplingNode::prepareToPlay (double sampleRate_, int estimatedSamplesPerBlock)
 {
 
-	std::cout << "ResamplingNode preparing to play." << std::endl;
+	//std::cout << "ResamplingNode preparing to play." << std::endl;
 
 	if (isTransmitting) {
 

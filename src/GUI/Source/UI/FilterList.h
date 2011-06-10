@@ -16,19 +16,18 @@
 #include "../../JuceLibraryCode/JuceHeader.h"
 
 //==============================================================================
-// this is the listbox containing the draggable source components..
+// this is the listbox containing the draggable source components
 
 class FilterList : public Component
 {
 public:
-    //==============================================================================
     FilterList();
     ~FilterList();
 
     void paint (Graphics& g);
 private:
-   ScopedPointer <TreeView> treeView;
-   ScopedPointer <TreeViewItem> rootItem;
+   TreeView* treeView;
+   TreeViewItem* rootItem;
 
 };
 
@@ -39,10 +38,12 @@ public:
     ~ListItem();
 
     void paintItem(Graphics&, int, int);
+  //  void paintOpenCloseButton (Graphics &g, int width, int height, bool isMouseOver);
 
     bool mightContainSubItems();
     const String getUniqueName();
     const String getDragSourceDescription();
+
 
 private:
     bool containsSubItems;

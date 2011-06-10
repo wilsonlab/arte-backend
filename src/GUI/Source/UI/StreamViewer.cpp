@@ -82,9 +82,6 @@ void StreamViewerRenderer::renderOpenGL()
 	//glOrtho(0, 1, 1, 0, 0, 1);
 	//glMatrixMode (GL_MODELVIEW);
 
-
-	
-
 	int skip = 1;
 
 	//glBegin(GL_LINE_STRIP);
@@ -99,7 +96,7 @@ void StreamViewerRenderer::renderOpenGL()
 		glBegin(GL_LINE_STRIP);
 
 		//std::cout << "Message Received." << std::endl;
-		glColor3f(1.0*chan/16,1.0*chan/16,1.0*chan/16);
+		glColor3f(0,0,0);//1.0*chan/16,1.0*chan/16,1.0*chan/16);
 	
 		for (int n = 0; n < nSamples-skip; n+= skip )
 		{
@@ -152,6 +149,5 @@ void StreamViewer::resized()
 
 void StreamViewer::actionListenerCallback(const String & msg)
 {
-	//std::cout << "Message Received." << std::endl;
 	streamViewerRenderer->repaint();
 }
