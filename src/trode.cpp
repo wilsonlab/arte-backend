@@ -22,89 +22,15 @@ Trode::Trode(){
 Trode::~Trode(){
   if (has_sockfd)
     close(my_netcomdat.sockfd);
-  //printf("caught an attempt to close sockfd from a trode.\n");
-    //std::cout << "In destructor of tetrode object for tetrode: " << trode_name << std::endl; (<- interesting results)
 }
 
 // Old init function using std::maps for trode_map, neural_daq_map, filt_map
-
-
 int Trode::init(boost::property_tree::ptree &trode_pt, 
 		boost::property_tree::ptree &default_pt, 
 		std::map<int,neural_daq> &neural_daq_map, 
 		std::map<std::string,Filt> &filt_map){
   
-
-//   std::cout << "Beginning of assign_property block." << std::endl;
-
-//   std::istringstream iss(trode_pt.data()); // initialize istringstream with trode_pt.data() which is std::string trode name
-//   iss >> trode_opt.trode_name;
-//   //trode_opt.trode_name = trode_pt.data();
   n_chans = 1;
-  
-
-//   assign_property<uint16_t> ("n_chans", &(trode_opt.n_chans), trode_pt, default_pt, 1);
-//   assign_property_ftor<rdata_t>("thresholds", trode_opt.thresholds, trode_pt, default_pt,trode_opt.n_chans);
-//   assign_property<uint16_t>("channels", trode_opt.channels, trode_pt, default_pt, trode_opt.n_chans);
-//   assign_property<uint16_t>("daq_id", &(trode_opt.daq_id), trode_pt,default_pt, 1);
-//   assign_property<name_string_t>("filt_name", &(trode_opt.filt_name), trode_pt, default_pt, 1);
-//   assign_property<uint16_t>("samps_before_trig", &(trode_opt.samps_before_trig), trode_pt, default_pt, 1);
-//   assign_property<uint16_t>("samps_after_trig", &(trode_opt.samps_after_trig), trode_pt, default_pt, 1);
-//   assign_property<name_string_t> ("spike_mode", &(trode_opt.spike_mode), trode_pt, default_pt, 1);
-//   assign_property<name_string_t> ("buffer_dump_filename", &(trode_opt.buffer_dump_filename), trode_pt, default_pt, 1);
-
-//   std::cout << "Finished assign_property block." << std::endl;
-
-//   my_daq = &(neural_daq_map[trode_opt.daq_id]);
-
-//   trode_opt.stream_n_samps_per_chan = my_daq->n_samps_per_buffer;
-//   trode_opt.n_samps_per_spike = 1 + trode_opt.samps_before_trig + trode_opt.samps_after_trig;
-//   trode_opt.buffer_mult_of_input = trode_opt.n_samps_per_spike / my_daq->n_samps_per_buffer;
-//   if((trode_opt.n_samps_per_spike % my_daq->n_samps_per_buffer) > 0 )
-//     trode_opt.buffer_mult_of_input += 1;
-
-//   if(filt_map.find(trode_opt.filt_name) == filt_map.end()){
-//     std::cerr << "In Trode::init of trode " << trode_opt.trode_name 
-// 	      << " looked for filt named " << trode_opt.filt_name
-// 	      << " but couldn't find it." << std::endl;
-//   }
-//   assert(filt_map.find(trode_opt.filt_name) != filt_map.end());
-
-//   trode_opt.my_filt = filt_map.find(trode_opt.filt_name)->second;
-
-//   int min_samps_for_filt = trode_opt.my_filt.order;
-//   trode_opt.my_filt.buffer_mult_of_input = min_samps_for_filt / my_daq->n_samps_per_buffer + 2;
-//   if( min_samps_for_filt % my_daq->n_samps_per_buffer > 0)
-//     trode_opt.my_filt.buffer_mult_of_input += 1;
-
-//   trode_opt.my_filt.buffer_mult_of_input += trode_opt.my_filt.filtfilt_wait_n_buffers;
-
-//   trode_opt.my_filt.n_samps_per_chan = my_daq->n_samps_per_buffer * trode_opt.my_filt.buffer_mult_of_input;
-//   trode_opt.buf_len = trode_opt.my_filt.n_samps_per_chan;
-//   trode_opt.buf_size_bytes = trode_opt.my_filt.n_samps_per_chan * trode_opt.n_chans * sizeof(u_buf[0]);
-//   trode_opt.my_filt.out_buf_size_bytes = trode_opt.buf_size_bytes;
-
-//   // WHY DID I DO THIS?  I believe filts from map are copied into each trode, not
-//   // referenced from each trode.  This is important b/c filts acquire some
-//   // trode-spacefic values (and lfp specific values, in lfp_banks).
-//   filt_map[trode_opt.filt_name] = trode_opt.my_filt;
-
-//   ptr_to_raw_stream = &(my_daq->data_ptr);
-
-//   if(!trode_opt.buffer_dump_filename.empty()){
-//     buffer_dump_file = try_fopen( trode_opt.buffer_dump_filename.c_str(), "wb" );
-//     uint32_t tmp = 0;
-//     try_fwrite<uint32_t>( &tmp, 1, buffer_dump_file );
-//     try_fwrite<uint16_t>( &(trode_opt.n_chans), 1, buffer_dump_file );
-//     try_fwrite<uint16_t>( &(my_daq->n_samps_per_buffer), 1, buffer_dump_file );
-//   }
-
-//   u_curs = 0;
-//   f_curs = 0;
-//   ff_curs = 0;
-//   tmp = 0;
-
-//   print_options();
 
 }
 
@@ -131,6 +57,34 @@ void Trode::init2(boost::property_tree::ptree &trode_pt,
   // NB check the reasoning for the above count.  Do we need a longer buffer?
   my_buffer->init(trode_pt, default_pt, (n_samps_per_spike + 1) );
 
+  // Init the spike-detector.  Pass my_buffer in
+  // Why not pass in the trode?  because then spike_detector.h would have to include trode.h
+  // Cant do that because trode.h includes spike_detector.h  Spike-detector will init
+  // as much as it can from the buffer settings.  Trode-specific stuff will have to be
+  // passed in through additional arguments to spike_detector::init()
+  my_spike_detector.init(my_buffer);
+
+
+
+  // fill out the spike_net packets - the parts that we know
+  for(int n = 0; n < MAX_N_SPIKES_PER_BUFFER; n++){
+    
+    spike_array[n].ts = -1;
+    spike_array[n].name = name;
+    spike_array[n].n_chans = n_chans;
+    spike_array[n].n_samps_per_chan = n_samps_per_spike;
+    spike_array[n].samp_n_bytes = 2;
+    for(int m = 0; m < (n_chans * n_samps_per_spike); m++)
+      spike_array[n].data[m] = m;
+    for(int m = 0; m < n_chans; m++)
+      spike_array[n].gains[m] = m;
+    spike_array[n].trig_ind = samps_before_trig;
+
+  }
+  printf("Done initializing spike structs.\n");
+
+
+    
   // Initialize the netcom
   //extern std::vector<NetCom> netcom_vector;
 
@@ -158,27 +112,8 @@ void Trode::init2(boost::property_tree::ptree &trode_pt,
 
 void *trode_filter_data(void *t){
 
-//   **********OLD WAY******
-//   Trode *trode = (Trode *)t;
-//   //  std::cout << "About to call filter_data from the trode." << std::endl;
-//   if(tmp == 0){
-//     //std::cout << "About to call filter_data from the trode: " << trode->trode_opt.trode_name << std::endl;
-//     //fflush(stdout);
-//     filter_data(*(trode->ptr_to_raw_stream), &(trode->trode_opt.my_filt), trode->my_daq, trode->trode_opt.channels, 
-// 		trode->trode_opt.n_chans, trode->my_daq->n_samps_per_buffer, 
-// 		trode->trode_opt.buf_len, &(trode->u_curs), &(trode->f_curs), 
-// 		&(trode->ff_curs),trode->u_buf, trode->f_buf, trode->ff_buf);
-
-//     find_spikes(trode);
-//     //tmp = 1;
-//     //print_array(trode->u_buf, trode->trode_opt.n_chans, trode->trode_opt.my_filt.n_samps_per_chan, trode->u_curs);  
-//   } else{
-//     //std::cout << "skip" << std::endl;
-//     //fflush(stdout);
-//   }
-
   filter_buffer( ((Trode *)t)->my_buffer );
-  
+  //  find_spikes( (Trode*)t );
 
 }
 
@@ -203,79 +138,56 @@ void Trode::print_options(void){
 
 void Trode::print_buffers(int chan_lim, int samp_lim){
 
-
-//   system("clear");
-//   std::cout << "*********" << name << "*************" << std::endl;
-//   std::cout << std::fixed << std::setprecision(1); 
-//   neural_daq this_daq = neural_daq_map[my_buffer->my_daq->id];
-//   std::cout << "raw_stream || u_buf  ||  f_buf" << std::endl;
-
-//   for (int s = 0; s < samp_lim; s++){
-
-//     int neural_daq_row_offset = s * (my_buffer->my_daq)->n_chans;
-//     int row_offset = s * n_chans;
-//     int last_curs = CBUF( (my_buffer->u_curs - (my_buffer->my_daq)->n_samps_per_buffer), my_buffer->buf_len);
-//     int adjusted_u_curs;
-//     if(my_buffer->u_curs == 0){
-//       adjusted_u_curs = my_buffer->buf_len;
-//     }
-//     else{
-//       adjusted_u_curs = my_buffer->u_curs;
-//     }
-
-//     if( s < last_curs || s >= adjusted_u_curs){
-//       for(int c = 0; c < chan_lim; c++){
-// 	std::cout << "\033[0;32m" << std::setw(7) << 0.0 << " " << "\033[0m";
-//       }
-//     }
-//     else{
-//       for(int c = 0; c < chan_lim; c++){
-// 	int this_in_c = (my_buffer->channels)[c];
-// 	//      std::cout << std::setw(7) << ptr_to_raw_stream[this_in_c + neural_daq_row_offset] << " "; // correct output
-// 	std::cout << std::setw(7) << (my_buffer->my_daq)->data_ptr[(this_in_c + neural_daq_row_offset) - (last_curs * (my_buffer->my_daq)->n_chans)] << " "; // correct output
-// 	//       std::cout << std::setw(7) << my_daq->data_ptr_copy[this_in_c + neural_daq_row_offset] << " ";  // all 8.0's
-// 	//      std::cout << std::setw(7) << this_daq.data_ptr_copy[this_in_c + neural_daq_row_offset] << " ";  // all 8.0's
-//       }
-//     }
-
-//     std::cout << "  ||  ";
-
-//     for (int c = 0; c < chan_lim; c++){
-//       if(s == (my_buffer->u_curs)){
-// 	std::cout << "\033[0;32m";
-//       }else{
-// 	std::cout << "\033[0m";}
-//       std::cout << std::setw(7) << my_buffer->u_buf[c + row_offset] << " \033[0m"; 
-//     }
-
-// //     std::cout << "  ||  ";
-
-// //     std::cout << std::fixed << std::setprecision(1);
-// //     for (int c = 0; c < chan_lim; c++){
-// //       if(s == f_curs){
-// // 	std::cout << "\033[0;32m";
-// //       }else{
-// // 	std::cout << "\033[0m";}
-// //       std::cout << std::setw(7) << u_buf[c + row_offset + (trode_opt.n_chans * trode_opt.buf_len)] << " \033[0m";
-// //     }
-
-
-//     std::cout << "  ||  ";
-//     std::cout << std::fixed << std::setprecision(1);
-//     for (int c = 0; c < chan_lim; c++){
-//       if(s == my_buffer->f_curs){
-// 	std::cout << "\033[0;32m";
-//       } else{
-// 	std::cout << "\033[0m";}
-//       std::cout << std::setw(7) << my_buffer->f_buf[c + row_offset] << "  \033[0m";
-//     }
-//     std::cout <<std::endl;
-//   }
-
-
 }
 
 
 void Trode::print_spikes(void){
 
+}
+
+void find_spikes(Trode *t){
+
+  int n_spikes;
+  int spike_starts[MAX_N_SPIKES_PER_BUFFER];
+  int buf_len, n_chans, search_start_ind, search_stop_ind, stop_ind; 
+  int samps_before_trig, n_samps_per_spike, search_cursor, s, c;
+  bool found_spike;
+  rdata_t *thresh, *spike_buffer, *f_buf;
+  Filtered_buffer *fb;
+  SpikeDetector *sd;
+  
+  fb = t->my_buffer;
+  buf_len = fb->buf_len;
+  n_chans = t->n_chans;
+  samps_before_trig = t->samps_before_trig;
+  //ssss50samps_after_trig = t->samps_after_trig;
+
+  search_stop_ind  = CBUF( (fb->f_curs + fb->stream_n_samps_per_chan - t->samps_after_trig),
+		    buf_len);
+  search_start_ind = CBUF( (stop_ind - t->n_samps_per_spike),
+		    buf_len);
+
+  for(search_cursor = search_start_ind; 
+      search_cursor != search_stop_ind; 
+      search_cursor = CBUF(search_cursor+1, buf_len)){
+    
+    found_spike = 0;
+    for(c = 0; c < n_chans; c++){
+      found_spike += (f_buf[ search_cursor * n_chans + c] > thresh[c]);  // good idea to treat bool like int?
+    }
+    
+    if(found_spike > 0){
+      for(s = 0; s < n_samps_per_spike; s++){
+	for(c = 0; c < n_chans; c++){
+	  spike_buffer[ s * n_chans + c ] = f_buf[ CBUF((search_cursor-samps_before_trig+s), buf_len)*n_chans + c];
+	}
+      }
+
+      search_cursor += t->refractory_period_samps - 1; // drop 1 1b/c we add the 1 in the for loop
+
+      //spike_to_disk(spike_buffer, n_chans, n_samps_per_chan, trode);
+      //spike_to_net (spike_buffer, n_chans, n_samps_per_chan, trode);
+    }
+    
+  }
 }

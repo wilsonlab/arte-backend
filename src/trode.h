@@ -23,25 +23,6 @@ class Trode{
   Trode();
   virtual ~Trode();
   
-/*    struct trode_opt_struct{  */
-/*      uint16_t trode_name;  */
-/*      name_string_t filt_name;  */
-/*      uint16_t n_chans;  */
-/*      rdata_t thresholds[MAX_TRODE_N_CHANS];  */
-/*      uint16_t daq_id;  */
-/*      uint16_t stream_n_samps_per_chan;  */
-/*      uint16_t stream_n_chan;  */
-/*      Filt my_filt;  */
-/*      name_string_t spike_mode;  */
-/*      int buffer_mult_of_input;  */
-/*      int buf_len;  */
-/*      int buf_size_bytes;  */
-/*      uint16_t channels[MAX_TRODE_N_CHANS];  */
-/*      uint16_t samps_before_trig;  */
-/*      uint16_t samps_after_trig;  */
-/*      uint16_t n_samps_per_spike;  */
-/*    } trode_opt;  */
-  
   uint16_t name;
 
   uint16_t n_chans;
@@ -55,6 +36,10 @@ class Trode{
   Filtered_buffer *my_buffer;
 
   neural_daq *my_daq;
+
+  SpikeDetector my_spike_detector;
+
+  spike_net_t spike_array[MAX_N_SPIKES_PER_BUFFER];
 
   NetCom * my_netcom;
   NetComDat my_netcomdat;
@@ -73,20 +58,9 @@ class Trode{
   void print_buffers(int chan_lim, int samp_lim); // this should be handled by my_buffer, not trode
   void print_spikes();
 
-
-/*   rdata_t **ptr_to_raw_stream; */
-/*   rdata_t u_buf [MAX_TRODE_BUFFER];                // unfiltered data buffer  */
-/*   rdata_t f_buf [MAX_TRODE_BUFFER];                // filtered data buffer */
-/*   rdata_t ff_buf [MAX_TRODE_BUFFER];             // filtfiltered data buffer */
-/*   int u_curs; */
-/*   int f_curs; */
-/*   int ff_curs; */
-/*   int u_curs_time; */
-/*   int f_curs_time; */
-
-/*   FILE *buffer_dump_file; */
-
 };
+
+void find_spikes(Trode *t);
 
 extern std::map<uint16_t, Trode> trode_map;
 extern Trode * trode_array;

@@ -11,6 +11,29 @@
 extern int master_id;
 extern int32_t buffer_size;
 
+
+struct neural_daq{
+  int id;
+  name_string_t dev_name;
+  uint16_t n_samps_per_buffer;
+  uint16_t n_chans;
+  name_string_t in_filename;
+  FILE *in_file;
+  name_string_t raw_dump_filename;
+  FILE *out_file;
+  rdata_t data_buffer[MAX_NEURAL_DAQ_BUFFER];
+  rdata_t *data_ptr;
+  uint32_t buffer_timestamp;
+  TaskHandle task_handle;
+  int total_samp_count;
+  int size_bytes;
+  int status;
+  double buffer_time_interval;  // inter-buffer-interval (sec)
+  uint32_t daq_buffer_count;
+  uint32_t this_buffer;
+};
+
+
 void neural_daq_init(boost::property_tree::ptree &setup_ptree);
 
 void neural_daq_start_all(void);

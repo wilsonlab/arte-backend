@@ -1,10 +1,10 @@
 #ifndef SPIKE_DETECTOR_H_
 #define SPIKE_DETECTOR_H_
 
-#include "trode.h"
+//#include "trode.h"
 #include "filtered_buffer.h"
 
-enum spikemode_t {THRESHOLD=0, LOCALMAX=1};
+//enum spikemode_t {THRESHOLD=0, LOCALMAX=1};
 
 class SpikeDetector {
 
@@ -15,7 +15,7 @@ class SpikeDetector {
 
   void init(Filtered_buffer *fb);
 
-  spikemode_t mode;
+  //spikemode_t mode;
   Filtered_buffer * fb;
 
   // going to try using dynamic memory again
@@ -44,6 +44,7 @@ class SpikeDetector {
 
 //void init();
 
-void find_spikes(Filtered_buffer *fb);
+// This is now defined in trode.cpp
+//void find_spikes(Filtered_buffer *fb, SpikeDetector *sd);
 
 #endif
