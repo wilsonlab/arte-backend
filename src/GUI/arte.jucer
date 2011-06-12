@@ -92,6 +92,15 @@
               file="Source/Audio/AudioComponent.h"/>
       </GROUP>
       <GROUP id="yQmqZWk" name="Processors">
+        <GROUP id="AqvwO6w" name="Editors">
+          <FILE id="4sHjKNc" name="FilterEditor.cpp" compile="1" resource="0"
+                file="Source/Processors/Editors/FilterEditor.cpp"/>
+          <FILE id="A2OQdsN" name="FilterEditor.h" compile="0" resource="0" file="Source/Processors/Editors/FilterEditor.h"/>
+          <FILE id="9sKH5cL" name="GenericEditor.cpp" compile="1" resource="0"
+                file="Source/Processors/Editors/GenericEditor.cpp"/>
+          <FILE id="gETPJeW" name="GenericEditor.h" compile="0" resource="0"
+                file="Source/Processors/Editors/GenericEditor.h"/>
+        </GROUP>
         <GROUP id="ZgsuWxi" name="DataThreads">
           <FILE id="qqEKlVW" name="libokFrontPanel.so" compile="0" resource="1"
                 file="Source/Processors/DataThreads/libokFrontPanel.so"/>
@@ -113,10 +122,6 @@
           <FILE id="9JbVKlA" name="DataThread.cpp" compile="1" resource="0" file="Source/Processors/DataThreads/DataThread.cpp"/>
           <FILE id="McgNvuR" name="DataThread.h" compile="0" resource="0" file="Source/Processors/DataThreads/DataThread.h"/>
         </GROUP>
-        <FILE id="a9u8QTi" name="GenericEditor.cpp" compile="1" resource="0"
-              file="Source/Processors/GenericEditor.cpp"/>
-        <FILE id="o4f2Ptd" name="GenericEditor.h" compile="0" resource="0"
-              file="Source/Processors/GenericEditor.h"/>
         <FILE id="f34QY5Q" name="RecordNode.cpp" compile="1" resource="0" file="Source/Processors/RecordNode.cpp"/>
         <FILE id="ne3WPH4" name="RecordNode.h" compile="0" resource="0" file="Source/Processors/RecordNode.h"/>
         <FILE id="JXxx5p" name="SignalGenerator.cpp" compile="1" resource="0"
@@ -144,10 +149,6 @@
               file="Source/Processors/ProcessorGraph.h"/>
       </GROUP>
       <GROUP id="RNGb1yR" name="UI">
-        <FILE id="Qam0ze" name="FilterViewport2.cpp" compile="1" resource="0"
-              file="Source/UI/FilterViewport2.cpp"/>
-        <FILE id="5M42AUH" name="FilterViewport2.h" compile="0" resource="0"
-              file="Source/UI/FilterViewport2.h"/>
         <FILE id="XxpxuUf" name="StreamViewer.cpp" compile="1" resource="0"
               file="Source/UI/StreamViewer.cpp"/>
         <FILE id="N98qcpo" name="StreamViewer.h" compile="0" resource="0" file="Source/UI/StreamViewer.h"/>

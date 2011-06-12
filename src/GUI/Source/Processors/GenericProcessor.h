@@ -13,7 +13,7 @@
 
 
 #include "../../JuceLibraryCode/JuceHeader.h"
-#include "GenericEditor.h"
+#include "Editors/GenericEditor.h"
 #include <time.h>
 #include <stdio.h>
 
@@ -25,7 +25,7 @@ class GenericProcessor : public AudioProcessor
 public:
 
 	GenericProcessor(const String name, int* nSamples, int nChans, const CriticalSection& lock, int nodeId);
-	~GenericProcessor();
+	virtual ~GenericProcessor();
 	
 	const String getName() const {return name;}
 	
@@ -34,7 +34,7 @@ public:
 	void processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages);
 	void setParameter (int parameterIndex, float newValue);
 
-	AudioProcessorEditor* createEditor();
+	virtual AudioProcessorEditor* createEditor();
 	bool hasEditor() const {return true;}
 	
 	void reset() {}

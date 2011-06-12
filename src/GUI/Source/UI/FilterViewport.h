@@ -15,7 +15,7 @@
 
 #include "../../JuceLibraryCode/JuceHeader.h"
 #include "../Processors/ProcessorGraph.h"
-#include "../Processors/GenericEditor.h"
+#include "../Processors/Editors/GenericEditor.h"
 
 // and this is a component that can have things dropped onto it..
 

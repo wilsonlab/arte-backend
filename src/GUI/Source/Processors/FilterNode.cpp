@@ -52,16 +52,16 @@ FilterNode::~FilterNode()
 	filter = 0;
 }
 
-//AudioProcessorEditor* FilterNode::createEditor( )
-//{
-	//filterEditor = new FilterEditor(this);
+AudioProcessorEditor* FilterNode::createEditor( )
+{
+	FilterEditor* filterEditor = new FilterEditor(this);
 	
-	//std::cout << "Creating editor." << std::endl;
+	std::cout << "Creating editor." << std::endl;
 	//filterEditor = new FilterEditor(this);
-	//return filterEditor;
+	return filterEditor;
 
 	//return 0;
-//}
+}
 
 //AudioProcessorEditor* FilterNode::createEditor(AudioProcessorEditor* const editor)
 //{

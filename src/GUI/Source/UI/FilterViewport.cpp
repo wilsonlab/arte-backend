@@ -18,29 +18,13 @@
           somethingIsBeingDraggedOver (false), graph(pgraph), lastBound(5), shiftDown(false)
     {
 
-     //    table.setModel (this);
-     //    table.setColour (ListBox::outlineColourId, Colours::darkgrey);
-     //    table.setOutlineThickness (0);
-     //  //  table.getHeader().addColumn("Source",1,100,50,400,TableHeaderComponent::defaultFlags);
-     // //   table.getHeader().addColumn("Sink",2,100,50,400,TableHeaderComponent::defaultFlags);
-
-     //  //  table.getHeader().setSortColumnId (1, true);
-
-     //    table.setMultipleSelectionEnabled (false);
-     //    table.setBounds(3,3,getWidth()-6,getHeight()-6);
-     //    table.setRowHeight (66);
-     //    table.getHeader().addListener(this);
-
-     //    addAndMakeVisible (&table);
-
       addMouseListener(this, true);
-      //addKeyListener(this);
-     // setWantsKeyboardFocus(true);
 
     }
 
     FilterViewport::~FilterViewport()
     {
+        //deleteAllChildren();
         //delete(editorArray);
         //editorArray = 0;
     }
@@ -48,12 +32,7 @@
     //==============================================================================
     void FilterViewport::paint (Graphics& g)
     {
-        //g.fillAll (Colours::orange.withAlpha (0.2f));
 
-       // paintCell (g, 0, 1, 20, 20, 1);
-       // table.setBounds(3,3,getWidth()-6,getHeight()-6);
-
-        // draw a red line around the comp if the user's currently dragging something over it..
         if (somethingIsBeingDraggedOver)
         {
             g.setColour (Colours::orange);
@@ -62,10 +41,6 @@
             g.setColour (Colours::grey.withAlpha(0.5f));
             g.drawRect (0, 0, getWidth(), getHeight(), 2);
         }
-
-        //g.setColour (Colours::black);
-       // g.setFont (14.0f);
-       // g.drawFittedText (message, 10, 0, getWidth() - 20, getHeight(), Justification::centred, 4);
 
     }
 
@@ -103,18 +78,13 @@
 
         std::cout << "Item dropped." << std::endl;
 
-        const GenericEditor* editor = (const GenericEditor*) graph->createNewProcessor(sourceDescription);
+        GenericEditor* editor = (GenericEditor*) graph->createNewProcessor(sourceDescription);
 
         if (editor != 0) {
 
             editorArray.add(editor);
             editorArray.getLast()->setViewport(this);
         
-         // Component* comp = table.getCellComponent(lastBound,1);
-        //comp->addAndMakeVisible(editorArray.getLast());
-         //lastBound++;
-       // refreshComponentForCell (1, lastBound, true, 0);
-
             int componentWidth = editorArray.getLast()->desiredWidth;
 
             addAndMakeVisible(editorArray.getLast());
@@ -228,7 +198,8 @@
        // if (!shiftDown) {
         for (int i = 0; i < editorArray.size(); i++) {
             
-            if (e.eventComponent == editorArray[i]) {
+            if (e.eventComponent == editorArray[i]
+                 || e.eventComponent->getParentComponent() == editorArray[i]) {
                 editorArray[i]->select();
             } else {
               //  if (!e.mods.isShiftDown())  

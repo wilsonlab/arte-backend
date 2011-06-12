@@ -14,8 +14,9 @@
 #include "../../JuceLibraryCode/JuceHeader.h"
 #include "../Dsp/Dsp.h"
 #include "GenericProcessor.h"
+#include "Editors/FilterEditor.h"
 
-//class FilterEditor;
+class FilterEditor;
 
 class FilterNode : public GenericProcessor
 
@@ -29,6 +30,8 @@ public:
 	void releaseResources();
 	void processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages);
 	void setParameter (int parameterIndex, float newValue);
+
+	AudioProcessorEditor* createEditor();
 
 	bool hasEditor() const {return true;}
 	

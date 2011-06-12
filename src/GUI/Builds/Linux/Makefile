@@ -63,13 +63,14 @@ OBJECTS := \
   $(OBJDIR)/RootFinder_239a995f.o \
   $(OBJDIR)/State_22979684.o \
   $(OBJDIR)/AudioComponent_521bd9c9.o \
+  $(OBJDIR)/FilterEditor_dfe1f39d.o \
+  $(OBJDIR)/GenericEditor_becb2ad6.o \
   $(OBJDIR)/okFrontPanelDLL_158af498.o \
   $(OBJDIR)/NetworkThread_276b0d43.o \
   $(OBJDIR)/FPGAThread_a8dc34ed.o \
   $(OBJDIR)/DataBuffer_6ae4f549.o \
   $(OBJDIR)/IntanThread_32126b71.o \
   $(OBJDIR)/DataThread_b2a47a13.o \
-  $(OBJDIR)/GenericEditor_3dfa9e1f.o \
   $(OBJDIR)/RecordNode_2b7a1a2.o \
   $(OBJDIR)/SignalGenerator_a9cf4806.o \
   $(OBJDIR)/ResamplingNode_27a58a6b.o \
@@ -78,7 +79,6 @@ OBJECTS := \
   $(OBJDIR)/SourceNode_c2d6336c.o \
   $(OBJDIR)/GenericProcessor_733760aa.o \
   $(OBJDIR)/ProcessorGraph_68b34a0b.o \
-  $(OBJDIR)/FilterViewport2_a999cf02.o \
   $(OBJDIR)/StreamViewer_5c81b76e.o \
   $(OBJDIR)/FilterViewport_47880e3a.o \
   $(OBJDIR)/FilterList_10c1d1b2.o \
@@ -207,6 +207,16 @@ $(OBJDIR)/AudioComponent_521bd9c9.o: ../../Source/Audio/AudioComponent.cpp
 	@echo "Compiling AudioComponent.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
+$(OBJDIR)/FilterEditor_dfe1f39d.o: ../../Source/Processors/Editors/FilterEditor.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling FilterEditor.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/GenericEditor_becb2ad6.o: ../../Source/Processors/Editors/GenericEditor.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling GenericEditor.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
 $(OBJDIR)/okFrontPanelDLL_158af498.o: ../../Source/Processors/DataThreads/okFrontPanelDLL.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling okFrontPanelDLL.cpp"
@@ -235,11 +245,6 @@ $(OBJDIR)/IntanThread_32126b71.o: ../../Source/Processors/DataThreads/IntanThrea
 $(OBJDIR)/DataThread_b2a47a13.o: ../../Source/Processors/DataThreads/DataThread.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling DataThread.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/GenericEditor_3dfa9e1f.o: ../../Source/Processors/GenericEditor.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling GenericEditor.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/RecordNode_2b7a1a2.o: ../../Source/Processors/RecordNode.cpp
@@ -280,11 +285,6 @@ $(OBJDIR)/GenericProcessor_733760aa.o: ../../Source/Processors/GenericProcessor.
 $(OBJDIR)/ProcessorGraph_68b34a0b.o: ../../Source/Processors/ProcessorGraph.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling ProcessorGraph.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/FilterViewport2_a999cf02.o: ../../Source/UI/FilterViewport2.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling FilterViewport2.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/StreamViewer_5c81b76e.o: ../../Source/UI/StreamViewer.cpp
