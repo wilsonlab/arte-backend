@@ -49,9 +49,6 @@ private:
 
 	int* numSamplesInThisBuffer;
 
-	bool transmitData;
-	bool canRelease;
-
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SourceNode);
 
 };

@@ -16,86 +16,51 @@
 #include "DisplayNode.h"
 #include "ResamplingNode.h"
 #include "SignalGenerator.h"
-//#include "../Network/NetworkNode.h"
 #include "RecordNode.h"
 #include <stdio.h>
 
-ProcessorGraph::ProcessorGraph(int numChannels) : currentNodeId(100) {
-
-	//std::cout << "Processor graph created." << std::endl;
+ProcessorGraph::ProcessorGraph(int numChannels) : currentNodeId(100), lastNodeId(1), 
+	SOURCE_NODE_ID(0), RECORD_NODE_ID(199), DISPLAY_NODE_ID(10), OUTPUT_NODE_ID(201), RESAMPLING_NODE_ID(202)
+	
+	{
 
 	setPlayConfigDetails(0,2,44100.0, 128);
 
 	numSamplesInThisBuffer = 1024;
 
-	//SignalGenerator* sg = new SignalGenerator();
-	//NetworkNode* sn = new NetworkNode(T("Processor 1"), &numSamplesInThisBuffer, lock);
-	SourceNode* sn = new SourceNode("Intan Demo Board", &numSamplesInThisBuffer, numChannels, lock, 98);
-	FilterNode* fn = new FilterNode(T("Filter Node"), &numSamplesInThisBuffer, lock);
-	DisplayNode* dn = new DisplayNode(T("Display Node"), &numSamplesInThisBuffer, lock);
-	ResamplingNode* rn = new ResamplingNode(T("Resampling Node"), &numSamplesInThisBuffer, lock, true);
-	//GenericProcessor* gp2 = new GenericProcessor(T("Processor 2"), &numSamplesInThisBuffer);
-
-	RecordNode* recn = new RecordNode(T("Record Node"), &numSamplesInThisBuffer, numChannels, lock, 2);
-	//GenericProcessor* gp3 = new GenericProcessor(T("Output Node"));
-
 	// add output node
 	AudioProcessorGraph::AudioGraphIOProcessor* on = 
 		new AudioProcessorGraph::AudioGraphIOProcessor(AudioProcessorGraph::AudioGraphIOProcessor::audioOutputNode);
 
-	//addNode(sg,98);
-	addNode(sn,98);
-	addNode(fn,3);
-	addNode(dn,10);
-	addNode(rn,2);
-	addNode(recn,15);
-	//addNode(gp2,2);
-	addNode(on,99);
+	// add record node
+	RecordNode* recn = new RecordNode(T("Record Node"), &numSamplesInThisBuffer, numChannels, lock, RECORD_NODE_ID);
 
-	for (int chan = 0; chan < numChannels; chan++) {
+	// add display node
+	DisplayNode* dn = new DisplayNode(T("Display Node"), &numSamplesInThisBuffer, lock);
 
-		// connect source node to filter node
+	// add resampling node
+	ResamplingNode* rn = new ResamplingNode(T("Resampling Node"), &numSamplesInThisBuffer, numChannels, lock, RESAMPLING_NODE_ID);
 
-	addConnection(98, // sourceNodeID
-				  chan, // sourceNodeChannelIndex
-				  3, // destNodeID
-				  chan); // destNodeChannelIndex
+	addNode(on,OUTPUT_NODE_ID);
+	addNode(recn,RECORD_NODE_ID);
+	addNode(dn, DISPLAY_NODE_ID);
+	addNode(rn, RESAMPLING_NODE_ID);
 
-
-	    // connect filter node to resampling node
-
-		 addConnection(3, // sourceNodeID
-		 		  chan, // sourceNodeChannelIndex
-		 		  2, // destNodeID
-		 		  chan); // destNodeChannelIndex
-
-
-	   // connect filter node to display node
-
-	  	addConnection(3, // sourceNodeID
-				  chan, // sourceNodeChannelIndex
-				  10, // destNodeID
-				  chan); // destNodeChannelIndex
-
-    }
-
-    // connect to record node
-    addConnection(3,0,15,0);
-    addConnection(3,1,15,1);
-    addConnection(3,2,15,2);
-
-    //  connect resampling node to output node
-    addConnection(2, // sourceNodeID
+	 //  connect resampling node to output node
+    addConnection(RESAMPLING_NODE_ID, // sourceNodeID
 				  0, // sourceNodeChannelIndex
-				  99, // destNodeID
+				  OUTPUT_NODE_ID, // destNodeID
 				  0); // destNodeChannelIndex
 
-	addConnection(2, // sourceNodeID
+	addConnection(RESAMPLING_NODE_ID, // sourceNodeID
 				  1, // sourceNodeChannelIndex
-				  99, // destNodeID
+				  OUTPUT_NODE_ID, // destNodeID
 				  1); // destNodeChannelIndex
 
-    std::cout << "Processor graph created." << std::endl;
+
+	std::cout << "Processor graph created." << std::endl;
+
+	
 	
 }
 
@@ -109,40 +74,138 @@ void* ProcessorGraph::createNewProcessor(const String& description) {
 
 	std::cout << processorType << "::" << subProcessorType << std::endl;
 
-	GenericProcessor* processor;
+	GenericProcessor* processor = 0;
+
+	int id = currentNodeId;
 
 	if (processorType.equalsIgnoreCase("Data Sources")) {
-		processor = new SourceNode(subProcessorType, &numSamplesInThisBuffer, 16, lock, currentNodeId);
+
+		if (SOURCE_NODE_ID == 0) {
+			std::cout << "Creating a new data source." << std::endl;
+			processor = new SourceNode(subProcessorType, &numSamplesInThisBuffer, 16, lock, id);
+			SOURCE_NODE_ID = id;
+			if (nodeArray.size() > 1)
+				nodeArray.set(0, id);
+			else 
+				nodeArray.add(id);
+		}
+
+
+	} else if (processorType.equalsIgnoreCase("Filters")) {
+		if (subProcessorType.equalsIgnoreCase("Bandpass Filter")) {
+			std::cout << "Creating a new filter." << std::endl;
+			processor = new FilterNode(subProcessorType, &numSamplesInThisBuffer, getSourceNode()->getNumOutputs(), lock, id);
+
+		} else if (subProcessorType.equalsIgnoreCase("Resampler")) {
+			std::cout << "Creating a new resampler." << std::endl;
+			processor = new ResamplingNode(subProcessorType, &numSamplesInThisBuffer, getSourceNode()->getNumOutputs(), lock, id);
+		} 
+
 	} else {
-		processor = new GenericProcessor(subProcessorType, &numSamplesInThisBuffer, 16, lock, currentNodeId);
+
+		processor = new GenericProcessor(subProcessorType, &numSamplesInThisBuffer, 16, lock, id);
+
 	}
 
-	addNode(processor,currentNodeId++);
-	return processor->createEditor();
+	if (processor != 0) {
+
+		addNode(processor,id);
+
+		if (id != SOURCE_NODE_ID) {
+		
+			std::cout << "Connecting to source node." << std::endl;
+
+			for (int chan = 0; chan < processor->getNumInputs(); chan++) {
+				addConnection(nodeArray.getLast(), // sourceNodeID
+				  	chan, // sourceNodeChannelIndex
+				   	id, // destNodeID
+				  	chan); // destNodeChannelIndex
+			}
+
+			std::cout << "Connecting to output nodes." << std::endl;
+
+			for (int chan = 0; chan < processor->getNumOutputs(); chan++) {
+
+				//std::cout << "  Connecting channel " << chan << std::endl;
+				addConnection(id, // sourceNodeID
+				  	chan, // sourceNodeChannelIndex
+				   	DISPLAY_NODE_ID, // destNodeID
+				  	chan); // destNodeChannelIndex
+
+				addConnection(id, // sourceNodeID
+				  	chan, // sourceNodeChannelIndex
+				   	RESAMPLING_NODE_ID, // destNodeID
+				  	chan); // destNodeChannelIndex
+
+				addConnection(id, // sourceNodeID
+				  	chan, // sourceNodeChannelIndex
+				   	RECORD_NODE_ID, // destNodeID
+				  	chan); // destNodeChannelIndex
+			}
+
+		}
+		nodeArray.add(id);
+		currentNodeId++;
+
+		return processor->createEditor();
+
+	} else {
+		return 0;
+	}
 
 }
 
 void ProcessorGraph::removeProcessor(int nodeId) {
 	std::cout << "Removing processor with ID " << nodeId << std::endl;
+
+	if (nodeId == SOURCE_NODE_ID) {
+		SOURCE_NODE_ID = 0;
+	}
+
 	removeNode(nodeId);
+	nodeArray.remove(nodeArray.indexOf(nodeId));
 }
 
-void ProcessorGraph::enableSourceNode() {
+bool ProcessorGraph::enableSourceNode() {
 	//std::cout << "Enabling source node..." << std::endl;
-	SourceNode* sn = (SourceNode*) getNodeForId(98)->getProcessor();
-	sn->enable();
+	SourceNode* sn = getSourceNode();
+
+	if (sn != 0) {
+		getSourceNode()->enable();
+		return true;
+	} else {
+		return false;
+	}
 }
 
-void ProcessorGraph::disableSourceNode() {
+bool ProcessorGraph::disableSourceNode() {
+
 	//std::cout << "Disabling source node..." << std::endl;
-	SourceNode* sn = (SourceNode*) getNodeForId(98)->getProcessor();
-	sn->disable();
+	SourceNode* sn = getSourceNode();
+
+	if (sn != 0) {
+		getSourceNode()->disable();
+		return true;
+	} else {
+		return false;
+	}
 }
 
 
 RecordNode* ProcessorGraph::getRecordNode() {
 	
-	Node* node = getNodeForId(15);
+	Node* node = getNodeForId(RECORD_NODE_ID);
 	return (RecordNode*) node->getProcessor();
+
+}
+
+SourceNode* ProcessorGraph::getSourceNode() {
+	
+	if (nodeArray.size() > 0 && nodeArray[0] == SOURCE_NODE_ID) {
+		Node* node = getNodeForId(SOURCE_NODE_ID);
+		return (SourceNode*) node->getProcessor();
+	} else {
+		return 0;
+	}
 
 }

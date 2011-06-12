@@ -218,8 +218,10 @@ void ControlPanel::buttonClicked(Button* button)
 	{
 
 		if (!audio->callbacksAreActive()) {
-			graph->enableSourceNode();
-			audio->beginCallbacks();
+			if (graph->enableSourceNode())
+				audio->beginCallbacks();
+			else
+				playButton->setToggleState(false, false);
 		}
 
 	} else {

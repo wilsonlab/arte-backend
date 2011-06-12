@@ -101,21 +101,28 @@
     {
         message = "last filter dropped: " + sourceDescription;
 
-        editorArray.add((const GenericEditor*) graph->createNewProcessor(sourceDescription));
-        editorArray.getLast()->setViewport(this);
+        std::cout << "Item dropped." << std::endl;
+
+        const GenericEditor* editor = (const GenericEditor*) graph->createNewProcessor(sourceDescription);
+
+        if (editor != 0) {
+
+            editorArray.add(editor);
+            editorArray.getLast()->setViewport(this);
         
-       // Component* comp = table.getCellComponent(lastBound,1);
+         // Component* comp = table.getCellComponent(lastBound,1);
         //comp->addAndMakeVisible(editorArray.getLast());
-        //lastBound++;
+         //lastBound++;
        // refreshComponentForCell (1, lastBound, true, 0);
 
-        int componentWidth = editorArray.getLast()->desiredWidth;
+            int componentWidth = editorArray.getLast()->desiredWidth;
 
-        addAndMakeVisible(editorArray.getLast());
-        editorArray.getLast()->setBounds(lastBound,5,componentWidth,getHeight()-10);
+            addAndMakeVisible(editorArray.getLast());
+            editorArray.getLast()->setBounds(lastBound,5,componentWidth,getHeight()-10);
 
-        lastBound+=componentWidth;
+            lastBound+=componentWidth;
 
+        }
 
         somethingIsBeingDraggedOver = false;
         repaint();

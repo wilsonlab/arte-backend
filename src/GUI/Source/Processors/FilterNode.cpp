@@ -12,18 +12,23 @@
 #include "FilterNode.h"
 //#include "FilterEditor.h"
 
-FilterNode::FilterNode(const String name_, int* nSamps, const CriticalSection& lock_)
-	: sampleRate (44100.0), centerFrequency(2000.0), bandWidth (200),
-	  name (name_), numSamplesInThisBuffer(nSamps), lock(lock_)
+FilterNode::FilterNode(const String name_, int* nSamps, int nChans, const CriticalSection& lock_, int id)
+	: GenericProcessor(name_, nSamps, nChans, lock_, id), 
+	  sampleRate (44100.0), centerFrequency(2000.0), bandWidth (200)
 	
 {
 
-	setPlayConfigDetails(16,16,44100.0,128);
+	setNumInputs(nChans);
+	setNumOutputs(nChans);
+	//setPlayConfigDetails(nChans,nChans,44100.0,128);
 
-	filter = new Dsp::SmoothedFilterDesign 
-		<Dsp::RBJ::Design::LowPass, 16> (1024);
+
+	//if (getName().equalsIgnoreCase("Bandpass Filter")) {
+
+		filter = new Dsp::SmoothedFilterDesign 
+			<Dsp::RBJ::Design::LowPass, 16> (1024);
 	
-	///std::cout << "Filter created." << std::endl;
+		std::cout << "Filter created." << std::endl;
 
 	//filter.setup(3, // order
 	 //            sampleRate,
@@ -31,31 +36,32 @@ FilterNode::FilterNode(const String name_, int* nSamps, const CriticalSection& l
 	   //          bandWidth,
 	    //         1); // ripple dB
 
-	Dsp::Params params;
-	params[0] = sampleRate; // sample rate
-	params[1] = centerFrequency; // cutoff frequency
-	params[2] = 1.25; //Q //
-	//params[3] = bandWidth; // bandWidth
+		Dsp::Params params;
+		params[0] = sampleRate; // sample rate
+		params[1] = centerFrequency; // cutoff frequency
+		params[2] = 1.25; //Q //
+		//params[3] = bandWidth; // bandWidth
 
-	filter->setParams (params);
+		filter->setParams (params);
+
+	//}
 }
 
 FilterNode::~FilterNode()
 {
 	filter = 0;
-	filterEditor = 0;
 }
 
-AudioProcessorEditor* FilterNode::createEditor( )
-{
+//AudioProcessorEditor* FilterNode::createEditor( )
+//{
 	//filterEditor = new FilterEditor(this);
 	
 	//std::cout << "Creating editor." << std::endl;
 	//filterEditor = new FilterEditor(this);
 	//return filterEditor;
 
-	return 0;
-}
+	//return 0;
+//}
 
 //AudioProcessorEditor* FilterNode::createEditor(AudioProcessorEditor* const editor)
 //{
@@ -80,6 +86,7 @@ void FilterNode::setParameter (int parameterIndex, float newValue)
 
 void FilterNode::prepareToPlay (double sampleRate_, int estimatedSamplesPerBlock)
 {
+	//std::cout << "Filter node preparing." << std::endl;
 }
 
 void FilterNode::releaseResources() 
@@ -89,21 +96,7 @@ void FilterNode::releaseResources()
 void FilterNode::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages)
 {
 
-	//std::cout << "FilterNode processing." << std::endl;
-	 //std::cout << buffer.getNumSamples() << std::endl;
-	 //std::cout << buffer.getNumChannels() << std::endl;
-
-	//std::cout << "Filter Node sample count: " << buffer.getNumSamples() << std::endl;
-
-
-	lock.enter();
-	int nSamps = *numSamplesInThisBuffer;
-	lock.exit();
-
-	//std::cout << "Filter node samples: " << nSamps << std::endl;
-
+	int nSamps = getNumSamples();
     filter->process (nSamps, buffer.getArrayOfChannels());
-
-   // std::cout << "Filter processing complete." << std::endl;
 
 }

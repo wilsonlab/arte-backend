@@ -14,6 +14,7 @@
 #include "../../JuceLibraryCode/JuceHeader.h"
 
 class RecordNode;
+class SourceNode;
 
 class ProcessorGraph : public AudioProcessorGraph
 {
@@ -24,21 +25,28 @@ public:
 	void* createNewProcessor(const String& description);
 	void removeProcessor(int nodeId);
 
-	void enableSourceNode();
-	void disableSourceNode();
+	bool enableSourceNode();
+	bool disableSourceNode();
 
 	int numSamplesInThisBuffer;
 
 	int currentNodeId;
+	int lastNodeId;
 
 	const CriticalSection lock;
 
 	RecordNode* getRecordNode();
+	SourceNode* getSourceNode();
 
 private:	
 
+	int SOURCE_NODE_ID;
+	const int RECORD_NODE_ID;
+	const int DISPLAY_NODE_ID;
+	const int OUTPUT_NODE_ID;
+	const int RESAMPLING_NODE_ID;
 
-
+	Array<int, CriticalSection> nodeArray; 
 
 };
 

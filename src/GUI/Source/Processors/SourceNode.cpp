@@ -14,17 +14,13 @@
 
 SourceNode::SourceNode(const String name_, int* nSamps, int nChans, const CriticalSection& lock_, int id)
 	: GenericProcessor(name_, nSamps, nChans, lock_, id),
-	  transmitData(false), dataThread(0)
+	  dataThread(0)
 {
 
 	// Source node type determines configuration info
 	if (getName().equalsIgnoreCase("Intan Demo Board")) {
-
-		setPlayConfigDetails(0, // numInputChannels
-						 16, // numOutputChannels
-						 44100.0, // expected sample rate
-						 128); // expected number of samples per buf
-
+		setNumOutputs(16);
+		setNumInputs(0);
 	}
 
 }
@@ -55,7 +51,6 @@ void SourceNode::releaseResources() {}
 void SourceNode::enable() {
 	
 	std::cout << "Source node received enable signal" << std::endl;
-	transmitData = true;
 
 	if (getName().equalsIgnoreCase("Intan Demo Board")) {
 		dataThread = new IntanThread();
@@ -67,23 +62,19 @@ void SourceNode::enable() {
 void SourceNode::disable() {
 	
 	std::cout << "Source node received disable signal" << std::endl;
-	transmitData = false;
 
-		if (dataThread != 0) {
-			delete dataThread;
-			dataThread = 0;
-		}
-
+	if (dataThread != 0) {
+		delete dataThread;
+		dataThread = 0;
+	}
 }
 
 
 void SourceNode::processBlock (AudioSampleBuffer& outputBuffer, MidiBuffer& midiMessages)
 {
-
 	outputBuffer.clear();
 	int numRead = inputBuffer->readAllFromBuffer(outputBuffer,outputBuffer.getNumSamples());
 	setNumSamples(numRead); // write the total number of samples
-
 }
 
 

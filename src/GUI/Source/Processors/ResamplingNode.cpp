@@ -11,17 +11,16 @@
 #include "ResamplingNode.h"
 #include <stdio.h>
 
-ResamplingNode::ResamplingNode (const String name_, int* nSamps, 
-			      const CriticalSection& lock_, bool temp)
-	: ratio (1.0), lastRatio (1.0),
-	  name (name_), numSamplesInThisBuffer(nSamps), lock(lock_),
-	  destBufferPos(0), destBufferIsTempBuffer(temp),
+ResamplingNode::ResamplingNode(const String name_, int* nSamps, int nChans, const CriticalSection& lock_, int id)
+	: GenericProcessor(name_, nSamps, nChans, lock_, id), 
+	  ratio (1.0), lastRatio (1.0),
+	  destBufferPos(0), destBufferIsTempBuffer(true),
 	  destBufferSampleRate(44100.0), sourceBufferSampleRate(25000.0),
-	  isTransmitting(false), destBuffer(0), tempBuffer(0)
+	  destBuffer(0), tempBuffer(0), isTransmitting(false)
 	
 {
 
-	setPlayConfigDetails(16,16,44100.0,128);
+	setPlayConfigDetails(nChans,nChans,44100.0,128);
 
 	filter = new Dsp::SmoothedFilterDesign 
 		<Dsp::RBJ::Design::LowPass, 1> (1024);
@@ -75,16 +74,16 @@ ResamplingNode::~ResamplingNode()
 	//filterEditor = 0;
 }
 
-AudioProcessorEditor* ResamplingNode::createEditor( )
-{
+//AudioProcessorEditor* ResamplingNode::createEditor( )
+//{
 	//filterEditor = new FilterEditor(this);
 	
 	//std::cout << "Creating editor." << std::endl;
 	//filterEditor = new FilterEditor(this);
 	//return filterEditor;
 
-	return 0;
-}
+//	return 0;
+//}
 
 
 void ResamplingNode::setParameter (int parameterIndex, float newValue)
@@ -109,7 +108,7 @@ void ResamplingNode::prepareToPlay (double sampleRate_, int estimatedSamplesPerB
 
 	//std::cout << "ResamplingNode preparing to play." << std::endl;
 
-	if (isTransmitting) {
+	//if (isTransmitting) {
 
 
 	destBuffer = new AudioSampleBuffer(16, destBufferWidth);
@@ -129,9 +128,9 @@ void ResamplingNode::prepareToPlay (double sampleRate_, int estimatedSamplesPerB
 
 	updateFilter();
 
-	} else {
-		isTransmitting = true;
-	}
+	//} else {
+	//	isTransmitting = true;
+	//}
 
 }
 
@@ -155,8 +154,10 @@ void ResamplingNode::updateFilter() {
 void ResamplingNode::releaseResources() 
 {	
 	if (destBuffer != 0) {
-	deleteAndZero(destBuffer);
-	deleteAndZero(tempBuffer);
+		deleteAndZero(destBuffer);
+	}
+	if (tempBuffer != 0) {
+		deleteAndZero(tempBuffer);
 	}
 }
 
@@ -166,16 +167,8 @@ void ResamplingNode::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMe
 		//std::cout << "Filter Node sample count: " << buffer.getNumSamples() << std::endl;
 
 
-	lock.enter();
-	int nSamps = *numSamplesInThisBuffer - 1;
-	lock.exit();
+	int nSamps = getNumSamples();
 
-	//std::cout << nSamps << std::endl;
-
-
-   // for (int n = 0; n < buffer.getNumSamples(); n+= 10)
-    //	std::cout << buffer.getMagnitude(1,n,1) << " ";
-    
     //std::cout << "END OF OLD BUFFER." << std::endl;
 
 	if (destBufferIsTempBuffer)

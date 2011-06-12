@@ -65,8 +65,15 @@ public:
 	
 	float getParameter (int parameterIndex) {return 1.0;}
 
+	// custom methods:
 	int getNumSamples();
 	void setNumSamples(int);
+
+	int getNumInputs();
+	void setNumInputs(int);
+
+	int getNumOutputs();
+	void setNumOutputs(int);
 
 	int getNodeId();
 
@@ -76,6 +83,9 @@ private:
 	int* numSamplesInThisBuffer;
 	const CriticalSection& lock;
 	int nodeId;
+
+	int numInputs;
+	int numOutputs;
 
 	AudioProcessorEditor* editor;
 

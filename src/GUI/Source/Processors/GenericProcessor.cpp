@@ -12,10 +12,10 @@
 
 GenericProcessor::GenericProcessor(const String name_, int* nSamps, int nChans, const CriticalSection& lock_, int id)
 	: numSamplesInThisBuffer(nSamps),
-	  name (name_), lock(lock_), nodeId(id)
+	  name (name_), lock(lock_), nodeId(id), numInputs(nChans), numOutputs(nChans)
 {
 
-	setPlayConfigDetails(nChans,nChans,44100.0,*nSamps);
+	setPlayConfigDetails(numInputs,numOutputs,44100.0,*nSamps);
 
 }
 
@@ -49,13 +49,6 @@ void GenericProcessor::releaseResources()
 {	
 }
 
-// void GenericProcessor::lock() {
-// 	myLock.enter();
-// }
-
-// void GenericProcessor::unlock(){
-// 	myLock.exit();
-// }
 
 void GenericProcessor::setNumSamples(int n) {
 	lock.enter();
@@ -70,6 +63,26 @@ int GenericProcessor::getNumSamples() {
 
 	return numRead;
 }
+
+int GenericProcessor::getNumInputs() {
+	return numInputs;
+}
+
+void GenericProcessor::setNumInputs(int n) {
+	numInputs = n;
+	setPlayConfigDetails(numInputs,numOutputs,44100.0,1024);
+}
+
+int GenericProcessor::getNumOutputs() {
+	return numOutputs;
+}
+
+void GenericProcessor::setNumOutputs(int n) {
+	numOutputs = n;
+	setPlayConfigDetails(numInputs,numOutputs,44100.0,1024);
+}
+
+
 
 int GenericProcessor::getNodeId() {
 	
