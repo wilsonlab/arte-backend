@@ -34,7 +34,7 @@ private:
 class ListItem : public TreeViewItem
 {
 public:
-    ListItem(const String, bool);
+    ListItem(const String, const String, bool);
     ~ListItem();
 
     void paintItem(Graphics&, int, int);
@@ -48,6 +48,7 @@ public:
 private:
     bool containsSubItems;
     const String name;
+    const String parentName;
 
 };
 

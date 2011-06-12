@@ -30,13 +30,13 @@ ProcessorGraph::ProcessorGraph(int numChannels) : currentNodeId(100) {
 
 	//SignalGenerator* sg = new SignalGenerator();
 	//NetworkNode* sn = new NetworkNode(T("Processor 1"), &numSamplesInThisBuffer, lock);
-	SourceNode* sn = new SourceNode("Intan Demo Board", &numSamplesInThisBuffer, numChannels, lock);
+	SourceNode* sn = new SourceNode("Intan Demo Board", &numSamplesInThisBuffer, numChannels, lock, 98);
 	FilterNode* fn = new FilterNode(T("Filter Node"), &numSamplesInThisBuffer, lock);
 	DisplayNode* dn = new DisplayNode(T("Display Node"), &numSamplesInThisBuffer, lock);
 	ResamplingNode* rn = new ResamplingNode(T("Resampling Node"), &numSamplesInThisBuffer, lock, true);
 	//GenericProcessor* gp2 = new GenericProcessor(T("Processor 2"), &numSamplesInThisBuffer);
 
-	RecordNode* recn = new RecordNode(T("Record Node"), &numSamplesInThisBuffer, numChannels, lock);
+	RecordNode* recn = new RecordNode(T("Record Node"), &numSamplesInThisBuffer, numChannels, lock, 2);
 	//GenericProcessor* gp3 = new GenericProcessor(T("Output Node"));
 
 	// add output node
@@ -99,24 +99,50 @@ ProcessorGraph::ProcessorGraph(int numChannels) : currentNodeId(100) {
 	
 }
 
-ProcessorGraph::~ProcessorGraph() {
-	
-
-
-}
+ProcessorGraph::~ProcessorGraph() { }
 
 void* ProcessorGraph::createNewProcessor(const String& description) {
-	
-	std::cout << "Creating new processor with description: " << description << std::endl;
-	GenericProcessor* gp = new GenericProcessor(description, &numSamplesInThisBuffer, 16, lock);
-	addNode(gp,currentNodeId++);
-	return gp->createEditor();
+
+	int splitPoint = description.indexOf("/");
+	String processorType = description.substring(0,splitPoint);
+	String subProcessorType = description.substring(splitPoint+1);
+
+	std::cout << processorType << "::" << subProcessorType << std::endl;
+
+	GenericProcessor* processor;
+
+	if (processorType.equalsIgnoreCase("Data Sources")) {
+		processor = new SourceNode(subProcessorType, &numSamplesInThisBuffer, 16, lock, currentNodeId);
+	} else {
+		processor = new GenericProcessor(subProcessorType, &numSamplesInThisBuffer, 16, lock, currentNodeId);
+	}
+
+	addNode(processor,currentNodeId++);
+	return processor->createEditor();
+
 }
+
+void ProcessorGraph::removeProcessor(int nodeId) {
+	std::cout << "Removing processor with ID " << nodeId << std::endl;
+	removeNode(nodeId);
+}
+
+void ProcessorGraph::enableSourceNode() {
+	//std::cout << "Enabling source node..." << std::endl;
+	SourceNode* sn = (SourceNode*) getNodeForId(98)->getProcessor();
+	sn->enable();
+}
+
+void ProcessorGraph::disableSourceNode() {
+	//std::cout << "Disabling source node..." << std::endl;
+	SourceNode* sn = (SourceNode*) getNodeForId(98)->getProcessor();
+	sn->disable();
+}
+
 
 RecordNode* ProcessorGraph::getRecordNode() {
 	
 	Node* node = getNodeForId(15);
-
 	return (RecordNode*) node->getProcessor();
 
 }

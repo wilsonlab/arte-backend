@@ -22,7 +22,7 @@ class RecordNode : public GenericProcessor
 public:
 	
 	// real member functions:
-	RecordNode(const String name, int* nSamples, int numChans, const CriticalSection& lock);
+	RecordNode(const String name, int* nSamples, int numChans, const CriticalSection& lock, int nodeId);
 	~RecordNode();
 	
 	

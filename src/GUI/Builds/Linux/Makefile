@@ -78,6 +78,7 @@ OBJECTS := \
   $(OBJDIR)/SourceNode_c2d6336c.o \
   $(OBJDIR)/GenericProcessor_733760aa.o \
   $(OBJDIR)/ProcessorGraph_68b34a0b.o \
+  $(OBJDIR)/FilterViewport2_a999cf02.o \
   $(OBJDIR)/StreamViewer_5c81b76e.o \
   $(OBJDIR)/FilterViewport_47880e3a.o \
   $(OBJDIR)/FilterList_10c1d1b2.o \
@@ -279,6 +280,11 @@ $(OBJDIR)/GenericProcessor_733760aa.o: ../../Source/Processors/GenericProcessor.
 $(OBJDIR)/ProcessorGraph_68b34a0b.o: ../../Source/Processors/ProcessorGraph.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling ProcessorGraph.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/FilterViewport2_a999cf02.o: ../../Source/UI/FilterViewport2.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling FilterViewport2.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/StreamViewer_5c81b76e.o: ../../Source/UI/StreamViewer.cpp

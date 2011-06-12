@@ -22,6 +22,10 @@ public:
 	~ProcessorGraph();
 
 	void* createNewProcessor(const String& description);
+	void removeProcessor(int nodeId);
+
+	void enableSourceNode();
+	void disableSourceNode();
 
 	int numSamplesInThisBuffer;
 

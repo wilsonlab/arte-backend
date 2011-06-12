@@ -12,8 +12,8 @@
 #include "SourceNode.h"
 #include <stdio.h>
 
-SourceNode::SourceNode(const String name_, int* nSamps, int nChans, const CriticalSection& lock_)
-	: GenericProcessor(name_, nSamps, nChans, lock_),
+SourceNode::SourceNode(const String name_, int* nSamps, int nChans, const CriticalSection& lock_, int id)
+	: GenericProcessor(name_, nSamps, nChans, lock_, id),
 	  transmitData(false), dataThread(0)
 {
 
@@ -38,42 +38,51 @@ void SourceNode::setParameter (int parameterIndex, float newValue)
 
 void SourceNode::prepareToPlay (double sampleRate_, int estimatedSamplesPerBlock)
 {
-
-	if (transmitData) {
-		std::cout << "Prepared to play." << std::endl;
-
-		// Source node determines type of data thread
-		if (getName().equalsIgnoreCase("Intan Demo Board")) {
-			dataThread = new IntanThread();
-			inputBuffer = dataThread->getBufferAddress();
-		}
-
-	} else {
-		transmitData = true;
-	}
-
+	//
+	// We take care of thread creation and destruction in separate enable/disable function
+	// 
+	// prepareToPlay is called whenever the graph is edited, not only when callbacks are
+	// 	about to begin
+	//
 }
+
+void SourceNode::releaseResources() {}
 
 //void SourceNode::createEditor() {
 	
 //}
 
+void SourceNode::enable() {
+	
+	std::cout << "Source node received enable signal" << std::endl;
+	transmitData = true;
 
-void SourceNode::releaseResources() 
-{	
-	if (dataThread != 0) {
-		delete dataThread;
-		dataThread = 0;
+	if (getName().equalsIgnoreCase("Intan Demo Board")) {
+		dataThread = new IntanThread();
+		inputBuffer = dataThread->getBufferAddress();
 	}
+
 }
+
+void SourceNode::disable() {
+	
+	std::cout << "Source node received disable signal" << std::endl;
+	transmitData = false;
+
+		if (dataThread != 0) {
+			delete dataThread;
+			dataThread = 0;
+		}
+
+}
+
 
 void SourceNode::processBlock (AudioSampleBuffer& outputBuffer, MidiBuffer& midiMessages)
 {
 
 	outputBuffer.clear();
 	int numRead = inputBuffer->readAllFromBuffer(outputBuffer,outputBuffer.getNumSamples());
-	// write the total number of samples
-	setNumSamples(numRead);
+	setNumSamples(numRead); // write the total number of samples
 
 }
 

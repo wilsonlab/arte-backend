@@ -53,6 +53,16 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 	
 	filterViewport = new FilterViewport(processorGraph);
 	addAndMakeVisible(filterViewport);
+
+	//AffineTransform at = AffineTransform();
+   // 	at.rotated(1.5708f);
+
+  // filterViewport->setBounds(150,200,200,500);
+
+  // Point<int> p = getLocalPoint(filterViewport, filterViewport->getPosition());
+  //  	filterViewport->setTransform(AffineTransform::rotation(-double_Pi/2,
+   // 	       float(p.getX()), float(p.getY())));
+    	       //filterViewport->getX(),filterViewport->getY()));
 	
 	controlPanel = new ControlPanel(processorGraph, audio);
 	addAndMakeVisible(controlPanel);
@@ -97,6 +107,9 @@ void UIComponent::resized()
 	
 	if (filterViewport != 0)
 		filterViewport->setBounds(25,h-150,w-50,125);
+		//filterViewport->setBounds(730-h, 140, 120, w-100); //(-500,h-500,200,800);
+		//filterViewport->setTransform(AffineTransform::rotation(-double_Pi/2,
+    	//       filterViewport->getX(),filterViewport->getY()));
 	
 	if (controlPanel != 0)
 		controlPanel->setBounds(20,10,w-20,25);

@@ -24,7 +24,7 @@ class GenericProcessor : public AudioProcessor
 {
 public:
 
-	GenericProcessor(const String name, int* nSamples, int nChans, const CriticalSection& lock);
+	GenericProcessor(const String name, int* nSamples, int nChans, const CriticalSection& lock, int nodeId);
 	~GenericProcessor();
 	
 	const String getName() const {return name;}
@@ -68,11 +68,14 @@ public:
 	int getNumSamples();
 	void setNumSamples(int);
 
+	int getNodeId();
+
 private:
 
 	const String name;
 	int* numSamplesInThisBuffer;
 	const CriticalSection& lock;
+	int nodeId;
 
 	AudioProcessorEditor* editor;
 

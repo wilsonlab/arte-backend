@@ -72,7 +72,7 @@ RecordButton::~RecordButton()
 }
 
 
-CPUMeter::CPUMeter() : Label(T("CPU Meter"),"0.0"), cpu(0.5f)
+CPUMeter::CPUMeter() : Label(T("CPU Meter"),"0.0"), cpu(0.0f)
 {
 }
 
@@ -217,13 +217,19 @@ void ControlPanel::buttonClicked(Button* button)
 	if (playButton->getToggleState())
 	{
 
-		if (!audio->callbacksAreActive()) 
+		if (!audio->callbacksAreActive()) {
+			graph->enableSourceNode();
 			audio->beginCallbacks();
+		}
 
 	} else {
 
-		if (audio->callbacksAreActive())
+		if (audio->callbacksAreActive()) {
+			
 			audio->endCallbacks();
+			graph->disableSourceNode();
+			cpuMeter->updateCPU(0.0f);
+		}
 
 	}
 
@@ -232,10 +238,14 @@ void ControlPanel::buttonClicked(Button* button)
 void ControlPanel::actionListenerCallback(const String & msg)
 {
 	//std::cout << "Message Received." << std::endl;
-	cpuMeter->updateCPU(audio->getCpuUsage());
+	if (playButton->getToggleState()) {
+		cpuMeter->updateCPU(audio->getCpuUsage());
+	}
+
 	cpuMeter->repaint();
 
 	diskMeter->updateDiskSpace(graph->getRecordNode()->getFreeSpace());
 	diskMeter->repaint();
-
+	
+	
 }

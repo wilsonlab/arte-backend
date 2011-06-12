@@ -19,8 +19,11 @@
 
 // and this is a component that can have things dropped onto it..
 
+class GenericEditor;
+
 class FilterViewport  : public Component,
                         public DragAndDropTarget
+                        //public KeyListener
                        // public TableListBoxModel,
                         //public TableHeaderComponent::Listener
 {
@@ -51,6 +54,15 @@ public:
     void paint (Graphics& g);
 
     void mouseDown(const MouseEvent &e);
+    void mouseDragged(const MouseEvent &e);
+    //void mouseEnter(const MouseEvent &e);
+    //void mouseExit
+    //void modifierKeysChanged (const ModifierKeys & modifiers);
+    bool keyPressed (const KeyPress &key);
+    void moveSelection( const KeyPress &key);
+
+    void deleteNode(GenericEditor* editor);
+
 
     //void tableColumnsChanged(TableHeaderComponent* tableHeader);
    // void tableColumnsResized(TableHeaderComponent* tableHeader);
@@ -69,6 +81,7 @@ public:
 private:
     String message;
     bool somethingIsBeingDraggedOver;
+    bool shiftDown;
     ProcessorGraph* graph;
     OwnedArray<GenericEditor, CriticalSection> editorArray;
 

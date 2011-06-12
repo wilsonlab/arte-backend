@@ -144,6 +144,10 @@
               file="Source/Processors/ProcessorGraph.h"/>
       </GROUP>
       <GROUP id="RNGb1yR" name="UI">
+        <FILE id="Qam0ze" name="FilterViewport2.cpp" compile="1" resource="0"
+              file="Source/UI/FilterViewport2.cpp"/>
+        <FILE id="5M42AUH" name="FilterViewport2.h" compile="0" resource="0"
+              file="Source/UI/FilterViewport2.h"/>
         <FILE id="XxpxuUf" name="StreamViewer.cpp" compile="1" resource="0"
               file="Source/UI/StreamViewer.cpp"/>
         <FILE id="N98qcpo" name="StreamViewer.h" compile="0" resource="0" file="Source/UI/StreamViewer.h"/>

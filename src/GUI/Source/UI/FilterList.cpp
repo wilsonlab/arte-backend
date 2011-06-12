@@ -13,7 +13,7 @@
 
  FilterList::FilterList() : treeView(0)
  {
-       rootItem = new ListItem("Processors",true);
+       rootItem = new ListItem("Processors","none",true);
        rootItem->setOpen(true);
 
         addAndMakeVisible (treeView = new TreeView());
@@ -42,28 +42,28 @@ void FilterList::paint (Graphics& g)
 }
 
 
-ListItem::ListItem(const String name_, bool containsSubItems_) 
-    : name(name_), containsSubItems(containsSubItems_) {
+ListItem::ListItem(const String name_, const String parentName_, bool containsSubItems_) 
+    : name(name_), parentName(parentName_), containsSubItems(containsSubItems_) {
 
     if (name.equalsIgnoreCase("Processors")) {
-       addSubItem (new ListItem ("Data Sources",true));
-       addSubItem (new ListItem ("Filters",true));
-       addSubItem (new ListItem ("Visualizers",true));
-       addSubItem (new ListItem ("Utilities",true));
+       addSubItem (new ListItem ("Data Sources",name,true));
+       addSubItem (new ListItem ("Filters",name,true));
+       addSubItem (new ListItem ("Visualizers",name,true));
+       addSubItem (new ListItem ("Utilities",name,true));
     } else if (name.equalsIgnoreCase("Data Sources")) {
-       addSubItem (new ListItem ("Intan Demo Board",false));
-       addSubItem (new ListItem ("Custom FPGA",false));
-       addSubItem (new ListItem ("Network Stream",false));
+       addSubItem (new ListItem ("Intan Demo Board",name,false));
+       addSubItem (new ListItem ("Custom FPGA",name,false));
+       addSubItem (new ListItem ("Network Stream",name,false));
     } else if (name.equalsIgnoreCase("Filters")) {
-       addSubItem (new ListItem ("Bandpass Filter",false));
-       addSubItem (new ListItem ("Resampler",false));
-       addSubItem (new ListItem ("Thresholder",false));
+       addSubItem (new ListItem ("Bandpass Filter",name,false));
+       addSubItem (new ListItem ("Resampler",name,false));
+       addSubItem (new ListItem ("Thresholder",name,false));
     }  else if (name.equalsIgnoreCase("Visualizers")) {
-       addSubItem (new ListItem ("Stream Viewer",false));
-       addSubItem (new ListItem ("Spike Viewer",false));
-       addSubItem (new ListItem ("FFT Viewer",false));
+       addSubItem (new ListItem ("Stream Viewer",name,false));
+       addSubItem (new ListItem ("Spike Viewer",name,false));
+       addSubItem (new ListItem ("FFT Viewer",name,false));
     }  else if (name.equalsIgnoreCase("Utilities")) {
-       addSubItem (new ListItem ("Splitter",false));
+       addSubItem (new ListItem ("Splitter",name,false));
     }
 
 }
@@ -82,7 +82,9 @@ void ListItem::paintItem(Graphics& g, int width, int height) {
 
 const String ListItem::getDragSourceDescription()
 {
-    return name;
+    //String parentName = getParentItem()->getUniqueName();
+    //std::cout << parentName << std::endl;
+    return parentName + "/" + name;
 }
 
 // void ListItem::paintOpenCloseButton (Graphics &g, int width, int height, bool isMouseOver)

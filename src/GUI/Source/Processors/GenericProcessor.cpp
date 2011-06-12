@@ -10,9 +10,9 @@
 
 #include "GenericProcessor.h"
 
-GenericProcessor::GenericProcessor(const String name_, int* nSamps, int nChans, const CriticalSection& lock_)
+GenericProcessor::GenericProcessor(const String name_, int* nSamps, int nChans, const CriticalSection& lock_, int id)
 	: numSamplesInThisBuffer(nSamps),
-	  name (name_), lock(lock_)
+	  name (name_), lock(lock_), nodeId(id)
 {
 
 	setPlayConfigDetails(nChans,nChans,44100.0,*nSamps);
@@ -69,6 +69,12 @@ int GenericProcessor::getNumSamples() {
 	lock.exit();
 
 	return numRead;
+}
+
+int GenericProcessor::getNodeId() {
+	
+	return nodeId;
+
 }
 
 void GenericProcessor::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages)

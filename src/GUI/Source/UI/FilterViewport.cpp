@@ -15,7 +15,7 @@
     //==============================================================================
    FilterViewport::FilterViewport(ProcessorGraph* pgraph)
         : message ("Drag-and-drop some rows from the top-left box onto this component!"),
-          somethingIsBeingDraggedOver (false), graph(pgraph), lastBound(5)
+          somethingIsBeingDraggedOver (false), graph(pgraph), lastBound(5), shiftDown(false)
     {
 
      //    table.setModel (this);
@@ -34,6 +34,8 @@
      //    addAndMakeVisible (&table);
 
       addMouseListener(this, true);
+      //addKeyListener(this);
+     // setWantsKeyboardFocus(true);
 
     }
 
@@ -100,22 +102,111 @@
         message = "last filter dropped: " + sourceDescription;
 
         editorArray.add((const GenericEditor*) graph->createNewProcessor(sourceDescription));
-
+        editorArray.getLast()->setViewport(this);
         
        // Component* comp = table.getCellComponent(lastBound,1);
         //comp->addAndMakeVisible(editorArray.getLast());
         //lastBound++;
        // refreshComponentForCell (1, lastBound, true, 0);
 
-        addAndMakeVisible(editorArray.getLast());
-        editorArray.getLast()->setBounds(lastBound,5,getHeight()-10,getHeight()-10);
+        int componentWidth = editorArray.getLast()->desiredWidth;
 
-        lastBound+=getHeight()-10;
+        addAndMakeVisible(editorArray.getLast());
+        editorArray.getLast()->setBounds(lastBound,5,componentWidth,getHeight()-10);
+
+        lastBound+=componentWidth;
 
 
         somethingIsBeingDraggedOver = false;
         repaint();
     }
+
+    void FilterViewport::deleteNode (GenericEditor* editor) {
+
+        int indexToDelete = editorArray.indexOf(editor);
+        
+        graph->removeProcessor(editorArray[indexToDelete]->nodeId);
+
+        //std::cout << "Node ID: " << editorArray[indexToDelete]->nodeId << std::endl;
+
+        editorArray.remove(indexToDelete,true);
+            
+        lastBound = 5;
+
+        for (int n = 0; n < editorArray.size(); n++)
+        {
+            int componentWidth = editorArray[n]->desiredWidth;
+            editorArray[n]->setBounds(lastBound,5, componentWidth, getHeight()-10);
+            lastBound+=componentWidth;
+        }
+
+        if (editorArray.size() > 0) {
+
+            if (indexToDelete == editorArray.size()) {
+            editorArray[indexToDelete-1]->select();
+             } else {
+                 editorArray[indexToDelete]->select();
+             }
+        }
+
+    }
+
+    void FilterViewport::moveSelection (const KeyPress &key) {
+        
+        if (key.getKeyCode() == key.leftKey) {
+            
+            for (int i = 0; i < editorArray.size(); i++) {
+            
+                if (editorArray[i]->getSelectionState() && i > 0) {
+                    
+                    editorArray[i-1]->select();
+                    editorArray[i]->deselect();
+
+                }
+               
+            }
+
+
+        } else if (key.getKeyCode() == key.rightKey) {
+             
+             for (int i = 0; i < editorArray.size()-1; i++) {
+            
+                if (editorArray[i]->getSelectionState()) {
+                    
+                    editorArray[i+1]->select();
+                    editorArray[i]->deselect();
+                    break;
+
+                }
+               
+            }
+
+
+
+        }
+
+    }
+
+    bool FilterViewport::keyPressed (const KeyPress &key) {
+        
+       // std::cout << key.getKeyCode() << std::endl;
+    }
+
+    //void FilterViewport::modifierKeysChanged (const ModifierKeys & modifiers) {
+        
+   /*     if (modifiers.isShiftDown()) {
+            
+            std::cout << "Shift key pressed." << std::endl;
+            shiftDown  = true;
+
+        } else {
+
+
+            std::cout << "Shift key released." << std::endl;
+            shiftDown = false;
+        }*/
+
+    //}
 
     void FilterViewport::mouseDown(const MouseEvent &e) {
         
@@ -127,13 +218,17 @@
 
         //GenericEditor* c = (GenericEditor*) e.eventComponent;
 
+       // if (!shiftDown) {
         for (int i = 0; i < editorArray.size(); i++) {
             
-            if (e.eventComponent == editorArray[i])
+            if (e.eventComponent == editorArray[i]) {
                 editorArray[i]->select();
-            else 
-                editorArray[i]->deselect();
+            } else {
+              //  if (!e.mods.isShiftDown())  
+                    editorArray[i]->deselect();
+            }
         }
+
 
         //c->switchSelectedState();
 
@@ -148,5 +243,11 @@
 
             //if (bounds.contains(p))
             
+
+    }
+
+    void FilterViewport::mouseDragged(const MouseEvent &e) {
+        
+       // std::cout << e.getMouseDownX() << " " << e.x << std::endl;
 
     }

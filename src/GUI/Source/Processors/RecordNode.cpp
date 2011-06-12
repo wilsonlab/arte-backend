@@ -10,8 +10,11 @@
 
 #include "RecordNode.h"
 
-RecordNode::RecordNode(const String name_, int* nSamples, int numChans, const CriticalSection& lock_)
-	: GenericProcessor(name_, nSamples, numChans, lock_), isRecording(false)
+RecordNode::RecordNode(const String name_,
+					   int* nSamples, int numChans,
+					   const CriticalSection& lock_,
+					   int id)
+	: GenericProcessor(name_, nSamples, numChans, lock_, id), isRecording(false)
 {
 
 
