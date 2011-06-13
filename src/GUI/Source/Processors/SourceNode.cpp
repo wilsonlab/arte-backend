@@ -21,6 +21,9 @@ SourceNode::SourceNode(const String name_, int* nSamps, int nChans, const Critic
 	if (getName().equalsIgnoreCase("Intan Demo Board")) {
 		setNumOutputs(16);
 		setNumInputs(0);
+	} else if (getName().equalsIgnoreCase("Custom FPGA")) {
+		setNumOutputs(32);
+		setNumInputs(0);
 	}
 
 }
@@ -54,6 +57,9 @@ void SourceNode::enable() {
 
 	if (getName().equalsIgnoreCase("Intan Demo Board")) {
 		dataThread = new IntanThread();
+		inputBuffer = dataThread->getBufferAddress();
+	} else if (getName().equalsIgnoreCase("Custom FPGA")) {
+		dataThread = new FPGAThread();
 		inputBuffer = dataThread->getBufferAddress();
 	}
 

@@ -15,6 +15,7 @@
 
 class RecordNode;
 class SourceNode;
+class FilterViewport;
 
 class ProcessorGraph : public AudioProcessorGraph
 {
@@ -22,7 +23,7 @@ public:
 	ProcessorGraph(int numChannels);
 	~ProcessorGraph();
 
-	void* createNewProcessor(const String& description);
+	void* createNewProcessor(const String& description, FilterViewport* viewport);
 	void removeProcessor(int nodeId);
 
 	bool enableSourceNode();

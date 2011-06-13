@@ -17,7 +17,7 @@
 #include <time.h>
 #include <stdio.h>
 
-//class GenericEditor;
+class FilterViewport;
 
 class GenericProcessor : public AudioProcessor
 
@@ -65,6 +65,8 @@ public:
 	
 	float getParameter (int parameterIndex) {return 1.0;}
 
+	void setViewport(FilterViewport* vp);
+
 	// custom methods:
 	int getNumSamples();
 	void setNumSamples(int);
@@ -77,6 +79,8 @@ public:
 
 	int getNodeId();
 
+	FilterViewport* viewport;
+
 private:
 
 	const String name;
@@ -88,6 +92,7 @@ private:
 	int numOutputs;
 
 	AudioProcessorEditor* editor;
+	
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GenericProcessor);
 

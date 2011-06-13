@@ -17,6 +17,7 @@
 #include "Editors/FilterEditor.h"
 
 class FilterEditor;
+class FilterViewport;
 
 class FilterNode : public GenericProcessor
 

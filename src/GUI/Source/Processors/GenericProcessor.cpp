@@ -24,10 +24,10 @@ GenericProcessor::~GenericProcessor()
 	//deleteAllChildren();
 }
 
-AudioProcessorEditor* GenericProcessor::createEditor( )
+AudioProcessorEditor* GenericProcessor::createEditor()
 {
 	
-	return new GenericEditor (this);
+	return new GenericEditor (this, viewport);
 }
 
 
@@ -35,6 +35,11 @@ void GenericProcessor::setParameter (int parameterIndex, float newValue)
 {
 
 
+}
+
+void GenericProcessor::setViewport(FilterViewport* vp) {
+	
+	viewport = vp;
 }
 
 
@@ -89,6 +94,8 @@ int GenericProcessor::getNodeId() {
 	return nodeId;
 
 }
+
+
 
 void GenericProcessor::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages)
 {

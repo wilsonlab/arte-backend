@@ -17,6 +17,7 @@
 #include "ResamplingNode.h"
 #include "SignalGenerator.h"
 #include "RecordNode.h"
+#include "EventNode.h"
 #include <stdio.h>
 
 ProcessorGraph::ProcessorGraph(int numChannels) : currentNodeId(100), lastNodeId(1), 
@@ -36,10 +37,10 @@ ProcessorGraph::ProcessorGraph(int numChannels) : currentNodeId(100), lastNodeId
 	RecordNode* recn = new RecordNode(T("Record Node"), &numSamplesInThisBuffer, numChannels, lock, RECORD_NODE_ID);
 
 	// add display node
-	DisplayNode* dn = new DisplayNode(T("Display Node"), &numSamplesInThisBuffer, lock);
+	DisplayNode* dn = new DisplayNode(T("Display Node"), &numSamplesInThisBuffer, numChannels, lock, DISPLAY_NODE_ID);
 
 	// add resampling node
-	ResamplingNode* rn = new ResamplingNode(T("Resampling Node"), &numSamplesInThisBuffer, numChannels, lock, RESAMPLING_NODE_ID);
+	ResamplingNode* rn = new ResamplingNode(T("Resampling Node"), &numSamplesInThisBuffer, numChannels, lock, RESAMPLING_NODE_ID, true);
 
 	addNode(on,OUTPUT_NODE_ID);
 	addNode(recn,RECORD_NODE_ID);
@@ -66,7 +67,7 @@ ProcessorGraph::ProcessorGraph(int numChannels) : currentNodeId(100), lastNodeId
 
 ProcessorGraph::~ProcessorGraph() { }
 
-void* ProcessorGraph::createNewProcessor(const String& description) {
+void* ProcessorGraph::createNewProcessor(const String& description, FilterViewport* vp) {
 
 	int splitPoint = description.indexOf("/");
 	String processorType = description.substring(0,splitPoint);
@@ -98,8 +99,27 @@ void* ProcessorGraph::createNewProcessor(const String& description) {
 
 		} else if (subProcessorType.equalsIgnoreCase("Resampler")) {
 			std::cout << "Creating a new resampler." << std::endl;
-			processor = new ResamplingNode(subProcessorType, &numSamplesInThisBuffer, getSourceNode()->getNumOutputs(), lock, id);
+			processor = new ResamplingNode(subProcessorType, &numSamplesInThisBuffer, getSourceNode()->getNumOutputs(), lock, id, false);
 		} 
+
+	} else if (processorType.equalsIgnoreCase("Utilities")) {
+		
+		if (subProcessorType.equalsIgnoreCase("Event Node")) {
+			
+			if (SOURCE_NODE_ID == 0) {
+				SOURCE_NODE_ID = id;
+				std::cout << "Creating a new event source." << std::endl;
+				processor = new EventNode(subProcessorType, &numSamplesInThisBuffer, 2, lock, SOURCE_NODE_ID, true);
+			} else {
+				std::cout << "Creating a new event receiver." << std::endl;
+				processor = new EventNode(subProcessorType, &numSamplesInThisBuffer, 2, lock, currentNodeId, false);
+				
+				std::cout << midiChannelIndex << " is MIDI index." << std::endl;
+
+			}
+
+		}
+
 
 	} else {
 
@@ -111,7 +131,7 @@ void* ProcessorGraph::createNewProcessor(const String& description) {
 
 		addNode(processor,id);
 
-		if (id != SOURCE_NODE_ID) {
+		if (false) {//id != SOURCE_NODE_ID) {
 		
 			std::cout << "Connecting to source node." << std::endl;
 
@@ -144,9 +164,16 @@ void* ProcessorGraph::createNewProcessor(const String& description) {
 			}
 
 		}
+
+			addConnection(SOURCE_NODE_ID, // sourceNodeID
+				  	midiChannelIndex, // sourceNodeChannelIndex
+				   	currentNodeId, // destNodeID
+				  	midiChannelIndex); // destNodeChannelIndex
+
 		nodeArray.add(id);
 		currentNodeId++;
 
+		processor->setViewport(vp);
 		return processor->createEditor();
 
 	} else {

@@ -24,7 +24,12 @@ class ResamplingNode : public GenericProcessor
 public:
 	
 	// real member functions:
-	ResamplingNode(const String name, int* nSamples, int nChans, const CriticalSection& lock, int nodeId);
+	ResamplingNode(const String name,
+				   int* nSamples,
+				   int nChans,
+				   const CriticalSection& lock,
+				   int nodeId,
+				   bool destBufferIsTempBuffer);
 	~ResamplingNode();
 	
 	AudioSampleBuffer* getBufferAddress() { return destBuffer; }
@@ -34,6 +39,7 @@ public:
 	void releaseResources();
 	void processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages);
 	void setParameter (int parameterIndex, float newValue);
+
 
 private:
 

@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include "DataThreads/DataBuffer.h"
 #include "DataThreads/IntanThread.h"
+#include "DataThreads/FPGAThread.h"
 #include "GenericProcessor.h"
 
 class SourceNode : public GenericProcessor

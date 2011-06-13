@@ -11,10 +11,15 @@
 #include "ResamplingNode.h"
 #include <stdio.h>
 
-ResamplingNode::ResamplingNode(const String name_, int* nSamps, int nChans, const CriticalSection& lock_, int id)
+ResamplingNode::ResamplingNode(const String name_,
+							   int* nSamps,
+							   int nChans,
+							   const CriticalSection& lock_,
+							   int id,
+							   bool destBufferType)
 	: GenericProcessor(name_, nSamps, nChans, lock_, id), 
 	  ratio (1.0), lastRatio (1.0),
-	  destBufferPos(0), destBufferIsTempBuffer(true),
+	  destBufferPos(0), destBufferIsTempBuffer(destBufferType),
 	  destBufferSampleRate(44100.0), sourceBufferSampleRate(25000.0),
 	  destBuffer(0), tempBuffer(0), isTransmitting(false)
 	
