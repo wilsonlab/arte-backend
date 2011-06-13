@@ -43,7 +43,7 @@ StreamViewerRenderer::~StreamViewerRenderer()
 
 void StreamViewerRenderer::newOpenGLContextCreated()
 {
-	glClearColor(0.75f, 0.5f, 0.25f, 0.0f);
+	glClearColor(0.0f, 0.5f, 0.25f, 0.0f);
 	glClearDepth (1.0);
 
 	glMatrixMode (GL_PROJECTION);

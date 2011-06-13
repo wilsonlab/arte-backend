@@ -36,11 +36,14 @@
         if (somethingIsBeingDraggedOver)
         {
             g.setColour (Colours::orange);
-            g.drawRect (0, 0, getWidth(), getHeight(), 3);
+            //g.drawRect (0, 0, getWidth(), getHeight(), 3);
+
         } else {
             g.setColour (Colours::grey.withAlpha(0.5f));
-            g.drawRect (0, 0, getWidth(), getHeight(), 2);
+            //g.drawRect (0, 0, getWidth(), getHeight(), 2);
         }
+
+        g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), 15);
 
     }
 
@@ -48,12 +51,15 @@
     // These methods implement the DragAndDropTarget interface, and allow our component
     // to accept drag-and-drop of objects from other Juce components..
 
-    bool FilterViewport::isInterestedInDragSource (const String& /*sourceDescription*/, Component* /*sourceComponent*/)
+    bool FilterViewport::isInterestedInDragSource (const String& description, Component* component)
     {
-        // normally you'd check the sourceDescription value to see if it's the
-        // sort of object that you're interested in before returning true, but for
-        // the demo, we'll say yes to anything..
-        return true;
+        //check the sourceDescription value
+        
+        if (description.startsWith("Processors")) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     void FilterViewport::itemDragEnter (const String& /*sourceDescription*/, Component* /*sourceComponent*/, int /*x*/, int /*y*/)
@@ -90,7 +96,7 @@
             addAndMakeVisible(editorArray.getLast());
             editorArray.getLast()->setBounds(lastBound,5,componentWidth,getHeight()-10);
 
-            lastBound+=componentWidth;
+            lastBound+=(componentWidth+10);
 
         }
 

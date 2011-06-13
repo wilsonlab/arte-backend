@@ -19,10 +19,9 @@
         addAndMakeVisible (treeView = new TreeView());
         treeView->setRootItem (rootItem);
         treeView->setMultiSelectEnabled(false);
-        treeView->setBounds(0,0,200,600);
+        treeView->setBounds(10,10,200,600);
         treeView->setDefaultOpenness(true);
         treeView->setRootItemVisible(false);
-
 
 }
 
@@ -37,8 +36,13 @@ FilterList::~FilterList()
 // this just fills in the background of the listbox
 void FilterList::paint (Graphics& g)
 {
-  //  g.setColour (Colours::grey.withAlpha(0.5f));
-   // g.drawRect (0, 0, getWidth(), getHeight(), 2);
+    g.setColour (Colours::grey.withAlpha(0.5f));
+    g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), 12);
+    //g.setColour (Colours::black);
+   // g.drawRoundedRectangle(0, 0, getWidth(), getHeight(), 10, 3);
+   // g.setColour (Colours::black);
+    //g.drawRoundedRectangle(5, 5, getWidth()-10, getHeight()-10, 8, 2.2);
+
 }
 
 
@@ -71,11 +75,17 @@ ListItem::ListItem(const String name_, const String parentName_, bool containsSu
 ListItem::~ListItem() {}//clearSubItems();}
 
 void ListItem::paintItem(Graphics& g, int width, int height) {
+    
+   // if (isSelected()) {
+    //    g.fillAll (Colours::lightgrey.withAlpha (0.1f));
+   // }
+
     if (isSelected()) {
-        g.fillAll (Colours::lightgrey.withAlpha (0.1f));
+        g.setColour (Colours::yellow);
+    } else {
+        g.setColour (Colours::black);
     }
 
-    g.setColour (Colours::black);
     g.setFont( height*0.7f);
     g.drawText (getUniqueName(),4, 0, width-4, height, Justification::centredLeft, true);
 }
