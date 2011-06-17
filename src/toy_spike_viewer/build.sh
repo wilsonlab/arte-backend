@@ -1,0 +1,1 @@
+g++ *.cpp ../netcom/netcom.cpp ../netcom/datapacket.cpp -D__STDC_LIMIT_MACROS -o toy_spike_viewer
