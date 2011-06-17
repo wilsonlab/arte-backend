@@ -103,6 +103,11 @@ void filter_buffer( Filtered_buffer * fb ){
 	    d_buf[i_ind[i+1]+pt_h2+c] * a[i*3+2] );
 
 	i_buf[i_ind[i+1] + pt_h0 + c] = (rdata_t) d_buf[i_ind[i+1] + pt_h0 + c];
+
+	// copy values into f_buf
+	if(i+1 == fb->my_filt.filt_num_sos)
+	  f_buf[pt_h0 + c] = i_buf[i_ind[i+1] + pt_h0 + c];
+
 	// pause for debugger
 	
 	// test if the index hit is right
@@ -117,6 +122,14 @@ void filter_buffer( Filtered_buffer * fb ){
 	    "  i_buf[ " << i_ind[i] << "+" << pt_h0 << "+" << c << "] * b[" << i*3+0 << "] * gains[" << i << "]" << std::endl <<
 	    " " << i_buf[i_ind[i] + pt_h0 + c] << " * " << b[i*3 + 0] << " * " << fb->my_filt.input_gains[i] << std::endl;
 	}
+	
+	if(false){
+	  printf("d_buf[%d] = %f   i_buf[%d] = %d   f_buf[%d] = %d\n", 
+		 i_ind[i+1]+pt_h0+c, d_buf[i_ind[i+1]+pt_h0+c],
+		 i_ind[i+1]+pt_h0+c, i_buf[i_ind[i+1]+pt_h0+c],
+		 pt_h0+c, f_buf[pt_h0+c]);
+	}
+
       }
 
     }

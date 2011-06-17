@@ -76,6 +76,8 @@ void *lfp_bank_filter_data(void *lfp_bank_in){
   
   filter_buffer( this_bank->my_buffer );
 
+  // filtered_buffer::write_buffers() checks the flag for buffer dump to file
+  // and writes to the dump file accordingly
   // shouldn't this be called from within filter_buffer?
   this_bank->my_buffer->write_buffers();
   
@@ -84,7 +86,7 @@ void *lfp_bank_filter_data(void *lfp_bank_in){
     for(c = 0; c < this_bank->n_chans; c++){
       samp_ind = i * this_bank->keep_nth_sample;
       this_bank->d_buf[ (i*(this_bank->n_chans)) + c ] = 
-	this_bank->my_buffer->u_buf[ (samp_ind*(this_bank->n_chans)) + c ];
+	this_bank->my_buffer->f_buf[ (samp_ind*(this_bank->n_chans)) + c ];
     }
   }
   
@@ -124,7 +126,7 @@ void lfp_bank_write_record(void *lfp_bank_in){
   memcpy(lfp.data,  this_bank->d_buf, n_bytes);
   memcpy(lfp.gains, this_bank->d_buf, (lfp.n_samps_per_chan * lfp.n_chans)); // temproray fix b/c don't have a gains field in lfp_bank yet.
   
-  waveToBuff(&lfp, buff, &buff_size);
+  waveToBuff(&lfp, buff, &buff_size, true);
   NetCom::txBuff(this_bank->my_netcomdat, buff, buff_size);
   // printf("buff: ");
   //  for(int s = 0; s < 50; s++)

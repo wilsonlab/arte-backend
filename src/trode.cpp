@@ -77,7 +77,7 @@ void Trode::init2(boost::property_tree::ptree &trode_pt,
     for(int m = 0; m < (n_chans * n_samps_per_spike); m++)
       spike_array[n].data[m] = m;
     for(int m = 0; m < n_chans; m++)
-      spike_array[n].gains[m] = m;
+      spike_array[n].gains[m] = 1;
     spike_array[n].trig_ind = samps_before_trig;
 
   }
@@ -112,8 +112,16 @@ void Trode::init2(boost::property_tree::ptree &trode_pt,
 
 void *trode_filter_data(void *t){
 
+  int n_spikes;
+
   filter_buffer( ((Trode *)t)->my_buffer );
-  //  find_spikes( (Trode*)t );
+  //if( ((Trode*)t)->name == 0)
+        n_spikes = find_spikes( (Trode*)t );
+
+  if(n_spikes > 0){
+    spike_to_disk(((Trode*)t)->spike_array, n_spikes);
+    spike_to_net(((Trode*)t)->spike_array,  n_spikes, (Trode*)t);
+  }
 
 }
 
@@ -145,49 +153,101 @@ void Trode::print_spikes(void){
 
 }
 
-void find_spikes(Trode *t){
+int find_spikes(Trode *t){
 
-  int n_spikes;
+  int n_spikes = 0;
   int spike_starts[MAX_N_SPIKES_PER_BUFFER];
-  int buf_len, n_chans, search_start_ind, search_stop_ind, stop_ind; 
-  int samps_before_trig, n_samps_per_spike, search_cursor, s, c;
+  int buf_len, n_chans, search_start_ind, start_c, search_stop_ind, stop_c, stop_ind; 
+  int samps_before_trig, samps_after_trig, n_samps_per_spike, search_cursor, search_c, prev_c,  s, c;
   bool found_spike;
   rdata_t *thresh, *spike_buffer, *f_buf;
   Filtered_buffer *fb;
   SpikeDetector *sd;
-  
+  int n_samps_checked;
+
+  //  printf("in find_spikes\n");
+  //  fflush(stdout);
+
   fb = t->my_buffer;
   buf_len = fb->buf_len;
   n_chans = t->n_chans;
+  n_samps_per_spike = t->n_samps_per_spike;
   samps_before_trig = t->samps_before_trig;
-  //ssss50samps_after_trig = t->samps_after_trig;
-
-  search_stop_ind  = CBUF( (fb->f_curs + fb->stream_n_samps_per_chan - t->samps_after_trig),
-		    buf_len);
-  search_start_ind = CBUF( (stop_ind - t->n_samps_per_spike),
-		    buf_len);
-
-  for(search_cursor = search_start_ind; 
-      search_cursor != search_stop_ind; 
-      search_cursor = CBUF(search_cursor+1, buf_len)){
+  samps_after_trig = t->samps_after_trig;
+  f_buf = &(fb->f_buf[0]);
+  thresh = (t->thresholds);
+  
+  search_stop_ind  =  (fb->f_curs + fb->stream_n_samps_per_chan - t->samps_after_trig);
+  search_start_ind = (search_stop_ind - t->n_samps_per_spike);
+  
+  n_samps_checked = 0;
+  
+  for(search_cursor = search_start_ind; search_cursor < search_stop_ind; search_cursor++){
+    
+    search_c = CBUF(search_cursor,   buf_len);
+    prev_c   = CBUF(search_cursor-1, buf_len);
+    
+    //n_samps_checked++;
+    //  for(search_cursor = search_start_ind; search_cursor != search_stop_ind; search_cursor++){
+    
+    if(false){
+      printf("stop_ind: %d   start_ind:%d   search_cursor:%d\n samp1:%d  2:%d  3:%d  4:%d  thresh1:%d  2:%d   3:%d  4:%d\n",
+	     search_stop_ind, search_start_ind, search_cursor,
+	     f_buf[search_c * n_chans + 0], f_buf[search_c * n_chans + 1],
+	     f_buf[search_c * n_chans + 2], f_buf[search_c * n_chans + 3],
+	     thresh[0], thresh[1], thresh[2], thresh[3]);
+      fflush(stdout);
+    }
     
     found_spike = 0;
     for(c = 0; c < n_chans; c++){
-      found_spike += (f_buf[ search_cursor * n_chans + c] > thresh[c]);  // good idea to treat bool like int?
+      if( (f_buf[ search_c*n_chans + c ] >= thresh[c]) & (f_buf[prev_c*n_chans + c] < thresh[c]) )
+	found_spike++;
     }
     
     if(found_spike > 0){
-      for(s = 0; s < n_samps_per_spike; s++){
-	for(c = 0; c < n_chans; c++){
-	  spike_buffer[ s * n_chans + c ] = f_buf[ CBUF((search_cursor-samps_before_trig+s), buf_len)*n_chans + c];
-	}
+      
+      if(false){
+	printf("FOUND SPIKE! refrac peridod samps:%d  start_ind:%d   stop_ind:%d n_samps_per_spike:%d\n",
+	       t->refractory_period_samps, search_start_ind, search_stop_ind, t->n_samps_per_spike);
+	fflush(stdout);
       }
-
-      search_cursor += t->refractory_period_samps - 1; // drop 1 1b/c we add the 1 in the for loop
-
+      
+      t->spike_array[n_spikes].ts = t->my_buffer->my_daq->buffer_timestamp + (search_c * 10)/32;
+      
+      for(s = 0; s < n_samps_per_spike; s++){
+ 	for(c = 0; c < n_chans; c++){
+ 	  t->spike_array[n_spikes].data[ s * n_chans + c ] = f_buf[ CBUF((search_cursor-samps_before_trig+s), buf_len)*n_chans + c];
+ 	}
+      }
+      
+      n_spikes++;
+      
+      if(false){
+	printf("search_cursor before update: %d\n",search_cursor);
+	fflush(stdout);
+      }
+      search_cursor = search_cursor + t->refractory_period_samps - 1; // drop 1 1b/c we add the 1 in the for loop
+      if(false){
+	printf("search_cursor after update: %d\n\n",search_cursor);
+	fflush(stdout);
+      }
       //spike_to_disk(spike_buffer, n_chans, n_samps_per_chan, trode);
       //spike_to_net (spike_buffer, n_chans, n_samps_per_chan, trode);
     }
     
   }
+  return n_spikes;  // so the caller knows how much of the spike_array has been filled
+}
+
+
+void spike_to_disk(spike_net_t *spike_array, int n_spike){
+
+}
+
+void spike_to_net(spike_net_t *spike_array, int n_spikes, Trode *t){
+  for(int n = 0; n < n_spikes; n++){
+    NetCom::txSpike(t->my_netcomdat, &(spike_array[n]));
+  }
+
 }

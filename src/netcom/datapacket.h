@@ -7,6 +7,9 @@
 #include <netinet/in.h>
 #include "../global_defs.h"
 
+// these seem to assume that host byteorder is little endian
+// should they be replaced with ntohs(x), ntohl(x), etc?
+// and, how would we do this with the 64 bit values?
 #define ntoh64(x) bswap_64(x)
 #define hton64(x) bswap_64(x)
 
@@ -15,6 +18,19 @@
 
 #define ntoh16(x) bswap_16(x)
 #define hton16(x) bswap_16(x)
+
+
+// Conditional versions of the above, so that datapacket
+// functions can also build bytestreams for saving to disk
+// (in which case, we don't want any bswaps to happen)
+#define ntoh64c(x,c)  c ? bswap_64(x) : x
+#define hton64c(x,c)  c ? bswap_64(x) : x
+
+#define ntoh32c(x,c)  c ? bswap_32(x) : x
+#define hton32c(x,c)  c ? bswap_32(x) : x
+
+#define ntoh16c(x,c)  c ? bswap_16(x) : x
+#define hton16c(x,c)  c ? bswap_16(x) : x
 
 #define MAX_BUF_LEN 2048
 void printBuff(char* buff, int blen);
@@ -95,14 +111,14 @@ struct lfp_bank_net_t{
 // The xxToBuff functions add the appropriate buffer headers, the user 
 // does not have to worry about adding the headers by hand	
 
-void tsToBuff(timestamp_t* s,char* buff, int blen);
-timestamp_t buffToTs(char* buff, int blen);
+void tsToBuff(timestamp_t* s,char* buff, int blen, bool c);
+timestamp_t buffToTs(char* buff, int blen, bool c);
 
-void spikeToBuff(spike_t* s, char* buff, int *blen);
-void buffToSpike(spike_net_t *s, char *buff);
+void spikeToBuff(spike_net_t* s, char* buff, int *blen, bool c);
+void buffToSpike(spike_net_t *s, char *buff, bool c);
 
-void waveToBuff(lfp_bank_net_t* lfp, char* buff, int *blen);
-void buffToWave(lfp_bank_net_t *lfp, char *buff);
+void waveToBuff(lfp_bank_net_t* lfp, char* buff, int *blen, bool c);
+void buffToWave(lfp_bank_net_t *lfp, char *buff, bool c);
 
 enum packetType_t {NETCOM_UDP_SPIKE = 65,
                    NETCOM_UDP_LFP = 66,

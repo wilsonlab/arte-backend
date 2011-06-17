@@ -68,28 +68,7 @@ const int MAX_FILT_COEFS = MAX_FILTERED_BUFFER_LEN;
 
 const int MAX_SPIKE_N_SAMPS_PER_CHAN = 128;
 
-/* struct neural_daq{ */
-/*   int id; */
-/*   name_string_t dev_name; */
-/*   uint16_t n_samps_per_buffer; */
-/*   uint16_t n_chans; */
-/*   name_string_t in_filename; */
-/*   FILE *in_file; */
-/*   name_string_t raw_dump_filename; */
-/*   FILE *out_file; */
-/*   rdata_t data_buffer[MAX_NEURAL_DAQ_BUFFER]; */
-/*   rdata_t *data_ptr; */
-/*   uint32_t buffer_timestamp; */
-/*   TaskHandle task_handle; */
-/*   int total_samp_count; */
-/*   int size_bytes; */
-/*   int status; */
-/*   double buffer_time_interval;  // inter-buffer-interval (sec) */
-/*   uint32_t daq_buffer_count; */
-/*   uint32_t this_buffer; */
-/* }; */
-//extern std::map <int, neural_daq> neural_daq_map;
-
+const int MAX_SPIKE_NET_BUFF_SIZE = 4000; // TODO: FIX THIS WHAT SHOULD THE MAX REALLY BE?
 
 extern bool daqs_reading; // Daq's read in unison.  No simultaneous mixing between file and card in allowed.
 extern bool daqs_writing; // <-- prob won't be used.  Some daq's may write while others don't.

@@ -60,7 +60,10 @@ class Trode{
 
 };
 
-void find_spikes(Trode *t);
+int find_spikes(Trode *t);
+
+void spike_to_disk(spike_net_t *spike_array, int n_spike);
+void spike_to_net(spike_net_t *spike_array, int n_spikes, Trode *t);
 
 extern std::map<uint16_t, Trode> trode_map;
 extern Trode * trode_array;
