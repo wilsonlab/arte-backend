@@ -2,6 +2,7 @@
 #define GLOBAL_DEFS_H_
 
 #include <stdio.h>
+#include <memory.h>
 #include <string>
 #include <iostream>
 //#include <NIDAQmx.h>
