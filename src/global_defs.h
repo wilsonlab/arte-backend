@@ -1,6 +1,7 @@
 #ifndef GLOBAL_DEFS_H_
 #define GLOBAL_DEFS_H_
 
+#include <stdio.h>
 #include <string>
 #include <iostream>
 //#include <NIDAQmx.h>
