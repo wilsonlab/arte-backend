@@ -15,8 +15,8 @@ Lfp_bank::Lfp_bank(){
 Lfp_bank::~Lfp_bank(){
   std::cout << "Lfp_bank destructor called." << std::endl;
   print_options();
-  if (has_sockfd)
-    close(my_netcomdat.sockfd);
+  //if (has_sockfd)
+  //  close(my_netcomdat.sockfd);
   //printf("caught an attempt to close sockfd\n");
 }
 
@@ -60,8 +60,10 @@ void Lfp_bank::init2(boost::property_tree::ptree &lfp_bank_pt,
   assign_property<int>        ("port", &port_num, lfp_bank_pt, lfp_bank_pt, 1);
   strcpy( host_str, host_ip.c_str() );
   if( strcmp("on", net_on.c_str()) == 0){
+    printf("lfp bank trying init with host %s and port %d\n", host_str, port_num);
     my_netcomdat = my_netcom->initUdpTx( host_str, port_num );
-    printf("Successfully connected lfp_bank %d to host_ip %s at port %d\n",lfp_bank_name, host_str, port_num);
+    printf("Successfully connected lfp_bank %d to host_ip %s at port %d . sockfd is %d\n",
+	   lfp_bank_name, host_str, port_num, my_netcomdat.sockfd);
   }
 }
 
@@ -135,3 +137,7 @@ void lfp_bank_write_record(void *lfp_bank_in){
   
 }
 
+void Lfp_bank::end_acquisition(){
+  if(has_sockfd)
+    close(my_netcomdat.sockfd);
+}

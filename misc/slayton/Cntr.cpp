@@ -20,9 +20,12 @@ int main(void)
 	// DAQmx Start Code
 	/*********************************************/
 
-	DAQmxSetArmStartTrigType(taskHandle, DAQmx_Val_DigEdge);
-	DAQmxSetDigEdgeArmStartTrigSrc(taskHandle, "/Dev1/PFI7");
-	DAQmxSetDigEdgeArmStartTrigEdge(taskHandle, DAQmx_Val_Rising);
+// 	DAQmxSetArmStartTrigType(taskHandle, DAQmx_Val_DigEdge);
+// 	DAQmxSetDigEdgeArmStartTrigSrc(taskHandle, "/Dev1/PFI7");
+// 	DAQmxSetDigEdgeArmStartTrigEdge(taskHandle, DAQmx_Val_Rising);
+// 	DAQmxErrChk (DAQmxStartTask(taskHandle));
+
+	DAQmxDisableStartTrig(taskHandle);
 	DAQmxErrChk (DAQmxStartTask(taskHandle));
 
 	printf("Continuously polling. Press Ctrl+C to interrupt\n");

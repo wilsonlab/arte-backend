@@ -20,8 +20,8 @@ Trode::Trode(){
 
 
 Trode::~Trode(){
-  if (has_sockfd)
-    close(my_netcomdat.sockfd);
+  // if (has_sockfd)
+  //  close(my_netcomdat.sockfd);
 }
 
 // Old init function using std::maps for trode_map, neural_daq_map, filt_map
@@ -102,10 +102,12 @@ void Trode::init2(boost::property_tree::ptree &trode_pt,
   //delete my_netcom;
   //my_netcom = &(netcom_vector.back());
   if( strcmp( "on", net_on.c_str())==0 ){
-    my_netcom->initUdpTx( host_str, port_num );
-    printf("Successfully connected tetrode %d to host_ip %s at port %d\n",
-	   name, host_ip.c_str(), port_num);
-    has_sockfd = true;
+    
+    printf("trode name %d trying init with host %s and port %d\n", name, host_str, port_num);
+    my_netcomdat = my_netcom->initUdpTx( host_str, port_num );
+    printf("Successfully connected tetrode %d to host_ip %s at port %d. sockfd is %d\n",
+	   name, host_ip.c_str(), port_num, my_netcomdat.sockfd);
+    //has_sockfd = true;
   }
 
 }
@@ -247,7 +249,32 @@ void spike_to_disk(spike_net_t *spike_array, int n_spike){
 
 void spike_to_net(spike_net_t *spike_array, int n_spikes, Trode *t){
   for(int n = 0; n < n_spikes; n++){
-    NetCom::txSpike(t->my_netcomdat, &(spike_array[n]));
-  }
+    
+    if(true){
+      char buff[4000];
+      int buff_size;
+      spikeToBuff(&spike_array[n], buff, &buff_size, true);
+      
+      if(false){
+      printf("buffsize: %d\n",buff_size);
+      for(int n = 0; n < buff_size; n++)
+	printf("%c",buff[n]);
+      printf("\n");
+      }
+      //printf("name %d  ip %s    port %d  sockfd %d \n",t->name, t->my_netcomdat.host_ip, t->my_netcomdat.port, t->my_netcomdat.sockfd);
+      printf("name %d  sockfd %d\n", t->name, t->my_netcomdat.sockfd);
+      fflush(stdout);
+      NetCom::txBuff(t->my_netcomdat, buff, buff_size);
+    }    
 
+    if(false){
+      NetCom::txSpike(t->my_netcomdat, &(spike_array[n]));
+    }
+  }
+  
+}
+
+void Trode::end_acquisition(){
+  if(has_sockfd)
+    close(my_netcomdat.sockfd);
 }

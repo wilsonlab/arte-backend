@@ -217,6 +217,14 @@ void neural_daq_stop_all(void){
     std::cout << "About to call fb[n].finalize_files() from neural_daq.cpp" << std::endl;
     filtered_buffer_array[n].finalize_files();
   }
+
+  for(int n = 0; n < n_trodes; n++){
+    trode_array[n].end_acquisition();
+  }
+
+  for(int n = 0; n < n_lfp_banks; n++){
+    lfp_bank_array[n].end_acquisition();
+  }
   
   std::cout << "test cout neural_daq.cpp line 182" << std::endl; 
 }
@@ -304,7 +312,7 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
       if(n == 0 && (arte_timer.toy_timestamp % (250 * 10) == 0) ){
 	//this_trode->print_buffers(4, 97);
       }
-      n++; // for threads
+      //n++; // for threads
 
     }
     //for( std::map< uint16_t, Lfp_bank >::iterator it = lfp_bank_map.begin();

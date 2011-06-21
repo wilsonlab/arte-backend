@@ -57,6 +57,7 @@ class Trode{
   void print_options();
   void print_buffers(int chan_lim, int samp_lim); // this should be handled by my_buffer, not trode
   void print_spikes();
+  void end_acquisition();
 
 };
 
