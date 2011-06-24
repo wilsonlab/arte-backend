@@ -7,7 +7,7 @@
 #include "global_defs.h"
 #include <map>
 #include "timer.h"
-#include <nidaqmx.h>
+#include <NIDAQmx.h>
 
 extern int master_id;
 extern int32_t buffer_size;

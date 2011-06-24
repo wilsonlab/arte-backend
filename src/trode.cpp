@@ -117,6 +117,9 @@ void *trode_filter_data(void *t){
   int n_spikes;
 
   filter_buffer( ((Trode *)t)->my_buffer );
+
+  ((Trode*)t)->my_buffer->write_buffers();
+
   //if( ((Trode*)t)->name == 0)
         n_spikes = find_spikes( (Trode*)t );
 

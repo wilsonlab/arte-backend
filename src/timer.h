@@ -83,7 +83,7 @@ class Timer {
   void initUdpRx(std::string host, int port);
 
   //const bool isToy = ISTOY;
-  uint32_t toy_timestamp; //public settable xfake timestamp
+  uint32_t toy_timestamp; //public settable fake timestamp
 };
 
 #endif
