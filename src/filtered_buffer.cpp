@@ -104,7 +104,7 @@ void Filtered_buffer::init(boost::property_tree::ptree &pt,
 
   // open files if we're writing to files
   finalize_done = true; // this flag will change if we open files
-  if(! ((strcmp(buffer_dump_filename,"none"))==1) )
+  if(! ((strcmp(buffer_dump_filename,"none"))==0) )
     init_files(tmp_buffer_filename);
 
   // set the cursurs to the beginning of the buffer
