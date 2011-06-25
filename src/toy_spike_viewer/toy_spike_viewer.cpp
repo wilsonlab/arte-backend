@@ -51,13 +51,13 @@ int main (int argc, char *argv[]){
     
     if(false){  //get buffer as spike packet
       
-      printf("before rxwave\n");
-      fflush(stdout);
+      //      printf("before rxwave\n");
+      //fflush(stdout);
       NetCom::rxSpike( my_netcomdat, &spike );
-      printf("after rxwave\n");
-      fflush(stdout);
+      //printf("after rxwave\n");
+      //fflush(stdout);
       
-      if(true){
+      if(false){
 	printf("got one. ts is: %d   ", spike.ts);
 	printf("name: %d   ", spike.name);
 	printf("n_chans: %d  ", spike.n_chans);
@@ -78,10 +78,17 @@ int main (int argc, char *argv[]){
 	printf("packetcount: %d\n",packet_count);
     }
     
-    fflush(stdout);
+    //fflush(stdout);
     
-  }
+ 
   
+    if(true){
+      system("clear");
+       printf("HEY!\n");
+       plot_waveforms(&spike,500, 20, 5); 
+    }
+		   
+  }
   return 0;
   
 }
