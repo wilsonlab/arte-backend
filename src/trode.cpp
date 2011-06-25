@@ -124,6 +124,7 @@ void *trode_filter_data(void *t){
         n_spikes = find_spikes( (Trode*)t );
 
   if(n_spikes > 0){
+    //printf("FOUND SPIKE!\n");
     spike_to_disk(((Trode*)t)->spike_array, n_spikes);
     spike_to_net(((Trode*)t)->spike_array,  n_spikes, (Trode*)t);
   }
@@ -211,7 +212,7 @@ int find_spikes(Trode *t){
 	fflush(stdout);
       }
       //spike_to_disk(spike_buffer, n_chans, n_samps_per_chan, trode);
-      //spike_to_net (spike_buffer, n_chans, n_samps_per_chan, trode);
+      //spike_to_net (t->spike_array, n_spikes, t);
     }
     
   }
@@ -238,8 +239,12 @@ void spike_to_net(spike_net_t *spike_array, int n_spikes, Trode *t){
       printf("\n");
       }
       //printf("name %d  ip %s    port %d  sockfd %d \n",t->name, t->my_netcomdat.host_ip, t->my_netcomdat.port, t->my_netcomdat.sockfd);
-      printf("name %d  sockfd %d\n", t->name, t->my_netcomdat.sockfd);
-      fflush(stdout);
+      
+      if(false){
+	printf("name %d  sockfd %d\n", t->name, t->my_netcomdat.sockfd);
+	fflush(stdout);
+      }
+      
       NetCom::txBuff(t->my_netcomdat, buff, buff_size);
     }    
 
