@@ -131,33 +131,6 @@ void *trode_filter_data(void *t){
 }
 
 
-void Trode::print_options(void){
-  std::cout << "********Trode: " << name << "********" << std::endl
-	    << "n_chans:      " << n_chans << std::endl
-	    << "channels: ";
-  for (int a = 0; a < n_chans; a++)
-    std::cout << my_buffer->channels[a] << " ";
-  std::cout << std::endl
-	    << "thresholds:   ";
-  for(int a = 0; a < n_chans; a++)
-    std::cout << thresholds[a] << " ";
-  std:: cout << std::endl
-	     << "daq_id:      " << my_buffer->daq_id << std::endl
-	     << "filt_name:   " << (my_buffer->my_filt).filt_name << std::endl
-	     << "filt.order:  " << (my_buffer->my_filt).order << std::endl
-	     << "spike_nsamps:" << n_samps_per_spike << std::endl << std::endl;
-}
-
-
-void Trode::print_buffers(int chan_lim, int samp_lim){
-
-}
-
-
-void Trode::print_spikes(void){
-
-}
-
 int find_spikes(Trode *t){
 
   int n_spikes = 0;
@@ -280,4 +253,33 @@ void spike_to_net(spike_net_t *spike_array, int n_spikes, Trode *t){
 void Trode::end_acquisition(){
   if(has_sockfd)
     close(my_netcomdat.sockfd);
+}
+
+
+
+void Trode::print_options(void){
+  std::cout << "********Trode: " << name << "********" << std::endl
+	    << "n_chans:      " << n_chans << std::endl
+	    << "channels: ";
+  for (int a = 0; a < n_chans; a++)
+    std::cout << my_buffer->channels[a] << " ";
+  std::cout << std::endl
+	    << "thresholds:   ";
+  for(int a = 0; a < n_chans; a++)
+    std::cout << thresholds[a] << " ";
+  std:: cout << std::endl
+	     << "daq_id:      " << my_buffer->daq_id << std::endl
+	     << "filt_name:   " << (my_buffer->my_filt).filt_name << std::endl
+	     << "filt.order:  " << (my_buffer->my_filt).order << std::endl
+	     << "spike_nsamps:" << n_samps_per_spike << std::endl << std::endl;
+}
+
+
+void Trode::print_buffers(int chan_lim, int samp_lim){
+
+}
+
+
+void Trode::print_spikes(void){
+
 }

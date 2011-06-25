@@ -99,6 +99,7 @@ int32 GetTerminalNameWithDevPrefix(TaskHandle taskHandle, const char terminalNam
 int32 CVICALLBACK timerDigTrigCallback(TaskHandle taskHandle, int32 signalID, void *callbackData);
 
 FILE *try_fopen( const char *filename, const char *mode);
+void try_fclose( FILE *the_file );
 
 template <class T>
 void try_fread( T *ptr, size_t count, FILE * stream){

@@ -20,3 +20,5 @@ extern int n_neural_daqs;
 extern int n_filtered_buffers;
 extern int n_trodes;
 extern int n_lfp_banks;
+
+extern FILE *main_file;

@@ -1,7 +1,7 @@
 #include "unp.h"
 #include "../netcom/netcom.h"
 #include "../netcom/datapacket.h"
-
+#include "plot_waveforms.h"
 
 //void watch_net( char host_ip[INET6_ADDRSTRLEN], int port_num ){
 //
@@ -16,6 +16,9 @@ int main (int argc, char *argv[]){
   char buff[BUFFSIZE];
   spike_net_t spike;
   int buff_len;
+
+  int last_drawn_ts = 0;
+  int min_wait = 0;
 
   if(argc != 3){
     printf("Usage: toy_wave_viewer host port\n");
@@ -45,8 +48,8 @@ int main (int argc, char *argv[]){
 	printf("/n");
       }
     }
-
-    if(true){  //get buffer as spike packet
+    
+    if(false){  //get buffer as spike packet
       
       printf("before rxwave\n");
       fflush(stdout);
@@ -55,16 +58,16 @@ int main (int argc, char *argv[]){
       fflush(stdout);
       
       if(true){
-      printf("got one. ts is: %d   ", spike.ts);
-      printf("name: %d   ", spike.name);
-      printf("n_chans: %d  ", spike.n_chans);
-      for(int s = 0; s < spike.n_samps_per_chan; s++){
-	printf("  samp%d:  ",s);
-	for(int c = 0; c < spike.n_chans; c++){
-	  printf("%d ", spike.data[ s*spike.n_chans + c ]);
+	printf("got one. ts is: %d   ", spike.ts);
+	printf("name: %d   ", spike.name);
+	printf("n_chans: %d  ", spike.n_chans);
+	for(int s = 0; s < spike.n_samps_per_chan; s++){
+	  printf("  samp%d:  ",s);
+	  for(int c = 0; c < spike.n_chans; c++){
+	    printf("%d ", spike.data[ s*spike.n_chans + c ]);
+	  }
 	}
-      }
-      printf("\n");
+	printf("\n");
       }
 
     }
@@ -74,12 +77,12 @@ int main (int argc, char *argv[]){
       if(packet_count % 50 == 0)
 	printf("packetcount: %d\n",packet_count);
     }
-
+    
     fflush(stdout);
-  
+    
   }
-
+  
   return 0;
-
+  
 }
      

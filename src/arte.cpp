@@ -13,9 +13,12 @@ int main(int argc, char *argv[]){
   arte_init(argc, argv, default_setup_config_filename, default_session_config_filename);
 
   neural_daq_start_all();
+
   std::cout << "Hit return to stop acquisition." << std::endl;
   getchar();
   neural_daq_stop_all();
+  try_fclose( main_file );
+
   std::cout << "After call to neural_daq_stop_all()" << std::endl;
  
   return 0;

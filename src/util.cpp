@@ -72,3 +72,15 @@ FILE *try_fopen( const char *filename, const char *mode){
   }
   return fp;
 }
+
+void try_fclose( FILE *the_file ){
+  int r;
+  if( the_file == NULL ){
+    printf("Tried to close a file that isn't open\n");
+  } else {
+    r = fclose( the_file );
+  }
+  if(r > 0){
+    printf("Got an error closing a file.\n");
+  }
+}

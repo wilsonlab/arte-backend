@@ -14,9 +14,12 @@
 #include "lfp_bank.h"
 #include "netcom/netcom.h"
 
+extern FILE *main_file;
+
 extern uint32_t timestamp;
 
 extern Timer arte_timer;
+extern bool timer_is_toy;
 //extern uint32_t buffer_count;
 
 extern std::string setup_config_filename;

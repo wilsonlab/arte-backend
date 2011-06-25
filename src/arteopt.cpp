@@ -9,7 +9,10 @@
 #include "timer.h"
 #include "filtered_buffer.h"
 
+FILE *main_file;
+
 Timer arte_timer;
+bool timer_is_toy = true;
 
 std::string setup_config_filename;
 std::string session_config_filename;
@@ -106,7 +109,16 @@ void arte_session_init(int argc, char *argv[]){
 
   std::cout << "Starting session init." << std::endl;
 
-
+  // open the main data file
+  char filename[MAX_NAME_STRING_LEN];
+  std::string tmp_filename;
+  assign_property<std::string>("options.session.main_filename",&tmp_filename, session_pt, session_pt, 1);
+  strcpy( filename, tmp_filename.c_str());
+  if( (strcmp(filename, "none")) != 0 ){
+    main_file = try_fopen( filename, "wb" );
+  } else{
+    main_file = NULL;
+  }
 
   // count how many trodes
   BOOST_FOREACH(boost::property_tree::ptree::value_type &v,

@@ -199,7 +199,7 @@ void neural_daq_stop(int i){
 
 void neural_daq_stop_all(void){
   acquiring = false;
-  std::cout << "neural_daq.cpp line 160 test." << std::endl;
+  //  std::cout << "neural_daq.cpp line 160 test." << std::endl;
   sleep(1);  // why sleep?  b/c for some reason hitting immediately after running program hangs the computer (threads' fault?)
   neural_daq *nd;
 
@@ -225,8 +225,7 @@ void neural_daq_stop_all(void){
   for(int n = 0; n < n_lfp_banks; n++){
     lfp_bank_array[n].end_acquisition();
   }
-  
-  std::cout << "test cout neural_daq.cpp line 182" << std::endl; 
+
 }
 
 void read_data_from_file(void){ // the file-reading version of EveryNCallback
@@ -244,16 +243,6 @@ void read_data_from_file(void){ // the file-reading version of EveryNCallback
     nd->daq_buffer_count += 1;
   }
 
-//   Trode *this_trode;
-//   for(std::map<uint16_t, Trode>::iterator it = trode_map.begin(); it != trode_map.end(); it++){
-//     this_trode = & ( (*it).second);
-//     trode_filter_data(this_trode);
-//     if( it == trode_map.begin() && (arte_timer.toy_timestamp % (10 * 250) == 0)){
-//       printf("Put call to trode->buffer->print_buffers here.\n");
-//       //this_trode->my_filtered_buffer->print_buffers(4, 97);
-//     }
-//   }
-
   for(int i = 0; i < n_trodes; i++){
     trode_filter_data( (void*) &(trode_array[i]));
   }
@@ -265,9 +254,8 @@ void read_data_from_file(void){ // the file-reading version of EveryNCallback
 }
 
 int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEventType, uInt32 nSamples, void *callbackData){
+
   if(acquiring){
-    //std::cout << "In EveryNCallback." << std::endl;
-    //fflush(stdout);
     neural_daq *nd;
     int32 read;
     int rc;
