@@ -11,9 +11,9 @@ void plot_waveforms(spike_net_t *spike, int max_y, int n_rows, int row_for_zero_
   int y_per_row = (max_y - 0) / (n_rows - row_for_zero_y);
 
   int n,r,c,s,y;
-  for(n = n_rows-1; n >= 0; n++){
-    row_max_y[n] = max_y - y_per_row*(n_rows - (n-1));
-    row_min_y[n] = max_y - y_per_row*(n_rows - n);
+  for(n = n_rows-1; n >= 0; n--){
+    row_max_y[n] = max_y - y_per_row*(n_rows - (n));
+    row_min_y[n] = max_y - y_per_row*(n_rows - (n-1));
   }
 
   int n_disp_cols = spike->n_chans*spike->n_samps_per_chan + spike->n_chans + 1;
@@ -22,22 +22,23 @@ void plot_waveforms(spike_net_t *spike, int max_y, int n_rows, int row_for_zero_
     printf("-");
   printf("\n");
 
-  for(r = 0; r < n_rows; r++){
+  for(r = n_rows -1; r >= 0; r--){
     
     for(c = 0; c < spike->n_chans; c++){
       printf("|");
       for(s = 0; s < spike->n_samps_per_chan; s++){
-	y = spike->data[s*spike->n_chans + c];
-	if( (y <= row_max_y[r]) && (y > row_min_y[r]) ){
-	  printf("*");
-	} else {
-	  printf(" ");
-	}
+   	y = spike->data[s*spike->n_chans + c];
+   	if( (y <= row_max_y[r]) && (y > row_min_y[r]) ){
+   	  printf("*");
+   	} else {
+   	  printf(" ");
+   	}
       }
     }
-    printf("|\n");
+    printf("| \n");
+    //printf("| %d : %d\n", row_min_y[r], row_max_y[r]);
   }
-
+  
   for(n = 0; n < n_disp_cols; n++){
     printf("-");
   }

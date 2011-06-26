@@ -173,10 +173,10 @@ void NetCom::rxSpike(NetComDat net, spike_net_t* spike){
   char buff[BUFFSIZE-1];
   int buff_len = 0;
   
-  printf("rxspike before rxbuff...\n");
+  //printf("rxspike before rxbuff...\n");
   rxBuff(net, buff, &buff_len);
   buffToSpike(spike, buff, true);
-  printf("rx spike after buffToSpike\n");
+  //printf("rx spike after buffToSpike\n");
 }
 
 void NetCom::txBuff(NetComDat net, char *buff, int buff_len){

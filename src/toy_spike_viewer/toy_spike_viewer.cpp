@@ -49,7 +49,7 @@ int main (int argc, char *argv[]){
       }
     }
     
-    if(false){  //get buffer as spike packet
+    if(true){  //get buffer as spike packet
       
       //      printf("before rxwave\n");
       //fflush(stdout);
@@ -70,6 +70,19 @@ int main (int argc, char *argv[]){
 	printf("\n");
       }
 
+      
+      if(true){
+	if(spike.ts - last_drawn_ts > 330){
+	  last_drawn_ts = spike.ts;
+	//packet_count++;
+	//if(packet_count % 10 == 0)
+	 system("clear");
+	  //printf("HEY!\n");
+	plot_waveforms(&spike,5000, 30, 10); 
+	fflush(stdout);
+	}
+      }
+
     }
     
     if(false){
@@ -79,14 +92,7 @@ int main (int argc, char *argv[]){
     }
     
     //fflush(stdout);
-    
- 
-  
-    if(true){
-      system("clear");
-       printf("HEY!\n");
-       plot_waveforms(&spike,500, 20, 5); 
-    }
+     
 		   
   }
   return 0;
