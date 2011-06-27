@@ -78,7 +78,7 @@ void spikeToBuff(spike_net_t* s, char* buff, int *buff_len, bool c){
    memcpy(buff+cursor, &trig_ind_tx,         2);
    cursor += 2;
 
-   cursor_tx = hton16(cursor);
+   cursor_tx = hton16c(cursor,c);
    memcpy(buff+1,      &cursor_tx,           2);
 
   buff[cursor] = '\0';
