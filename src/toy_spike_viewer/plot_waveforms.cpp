@@ -42,6 +42,6 @@ void plot_waveforms(spike_net_t *spike, int max_y, int n_rows, int row_for_zero_
   for(n = 0; n < n_disp_cols; n++){
     printf("-");
   }
-  printf("\n%f\n",spike->ts/10000);
+  printf("\n%f\n",(float)spike->ts/10000);
 
 }
