@@ -39,7 +39,7 @@ void write_spike(spike_net_t *spike){
 }
 
 void ps(){
-  fprintf(out_f,"%");
+  fprintf(out_f,"%%"); // %% seems to be the escape sequence for getting a % printed
 }
 
 void write_file_header(spike_net_t *spike, int argc, char *argv[]){
