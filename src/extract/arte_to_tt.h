@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <cstdlib> // apparently needed for exit(0) in Ubuntu
 #include "../netcom/datapacket.h"
 #include "../global_defs.h"
 
