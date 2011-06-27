@@ -38,62 +38,77 @@ void write_spike(spike_net_t *spike){
   fwrite(spike->data, (spike->n_chans * spike->n_samps_per_chan), sizeof(rdata_t),  out_f);
 }
 
+void ps(){
+  fprintf(out_f,"%");
+}
+
 void write_file_header(spike_net_t *spike, int argc, char *argv[]){
 
-  fprintf(out_f, "%%BEGINHEADER\n");
-  fprintf(out_f, "% Program\tadextract\n"); //Problem?
-  fprintf(out_f, "% Program Version:\t1.18\n"); //Problem?
-  fprintf(out_f, "% Argc:\t%d\n", argc);
-  for(int i = 0; i < argc; i++)
-    fprintf(out_f, "% Argv[i+1] :\t%s\n", argv[i]); //Problem?
-  fprintf(out_f, "% Date:\tTue Jun 21 09:53:08 2011\n"); //Problem?
-  fprintf(out_f, "% Directory:\t/home/greghale/data/joe/062011\n"); //Problem?
-  fprintf(out_f, "% Hostname:\tjellyroll\n"); //sloppy
-  fprintf(out_f, "% Architecture:\ti686\n"); 
-  fprintf(out_f, "% User:\tgreghale ()\n"); //sloppy
-  fprintf(out_f, "% File type:\tBinary\n");
-  fprintf(out_f, "% Extraction type:\ttetrode waveforms\n");
-  fprintf(out_f, "% Probe:\t0\n");  //Problem?
-  fprintf(out_f, "% Fields\ttimestamp,%d,%d,%d waveform,%d,%d,%d\n",8,4,1,2,2,
+  ps(); ps(); fprintf(out_f, "BEGINHEADER\n");
+  ps(); fprintf(out_f, " Program\tadextract\n"); //Problem?
+ps();   fprintf(out_f, " Program Version:\t1.18\n"); //Problem?
+  ps(); fprintf(out_f, " Argc:\t%d\n", argc);
+  for(int i = 0; i < argc; i++){
+    ps(); fprintf(out_f, " Argv[i+1] :\t%s\n", argv[i]); //Problem?
+  }
+  ps(); fprintf(out_f, " Date:\tTue Jun 21 09:53:08 2011\n"); //Problem?
+ ps();  fprintf(out_f, " Directory:\t/home/greghale/data/joe/062011\n"); //Problem?
+  ps(); fprintf(out_f, " Hostname:\tjellyroll\n"); //sloppy
+  ps(); fprintf(out_f, " Architecture:\ti686\n"); 
+  ps(); fprintf(out_f, " User:\tgreghale ()\n"); //sloppy
+  ps(); fprintf(out_f, " File type:\tBinary\n");
+  ps(); fprintf(out_f, " Extraction type:\ttetrode waveforms\n");
+  ps(); fprintf(out_f, " Probe:\t0\n");  //Problem?
+  ps(); fprintf(out_f, " Fields\ttimestamp,%d,%d,%d waveform,%d,%d,%d\n",8,4,1,2,2,
 	  spike->n_chans * spike->n_samps_per_chan);
-  fprintf(out_f, "\n");
-  fprintf(out_f, "% Beginning of header from input file 'raw/02200320.sgh'\n"); //Problem?
-  fprintf(out_f, "% mode: SPIKE\n");
-  fprintf(out_f, "% adversion:\t1.36b\n");
-  fprintf(out_f, "% rate:\t250000.000000\n"); //Problem?
-  fprintf(out_f, "% nelectrodes: 2\n");
-  fprintf(out_f, "% nchannels:\t8\n");
-  fprintf(out_f, "% nelect_chan:\t%d\n", spike->n_chans); //Problem?
-  fprintf(out_f, "% errors:\t%d\n",0); // me?  errors?
-  fprintf(out_f, "% disk_errors:\t%d\n",0);
-  fprintf(out_f, "% dma_bufsize:\t%d\n",24567); //Problem?
-  fprintf(out_f, "% spikelen:\t%d\n", spike->n_samps_per_chan); //Problem?
-  fprintf(out_f, "% spikesep:\t%d\n", 32); // sloppy.  Do I need to put refrac period in packets?
+  ps(); fprintf(out_f, "\n");
+  ps(); fprintf(out_f, " Beginning of header from input file 'raw/02200320.sgh'\n"); //Problem?
+  ps(); fprintf(out_f, " mode: SPIKE\n");
+  ps(); fprintf(out_f, " adversion:\t1.36b\n");
+  ps(); fprintf(out_f, " rate:\t250000.000000\n"); //Problem?
+  ps(); fprintf(out_f, " nelectrodes: 2\n");
+  ps(); fprintf(out_f, " nchannels:\t8\n");
+  ps(); fprintf(out_f, " nelect_chan:\t%d\n", spike->n_chans); //Problem?
+  ps(); fprintf(out_f, " errors:\t%d\n",0); // me?  errors?
+  ps(); fprintf(out_f, " disk_errors:\t%d\n",0);
+  ps(); fprintf(out_f, " dma_bufsize:\t%d\n",24567); //Problem?
+  ps(); fprintf(out_f, " spikelen:\t%d\n", spike->n_samps_per_chan); //Problem?
+  ps(); fprintf(out_f, " spikesep:\t%d\n", 32); // sloppy.  Do I need to put refrac period in packets?
   int chan_offset[8] = {65, 122, 180, 238, 296, 353, 411, 469};
   for(int i = 0; i < 8; i++){
-    fprintf(out_f, "% channel %d ampgain:\t%d\n", i, 10000); // sloppy
-    fprintf(out_f, "% channel %d adgain:\t%d\n", i, 0);
-    fprintf(out_f, "% channel %d filter:\t%d\n", i, 136); // somewhat sloppy (does spikeparms care about filter settings?)
+    ps(); fprintf(out_f, " channel %d ampgain:\t%d\n", i, 10000); // sloppy
+    ps(); fprintf(out_f, " channel %d adgain:\t%d\n", i, 0);
+    ps(); fprintf(out_f, " channel %d filter:\t%d\n", i, 136); // somewhat sloppy (does spikeparms care about filter settings?)
     uint16_t this_thresh;
     if(i <= spike->n_chans){
       this_thresh = spike->thresh[i];
     }else{
       this_thresh = 154;
     }
-    fprintf(out_f, "% channel %d threshold:\t%d\n", i, this_thresh);
-    fprintf(out_f, "% channel %d color:\t%d\n",i, 15);
-    fprintf(out_f, "% channel %d offset:\t%d\n", i, chan_offset[i]);
-    fprintf(out_f, "% channel %d contscale:\t%d\n", i, 0);
+    ps(); fprintf(out_f, " channel %d threshold:\t%d\n", i, this_thresh);
+    ps(); fprintf(out_f, " channel %d color:\t%d\n",i, 15);
+    ps(); fprintf(out_f, " channel %d offset:\t%d\n", i, chan_offset[i]);
+    ps(); fprintf(out_f, " channel %d contscale:\t%d\n", i, 0);
   }
-  fprintf(out_f, "% spike_size\t%d\n", 
+  ps(); fprintf(out_f, " spike_size\t%d\n", 
 	  (spike->n_chans * spike->n_samps_per_chan * 2 + 8)); // seemed to be the meaning from a real tt file?  is it important?
-  fprintf(out_f, "% fields: int electrode_num; long timestamp; int data[%d]\n",
+  ps(); fprintf(out_f, " fields: int electrode_num; long timestamp; int data[%d]\n",
 	  spike->n_chans * spike->n_samps_per_chan);
-  fprintf(out_f, "% End of header from input file 'raw/02200320.sgh'\n"); //Problem?
-  fprintf(out_f, "%\n");
-  fprintf(out_f, "%%ENDHEADER\n");
+  ps(); fprintf(out_f, " End of header from input file 'raw/02200320.sgh'\n"); //Problem?
+  ps(); fprintf(out_f, "\n");
+  ps(); ps(); fprintf(out_f, "ENDHEADER\n");
 
 }
+
+// void tfprintf(FILE *fp, char format_str[], ...){
+//   fprintf(fp, "%");
+//   fprintf(fp, format_str, ...);
+// }
+
+// void ttfprintf(FILE *fp, char format_str[], ...){
+//   fprintf(fp, "%%");
+//   fprintf(fp, format_str, ...);
+// }
 
 void init_filenames(int argc, char *argv[], 
 		    char input_filename[], char output_filename[], 
