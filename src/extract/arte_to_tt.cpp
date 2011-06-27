@@ -6,7 +6,7 @@ int main(int argc, char *argv[]){
 
   spike_net_t spike, first_spike;
   spike_net_t *spike_p;
-  uint16_t trodename;
+  int trodename;
   int ok_spike;
   
   char input_filename[200], output_filename[200];
@@ -16,15 +16,22 @@ int main(int argc, char *argv[]){
   in_f = fopen(input_filename, "rb");
   out_f = fopen(output_filename, "wb");
 
-  get_next_spike(&first_spike, trodename);
+  ok_spike = false;
+  while(!ok_spike){
+    printf("trying one...\n");
+    ok_spike = get_next_spike(&first_spike, trodename);
+  }
+  printf("finished looking...\n");
 
   write_file_header(&first_spike, argc, argv);
 
   write_spike(&first_spike);
-
+  if(true){
   while( feof(in_f) == 0){
     ok_spike = get_next_spike(&spike, trodename);
-    write_spike(&spike);
+    if(ok_spike)
+      write_spike(&spike);
+  }
   }
 
   printf("finished.\n");
@@ -48,8 +55,8 @@ void write_file_header(spike_net_t *spike, int argc, char *argv[]){
   ps(); fprintf(out_f, " Program\tadextract\n"); //Problem?
 ps();   fprintf(out_f, " Program Version:\t1.18\n"); //Problem?
   ps(); fprintf(out_f, " Argc:\t%d\n", argc);
-  for(int i = 0; i < argc; i++){
-    ps(); fprintf(out_f, " Argv[i+1] :\t%s\n", argv[i]); //Problem?
+  for(int i = 1; i < argc; i++){
+    ps(); fprintf(out_f, " Argv[%d] :\t%s\n", i, argv[i]); //Problem?
   }
   ps(); fprintf(out_f, " Date:\tTue Jun 21 09:53:08 2011\n"); //Problem?
  ps();  fprintf(out_f, " Directory:\t/home/greghale/data/joe/062011\n"); //Problem?
@@ -100,19 +107,9 @@ ps();   fprintf(out_f, " Program Version:\t1.18\n"); //Problem?
 
 }
 
-// void tfprintf(FILE *fp, char format_str[], ...){
-//   fprintf(fp, "%");
-//   fprintf(fp, format_str, ...);
-// }
-
-// void ttfprintf(FILE *fp, char format_str[], ...){
-//   fprintf(fp, "%%");
-//   fprintf(fp, format_str, ...);
-// }
-
 void init_filenames(int argc, char *argv[], 
 		    char input_filename[], char output_filename[], 
-		    uint16_t *trodename){
+		    int *trodename){
   
   if(argc != 7){
     printf("Argc was %d\n",argc);
@@ -123,37 +120,71 @@ void init_filenames(int argc, char *argv[],
     exit(1);
   }
 
-  for(int i = 1; i < 5; i++){
+  for(int i = 1; i < argc; i++){
     if( strcmp( argv[i], "-i" ) == 0)
+      //printf("Ok1\n");
       strcpy( input_filename, argv[i+1]);
     if( strcmp( argv[i], "-o") == 0)
+      //printf("Ok2\n");
       strcpy( output_filename, argv[i+1]);
     if( strcmp( argv[i], "-trodename") == 0){
-      sscanf("%d", argv[i], trodename);
+      //printf("Ok3\n");
+      //printf("argv[%d]: %s\n", i+1, argv[i+1]);
+      sscanf(argv[i+1], "%d", trodename);
     }
   }
+  //printf("Ok4\n");
+  //printf("trodename: %d\n", *trodename);
+  //fflush(stdout);
+  //exit(1);
 }
 
-  bool get_next_spike(spike_net_t* spike, uint16_t trodename){
+  bool get_next_spike(spike_net_t* spike, int trodename){
 
   char buff_head[100]; // excessively big head
   char buff[4000];
   char the_type;
   uint16_t the_length;
+  int the_next_byte;
   //spike_net_t spike;
 
-  fread  (buff_head, 4,sizeof(char), in_f);
-  fseek( in_f, -4, SEEK_CUR );
+  //fread(buff, sizeof(char), 1000, in_f);
+  //buffToSpike( spike, buff, false);
 
-  the_type = buff_head[0];
-  memcpy( &the_length, buff_head+1, 2 );
-  
-  fread (buff, the_length, sizeof(char), in_f);
+  //printf("spike->n_chans: %d\n", spike->n_chans);
+
+    fread  (buff_head, sizeof(char), 4,  in_f);
+    fseek( in_f, -4, SEEK_CUR );
+
+    the_type = buff_head[0];
+    memcpy( &the_length, buff_head+1, 2 );
+    memcpy( &the_next_byte, buff_head+3, 1);
+    
+    //printf("the_type: %c, the_length: %d, the_next: %d\n", the_type, the_length, the_next_byte);
+    
+    //fread(buff, sizeof(char), the_length, in_f);
+    //  buffToSpike( spike, buff, false);
+
+   // printf("The length: %d\n", the_length);
+
+   fread (buff,  sizeof(char),the_length, in_f);
 
   if( charToType(the_type) == NETCOM_UDP_SPIKE );
   buffToSpike( spike, buff, false );
 
-  return( spike->name == trodename );
+
+  //    printf("spike->name: %d, spike->n_chans: %d\n", spike->name, spike->n_chans);
+  //    for(int c = 0; c < spike->n_chans; c++){
+  //      printf("chan %d: ", c);
+  //      for(int s = 0; s < spike->n_samps_per_chan; s++){
+  //    	printf("%d ", spike->data[spike->n_chans*s + c]);
+  //      }
+  //      printf("\n");
+  //    }
+
+  
+  // printf("spikename: %d  trodename:%d\n", spike->name, trodename);
+  return( (int) (spike->name) == (int)trodename );
 
 }
   
