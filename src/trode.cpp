@@ -12,6 +12,7 @@
 #include "filter_fun.h"
 
 int tmp;
+extern FILE *main_file;
 
 Trode::Trode(){
   has_sockfd = false;
@@ -211,8 +212,7 @@ int find_spikes(Trode *t){
 	printf("search_cursor after update: %d\n\n",search_cursor);
 	fflush(stdout);
       }
-      //spike_to_disk(spike_buffer, n_chans, n_samps_per_chan, trode);
-      //spike_to_net (t->spike_array, n_spikes, t);
+
     }
     
   }
@@ -221,7 +221,13 @@ int find_spikes(Trode *t){
 
 
 void spike_to_disk(spike_net_t *spike_array, int n_spike){
-
+  char buff[4000]; // TODO: get the right buffer size
+  int buff_size, n;
+  // TODO: Get this part thread-safe, needz mutex
+  for(n = 0; n < n_spike; n++){
+    spikeToBuff(&spike_array[n], buff, &buff_size, false);
+    try_fwrite <char> (buff, buff_size, main_file);
+  }
 }
 
 void spike_to_net(spike_net_t *spike_array, int n_spikes, Trode *t){
