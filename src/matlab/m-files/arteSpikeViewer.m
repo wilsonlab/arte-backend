@@ -16,8 +16,8 @@ function u = arteSpikeViewer(u)
 % parser.parse(varargin);
 % args = parser.Results()
 
-args.host = '10.121.43.56';
-args.rxPort = 5000;
+args.host = '1.1.2.54';
+args.rxPort = 6303;
 args.txPort = 10000;
 args.udpObjBufferSize = 1024*8;
 
@@ -74,20 +74,6 @@ initWaveformLine();
 
 initNetwork();
 startNetworkRx();
-
-
-   function initFigures()
-        disp('initial run of plotArteSpikes, creating figures');
-        
-%        fig(2) = figure('Position', [660 300 900 600], 'toolbar', 'none', 'NumberTitle', 'off', 'Name', 'Projections', 'color' ,'k');
-%        fig(3) = figure('Position', [545 950 150 50], 'toolbar', 'none', 'NumberTitle', 'off', 'Name', 'Control');
-%        initControlFig;
-
-%         for figN = 1:numel(fig)
-%             listerHandler(figN) = addlistener(fig(figN), 'BeingDeleted','PostSet', @shutItDownFcn);
-%         end
-
-    end
      
     function initWaveformFigure()
 	fig(1) = figure('Position', [50 300 750 350],...
@@ -105,7 +91,7 @@ startNetworkRx();
         disp('Initializing the waveform plotting line');
 	temp = 1:128;
         waveLine(1) = line(temp,repmat(25,128,1), 'parent', waveAxes(1),...
-			'color', 'w',  'linestyle', args.linestyle, ...
+			'color', 'w',  'linestyle', 'none', ...
 			 'marker', '.', 'markerfacecolor', 'w','MarkerSize', 10);
 	line([32.5 32.5], [0 args.VOLT_MAX], 'color', 'w');
 	line([64.5 64.5], [0 args.VOLT_MAX], 'color', 'w');
@@ -123,11 +109,14 @@ startNetworkRx();
 %   Network and Buffer Related Function
 % -------------------------------------------
     function initNetwork()
+        disp(['Initializing network to listen to host: ' args.host, ' port:', num2str(args.rxPort)]);
         u = udp(args.host, args.txPort, 'LocalPort', args.rxPort, ...
             'InputBufferSize', 2048);
+
         set(u,'DatagramReceivedFcn', @udpPacketRxCallback);
     end
     function startNetworkRx()
+        disp('Starting the network');
         fopen(u);
         udpRxConnectionOpen = true;
     end
@@ -136,7 +125,7 @@ startNetworkRx();
 
         data = fread(obj, 145, 'uint16');
         nPacket = nPacket + 1;
-	disp(['Packets recieved:', num2str(nPacket)]);
+        disp(['Packets recieved:', num2str(nPacket)]);
 
         if numel(data)<145
             disp('truncated buffer');
@@ -154,7 +143,7 @@ startNetworkRx();
        
     function data = handParseBuffer(data)
          data = data( args.bufferTrimTop : args.bufferTrimTop + args.dataSamplesPerBuffer-1 );
-	size(data)
+	
 %        data = rand(args.samplesPerChannel, args.channels);
     end
     %function parseNetworkBuffer(buffer)
@@ -162,7 +151,7 @@ startNetworkRx();
   
     function plotBuffer(buffer)
         plotWaveforms(buffer);
-        plotProjections(buffer);
+       % plotProjections(buffer);
     end
 
     function plotWaveforms(waveform)
@@ -171,7 +160,7 @@ startNetworkRx();
             initWaveformLines;
         end
 	
-        waveform(1) = args.VOLT_MAX * ( mod(nPacket, 20)/20);
+        waveform(1) = args.VOLT_MAX * ( mod(nPacket, 50)/50);
         set(waveLine(1), 'YData', waveform);
         
     end
@@ -193,7 +182,7 @@ startNetworkRx();
             udpRxConnectionOpen = false;
             fclose(u);
         end
-        close(fig);
+        delete(fig);
     end
 
    
