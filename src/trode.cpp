@@ -158,7 +158,8 @@ int find_spikes(Trode *t){
   thresh = (t->thresholds);
   
   search_stop_ind  =  (fb->f_curs + fb->stream_n_samps_per_chan - t->samps_after_trig);
-  search_start_ind = (search_stop_ind - t->n_samps_per_spike);
+  //search_start_ind = (search_stop_ind - t->n_samps_per_spike);
+  search_start_ind = (search_stop_ind - fb->my_daq->n_samps_per_buffer + 1);
   
   n_samps_checked = 0;
   
