@@ -48,6 +48,7 @@ std::map<std::string, Filt> filt_map;
 
 boost::property_tree::ptree setup_pt;
 boost::property_tree::ptree session_pt;
+boost::property_tree::ptree timer_pt;
 
 std::vector<TaskHandle> task_handle_vector;
 
@@ -74,10 +75,11 @@ void arte_init(int argc, char *argv[], const std::string &setup_fn, const std::s
 
   arte_setup_init(argc, argv); // Use the property_tree to set global vars
   arte_session_init(argc, argv); // Use property_tree to set up trode list, trode/eeg view vars
-  //arte_network_init(argc, argv); // look at trode_array and lfp_bank_array, make netcom for each trode or lfp_bank, and 2 for arte itself
+  
+//arte_network_init(argc, argv); // look at trode_array and lfp_bank_array, make netcom for each trode or lfp_bank, and 2 for arte itself
   //arte_init_timer();  // in timer.h
   //arte_start_clock(); // in timer.h 
-  
+  arte_timer.init2( setup_pt.get_child("options.setup.timer") );
 }
 
 

@@ -11,6 +11,8 @@
 
 // Do we really need all these arrays and counters to be declared here?
 
+extern Timer arte_timer;
+
 extern neural_daq * neural_daq_array;
 extern Filtered_buffer * filtered_buffer_array;
 extern Trode * trode_array;

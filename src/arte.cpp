@@ -11,8 +11,10 @@ int main(int argc, char *argv[]){
 
   // implement in arteopt. setup done there for global neural_daq_map and trode_map
   arte_init(argc, argv, default_setup_config_filename, default_session_config_filename);
-
+  
+  printf("from main, about co tall neural_daq_start_all()\n");
   neural_daq_start_all();
+  //arte_timer.start();
 
   std::cout << "Hit return to stop acquisition." << std::endl;
   getchar();

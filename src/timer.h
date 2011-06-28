@@ -8,6 +8,8 @@
 #include <stdint.h>
 #include <string>
 #include "netcom/netcom.h"
+#include <boost/property_tree/xml_parser.hpp>
+#include <boost/property_tree/exceptions.hpp>
 
 class Timer {
 
@@ -37,6 +39,9 @@ class Timer {
   bool armed;
   bool master; 
   bool isSynced;
+
+  bool ad_slave;
+  uint16_t timer_freq;
 
   uint32_t initCount;
   int countDir;
@@ -71,7 +76,7 @@ class Timer {
 
   int setInitCount(uint32_t initCount);
   uint32_t getCount();
-  uint64_t getTimestamp();
+  uint32_t getTimestamp();
 
   int setTimerID(int newId);
   int getTimerID();
@@ -82,6 +87,8 @@ class Timer {
   void initUdpTx(std::string host, int port);
   void initUdpRx(std::string host, int port);
 
+  void init2(boost::property_tree::ptree &timer_pt);
+  
   //const bool isToy = ISTOY;
   uint32_t toy_timestamp; //public settable fake timestamp
 };

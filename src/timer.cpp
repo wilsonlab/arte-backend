@@ -20,6 +20,8 @@ Timer::Timer(){
 	syncCount=0;
 
 	becomeMaster(false);
+
+	//         niDev       niCtr          niArm           niSync
 	setDevStrs("/Dev1/", "/Dev1/ctr0", "/Dev1/PFI2", "/Dev1/port0/line0:7");
 
 	counterTask = 0;
@@ -62,6 +64,7 @@ std::string const& arm, std::string const& sync){
 int Timer::start(){
 	std::cout<<"Timer::start() called!"<<std::endl;
 
+	if(!ad_slave){
 	if (running){
 		std::cout<<"ERROR!!!! The Timer is already running\n";
 		return -1;
@@ -82,6 +85,13 @@ int Timer::start(){
 	std::cout<<"Timer::start(), starting the NIDAQmx Tasks"<<std::endl;
 	daq_err_check(DAQmxStartTask(counterTask));
 	daq_err_check(DAQmxStartTask(diPulseTask));
+	}
+
+	if(ad_slave){
+	  printf("about to start counter task \n");
+	  //daq_err_check( DAQmxStartTask( counterTask ) );
+	  printf("finished starting counter task.\n");
+	}
 	return 0;
 }
 int Timer::stop(){
@@ -117,25 +127,31 @@ int  Timer::setInitCount(uint32_t newCount){
 uint32_t Timer::getCount(){
 	if (counterTask==0){
 		return 0;
-	}
+	} 
 	uInt32 count = 0;
 	daq_err_check(DAQmxReadCounterScalarU32(counterTask, 10.0, &count, NULL));
 	std::cout<<"Timer::getCount() called, count is:"<<count<<std::endl;
 	//get the count from the counter card and return it
 	return (uint32_t) count;
+	
 }
 
 #ifndef ISTOY
 uint64_t Timer::getTimestamp(){
-    std::cout<<"Timer::getTimestamp() called!"<<std::endl;
+  std::cout<<"Timer::getTimestamp() called!"<<std::endl;
+    uInt32 timestamp;
+    //daq_err_check( DAQmxReadCounterScalarU32(counterTask, 10.0, &timestamp, NULL) );
   //get the count from the counter card, convert to TS and return it
     return 0;
 }
 #endif
 
 #ifdef ISTOY
-uint64_t Timer::getTimestamp(){
-    return toy_timestamp;
+uint32_t Timer::getTimestamp(){
+  uInt32 timestamp = 0;
+  daq_err_check( DAQmxReadCounterScalarU32( counterTask, 10.0, &timestamp, NULL) );
+  return timestamp;
+  //return toy_timestamp;
 }
 #endif
 
@@ -156,21 +172,31 @@ int Timer::initDAQSyncTask(){
 	DAQmxCreateTask("DigitalDetectionTask", &diPulseTask);
 	DAQmxCreateDIChan(diPulseTask, niSync, "", DAQmx_Val_ChanPerLine);
 	DAQmxCfgChangeDetectionTiming(diPulseTask, NULL, niSync, DAQmx_Val_ContSamps,1);
-	DAQmxRegisterSignalEvent(diPulseTask,DAQmx_Val_ChangeDetectionEvent,0,timerDigTrigCallback, 
-this);
+	DAQmxRegisterSignalEvent(diPulseTask,DAQmx_Val_ChangeDetectionEvent,0,timerDigTrigCallback, this);
 
 	return 0;
 }
 
 int Timer::armCounterTask(){
-	std::cout<<"Timer::armCounterTask() called!"<<std::endl;
-	std::cout<<"\tsetting the counter to trigger off of:"<<niArm<<std::endl;
-	daq_err_check(DAQmxSetArmStartTrigType(counterTask, DAQmx_Val_DigEdge));
-	daq_err_check(DAQmxSetDigEdgeArmStartTrigSrc(counterTask, niArm));
-	daq_err_check(DAQmxSetDigEdgeArmStartTrigEdge(counterTask, DAQmx_Val_Rising));
-	
 
-	return 0;
+  if(!ad_slave){
+    std::cout<<"Timer::armCounterTask() called!"<<std::endl;
+    std::cout<<"\tsetting the counter to trigger off of:"<<niArm<<std::endl;
+    daq_err_check(DAQmxSetArmStartTrigType(counterTask, DAQmx_Val_DigEdge));
+    daq_err_check(DAQmxSetDigEdgeArmStartTrigSrc(counterTask, niArm));
+    daq_err_check(DAQmxSetDigEdgeArmStartTrigEdge(counterTask, DAQmx_Val_Rising));
+  }
+
+  // in the ad slave case, we don't want a start trigger.  Just start counting
+  // the clock pulses as soon as the task is started (started by software, during
+  // the pause in clock pulses caused by ad master clock reset)
+  if(ad_slave){
+    running = 0;  // in my case.  In non-ad-slave, too?
+    daq_err_check( DAQmxDisableStartTrig(counterTask) );
+  }
+
+  return 0;
+
 }
 
 int Timer::txSyncCount(uint32_t syncCount, int nPackets)
@@ -238,3 +264,71 @@ int32 CVICALLBACK timerDigTrigCallback(TaskHandle taskHandle, int32 signalID, vo
 	return 0;
 }
 
+void Timer::init2(boost::property_tree::ptree &timer_pt){
+  std::string clock_source, dev_name_tmp, ctr_name_tmp, timer_role_tmp, niArm_tmp, niSync_tmp;
+  
+  assign_property<std::string> ("clock_source", &clock_source,   timer_pt, timer_pt, 1);
+  assign_property<std::string> ("dev_name",     &dev_name_tmp,   timer_pt, timer_pt, 1);
+  assign_property<std::string> ("ctr_name",     &ctr_name_tmp,   timer_pt, timer_pt, 1);
+  assign_property<std::string> ("timer_role",   &timer_role_tmp, timer_pt, timer_pt, 1);
+  assign_property<uint16_t>    ("timer_freq",   &timer_freq,     timer_pt, timer_pt, 1);
+  assign_property<std::string> ("niArm",        &niArm_tmp,      timer_pt, timer_pt, 1);
+  assign_property<std::string> ("niSync",       &niSync_tmp,     timer_pt, timer_pt, 1);
+
+  if( strcmp(clock_source.c_str(), "ad") == 0 ){
+    ad_slave = true;
+    becomeMaster(false);
+  }
+
+  strcpy( niDev, dev_name_tmp.c_str() );
+  strcpy( niCtr, ctr_name_tmp.c_str() );
+  strcpy( niArm, niArm_tmp.c_str() );
+  strcpy( niSync, niSync_tmp.c_str() );
+
+  if(ad_slave){
+    //setInitCount(0);
+    // initDAQSyncTask();  // Not in ad-slave mode
+    //initDAQCounterTask();
+    //armCounterTask();
+    counterTask = 0;
+    printf("About to create counter task.\n");
+    fflush(stdout);
+    daq_err_check( DAQmxCreateTask("Counter Task",&counterTask) );
+    fflush(stdout);
+    printf("About to create edge counter chan.\n");
+    fflush(stdout);
+    daq_err_check( DAQmxCreateCICountEdgesChan(counterTask, "Dev1/ctr1","",DAQmx_Val_Rising, 0, DAQmx_Val_CountUp) );
+    fflush(stdout);
+
+    //    printf("about to try to set sample clock timing for counter channel\n");
+    //daq_err_check( DAQmxCfgSampClkTiming( counterTask, "/Dev1/10MHzRefClock", 10000000.0, DAQmx_Val_Rising, DAQmx_Val_ContSamps, 100) );
+    //printf("finished setting sample clock timing for counter channel\n");
+    
+    printf("about to try setRefSource/n");
+    daq_err_check( DAQmxSetRefClkSrc( counterTask, "OnboardClock") );
+    printf("finished trying to setRefClkSrc\n");
+
+    //printf("About to disable start trig.\n");
+    //fflush(stdout);
+    //daq_err_check( DAQmxDisableStartTrig(counterTask) );
+    fflush(stdout);
+
+    // wait for user to start arte counting
+    fflush(stdout);
+    printf("Reset the master ad clock, and hit Enter here within a half second.\n");
+    
+    fflush(stdout);
+    char c = 'a';
+    while(c != '\n'){
+      c = getchar();
+    }
+
+    printf("About to start counter task.\n");
+    daq_err_check( DAQmxStartTask(counterTask) );
+    printf("finished starting counter task ok.\n");
+    fflush(stdout);
+  }
+  
+  
+
+}

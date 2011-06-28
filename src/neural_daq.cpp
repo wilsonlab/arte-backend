@@ -164,12 +164,16 @@ void neural_daq_start_all(void){
     for(int n = 0; n < n_neural_daqs; n++){
       neural_daq *nd = &( neural_daq_array[n] );
       if(nd->id != master_id){
+	printf("about to start a slave daq task\n");
 	daq_err_check ( DAQmxStartTask( nd->task_handle ) );
+	printf("just finished a slave daq task\n");
 	nd->status= 1;
       }
     }
     // start the master task last ->      
+    printf("about to start the master daq task.\n");
     daq_err_check ( DAQmxStartTask( neural_daq_array[master_id].task_handle) );
+    printf("finished starting the master daq task.\n");
     neural_daq_array[master_id].status = 1;
   } else {  // then daqs are getting their data from files
     
