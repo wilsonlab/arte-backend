@@ -78,7 +78,7 @@ int main (int argc, char *argv[]){
 	//if(packet_count % 10 == 0)
 	 system("clear");
 	  //printf("HEY!\n");
-	plot_waveforms(&spike,5000, 30, 10); 
+	plot_waveforms(&spike,15000, 30, 10); 
 	fflush(stdout);
 	}
       }

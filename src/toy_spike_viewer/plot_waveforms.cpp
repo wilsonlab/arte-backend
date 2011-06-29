@@ -29,7 +29,8 @@ void plot_waveforms(spike_net_t *spike, int max_y, int n_rows, int row_for_zero_
       for(s = 0; s < spike->n_samps_per_chan; s++){
    	y = spike->data[s*spike->n_chans + c];
    	if( (y <= row_max_y[r]) && (y > row_min_y[r]) ){
-   	  printf("*");
+	//	if(( y >= row_max_y[r])){
+   	  printf("o");
    	} else {
    	  printf(" ");
    	}
