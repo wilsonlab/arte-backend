@@ -5,11 +5,12 @@
 #include <stdlib.h>
 #include <time.h>
 
+#define noise 100
 spike_net_t genFakeSpike();
 
 int main(){
 
-	int spikePerSecond = 10;
+	int spikePerSecond = 3;
 	int sleep =  (1e6)/spikePerSecond;
 	char host[] = "10.121.43.56";
 	int port = 5000;
@@ -35,7 +36,7 @@ spike_net_t genFakeSpike(){
 //        0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 10, 10, 10 };
 
 	{100, 	100, 	100, 	100, 	100,	100,	110, 	120,
-	 150, 	200, 	1000,	1500,	1000, 	200,	0,	5,
+	 150, 	200, 	1000,	1800,	1000, 	200,	0,	5,
 	 10,	20,	30,	40,	50,	60,	70,	80,
 	 90,	91,	93,	94,	95,	96,	97,	98};
 
@@ -55,7 +56,7 @@ spike_net_t genFakeSpike(){
 
                 for (int j=0; j<s.n_samps_per_chan; j++){
                         idx = (i*s.n_samps_per_chan)+j;
-                        s.data[idx] =  trace[j] + rand() % 300;
+                        s.data[idx] =  trace[j]/2 + rand() % noise;
                 }
         }
         return s;
