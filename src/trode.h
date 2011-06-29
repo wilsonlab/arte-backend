@@ -32,6 +32,8 @@ class Trode{
   uint16_t samps_after_trig;
   uint16_t n_samps_per_spike;
   uint16_t refractory_period_samps;
+  uint16_t refractory_period_tics;
+  uint32_t next_ok_spike_ts;
   
   Filtered_buffer *my_buffer;
 
@@ -63,8 +65,8 @@ class Trode{
 
 int find_spikes(Trode *t);
 
-void spike_to_disk(spike_net_t *spike_array, int n_spike);
-void spike_to_net(spike_net_t *spike_array, int n_spikes, Trode *t);
+void spike_to_disk(spike_net_t *spike);
+void spike_to_net(spike_net_t *spike, Trode *t);
 
 extern std::map<uint16_t, Trode> trode_map;
 extern Trode * trode_array;

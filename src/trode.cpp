@@ -16,6 +16,7 @@ extern FILE *main_file;
 
 Trode::Trode(){
   has_sockfd = false;
+  next_ok_spike_ts = 0;
   //std::cout << "In a trode constructor" << std::endl;
 }
 
@@ -65,7 +66,7 @@ void Trode::init2(boost::property_tree::ptree &trode_pt,
   // passed in through additional arguments to spike_detector::init()
   my_spike_detector.init(my_buffer);
 
-
+  refractory_period_tics = refractory_period_samps / (uint16_t)SAMPLES_PER_TIC;
 
   // fill out the spike_net packets - the parts that we know
   for(int n = 0; n < MAX_N_SPIKES_PER_BUFFER; n++){
@@ -125,10 +126,29 @@ void *trode_filter_data(void *t){
         n_spikes = find_spikes( (Trode*)t );
 
   if(n_spikes > 0){
+    for(int n = 0; n < n_spikes; n++){
     //printf("FOUND SPIKE!\n");
-    spike_to_disk(((Trode*)t)->spike_array, n_spikes);
-    spike_to_net(((Trode*)t)->spike_array,  n_spikes, (Trode*)t);
+      if( ((Trode*)t)->spike_array[n].ts >= ((Trode*)t)->next_ok_spike_ts){
+	
+	if( ((Trode*)t)->name == 0 & true){
+	  printf("next_ok_ts: %d  this_ts called ok: %d\n", ((Trode*)t)->next_ok_spike_ts, ((Trode*)t)->spike_array[n].ts);
+	  printf("*************SENDING A SPIKE***************\n");
+	}
+
+	spike_to_disk(&((Trode*)t)->spike_array[n]);
+	spike_to_net(&((Trode*)t)->spike_array[n], (Trode*)t);
+	((Trode*)t)->next_ok_spike_ts = ((Trode*)t)->spike_array[n].ts + ((Trode*)t)->refractory_period_tics;
+	
+	if( ((Trode*)t)->name == 0 & true){
+	  printf("sent the spike at %d.  Now next_ok_ts is %d.\n",n, ((Trode*)t)->next_ok_spike_ts);
+	}
+
+      }
+    }
   }
+
+  if( ((Trode*)t)->name == 0 & n_spikes > 0)
+    printf("Found %d spikes.\n",n_spikes);
 
 }
 
@@ -185,6 +205,11 @@ int find_spikes(Trode *t){
       if( (f_buf[ search_c*n_chans + c ] >= thresh[c]) & (f_buf[prev_c*n_chans + c] < thresh[c]) )
 	found_spike++;
     }
+    if( t->name == 0 & true & found_spike){
+      printf("search_curs:%d search_c:%d samp-thresh:%d   last_search:%d last_c:%d lastsamp-thresh:%d",
+	     search_cursor, search_c, f_buf[search_c*n_chans + 0] - thresh[0],
+	     search_cursor-1, prev_c, f_buf[prev_c*n_chans + 0] - thresh[0]);
+    }
     
     if(found_spike > 0){
       
@@ -194,8 +219,22 @@ int find_spikes(Trode *t){
 	fflush(stdout);
       }
       
-      t->spike_array[n_spikes].ts = t->my_buffer->my_daq->buffer_timestamp + (search_c * 10)/32;
+      //t->spike_array[n_spikes].ts = t->my_buffer->my_daq->buffer_timestamp + (search_c * 10)/32;
       
+      //t->spike_array[n_spikes].ts = t->my_buffer->my_daq->buffer_timestamp +
+      //CBUF( search_cursor - fb->f_curs, fb->buf_len)*10/32;
+      
+      //t->spike_array[n_spikes].ts = t->my_buffer->my_daq->buffer_timestamp +
+      //	(search_cursor - fb->f_curs)*10/32;
+      
+      t->spike_array[n_spikes].ts = t->my_buffer->my_daq->buffer_timestamp + 
+	(search_c - fb->f_curs)*10/32;
+
+      if(t->name == 0 & true){
+	printf("buffer ts is %d.  Spike ts is %d\n", t->my_buffer->my_daq->buffer_timestamp,
+	       t->spike_array[n_spikes].ts);
+      }
+
       for(s = 0; s < n_samps_per_spike; s++){
  	for(c = 0; c < n_chans; c++){
  	  t->spike_array[n_spikes].data[ s * n_chans + c ] = f_buf[ CBUF((search_cursor-samps_before_trig+s), buf_len)*n_chans + c];
@@ -204,13 +243,16 @@ int find_spikes(Trode *t){
       
       n_spikes++;
       
-      if(false){
-	printf("search_cursor before update: %d\n",search_cursor);
+      if(true & t->name == 0){
+	printf("f_curs %d, start_ind %d, stop_ind %d, search_cursor before update: %d\n",
+	       fb->f_curs, search_start_ind, search_stop_ind, search_cursor );
 	fflush(stdout);
       }
+      //pritnf("search cursor before update: %d\n",search_cursor);
       search_cursor = search_cursor + t->refractory_period_samps - 1; // drop 1 1b/c we add the 1 in the for loop
-      if(false){
-	printf("search_cursor after update: %d\n\n",search_cursor);
+      if(true & t->name == 0){
+	printf("f_curs %d, start_ind %d, stop_ind %d, search_cursor after update: %d\n\n",
+	       fb->f_curs, search_start_ind, search_stop_ind, search_cursor);
 	fflush(stdout);
       }
 
@@ -221,43 +263,43 @@ int find_spikes(Trode *t){
 }
 
 
-void spike_to_disk(spike_net_t *spike_array, int n_spike){
+void spike_to_disk(spike_net_t *spike){
   char buff[4000]; // TODO: get the right buffer size
   int buff_size, n;
   // TODO: Get this part thread-safe, needz mutex
-  for(n = 0; n < n_spike; n++){
-    spikeToBuff(&spike_array[n], buff, &buff_size, false);
-    try_fwrite <char> (buff, buff_size, main_file);
-  }
+  
+  spikeToBuff(spike, buff, &buff_size, false);
+  try_fwrite <char> (buff, buff_size, main_file);
+  
+ 
 }
 
-void spike_to_net(spike_net_t *spike_array, int n_spikes, Trode *t){
-  for(int n = 0; n < n_spikes; n++){
+void spike_to_net(spike_net_t *spike, Trode *t){
+  
+  
+  if(true){
+    char buff[4000];
+    int buff_size;
+    spikeToBuff(spike, buff, &buff_size, true);
     
-    if(true){
-      char buff[4000];
-      int buff_size;
-      spikeToBuff(&spike_array[n], buff, &buff_size, true);
-      
-      if(false){
+    if(false){
       printf("buffsize: %d\n",buff_size);
       for(int n = 0; n < buff_size; n++)
 	printf("%c",buff[n]);
       printf("\n");
-      }
-      //printf("name %d  ip %s    port %d  sockfd %d \n",t->name, t->my_netcomdat.host_ip, t->my_netcomdat.port, t->my_netcomdat.sockfd);
-      
-      if(false){
-	printf("name %d  sockfd %d\n", t->name, t->my_netcomdat.sockfd);
-	fflush(stdout);
-      }
-      
-      NetCom::txBuff(t->my_netcomdat, buff, buff_size);
-    }    
-
-    if(false){
-      NetCom::txSpike(t->my_netcomdat, &(spike_array[n]));
     }
+    //printf("name %d  ip %s    port %d  sockfd %d \n",t->name, t->my_netcomdat.host_ip, t->my_netcomdat.port, t->my_netcomdat.sockfd);
+    
+    if(false){
+      printf("name %d  sockfd %d\n", t->name, t->my_netcomdat.sockfd);
+      fflush(stdout);
+    }
+    
+    NetCom::txBuff(t->my_netcomdat, buff, buff_size);
+  }    
+  
+  if(false){
+    NetCom::txSpike(t->my_netcomdat, spike);
   }
   
 }

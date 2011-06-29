@@ -150,8 +150,8 @@ uint64_t Timer::getTimestamp(){
 uint32_t Timer::getTimestamp(){
   uInt32 timestamp = 0;
   daq_err_check( DAQmxReadCounterScalarU32( counterTask, 10.0, &timestamp, NULL) );
-  return timestamp;
-  //return toy_timestamp;
+  //return timestamp;
+  return toy_timestamp;
 }
 #endif
 

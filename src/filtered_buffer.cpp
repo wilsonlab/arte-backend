@@ -87,6 +87,8 @@ void Filtered_buffer::init(boost::property_tree::ptree &pt,
   // which isn't ok).  So here we lengthen the circular
   // buffer accordingly.
   my_filt.buffer_mult_of_input += my_filt.filtfilt_wait_n_buffers;
+
+  my_filt.buffer_mult_of_input +=2;  // lengthen the buffer, doesn't hurt
   my_filt.n_samps_per_chan = stream_n_samps_per_chan * my_filt.buffer_mult_of_input;
   
   // increase the filtered buffer length if filter needs it to be longer

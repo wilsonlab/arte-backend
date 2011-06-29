@@ -18,6 +18,10 @@ typedef int16_t rdata_t;
 const rdata_t RDATA_MIN = INT16_MIN;
 const rdata_t RDATA_MAX = INT16_MAX;
 
+const int SAMPLE_RATE_HZ = 32000;
+const int CLOCK_RATE_HZ = 10000;
+const float SAMPLES_PER_TIC = (float)SAMPLE_RATE_HZ / (float)CLOCK_RATE_HZ;
+
 extern pthread_t my_threads[MAX_THREADS];
 
 const int MAX_NAME_STRING_LEN  = 64;
