@@ -1,4 +1,5 @@
 #include "arte_to_tt.h"
+#define _FILE_OFFSET_BITS 64
 
 FILE *in_f, *out_f;
 
@@ -16,24 +17,33 @@ int main(int argc, char *argv[]){
   in_f = fopen(input_filename, "rb");
   out_f = fopen(output_filename, "wb");
 
+  if(in_f == NULL)
+    printf("Bad in file: %s\n", input_filename);
+  if(out_f == NULL)
+    printf("Bad out_file: %s\n", output_filename);
+  if(in_f == NULL || out_f == NULL)
+    exit(1);
+
   ok_spike = false;
   while(!ok_spike){
     printf("trying one...\n");
     ok_spike = get_next_spike(&first_spike, trodename);
   }
+
   printf("finished looking...\n");
-
+  
   write_file_header(&first_spike, argc, argv);
-
+  
   write_spike(&first_spike);
+  
   if(true){
-  while( feof(in_f) == 0){
-    ok_spike = get_next_spike(&spike, trodename);
-    if(ok_spike)
-      write_spike(&spike);
+    while( feof(in_f) == 0){
+      ok_spike = get_next_spike(&spike, trodename);
+      if(ok_spike)
+   	write_spike(&spike);
+    }
   }
-  }
-
+  
   printf("finished.\n");
   exit(0);
 
