@@ -245,6 +245,7 @@ void read_data_from_file(void){ // the file-reading version of EveryNCallback
     }
     nd->this_buffer += 1;
     nd->daq_buffer_count += 1;
+    nd->buffer_timestamp = arte_timer.getTimestamp();
   }
 
   for(int i = 0; i < n_trodes; i++){

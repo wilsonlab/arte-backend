@@ -137,12 +137,12 @@ uint32_t Timer::getCount(){
 }
 
 #ifndef ISTOY
-uint64_t Timer::getTimestamp(){
+timestamp_t Timer::getTimestamp(){
   std::cout<<"Timer::getTimestamp() called!"<<std::endl;
     uInt32 timestamp;
-    //daq_err_check( DAQmxReadCounterScalarU32(counterTask, 10.0, &timestamp, NULL) );
+    daq_err_check( DAQmxReadCounterScalarU32(counterTask, 10.0, &timestamp, NULL) );
   //get the count from the counter card, convert to TS and return it
-    return 0;
+    return (timestamp_t)timestamp;
 }
 #endif
 

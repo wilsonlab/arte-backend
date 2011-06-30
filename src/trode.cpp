@@ -112,6 +112,12 @@ void Trode::init2(boost::property_tree::ptree &trode_pt,
     //has_sockfd = true;
   }
 
+  // make a list of ints to count up how many times each samp in the buffer has been searched for spikes
+  n_times_checked = new int [ my_buffer->buf_len ];
+  for(int z = 0;  z <  my_buffer->buf_len; z++){
+    n_times_checked[z] = 0;
+  }
+  
 }
 
 void *trode_filter_data(void *t){
@@ -183,14 +189,13 @@ int find_spikes(Trode *t){
   
   n_samps_checked = 0;
   
-  for(search_cursor = search_start_ind; search_cursor < search_stop_ind; search_cursor++){
+  for(search_cursor = search_start_ind; search_cursor <= search_stop_ind; search_cursor++){
     
     search_c = CBUF(search_cursor,   buf_len);
     prev_c   = CBUF(search_cursor-1, buf_len);
     
-    //n_samps_checked++;
-    //  for(search_cursor = search_start_ind; search_cursor != search_stop_ind; search_cursor++){
-    
+    t->n_times_checked[search_c]++;
+
     if(false){
       printf("stop_ind: %d   start_ind:%d   search_cursor:%d\n samp1:%d  2:%d  3:%d  4:%d  thresh1:%d  2:%d   3:%d  4:%d\n",
 	     search_stop_ind, search_start_ind, search_cursor,
@@ -206,7 +211,7 @@ int find_spikes(Trode *t){
 	found_spike++;
     }
     if( t->name == 0 & true & found_spike){
-      printf("search_curs:%d search_c:%d samp-thresh:%d   last_search:%d last_c:%d lastsamp-thresh:%d",
+      printf("Found a spike: search_curs:%d search_c:%d samp-thresh:%d   last_search:%d last_c:%d lastsamp-thresh:%d\n",
 	     search_cursor, search_c, f_buf[search_c*n_chans + 0] - thresh[0],
 	     search_cursor-1, prev_c, f_buf[prev_c*n_chans + 0] - thresh[0]);
     }
@@ -224,15 +229,25 @@ int find_spikes(Trode *t){
       //t->spike_array[n_spikes].ts = t->my_buffer->my_daq->buffer_timestamp +
       //CBUF( search_cursor - fb->f_curs, fb->buf_len)*10/32;
       
-      //t->spike_array[n_spikes].ts = t->my_buffer->my_daq->buffer_timestamp +
-      //	(search_cursor - fb->f_curs)*10/32;
+      t->spike_array[n_spikes].ts = t->my_buffer->my_daq->buffer_timestamp +
+      	(search_cursor - fb->f_curs)*10/32;
       
-      t->spike_array[n_spikes].ts = t->my_buffer->my_daq->buffer_timestamp + 
-	(search_c - fb->f_curs)*10/32;
+      //t->spike_array[n_spikes].ts = t->my_buffer->my_daq->buffer_timestamp + 
+      //(search_c - fb->f_curs)*10/32;
+      
+      if(t->name == 0 & true){
+        printf("Figuring ts. f_curs:%d buf_len:%d search_cursor:%d search_c:%d buffer_ts:%d  (search_cursor - f_curs):%d   (search_cursor-f_curs)10/32:%d\n",
+	       fb->f_curs, fb->buf_len, search_cursor, search_c, t->my_buffer->my_daq->buffer_timestamp, (search_cursor - fb->f_curs), (int)((search_cursor - fb->f_curs)*10/32));
+      }
 
       if(t->name == 0 & true){
 	printf("buffer ts is %d.  Spike ts is %d\n", t->my_buffer->my_daq->buffer_timestamp,
 	       t->spike_array[n_spikes].ts);
+	printf("n_times_checked: ");
+	for(int i = 0; i < fb->buf_len; i++){
+	  printf("%d ", t->n_times_checked[search_c]);
+	}
+	printf("\n");
       }
 
       for(s = 0; s < n_samps_per_spike; s++){
