@@ -1,77 +1,33 @@
-function u = arteSpikeViewerNewUI(varargin)
+function u = arteSpikeViewer(varargin)
 warning off;
-%-------------------------
-%       NETWORK VARS
-%-------------------------
+% NETWORK VARS
 args.host = '10.121.43.56';
-args.rxPort = 6302;
+args.rxPort = 6303;
 args.txPort = 10000;
 args.udpObjBufferSize = 1024*8;
 args.packetWordSize = 'int16';
 args.byteOrder = 'bigEndian';
+
 args.dataOrderFlag = true;
-args.enable_network = true;
 
-u = [];
-nPacket = 0;
-udpRxConnectionOpen = false;
-
-
-%-------------------------
-%       Data Vars
-%-------------------------
+% Data Vars
 args.nSamp = 32;
 args.nChan = 4;
 
-%-------------------------
-%       Plotting Vars
-%-------------------------
+%Plotting Vars
 args.linestyle = '-';
 args.dispPacketNumber = false;
 args.plotFrameNumber = true;
-args.colors = 'rygc';
 
-%-------------------------
-%       Misc Vars
-%-------------------------
+%Misc Vars
 args.VOLT_MAX = (2^16);
-args.WAVE_MAX = 2^15*1.4;
+args.WAVE_MAX = 2^15*1.3;
 args.WAVE_MIN = 2^14 * 1.5;
 args.D_WAVE = args.WAVE_MAX - args.WAVE_MIN;
+
 args.parseWithMex = false;
 args.correctDataOffset = true;
 
-%-------------------------
-%       UI Vars
-%-------------------------
-args.name = 'TT 14';
-args.orientation = 'vertical';
-args.showcontrols = true;
-miny = .01;
-dY = [];
-vert_position = [04 270 395 850];
-position  = [];
-if strcmp(args.orientation, 'vertical')
-    position = vert_position;
-else
-    disp('Horizontal Position not implemented');
-    position = horz_position;
-end
-
-fig = [];
-waveAxes = [];
-projAxes = [];
-dpix = [];
-
-waveLine = [];
-projImage = [];
-imgMat = [];
-packetNumText = [];
-
-
-%-------------------------
-%      Start
-%-------------------------
 
 if strcmp(args.packetWordSize, 'int16')
     args.bufferTrimTop = 8;
@@ -91,11 +47,26 @@ args.dataIdx =  args.bufferTrimTop+1 : args.bufferTrimTop + args.sampsPerBuffer;
 %   UI Elements
 % -------------------------------------------
 
+fig = [];
+waveAxes = [];
+projAxes = [];
+dx = [];
+dy = [];
+dpix = [];
+
+waveLine = [];
+projImage = [];
+imgMat = [];
+packetNumText = [];
+
 
 % -------------------------------------------
 %   Networking variables
 % -------------------------------------------
 
+u = [];
+nPacket = 0;
+udpRxConnectionOpen = false;
 
 % -------------------------------------------
 %  Start Everything up
@@ -103,7 +74,7 @@ args.dataIdx =  args.bufferTrimTop+1 : args.bufferTrimTop + args.sampsPerBuffer;
 
 disp(' ');
 disp('Starting up');
-initFigure;
+initFigures;
     
 initWaveformAxes();
 initWaveformLines();
@@ -113,12 +84,8 @@ initProjectionImages();
 
 drawnow();
 
-if args.enable_network
-    initNetwork();
-    startNetworkRx();
-else
-    disp('Starting up without network');
-end
+initNetwork();
+%startNetworkRx();
 
 
 
@@ -134,17 +101,12 @@ end
         u = udp(args.host, args.txPort, 'LocalPort', args.rxPort, ...
             'InputBufferSize', 2048, 'byteOrder', args.byteOrder);
         set(u,'DatagramReceivedFcn', @udpPacketRxCallback);
-%         u(2) = udp(args.host, args.txPort, 'LocalPort', args.rxPort+1, ...
-%             'InputBufferSize', 2048, 'byteOrder', args.byteOrder);
-%         set(u(2),'DatagramReceivedFcn', @udpPacketRxCallback);
-    end
-    function startNetworkRx()
+        
         fopen(u);
         udpRxConnectionOpen = true;
     end
 
     function udpPacketRxCallback(obj, event)
-        %disp(['Packet Rx:', num2str(get(obj,'LocalPort'))]);
         if strcmp(get(obj,'Status'), 'closed')
             return
         end
@@ -191,10 +153,10 @@ end
 % -------------------------------------------
 %   GUI Related Functions
 % -------------------------------------------
-   function initFigure()
+   function initFigures()
         disp('Initializing figures');
-        fig(1) = figure('Position', position, 'toolbar', 'none', 'menubar', 'none',...
-            'NumberTitle', 'off', 'Name', [args.name, ' - Arte Matlab Tetrode Viewer '], 'color' ,'k');
+        fig(1) = figure('Position', [50 300 600 600], 'toolbar', 'none', 'NumberTitle', 'off', 'Name', 'Waveforms', 'color' ,'k');
+        fig(2) = figure('Position', [660 300 900 600], 'toolbar', 'none', 'NumberTitle', 'off', 'Name', 'Projections', 'color' ,'k');
         set(fig,'DeleteFcn', @shutItDownFcn);
         
     end
@@ -202,10 +164,10 @@ end
             
     function initWaveformAxes()
         disp('Initializing waveform plotting axes');
-        waveAxes(1) = axes('Parent', fig(1), 'Position', [.01 .75 .24 .24]);
-        waveAxes(2) = axes('Parent', fig(1), 'Position', [.26 .75 .24 .24]);
-        waveAxes(3) = axes('Parent', fig(1), 'Position', [.51 .75 .24 .24]);
-        waveAxes(4) = axes('Parent', fig(1), 'Position', [.76 .75 .23 .24]);
+        waveAxes(1) = axes('Parent', fig(1), 'Position', [.01 .01 .48 .48]);
+        waveAxes(2) = axes('Parent', fig(1), 'Position', [.51 .01 .48 .48]);
+        waveAxes(3) = axes('Parent', fig(1), 'Position', [.01 .51 .48 .48]);
+        waveAxes(4) = axes('Parent', fig(1), 'Position', [.51 .51 .48 .48]);
         
         set(waveAxes, 'XLim', [1 args.nSamp], 'YLim', [args.WAVE_MIN args.WAVE_MAX], ...
             'Xtick', [], 'YTick', [], 'box', 'on', ...
@@ -214,12 +176,12 @@ end
 
     function initProjectionAxes()
         disp('Initializing projection plotting axes');
-        projAxes(1) = axes('Parent', fig(1), 'Position', [.01 .50 .49 .24]);
-        projAxes(2) = axes('Parent', fig(1), 'Position', [.51 .50 .48 .24]);
-        projAxes(3) = axes('Parent', fig(1), 'Position', [.01 .25 .49 .24]);
-        projAxes(4) = axes('Parent', fig(1), 'Position', [.51 .25 .48 .24]); 
-        projAxes(5) = axes('Parent', fig(1), 'Position', [.01 .01 .49 .23]); 
-        projAxes(6) = axes('Parent', fig(1), 'Position', [.51 .01 .48 .23]); 
+        projAxes(1) = axes('Parent', fig(2), 'Position', [.01 .01 .32 .48]);
+        projAxes(2) = axes('Parent', fig(2), 'Position', [.34 .01 .32 .48]);
+        projAxes(3) = axes('Parent', fig(2), 'Position', [.67 .01 .32 .48]);
+        projAxes(4) = axes('Parent', fig(2), 'Position', [.01 .51 .32 .48]); 
+        projAxes(5) = axes('Parent', fig(2), 'Position', [.34 .51 .32 .48]); 
+        projAxes(6) = axes('Parent', fig(2), 'Position', [.67 .51 .32 .48]); 
         
         set(projAxes, 'Box', 'on', 'Color', 'k', 'xcolor', 'w', 'ycolor', 'w',...
             'Xlim', [0, args.D_WAVE], 'YLim', [0, args.D_WAVE]);
@@ -230,25 +192,22 @@ end
     function initWaveformLines()
         disp('Initializing the waveform lines');
         
-        waveLine(1) = line(1:args.nSamp, repmat(100, 1,args.nSamp), 'parent', waveAxes(1), 'Color', args.colors(1), 'linestyle', args.linestyle);
-        waveLine(2) = line(1:args.nSamp, repmat(100, 1,args.nSamp), 'parent', waveAxes(2), 'Color', args.colors(2), 'linestyle', args.linestyle);
-        waveLine(3) = line(1:args.nSamp, repmat(100, 1,args.nSamp), 'parent', waveAxes(3), 'Color', args.colors(3), 'linestyle', args.linestyle);
-        waveLine(4) = line(1:args.nSamp, repmat(100, 1,args.nSamp), 'parent', waveAxes(4), 'Color', args.colors(4), 'linestyle', args.linestyle);
-        packetNumText = text(2,args.WAVE_MAX - args.WAVE_MAX * .025, 'Spike:0', 'color', 'w', 'parent', waveAxes(1), 'fontsize', 10);
+        waveLine(1) = line(1:args.nSamp, repmat(100, 1,args.nSamp), 'parent', waveAxes(1), 'Color', 'w', 'linestyle', args.linestyle);
+        waveLine(2) = line(1:args.nSamp, repmat(100, 1,args.nSamp), 'parent', waveAxes(2), 'Color', 'w', 'linestyle', args.linestyle);
+        waveLine(3) = line(1:args.nSamp, repmat(100, 1,args.nSamp), 'parent', waveAxes(3), 'Color', 'w', 'linestyle', args.linestyle);
+        waveLine(4) = line(1:args.nSamp, repmat(100, 1,args.nSamp), 'parent', waveAxes(4), 'Color', 'w', 'linestyle', args.linestyle);
+        packetNumText = text(2,args.WAVE_MAX - args.WAVE_MAX * .05, 'Frame:0', 'color', 'w', 'parent', waveAxes(3), 'fontsize', 12);
     end
     
     function initProjectionImages()
         
         disp('Initializing the projection images');
-        
         set(projAxes(1),'Units', 'pixels');
         dp = get(projAxes(1),'Position');
-        set(projAxes(1),'Units','normalized');
+        dx = dp(3);
+        dy = dp(4);
         
-        dpx = dp(3);
-        dpy = dp(4);
-        
-        dpix = min([dpx, dpy]);
+        dpix = min([dx, dy]);
         imgMat{1} = zeros(dpix, dpix,3);
         imgMat{2} = zeros(dpix, dpix,3);
         imgMat{3} = zeros(dpix, dpix,3);
@@ -276,7 +235,6 @@ end
 
     function plotWaveforms(waveform)
 
-        
         if (~exist('waveLine', 'var'))
             initWaveformLines;
         end
@@ -284,7 +242,6 @@ end
             %waveform(1:2,1) = args.VOLT_MAX * ( mod(nPacket, 50)/50);
             set(packetNumText,'String', strcat('Spike:',num2str(nPacket)) );    
         end
-        
         
         set(waveLine(1), 'YData', waveform(:,1));
         set(waveLine(2), 'YData', waveform(:,2));
@@ -295,28 +252,13 @@ end
 
     function plotProjections(waveform)
         spikeAmplitude = max(waveform) - min(waveform);
-        px = floor(voltToPixel(spikeAmplitude));
-
-        [~, i] = max(px);
-        c = [];
-        switch i
-            case 1
-                c = [1 0 0];
-            case 2
-                c = [1 1 0];
-            case 3
-                c = [0 1 0];
-            case 4
-                c = [0 1 1];
-            otherwise
-                c = [1 1 1];
-        end
-        imgMat{1}(px(1), px(2), 1:3) = c;
-        imgMat{2}(px(1), px(3), 1:3) = c;
-        imgMat{3}(px(1), px(4), 1:3) = c;
-        imgMat{4}(px(2), px(3), 1:3) = c;
-        imgMat{5}(px(2), px(4), 1:3) = c;
-        imgMat{6}(px(3), px(4), 1:3) = c;
+        px = voltToPixel(spikeAmplitude);
+        imgMat{1}(px(1), px(2), 1:3) = 1;
+        imgMat{2}(px(1), px(3), 1:3) = 1;
+        imgMat{3}(px(1), px(4), 1:3) = 1;
+        imgMat{4}(px(2), px(3), 1:3) = 1;
+        imgMat{5}(px(2), px(4), 1:3) = 1;
+        imgMat{6}(px(3), px(4), 1:3) = 1;
         
         set(projImage(1), 'CData', imgMat{1});
         set(projImage(2), 'CData', imgMat{2});
