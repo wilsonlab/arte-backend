@@ -43,16 +43,10 @@ args.dataIdx =  args.bufferTrimTop+1 : args.bufferTrimTop + args.sampsPerBuffer;
 disp(' ');
 disp('Starting up');
 
-v(1) = plotArteSpikes([],[],[]);
-set(v(1).fig,'Name', 'Spikes on port 6300');
-v(2) = plotArteSpikes([],[],[]);
-set(v(2).fig,'Name', 'Spikes on port 6301');
-v(3) = plotArteSpikes([],[],[]);
-set(v(3).fig,'Name', 'Spikes on port 6302');
-v(4) = plotArteSpikes([],[],[]);
-set(v(4).fig,'Name', 'Spikes on port 6303');
-
-
+aSP(1) = ArteSpikePlot(num2str(args.rxPort));
+aSP(2) = ArteSpikePlot(num2str(args.rxPort+1));
+aSP(3) = ArteSpikePlot(num2str(args.rxPort+2));
+aSP(4) = ArteSpikePlot(num2str(args.rxPort+3));
 
 if args.enable_network
     initNetwork();
@@ -74,13 +68,21 @@ end
         disp('Setting up network'); 
         disp(['    host:' args.host, ' port:', num2str(args.rxPort)]);
         
-        u(1) = udp(args.host, args.txPort, 'LocalPort', args.rxPort); 
-        u(2) = udp(args.host, args.txPort+1, 'LocalPort', args.rxPort+1); 
-        u(3) = udp(args.host, args.txPort+1, 'LocalPort', args.rxPort+2);
-        u(4) = udp(args.host, args.txPort+1, 'LocalPort', args.rxPort+3);
-        
-        set(u,'DatagramReceivedFcn', @udpPacketRxCallback,...
+        u(1) = udp(args.host, args.txPort, 'LocalPort', args.rxPort, ...
             'InputBufferSize', 2048, 'byteOrder', args.byteOrder);
+        u(2) = udp(args.host, args.txPort+1, 'LocalPort', args.rxPort+1, ...
+              'InputBufferSize', 2048, 'byteOrder', args.byteOrder); 
+        u(3) = udp(args.host, args.txPort+1, 'LocalPort', args.rxPort+2, ...
+              'InputBufferSize', 2048, 'byteOrder', args.byteOrder);
+        u(4) = udp(args.host, args.txPort+1, 'LocalPort', args.rxPort+3, ...
+              'InputBufferSize', 2048, 'byteOrder', args.byteOrder);
+        
+        set(u,'DatagramReceivedFcn', @udpPacketRxCallback);
+        
+        aSP(1).udpObj = u(1);
+        aSP(2).udpObj = u(2);
+        aSP(3).udpObj = u(3);
+        aSP(4).udpObj = u(4);
     end
 
     function startNetworkRx()
@@ -106,16 +108,17 @@ end
         spike = bufferToSpike(data);
         
         if get(obj,'localport')==args.rxPort
-            plotArteSpikes(v(1),spike, obj);
+            aSP(1).plotSpike(spike);
         end
         if get(obj,'localport')==args.rxPort+1
-            plotArteSpikes(v(2),spike, obj);
+            aSP(2).plotSpike(spike);
         end
         if get(obj,'localport')==args.rxPort+2
-            plotArteSpikes(v(3),spike, obj);
+            aSP(3).plotSpike(spike);
         end
         if get(obj,'localport')==args.rxPort+3
-            plotArteSpikes(v(4),spike, obj);
+            aSP(4).plotSpike(spike);
+            
         end
 %        get(obj,'localport')
         %drawnow();

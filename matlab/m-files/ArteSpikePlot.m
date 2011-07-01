@@ -1,3 +1,4 @@
+
 classdef ArteSpikePlot < handle
     % topo is a subclass of handle
     properties
@@ -47,11 +48,11 @@ classdef ArteSpikePlot < handle
             obj.name = name;
             
             obj.volt_max = 2^16;
-            obj.wave_max = 2^15 * 1.4;
+            obj.wave_max = 2^15 * 1.9;
             obj.wave_min = 2^14 * 1.5;
             obj.delta_wave = obj.wave_max - obj.wave_min;
             
-            obj.figPos = [04 270 395 850];
+            obj.figPos = [04 270 395 550];
             
             obj.nChan = 4;
             obj.nSamp = 32;
@@ -59,8 +60,8 @@ classdef ArteSpikePlot < handle
             obj.waveLineStyle = '-';
             obj.nSpike = 0;
 
-            obj.projColors = [1 0 0; 1 1 0; 0 1 0; 0 1 1];
-
+            %obj.projColors = [1 0 0; 1 1 0; 0 1 0; 0 1 1];
+            obj.projColors = [1 1 1; 1 1 1; 1 1 1; 1 1 1];
             
             obj.initFigure();
             obj.initWaveformAxes();
