@@ -2,6 +2,7 @@
 #define _FILE_OFFSET_BITS 64
 
 FILE *in_f, *out_f;
+int spike_count;
 
 int main(int argc, char *argv[]){
 
@@ -9,6 +10,7 @@ int main(int argc, char *argv[]){
   spike_net_t *spike_p;
   int trodename;
   int ok_spike;
+  spike_count = 0;
   
   char input_filename[200], output_filename[200];
 
@@ -39,8 +41,10 @@ int main(int argc, char *argv[]){
   if(true){
     while( feof(in_f) == 0){
       ok_spike = get_next_spike(&spike, trodename);
-      if(ok_spike)
+      if(ok_spike){
    	write_spike(&spike);
+	spike_count++;
+      }
     }
   }
   
@@ -149,8 +153,9 @@ void init_filenames(int argc, char *argv[],
   //exit(1);
 }
 
-  bool get_next_spike(spike_net_t* spike, int trodename){
+bool get_next_spike(spike_net_t* spike, int trodename){
 
+  bool ok_spike;
   char buff_head[100]; // excessively big head
   char buff[4000];
   char the_type;
@@ -182,7 +187,8 @@ void init_filenames(int argc, char *argv[],
   if( charToType(the_type) == NETCOM_UDP_SPIKE );
   buffToSpike( spike, buff, false );
 
-
+  ok_spike = ( (int) spike->name == (int) trodename );
+  
   //    printf("spike->name: %d, spike->n_chans: %d\n", spike->name, spike->n_chans);
   //    for(int c = 0; c < spike->n_chans; c++){
   //      printf("chan %d: ", c);
@@ -192,9 +198,20 @@ void init_filenames(int argc, char *argv[],
   //      printf("\n");
   //    }
 
-  
   // printf("spikename: %d  trodename:%d\n", spike->name, trodename);
-  return( (int) (spike->name) == (int)trodename );
+  
+  if(ok_spike){
+    for(int i = 0; i < spike->n_chans * spike->n_samps_per_chan; i++){
+      spike->data[i] = spike->data[i] / 16;
+    }
+    if(spike->ts > (UINT32_MAX - 10000) ){   // is it later than 10 seconds before the end of the valid time range?
+      if(spike_count < 1000){
+	ok_spike = false;
+	printf("Found spike with bad_ts:%d  Current spike_count is:%d   Dropping it.\n", spike->ts, spike_count);
+      }
+    }
+  }
+  return ok_spike;
 
 }
   
