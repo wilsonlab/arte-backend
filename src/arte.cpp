@@ -13,7 +13,12 @@ int main(int argc, char *argv[]){
   arte_init(argc, argv, default_setup_config_filename, default_session_config_filename);
   
   printf("from main, about co tall neural_daq_start_all()\n");
-  neural_daq_start_all();
+  //neural_daq_start_all() now gets called before the timer initializes
+  //this begins calls to EveryNSamplesCallback, however since
+  // our 'acquiring' flag is still set to false, the buffers are not
+  // processed, until the return from timer.init2();
+  // (this happens in src/arteopt.cpp
+  //neural_daq_start_all();
   //arte_timer.start();
 
   std::cout << "Hit return to stop acquisition." << std::endl;

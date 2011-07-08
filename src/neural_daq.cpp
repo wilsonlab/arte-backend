@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include "arteopt.h"
 
-bool acquiring;
+extern bool acquiring;
 int master_id; // old way
 int master_ind;// new way
 int32_t buffer_size;
@@ -156,7 +156,7 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
 
 void neural_daq_start_all(void){
   arte_timer.toy_timestamp = 0;
-  acquiring = true;
+  //acquiring = true;
   if (! daqs_reading){
     // start all slave tasks first, so that they don't miss the start trigger from the master
     std::map<int, neural_daq>::iterator it;
@@ -260,29 +260,38 @@ void read_data_from_file(void){ // the file-reading version of EveryNCallback
 
 int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEventType, uInt32 nSamples, void *callbackData){
 
-  if(acquiring){
-    neural_daq *nd;
-    int32 read;
-    int rc;
-    int n;
-    arte_timer.toy_timestamp += 10;
+ 
+  neural_daq *nd;
+  int32 read;
+  int rc;
+  int n;
 
-    // We may want to use a nonmember function here rather than a method.  Overhead issue when we call it at 1kHz
-    uint32_t time_now = arte_timer.getTimestamp();
-
-    // for(n = 0; n < neural_daq_map.size(); n++){
-    for( n = 0; n < n_neural_daqs; n++){
-      //std::cout << "In data-probing loop for neural_daq: " << n << std::endl;
-      //fflush(stdout);
-      nd = &(neural_daq_array[n]);
-      //daq_err_check ( DAQmxReadAnalogF64( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
-      daq_err_check ( DAQmxReadBinaryI16( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
+  // We may want to use a nonmember function here rather than a method.  Overhead issue when we call it at 1kHz
+  // uint32_t time_now = arte_timer.getTimestamp();
+  
+  // for(n = 0; n < neural_daq_map.size(); n++){
+  for( n = 0; n < n_neural_daqs; n++){
+    //std::cout << "In data-probing loop for neural_daq: " << n << std::endl;
+    //fflush(stdout);
+    nd = &(neural_daq_array[n]);
+    //daq_err_check ( DAQmxReadAnalogF64( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
+    daq_err_check ( DAQmxReadBinaryI16( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
+    
+    if(acquiring){
+      uint32_t time_now = arte_timer.getTimestamp();
       if( nd->out_file != NULL){
-	  try_fwrite<rdata_t>( nd->data_ptr, buffer_size, nd->out_file);
+	try_fwrite<rdata_t>( nd->data_ptr, buffer_size, nd->out_file);
       }
       nd->buffer_timestamp = time_now - 10; // make time correspond to the buffer's first data point
       nd->daq_buffer_count += 1; 
     }
+
+  }
+  
+  if(acquiring){
+    
+    //time_now
+    arte_timer.toy_timestamp += 10;
     //std::cout << "Finished daq loop." << std::endl;
     //fflush(stdout);
     n = 0; // for threads

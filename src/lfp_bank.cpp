@@ -128,8 +128,14 @@ void lfp_bank_write_record(void *lfp_bank_in){
   memcpy(lfp.data,  this_bank->d_buf, n_bytes);
   memcpy(lfp.gains, this_bank->d_buf, (lfp.n_samps_per_chan * lfp.n_chans)); // temproray fix b/c don't have a gains field in lfp_bank yet.
   
+  // send the wave to the network
   waveToBuff(&lfp, buff, &buff_size, true);
   NetCom::txBuff(this_bank->my_netcomdat, buff, buff_size);
+
+  // save the wave to the disk
+  waveToBuff(&lfp, buff, &buff_size, false);
+
+
   // printf("buff: ");
   //  for(int s = 0; s < 50; s++)
   //  printf("%c", buff[s]);

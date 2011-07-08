@@ -11,6 +11,8 @@
 
 FILE *main_file;
 
+bool acquiring = false;
+
 Timer arte_timer;
 bool timer_is_toy = true;
 
@@ -79,7 +81,10 @@ void arte_init(int argc, char *argv[], const std::string &setup_fn, const std::s
 //arte_network_init(argc, argv); // look at trode_array and lfp_bank_array, make netcom for each trode or lfp_bank, and 2 for arte itself
   //arte_init_timer();  // in timer.h
   //arte_start_clock(); // in timer.h 
+  
+  // Initialize the timer.  This will block until user hits return
   arte_timer.init2( setup_pt.get_child("options.setup.timer") );
+  acquiring = true;
 }
 
 
@@ -191,5 +196,8 @@ void arte_session_init(int argc, char *argv[]){
   }
 
   std::cout << "Done session init." << std::endl;
+
+  // Start the acquisition
+  neural_daq_start_all();
 
 }

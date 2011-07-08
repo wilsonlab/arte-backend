@@ -113,11 +113,12 @@ void Trode::init2(boost::property_tree::ptree &trode_pt,
   }
 
   // make a list of ints to count up how many times each samp in the buffer has been searched for spikes
-  n_times_checked = new int [ my_buffer->buf_len ];
-  for(int z = 0;  z <  my_buffer->buf_len; z++){
-    n_times_checked[z] = 0;
-  }
-  
+  //n_times_checked = new int [ my_buffer->buf_len ];
+  //for(int z = 0;  z <  my_buffer->buf_len; z++){
+  //  n_times_checked[z] = 0;
+  //}
+  next_ok_spike_ts = 0;
+
 }
 
 void *trode_filter_data(void *t){
@@ -128,33 +129,38 @@ void *trode_filter_data(void *t){
 
   ((Trode*)t)->my_buffer->write_buffers();
 
-  //if( ((Trode*)t)->name == 0)
-        n_spikes = find_spikes( (Trode*)t );
+  // We only look for spikes once the buffer ts has come to positive values
+  if( ((Trode*)t)->my_buffer->my_daq->buffer_timestamp > 0){
+    n_spikes = find_spikes( (Trode*)t );
+  }
 
   if(n_spikes > 0){
     for(int n = 0; n < n_spikes; n++){
-    //printf("FOUND SPIKE!\n");
+      //printf("FOUND SPIKE!\n");
       if( ((Trode*)t)->spike_array[n].ts >= ((Trode*)t)->next_ok_spike_ts){
 	
-	if( ((Trode*)t)->name == 0 & true){
-	  printf("next_ok_ts: %d  this_ts called ok: %d\n", ((Trode*)t)->next_ok_spike_ts, ((Trode*)t)->spike_array[n].ts);
-	  printf("*************SENDING A SPIKE***************\n");
-	}
+	//if( ((Trode*)t)->name == 0 & true){
+	  //printf("next_ok_ts: %d  this_ts called ok: %d\n", ((Trode*)t)->next_ok_spike_ts, ((Trode*)t)->spike_array[n].ts);
+	  //printf("*************SENDING A SPIKE***************\n");
+	//}
+	
+	if(false & ((Trode*)t)->name == 0)
+	  printf("Got inside the if block.\n");
 
 	spike_to_disk(&((Trode*)t)->spike_array[n]);
 	spike_to_net(&((Trode*)t)->spike_array[n], (Trode*)t);
 	((Trode*)t)->next_ok_spike_ts = ((Trode*)t)->spike_array[n].ts + ((Trode*)t)->refractory_period_tics;
 	
-	if( ((Trode*)t)->name == 0 & true){
-	  printf("sent the spike at %d.  Now next_ok_ts is %d.\n",n, ((Trode*)t)->next_ok_spike_ts);
-	}
+	//if( ((Trode*)t)->name == 0 & true){
+	// printf("sent the spike at %d.  Now next_ok_ts is %d.\n",n, ((Trode*)t)->next_ok_spike_ts);
+	//}
 
       }
     }
   }
 
-  if( ((Trode*)t)->name == 0 & n_spikes > 0)
-    printf("Found %d spikes.\n",n_spikes);
+//if( ((Trode*)t)->name == 0 & n_spikes > 0)
+//   printf("Found %d spikes.\n",n_spikes);
 
 }
 
@@ -194,7 +200,7 @@ int find_spikes(Trode *t){
     search_c = CBUF(search_cursor,   buf_len);
     prev_c   = CBUF(search_cursor-1, buf_len);
     
-    t->n_times_checked[search_c]++;
+    //t->n_times_checked[search_c]++;
 
     if(false){
       printf("stop_ind: %d   start_ind:%d   search_cursor:%d\n samp1:%d  2:%d  3:%d  4:%d  thresh1:%d  2:%d   3:%d  4:%d\n",
@@ -210,7 +216,7 @@ int find_spikes(Trode *t){
       if( (f_buf[ search_c*n_chans + c ] >= thresh[c]) & (f_buf[prev_c*n_chans + c] < thresh[c]) )
 	found_spike++;
     }
-    if( t->name == 0 & true & found_spike){
+    if( t->name == 0 & false & found_spike){
       printf("Found a spike: search_curs:%d search_c:%d samp-thresh:%d   last_search:%d last_c:%d lastsamp-thresh:%d\n",
 	     search_cursor, search_c, f_buf[search_c*n_chans + 0] - thresh[0],
 	     search_cursor-1, prev_c, f_buf[prev_c*n_chans + 0] - thresh[0]);
@@ -235,12 +241,12 @@ int find_spikes(Trode *t){
       //t->spike_array[n_spikes].ts = t->my_buffer->my_daq->buffer_timestamp + 
       //(search_c - fb->f_curs)*10/32;
       
-      if(t->name == 0 & true){
+      if(t->name == 0 & false){
         printf("Figuring ts. f_curs:%d buf_len:%d search_cursor:%d search_c:%d buffer_ts:%d  (search_cursor - f_curs):%d   (search_cursor-f_curs)10/32:%d\n",
 	       fb->f_curs, fb->buf_len, search_cursor, search_c, t->my_buffer->my_daq->buffer_timestamp, (search_cursor - fb->f_curs), (int)((search_cursor - fb->f_curs)*10/32));
       }
 
-      if(t->name == 0 & true){
+      if(t->name == 0 & false){
 	printf("buffer ts is %d.  Spike ts is %d\n", t->my_buffer->my_daq->buffer_timestamp,
 	       t->spike_array[n_spikes].ts);
 	printf("n_times_checked: ");
@@ -258,19 +264,22 @@ int find_spikes(Trode *t){
       
       n_spikes++;
       
-      if(true & t->name == 0){
+      if(false & t->name == 0){
 	printf("f_curs %d, start_ind %d, stop_ind %d, search_cursor before update: %d\n",
 	       fb->f_curs, search_start_ind, search_stop_ind, search_cursor );
 	fflush(stdout);
       }
       //pritnf("search cursor before update: %d\n",search_cursor);
       search_cursor = search_cursor + t->refractory_period_samps - 1; // drop 1 1b/c we add the 1 in the for loop
-      if(true & t->name == 0){
+      if(false & t->name == 0){
 	printf("f_curs %d, start_ind %d, stop_ind %d, search_cursor after update: %d\n\n",
 	       fb->f_curs, search_start_ind, search_stop_ind, search_cursor);
 	fflush(stdout);
       }
-
+      if(false & t->name == 0 & n_spikes > 0){
+	printf("spike ts:%d   next_ok_spike_ts:%d buffer_ts:%d\n",
+	       t->spike_array[n_spikes-1].ts, t->next_ok_spike_ts, t->my_buffer->my_daq->buffer_timestamp);
+      }
     }
     
   }

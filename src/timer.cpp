@@ -150,8 +150,8 @@ timestamp_t Timer::getTimestamp(){
 uint32_t Timer::getTimestamp(){
   uInt32 timestamp = 0;
   daq_err_check( DAQmxReadCounterScalarU32( counterTask, 10.0, &timestamp, NULL) );
-  //return timestamp;
-  return toy_timestamp;
+  return timestamp;
+  //return toy_timestamp;
 }
 #endif
 
@@ -318,10 +318,14 @@ void Timer::init2(boost::property_tree::ptree &timer_pt){
     printf("Reset the master ad clock, and hit Enter here within a half second.\n");
     
     fflush(stdout);
+
+    // in a separate thread
     char c = 'a';
     while(c != '\n'){
       c = getchar();
     }
+    //acquiring = true;
+    // end of thread block
 
     printf("About to start counter task.\n");
     daq_err_check( DAQmxStartTask(counterTask) );
