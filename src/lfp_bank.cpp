@@ -119,7 +119,11 @@ void lfp_bank_write_record(void *lfp_bank_in){
   uint16_t temp = 2;
   lfp_bank_net_t lfp;
   int buff_size;
+
+  // adjust the buffer timestamp so that it corresponds to the 
+  // first sample in this buffer
   lfp.ts = this_bank->my_buffer->my_daq->buffer_timestamp;
+
   lfp.name = this_bank->lfp_bank_name;
   lfp.n_chans = this_bank->n_chans;
   lfp.n_samps_per_chan = this_bank->d_buf_len;
@@ -128,19 +132,22 @@ void lfp_bank_write_record(void *lfp_bank_in){
   memcpy(lfp.data,  this_bank->d_buf, n_bytes);
   memcpy(lfp.gains, this_bank->d_buf, (lfp.n_samps_per_chan * lfp.n_chans)); // temproray fix b/c don't have a gains field in lfp_bank yet.
   
-  // send the wave to the network
-  waveToBuff(&lfp, buff, &buff_size, true);
-  NetCom::txBuff(this_bank->my_netcomdat, buff, buff_size);
-
-  // save the wave to the disk
-  waveToBuff(&lfp, buff, &buff_size, false);
-
-
-  // printf("buff: ");
-  //  for(int s = 0; s < 50; s++)
-  //  printf("%c", buff[s]);
-  //printf("\n");
+  // only save and transmit buffers with valid ts
+  // (ts == 0 often
+  if(lfp.ts > 0 & lfp.ts < (UINT32_MAX - 10000){
+      // send the wave to the network
+      waveToBuff(&lfp, buff, &buff_size, true);
+      NetCom::txBuff(this_bank->my_netcomdat, buff, buff_size);
+      
+      // save the wave to the disk
+      waveToBuff(&lfp, buff, &buff_size, false);
+      try_fwrite <char> (buff, buff_size, main_file);
   
+      // printf("buff: ");
+      //  for(int s = 0; s < 50; s++)
+      //  printf("%c", buff[s]);
+      //printf("\n");
+    }
 }
 
 void Lfp_bank::end_acquisition(){

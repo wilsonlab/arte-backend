@@ -275,18 +275,21 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
     //fflush(stdout);
     nd = &(neural_daq_array[n]);
     //daq_err_check ( DAQmxReadAnalogF64( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
-    daq_err_check ( DAQmxReadBinaryI16( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
     
     if(acquiring){
       uint32_t time_now = arte_timer.getTimestamp();
       if( nd->out_file != NULL){
 	try_fwrite<rdata_t>( nd->data_ptr, buffer_size, nd->out_file);
       }
-      nd->buffer_timestamp = time_now - 10; // make time correspond to the buffer's first data point
+      nd->buffer_timestamp = time_now - 
+	(nd->stream_n_samps_per_chan-1) * 10/32; // make time correspond to the buffer's first data point
       nd->daq_buffer_count += 1; 
     }
 
   }
+
+    daq_err_check ( DAQmxReadBinaryI16( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
+
   
   if(acquiring){
     
