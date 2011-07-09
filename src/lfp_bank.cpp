@@ -7,6 +7,8 @@
 #include "netcom/netcom.h"
 #include "netcom/datapacket.h"
 
+extern FILE *main_file;
+
 Lfp_bank::Lfp_bank(){
   std::cout << "Lfp_bank constructor called." << std::endl;
   has_sockfd = false;
@@ -134,7 +136,7 @@ void lfp_bank_write_record(void *lfp_bank_in){
   
   // only save and transmit buffers with valid ts
   // (ts == 0 often
-  if(lfp.ts > 0 & lfp.ts < (UINT32_MAX - 10000){
+  if(lfp.ts > 0 & lfp.ts < (UINT32_MAX - 10000)){
       // send the wave to the network
       waveToBuff(&lfp, buff, &buff_size, true);
       NetCom::txBuff(this_bank->my_netcomdat, buff, buff_size);

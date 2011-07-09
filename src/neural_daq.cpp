@@ -282,7 +282,7 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
 	try_fwrite<rdata_t>( nd->data_ptr, buffer_size, nd->out_file);
       }
       nd->buffer_timestamp = time_now - 
-	(nd->stream_n_samps_per_chan-1) * 10/32; // make time correspond to the buffer's first data point
+	(nd->n_samps_per_buffer-1) * 10/32; // make time correspond to the buffer's first data point
       nd->daq_buffer_count += 1; 
     }
 
