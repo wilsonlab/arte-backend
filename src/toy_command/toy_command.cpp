@@ -24,15 +24,16 @@ int main (int argc, char *argv[]){
 
     printf("\nPlease enter a command for arte:\n");
     fgets( the_command.command_str, MAX_COMMAND_STR_LEN+1, stdin );
+    
+    printf("command: %s\n", the_command.command_str);
 
-    if( !(strcmp(the_command.command_str, "exit") == 0)){
-      NetCom::txCommand(my_netcom_dat, &the_command);
-    } else {
+    if(strcmp(the_command.command_str, "exit") == 0){
       running = false;
-    }
-
+    } else{
+      NetCom::txCommand(my_netcom_dat, &the_command);
+    } 
   }
-
+  
   return 0;
 
 }
