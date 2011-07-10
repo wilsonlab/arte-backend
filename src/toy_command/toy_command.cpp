@@ -11,7 +11,7 @@ int main (int argc, char *argv[]){
   NetComDat my_netcom_dat;
 
   int port_num;
-  sprintf(argv[2], "%d", &port_num);
+  sscanf(argv[2], "%d", port_num);
 
   my_netcom_dat = my_netcom.initUdpTx(argv[1], port_num);
 
