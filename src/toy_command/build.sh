@@ -1,0 +1,1 @@
+g++ toy_command.cpp ../netcom/netcom.cpp ../netcom/datapacket.cpp -D__STDC_LIMIT_MACROS -o toy_command

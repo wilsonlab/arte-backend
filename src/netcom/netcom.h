@@ -36,6 +36,9 @@ class NetCom{
   
   static int txWave(NetComDat net, wave_t w, int nTx);
   static void rxWave(NetComDat net, lfp_bank_net_t *lfp);
+
+  static int txCommand(NetComDat net, command_t* the_command);
+  static void rxCommand(NetComDat net, command_t* the_command);
   
   static void txBuff(NetComDat net, char * buff, int buff_len);
   static void rxBuff(NetComDat net, char * buff, int *buff_len);

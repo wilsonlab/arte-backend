@@ -75,6 +75,8 @@ const int MAX_FILT_COEFS = MAX_FILTERED_BUFFER_LEN;
 const int MAX_SPIKE_N_SAMPS_PER_CHAN = 128;
 
 const int MAX_SPIKE_NET_BUFF_SIZE = 4000; // TODO: FIX THIS WHAT SHOULD THE MAX REALLY BE?
+const int MAX_NETCOM_BUFF_SIZE = 4000;
+const int MAX_COMMAND_STR_LEN = MAX_NETCOM_BUFF_SIZE - 4;
 
 extern bool daqs_reading; // Daq's read in unison.  No simultaneous mixing between file and card in allowed.
 extern bool daqs_writing; // <-- prob won't be used.  Some daq's may write while others don't.

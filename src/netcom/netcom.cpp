@@ -179,6 +179,20 @@ void NetCom::rxSpike(NetComDat net, spike_net_t* spike){
   //printf("rx spike after buffToSpike\n");
 }
 
+int NetCom::txCommand(NetComDat net, command_t *the_command){
+  char buff[BUFFSIZE-1];
+  int buff_len = 0;
+  commandToBuff( the_command, buff, &buff_len, true );
+  NetCom::txBuff(net, buff, buff_len);
+}
+
+void NetCom::rxCommand(NetComDat net, command_t *the_command){
+  char buff[BUFFSIZE-1];
+  int buff_len = 0;
+  rxBuff(net, buff, &buff_len);
+  buffToCommand(the_command, buff, true);
+}
+
 void NetCom::txBuff(NetComDat net, char *buff, int buff_len){
   
   if(false){  // this thing sets the buff line to all 'a'.  Kinda useful for testing listeners.

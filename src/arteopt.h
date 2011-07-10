@@ -13,10 +13,14 @@
 #include "filtered_buffer.h"
 #include "lfp_bank.h"
 #include "netcom/netcom.h"
+#include <time.h>
 
 extern FILE *main_file;
 
 extern uint32_t timestamp;
+
+//extern NetCom command_netcom;
+//NetComDat command_netcom_dat;
 
 extern Timer arte_timer;
 extern bool timer_is_toy;
@@ -50,5 +54,7 @@ neural_daq new_neural_daq(boost::property_tree::ptree::value_type &v);
 
 int save_setup_config(std::string &);
 int save_session_config(std::string &);
+
+void *wait_for_command(void *thread_data);
 
 #endif

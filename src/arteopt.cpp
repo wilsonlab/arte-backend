@@ -54,6 +54,9 @@ boost::property_tree::ptree timer_pt;
 
 std::vector<TaskHandle> task_handle_vector;
 
+NetCom command_netcom;
+NetComDat command_netcom_dat;
+
 void arte_init(int argc, char *argv[], const std::string &setup_fn, const std::string &session_fn){
 
   timestamp = 0;
@@ -104,6 +107,31 @@ void arte_setup_init(int argc, char *argv[]){
     this_filt.init(filt_pt);
     filt_map.insert( std::pair<std::string, Filt>(this_filt.filt_name, this_filt) );
   }
+
+  // initialize command port listener
+  std::string command_port_str;
+  char port_char[100];
+  std::string command_host_str;
+  char host_char[100];
+  assign_property<std::string>("options.setup.command_port", &command_port_str, setup_pt, setup_pt, 1);
+  assign_property<std::string>("options.setup.command_host", &command_host_str, setup_pt, setup_pt, 1);
+  strcpy( port_char, command_port_str.c_str());
+  strcpy( host_char, command_host_str.c_str());
+
+  if( !strcmp("none",command_port_str.c_str()) == 0 ){
+    int command_port_num;
+    sscanf(command_port_str.c_str(), "%d", &command_port_num);
+    command_netcom_dat = command_netcom.initUdpRx( host_char, command_port_num );
+    int rc;
+    long t;
+    pthread_t command_thread;
+    rc = pthread_create(&command_thread, NULL, wait_for_command,(void *)t);
+    if(rc){
+      printf("ERROR; return code from pthread_create() in arteopt command thread init is %d\n", rc);
+      exit(1);
+    }
+  }
+
   std::cout << "Finished arte_setup_init." << std::endl;
 }
 
@@ -200,4 +228,20 @@ void arte_session_init(int argc, char *argv[]){
   // Start the acquisition
   neural_daq_start_all();
 
+}
+
+void *wait_for_command(void *thread_data){
+  int millisec = 100; // time for sleep
+  struct timespec req = {0};
+  req.tv_sec = 0;
+  req.tv_nsec = millisec * 1000000L;
+  for(int i = 0; i < 100; i++){
+    printf("GOT INTO WAIT_FOR_COMMAND.\n");
+    nanosleep(&req, (struct timespec*)NULL);
+  }
+
+  //while(true){
+  //}
+  
+  pthread_exit(NULL);
 }

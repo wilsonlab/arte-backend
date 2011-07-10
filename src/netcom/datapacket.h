@@ -108,6 +108,10 @@ struct lfp_bank_net_t{
   rdata_t     gains[MAX_FILTERED_BUFFER_N_CHANS];              // the next 2*c bytes
 };
 
+struct command_t{
+  char command_str[MAX_COMMAND_STR_LEN];
+};
+
 // The xxToBuff functions add the appropriate buffer headers, the user 
 // does not have to worry about adding the headers by hand	
 
@@ -120,27 +124,33 @@ void buffToSpike(spike_net_t *s, char *buff, bool c);
 void waveToBuff(lfp_bank_net_t* lfp, char* buff, int *blen, bool c);
 void buffToWave(lfp_bank_net_t *lfp, char *buff, bool c);
 
+void commandToBuff(command_t *command, char* buff, int *blen, bool c);
+void buffToCommand(command_t *command, char* buff, bool c);
+
 enum packetType_t {NETCOM_UDP_SPIKE = 65,
                    NETCOM_UDP_LFP = 66,
                    NETCOM_UDP_TIME = 67,
+		   NETCOM_UDP_COMMAND = 68,
                    NETCOM_UNDEFINED=-1};
 
 inline char typeToChar(packetType_t x){
-        switch (x){
-                case NETCOM_UDP_SPIKE:  return 65;
-                case NETCOM_UDP_LFP:    return 66;
-                case NETCOM_UDP_TIME:   return 67;
-               	default:                return -1;
-        }
+  switch (x){
+  case NETCOM_UDP_SPIKE:   return 65;
+  case NETCOM_UDP_LFP:     return 66;
+  case NETCOM_UDP_TIME:    return 67;
+  case NETCOM_UDP_COMMAND: return 68;
+  default:                 return -1;
+  }
 }
 
 inline packetType_t charToType(char x){
-        switch (x){
-                case 65: return NETCOM_UDP_SPIKE;
-                case 66: return NETCOM_UDP_LFP;
-                case 67: return NETCOM_UDP_TIME;
-                default:return NETCOM_UNDEFINED;
-        }
+  switch (x){
+  case 65: return NETCOM_UDP_SPIKE;
+  case 66: return NETCOM_UDP_LFP;
+  case 67: return NETCOM_UDP_TIME;
+  case 68: return NETCOM_UDP_COMMAND;
+  default: return NETCOM_UNDEFINED;
+  }
 }
 
 

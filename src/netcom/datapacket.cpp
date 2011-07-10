@@ -136,6 +136,35 @@ void buffToSpike( spike_net_t *s, char* buff, bool c){
 
 }
 
+void commandToBuff(command_t *command, char* buff, int *blen, bool c){
+
+  uint16_t cursor = 4;
+  uint16_t cursor_tx;
+  buff[0] = typeToChar(NETCOM_UDP_COMMAND);
+  buff[4] = 0;
+
+  int command_len = strlen(command->command_str);
+  
+  memcpy(buff+cursor, &(command->command_str[0]), command_len);
+  cursor += command_len;
+
+  *blen = cursor;
+  
+  cursor_tx = hton16c(cursor, c);
+  memcpy( buff+1, &cursor_tx, 2 );
+
+}
+
+void buffToCommand(command_t *command, char* buff, bool c){
+  
+  uint16_t cursor = 4;
+  uint16_t command_len;
+  memcpy( &command_len, buff+1, 2 );
+  command_len = ntoh16c(command_len, c) - 4;
+
+  memcpy( command->command_str, buff+cursor, command_len );
+}
+
 /*------------- WAVE ------------*/
 void waveToBuff(lfp_bank_net_t* lfp, char* buff, int *blen, bool c){
   //TODO IMPLEMENT
@@ -143,9 +172,6 @@ void waveToBuff(lfp_bank_net_t* lfp, char* buff, int *blen, bool c){
   
   int s;
 
-  //old
-  //int cursor = 2;
-  //NEW
   uint16_t cursor = 4;
   uint16_t cursor_tx;
 
