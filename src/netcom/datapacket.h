@@ -109,6 +109,7 @@ struct lfp_bank_net_t{
 };
 
 struct command_t{
+  uint16_t n_char;
   char command_str[MAX_COMMAND_STR_LEN];
 };
 

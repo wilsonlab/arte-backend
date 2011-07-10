@@ -231,17 +231,21 @@ void arte_session_init(int argc, char *argv[]){
 }
 
 void *wait_for_command(void *thread_data){
-  int millisec = 100; // time for sleep
-  struct timespec req = {0};
-  req.tv_sec = 0;
-  req.tv_nsec = millisec * 1000000L;
-  for(int i = 0; i < 100; i++){
-    printf("GOT INTO WAIT_FOR_COMMAND.\n");
-    nanosleep(&req, (struct timespec*)NULL);
-  }
+  
+//   int millisec = 100; // time for sleep
+//   struct timespec req = {0};
+//   req.tv_sec = 0;
+//   req.tv_nsec = millisec * 1000000L;
+//   for(int i = 0; i < 100; i++){
+//     printf("GOT INTO WAIT_FOR_COMMAND.\n");
+//     nanosleep(&req, (struct timespec*)NULL);
+//   }
 
-  //while(true){
-  //}
+  command_t the_command;
+  while(true){
+    NetCom::rxCommand( command_netcom_dat, &the_command );
+    printf("Got command:%s\n", the_command.command_str);
+  }
   
   pthread_exit(NULL);
 }
