@@ -12,8 +12,8 @@ int main(){
 
 	int spikePerSecond = 3;
 	int sleep =  (1e6)/spikePerSecond;
-	char host[] = "10.121.43.56";
-	int port = 5000;
+	char host[] = "10.121.43.204";
+	int port = 6303;
 	NetComDat net = NetCom::initUdpTx(host,port);
 
 	spike_net_t spike = genFakeSpike();
@@ -56,7 +56,7 @@ spike_net_t genFakeSpike(){
 
                 for (int j=0; j<s.n_samps_per_chan; j++){
                         idx = (i*s.n_samps_per_chan)+j;
-                        s.data[idx] =  trace[j]/2 + rand() % noise;
+                        s.data[idx] =  trace[j]*1000 + rand() % noise;
                 }
         }
         return s;
