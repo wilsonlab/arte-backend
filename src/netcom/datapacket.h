@@ -63,7 +63,7 @@ void printBuff(char* buff, int blen);
 
 
 typedef uint32_t timestamp_t;
-
+/*
 struct spike_t{
 	timestamp_t ts;
 	uint8_t src;
@@ -73,7 +73,7 @@ struct spike_t{
 	std::vector<uint16_t> gain;
 	std::vector<uint16_t> thold;
 	std::vector<uint16_t> data;
-};
+};*/
 
 // Greg's alternative for a spike pre-packet struct
 struct spike_net_t{
@@ -87,7 +87,7 @@ struct spike_net_t{
   rdata_t     thresh[MAX_FILTERED_BUFFER_N_CHANS];          // the next b*c bytes
   uint16_t    trig_ind;                                     // the next 2 bytes
 };
-
+/*
 struct wave_t{
 	timestamp_t ts;
 	uint8_t src;
@@ -95,7 +95,7 @@ struct wave_t{
 	std::vector<uint16_t> gain;
 	std::vector<uint16_t> nSamp;
 	std::vector<uint16_t> data;
-};
+};*/
 
 // Greg's alternative for a lfp_bank pre-packet struct
 struct lfp_bank_net_t{
