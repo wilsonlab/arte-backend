@@ -52,7 +52,10 @@ set(v(3).fig,'Name', 'Spikes on port 6302');
 v(4) = plotArteSpikes([],[],[]);
 set(v(4).fig,'Name', 'Spikes on port 6303');
 
-
+packets =[];
+tic;
+prevTime = toc;
+deltaTime = .025;
 
 if args.enable_network
     initNetwork();
@@ -79,6 +82,10 @@ end
         u(3) = udp(args.host, args.txPort+1, 'LocalPort', args.rxPort+2);
         u(4) = udp(args.host, args.txPort+1, 'LocalPort', args.rxPort+3);
         
+        packets(1).buffer = [];
+        packets(2).buffer = [];
+        packets(3).buffer = [];
+        packets(4).buffer = [];
         set(u,'DatagramReceivedFcn', @udpPacketRxCallback,...
             'InputBufferSize', 2048, 'byteOrder', args.byteOrder);
     end
@@ -106,29 +113,49 @@ end
         spike = bufferToSpike(data);
         
         if get(obj,'localport')==args.rxPort
-            plotArteSpikes(v(1),spike, obj);
+            packets(1).buffer(:,:,end+1) = spike;
         end
         if get(obj,'localport')==args.rxPort+1
-            plotArteSpikes(v(2),spike, obj);
+            packets(2).buffer(:,:,end+1) = spike;
         end
         if get(obj,'localport')==args.rxPort+2
-            plotArteSpikes(v(3),spike, obj);
+            packets(3).buffer(:,:,end+1) = spike;
         end
         if get(obj,'localport')==args.rxPort+3
-            plotArteSpikes(v(4),spike, obj);
+            packets(4).buffer(:,:,end+1) = spike;
+        end
+        
+        curTime = toc;
+        
+        if (curTime > prevTime + deltaTime)
+            prevTime = curTime;
+            plotPackets();
         end
 %        get(obj,'localport')
         %drawnow();
     end
 
-    function data = bufferToSpike(data)
-       if ~args.parseWithMex
-            data = handParseBuffer(data);
-       else
-            data = mxParseSpikeBuffer(data);
-       end
+    function plotPackets
+        for i = 1:size(packets(1))
+            plotArteSpikes(v(1),packets(1).buffer(:,:,i));
+        end
+        for i = 1:size(packets(2))
+            plotArteSpikes(v(2),packets(2).buffer(:,:,i)); 
+        end
+        for i = 1:size(packets(3))
+            plotArteSpikes(v(3),packets(3).buffer(:,:,i));
+        end
+        for i = 1:size(packets(4))
+            plotArteSpikes(v(4),packets(4).buffer(:,:,i));
+        end
+        drawnow();
+        
     end
        
+    function data = bufferToSpike(data)
+        data = handParseBuffer(data);
+    end
+
     function data = handParseBuffer(data)
         if args.correctDataOffset
            data = data + 2^15;

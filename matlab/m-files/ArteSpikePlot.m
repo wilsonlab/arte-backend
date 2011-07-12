@@ -1,8 +1,6 @@
-
 classdef ArteSpikePlot < handle
     % topo is a subclass of handle
     properties
- 
         % UI Variables
         fig
         figPos
@@ -15,9 +13,6 @@ classdef ArteSpikePlot < handle
         imgSize
         imgSizeBig
         nSpikeLbl
-        
-        
-        
         
         % Networking & Buffer Variables
         udpObj
@@ -36,11 +31,7 @@ classdef ArteSpikePlot < handle
         waveColors
         projColors
         waveLineStyle
-        
-        
-        
-        
-        
+   
     end % properties
     
     methods
@@ -48,7 +39,7 @@ classdef ArteSpikePlot < handle
             obj.name = name;
             
             obj.volt_max = 2^16;
-            obj.wave_max = 2^15 * 1.9;
+            obj.wave_max = 2^15 * 1.7;
             obj.wave_min = 2^14 * 1.5;
             obj.delta_wave = obj.wave_max - obj.wave_min;
             
@@ -163,13 +154,12 @@ classdef ArteSpikePlot < handle
             
             obj.plotWaveforms(waveform);
             obj.plotProjections(waveform);
-            drawnow();
         end
         function plotWaveforms(obj, waveform)
-            set(obj.waveLine(1), 'YData', waveform(:,1));
-            set(obj.waveLine(2), 'YData', waveform(:,2));
-            set(obj.waveLine(3), 'YData', waveform(:,3));
-            set(obj.waveLine(4), 'YData', waveform(:,4));
+            set(obj.waveLine(1), 'YData', waveform(:,1), 'XData', 1:obj.nSamp);
+            set(obj.waveLine(2), 'YData', waveform(:,2), 'XData', 1:obj.nSamp);
+            set(obj.waveLine(3), 'YData', waveform(:,3), 'XData', 1:obj.nSamp);
+            set(obj.waveLine(4), 'YData', waveform(:,4), 'XData', 1:obj.nSamp);
             
         end
         
@@ -206,8 +196,11 @@ classdef ArteSpikePlot < handle
             
         end
         
-        
-        
+        function set.nSamp(obj,newNSamp)
+            disp('nSamps per chan changed');
+            obj.nSamp = newNSamp;
+            set(obj.waveAx, 'Xlim', [1 obj.nSamp]);
+        end
         function delete(obj)
             disp('Deleting');
             fclose(obj.udpObj);
@@ -215,6 +208,7 @@ classdef ArteSpikePlot < handle
             delete(obj.fig);
         end
     end % end methods
+    
     methods (Static = true)
         function pixels = voltToPixel(maxes, delta, dpix)
             
