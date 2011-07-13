@@ -68,24 +68,7 @@ void Trode::init2(boost::property_tree::ptree &trode_pt,
 
   refractory_period_tics = refractory_period_samps / (uint16_t)SAMPLES_PER_TIC;
 
-  // fill out the spike_net packets - the parts that we know
-  for(int n = 0; n < MAX_N_SPIKES_PER_BUFFER; n++){
-    
-    spike_array[n].ts = -1;
-    spike_array[n].name = name;
-    spike_array[n].n_chans = n_chans;
-    spike_array[n].n_samps_per_chan = n_samps_per_spike;
-    spike_array[n].samp_n_bytes = 2;
-    for(int m = 0; m < (n_chans * n_samps_per_spike); m++)
-      spike_array[n].data[m] = m;
-    for(int m = 0; m < n_chans; m++)
-      spike_array[n].gains[m] = 1;
-    spike_array[n].trig_ind = samps_before_trig;
-
-  }
-  printf("Done initializing spike structs.\n");
-
-
+  setup_spike_array();
     
   // Initialize the netcom
   //extern std::vector<NetCom> netcom_vector;
@@ -120,6 +103,27 @@ void Trode::init2(boost::property_tree::ptree &trode_pt,
   next_ok_spike_ts = 0;
 
 }
+
+void Trode::setup_spike_array(){
+
+  // fill out the spike_net packets - the parts that we know
+  for(int n = 0; n < MAX_N_SPIKES_PER_BUFFER; n++){
+    
+    spike_array[n].ts = -1;
+    spike_array[n].name = name;
+    spike_array[n].n_chans = n_chans;
+    spike_array[n].n_samps_per_chan = n_samps_per_spike;
+    spike_array[n].samp_n_bytes = 2;
+    for(int m = 0; m < (n_chans * n_samps_per_spike); m++)
+      spike_array[n].data[m] = m;
+    for(int m = 0; m < n_chans; m++)
+      spike_array[n].gains[m] = 1;
+    spike_array[n].trig_ind = samps_before_trig;
+
+  }
+  printf("Done initializing spike structs.\n");
+}
+
 
 void *trode_filter_data(void *t){
 

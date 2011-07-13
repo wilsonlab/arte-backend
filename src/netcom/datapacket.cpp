@@ -166,23 +166,16 @@ void buffToCommand(command_t *command, char* buff, bool c){
   uint16_t cursor = 4;
   uint16_t n_char;
   uint16_t buff_len;
-  printf("still ok beginning of buffToCommand\n");
-  fflush(stdout);
   memcpy( &buff_len, buff+1, 2 );
   buff_len = ntoh16c(buff_len, c);
-  printf("still ok after first memcpy.\n"); fflush(stdout);
 
   memcpy( &n_char, buff+cursor, 2);
   n_char = ntoh16c(n_char, c);
   cursor += 2;
-  printf("still ok after second memcpy. n_char is %d\n",n_char); fflush(stdout);
 
   memcpy( command->command_str, buff+cursor, n_char );
   cursor += n_char;
-
-  printf("still ok after third memcpy.\n"); fflush(stdout);
   command->n_char = n_char;
-  printf("command->n_char is %d\n",command->n_char);
   command->command_str[n_char] = '\0';
 
   

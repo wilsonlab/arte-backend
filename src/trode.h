@@ -59,6 +59,8 @@ class Trode{
 	    boost::property_tree::ptree &default_pt,
 	    Filtered_buffer * filtered_buffer_curs);
 
+  void setup_spike_array();
+
   void print_options();
   void print_buffers(int chan_lim, int samp_lim); // this should be handled by my_buffer, not trode
   void print_spikes();

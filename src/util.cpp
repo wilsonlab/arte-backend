@@ -1,14 +1,14 @@
 #include "util.h"
 #include <stdint.h>
 
-rdata_t ftor(double f_val){
-  return  (rdata_t)  ( f_val/NEURAL_DAQ_V_MAX * RDATA_MAX); // assume n_daq range and rdata range both symmetric around 0
+rdata_t ftor(double *f_val){
+  return  (rdata_t)  ( (*f_val)/NEURAL_DAQ_V_MAX * RDATA_MAX); // assume n_daq range and rdata range both symmetric around 0
   // properway would be:  (  rdata_min + (f_val - n_daq_min)/(n_daq_max - n_daq_min)  * (rdata_max - rdata_min))
 }
 
 void ftor_a(double *f_val, rdata_t *r_value, int n_elem){
   for(int i = 0; i < n_elem; i++){
-    r_value[i] = ftor(f_val[i]);
+    r_value[i] = ftor(f_val+i);
   }
 }
 

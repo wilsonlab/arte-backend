@@ -8,6 +8,7 @@
 #include "util.h"
 #include "timer.h"
 #include "filtered_buffer.h"
+#include "process_command.h"
 
 FILE *main_file;
 
@@ -244,7 +245,8 @@ void *wait_for_command(void *thread_data){
   command_t the_command;
   while(true){
     NetCom::rxCommand( command_netcom_dat, &the_command );
-    printf("Got command:%s\n", the_command.command_str);
+    process_command(&the_command);
+      //printf("Got command:%s\n", the_command.command_str);
   }
   
   pthread_exit(NULL);
