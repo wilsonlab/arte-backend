@@ -29,7 +29,7 @@ class FilterViewport  : public Component,
 {
 public:
     //==============================================================================
-    FilterViewport(ProcessorGraph* pgraph);
+    FilterViewport(ProcessorGraph* pgraph, TabbedComponent* tabComp);
     ~FilterViewport();
   
    /// int getNumRows() { return 1;}
@@ -54,7 +54,9 @@ public:
     void paint (Graphics& g);
 
     void mouseDown(const MouseEvent &e);
-    void mouseDragged(const MouseEvent &e);
+    void mouseDrag(const MouseEvent &e);
+    void mouseUp(const MouseEvent &e);
+    void mouseExit(const MouseEvent &e);
     //void mouseEnter(const MouseEvent &e);
     //void mouseExit
     //void modifierKeysChanged (const ModifierKeys & modifiers);
@@ -62,6 +64,9 @@ public:
     void moveSelection( const KeyPress &key);
 
     void deleteNode(GenericEditor* editor);
+
+    int addTab(String tabName, Component* componentToAdd);
+    void removeTab(int);
 
 
     //void tableColumnsChanged(TableHeaderComponent* tableHeader);
@@ -83,11 +88,18 @@ private:
     bool somethingIsBeingDraggedOver;
     bool shiftDown;
     ProcessorGraph* graph;
+    TabbedComponent* tabComponent;
     OwnedArray<GenericEditor, CriticalSection> editorArray;
+
+    void refreshEditors();
+
+    int insertionPoint;
+    bool componentWantsToMove;
+    int indexOfMovingComponent;
 
    // TableListBox table;
 
-    float lastBound;
+   // float lastBound;
 
 };
 

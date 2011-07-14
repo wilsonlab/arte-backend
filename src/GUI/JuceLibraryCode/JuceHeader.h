@@ -15,7 +15,7 @@
 
 #include "AppConfig.h"
 #if defined (JUCER_LINUX_MAKE_7346DA2A)
- #include "/home/jsiegle/Programming/C++/juce/juce_amalgamated.h"
+ #include "juce_amalgamated.h"
 #elif defined (JUCER_VS2010_78A501D)
  #include "../../../../../Programming/C++/juce/juce_amalgamated.h"
 #elif defined (JUCER_VS2008_78A5006)

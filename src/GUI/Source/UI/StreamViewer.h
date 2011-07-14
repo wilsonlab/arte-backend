@@ -11,7 +11,8 @@
 #ifndef __STREAMVIEWER_H_BC589573__
 #define __STREAMVIEWER_H_BC589573__
 
-#include "../../JuceLibraryCode/JuceHeader.h"
+#include "../../../JuceLibraryCode/JuceHeader.h"
+#include "GenericEditor.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -36,21 +37,29 @@
 #endif
 
 
-class StreamViewerControls : public Component
+class FilterViewport;
 
+class StreamViewer : public GenericEditor//,
+					 //public Slider::Listener
 {
 public:
-	StreamViewerControls();
-	~StreamViewerControls();
-	
-private:
-	Slider* slider1;
-	Slider* slider2;
+	StreamViewer (GenericProcessor* parentNode, FilterViewport* vp);
+	~StreamViewer();
+	//void sliderValueChanged (Slider* slider);
+
+private:	
+	//Slider* slider;
+	DocumentWindow* docWindow;
+
+	int tabIndex;
+
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (StreamViewer);
 
 };
 
 
-class StreamViewerRenderer : public OpenGLComponent
+class StreamViewerRenderer : public OpenGLComponent,
+							 public ActionListener
 
 {
 public:
@@ -62,27 +71,29 @@ public:
 private:
 	AudioSampleBuffer* displayBuffer;
 
-};
-
-
-
-class StreamViewer : public Component,
-					 public ActionListener
-
-{
-public:
-	StreamViewer(AudioSampleBuffer* buffer);
-	~StreamViewer();
-
-	void resized();
-	
-private:
-	StreamViewerControls* streamViewerControls;
-	StreamViewerRenderer* streamViewerRenderer;	
-
 	void actionListenerCallback(const String& msg);
 
 };
+
+
+
+// class StreamViewer : public Component,
+// 					 public ActionListener
+
+// {
+// public:
+// 	StreamViewer(AudioSampleBuffer* buffer);
+// 	~StreamViewer();
+
+// 	void resized();
+	
+// private:
+// 	StreamViewerControls* streamViewerControls;
+// 	StreamViewerRenderer* streamViewerRenderer;	
+
+// 	void actionListenerCallback(const String& msg);
+
+// };
 
 
 

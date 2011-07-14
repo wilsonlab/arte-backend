@@ -41,18 +41,30 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 	infoLabel->setFont(*Miso);
 	infoLabel->setColour(Label::textColourId,Colours::lightgrey);
 	
+	//addAndMakeVisible (tabbedComponent = new TabbedComponent (TabbedButtonBar::TabsAtRight));
+	dataViewport = new TabbedComponent (TabbedButtonBar::TabsAtRight);
+	dataViewport->setTabBarDepth(30);
+
+
 	// get graph from parent component
-	AudioProcessorGraph::Node* node = processorGraph->getNodeForId(10);
-	AudioProcessor* myProcessor = node->getProcessor();
-	DisplayNode* mp = (DisplayNode*) myProcessor;
-	StreamViewer* streamViewer = mp->createDisplay();
+	//AudioProcessorGraph::Node* node = processorGraph->getNodeForId(10);
+	//AudioProcessor* myProcessor = node->getProcessor();
+	//DisplayNode* mp = (DisplayNode*) myProcessor;
+	///StreamViewer* streamViewer = mp->createDisplay();
 	
-	dataViewport = new Viewport();
-	dataViewport->setViewedComponent(streamViewer);
-	addAndMakeVisible(dataViewport);
-	
-	filterViewport = new FilterViewport(processorGraph);
+	//dataViewport = new Viewport();
+	//dataViewport->setViewedComponent(streamViewer);
+	//dataViewport->addTab(T("Stream Viewer"), Colours::lightgrey, streamViewer, true);
+	//addAndMakeVisible(dataViewport);
+
+	//std::cout << "Created data viewport." << std::endl;
+	//dataViewport->setCurrentTabIndex (0);
+	//dataViewport->addTab(T("Blank"), Colours::lightgrey, new ListBox("Hi."), true);
+
+	filterViewport = new FilterViewport(processorGraph, dataViewport);
 	addAndMakeVisible(filterViewport);
+
+	std::cout << "Created filter viewport." << std::endl;
 
 	//AffineTransform at = AffineTransform();
    // 	at.rotated(1.5708f);
@@ -72,11 +84,13 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 
 	
 	//StreamViewer* s
-	addActionListener(streamViewer);
+	//addActionListener(streamViewer);
 	addActionListener(controlPanel);
 	//sendActionMessage(msg);
 
 	startTimer(15);
+
+	std::cout << "Finished UI stuff." << std::endl;
 
 	//resized();
 	
@@ -85,6 +99,7 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 UIComponent::~UIComponent()
 {
 	deleteAllChildren();
+	delete(dataViewport);
 	delete(Miso);
 	processorGraph = 0;
 	audio = 0;
@@ -100,13 +115,13 @@ void UIComponent::resized()
 		infoLabel->setBounds(w-80,h-30,100,30);
 	
 	if (dataViewport != 0) {
-		dataViewport->setBounds(240,60,w-100,h-250);
-		Component* vc = dataViewport->getViewedComponent();
-		vc->setBounds(0,0,w-140,h-250);
+		dataViewport->setBounds(240,60,w-260,h-250);
+		//Component* vc = dataViewport->getTabContentComponent(dataViewport->getCurrentTabIndex());//getViewedComponent();
+		//vc->setBounds(0,0,w-100,h-250);
 	}
 	
 	if (filterViewport != 0)
-		filterViewport->setBounds(25,h-150,w-50,125);
+		filterViewport->setBounds(25,h-140,w-50,125);
 		//filterViewport->setBounds(730-h, 140, 120, w-100); //(-500,h-500,200,800);
 		//filterViewport->setTransform(AffineTransform::rotation(-double_Pi/2,
     	//       filterViewport->getX(),filterViewport->getY()));

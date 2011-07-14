@@ -15,7 +15,7 @@
 #include "ControlPanel.h"
 #include "FilterList.h"
 #include "FilterViewport.h"
-#include "StreamViewer.h"
+//#include "StreamViewer.h"
 #include "../Processors/DisplayNode.h"
 #include "../Processors/ProcessorGraph.h"
 #include "../Audio/AudioComponent.h"
@@ -33,7 +33,8 @@ public:
 
 private:
 	//ControlPanel* controlPanel;
-	Viewport* dataViewport;
+	//Viewport* dataViewport;
+	TabbedComponent* dataViewport;
 	FilterViewport* filterViewport;
 	FilterList* filterList;
 	ControlPanel* controlPanel;

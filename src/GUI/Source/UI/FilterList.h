@@ -21,7 +21,8 @@
 
 
 
-class FilterList : public Component
+class FilterList : public Component//,
+                   //public Button::Listener
 {
 public:
     FilterList();
@@ -31,6 +32,7 @@ public:
 private:
    TreeView* treeView;
    TreeViewItem* rootItem;
+   //Button* showHideButton;
 
 };
 

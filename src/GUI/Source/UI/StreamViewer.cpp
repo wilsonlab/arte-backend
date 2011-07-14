@@ -10,22 +10,44 @@
 
 #include "StreamViewer.h"
 
-StreamViewerControls::StreamViewerControls()
-{
-	//slider1 = new Slider();
-	//slider1->setBounds(0,0,200,20);
-	//addAndMakeVisible(slider1);
 
-	//slider2 = new Slider();
-	//slider2->setBounds(0,20,200,20);
-	//addAndMakeVisible(slider2);
+StreamViewer::StreamViewer (GenericProcessor* parentNode, FilterViewport* vp) 
+	: GenericEditor(parentNode, vp), slider(0)
+
+{
+	desiredWidth = 210;
+
+	docWindow = new DocumentWindow(T("Stream Window"), Colours::black, DocumentWindow::allButtons);
+	docWindow->centreWithSize(300,200);
+	docWindow->setUsingNativeTitleBar(true);
+	docWindow->setResizable(true,true);
+	docWindow->setVisible(true);
+
+	viewport->addTab("Stream",0);
+
+	//tabIndex = 
 
 }
 
-StreamViewerControls::~StreamViewerControls()
+StreamViewer::~StreamViewer()
 {
+	//std::cout << "    Filter editor for " << getName() << " being deleted with " << getNumChildComponents() << " children. " << std::endl;
+	
+	//slider = 0;
+	//Slider* s = slider.release();
+	//delete s;
+	//slider = 0;
+	//delete slider;
+	
+	//slider = 0;
+
+	//delete(docWindow);
+
 	deleteAllChildren();
+	//slider = 0;	
+
 }
+
 
 
 //===================================================
@@ -113,41 +135,8 @@ void StreamViewerRenderer::renderOpenGL()
 	
 }
 
-//===================================================
 
-StreamViewer::StreamViewer(AudioSampleBuffer* buffer)
-{
-	streamViewerRenderer = new StreamViewerRenderer(buffer);
-	streamViewerControls = new StreamViewerControls();
-
-	addAndMakeVisible(streamViewerControls);
-	addAndMakeVisible(streamViewerRenderer);
-	//streamViewerRenderer->repaint();
-
-	//resized();
-
-}
-
-StreamViewer::~StreamViewer()
-{
-	deleteAllChildren();
-}
-
-void StreamViewer::resized()
-{
-
-	int w = getWidth();
-	int h = getHeight();
-
-	if (streamViewerRenderer != 0)
-		streamViewerRenderer->setBounds(0,0,w-200,h);
-	
-	if (streamViewerControls != 0)
-		streamViewerControls->setBounds(w-200,0,200,40);
-	
-}
-
-void StreamViewer::actionListenerCallback(const String & msg)
+void StreamViewerRenderer::actionListenerCallback(const String & msg)
 {
 	streamViewerRenderer->repaint();
 }

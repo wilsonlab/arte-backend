@@ -198,7 +198,7 @@ bool ProcessorGraph::enableSourceNode() {
 	SourceNode* sn = getSourceNode();
 
 	if (sn != 0) {
-		getSourceNode()->enable();
+		sn->enable();
 		return true;
 	} else {
 		return false;
@@ -211,7 +211,7 @@ bool ProcessorGraph::disableSourceNode() {
 	SourceNode* sn = getSourceNode();
 
 	if (sn != 0) {
-		getSourceNode()->disable();
+		sn->disable();
 		return true;
 	} else {
 		return false;

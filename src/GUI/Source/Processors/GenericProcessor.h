@@ -65,9 +65,9 @@ public:
 	
 	float getParameter (int parameterIndex) {return 1.0;}
 
+	// custom methods:
 	void setViewport(FilterViewport* vp);
 
-	// custom methods:
 	int getNumSamples();
 	void setNumSamples(int);
 

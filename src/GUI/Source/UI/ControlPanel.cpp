@@ -191,16 +191,9 @@ void ControlPanel::buttonClicked(Button* button)
 		if (recordButton->getToggleState())
 		{
 			playButton->setToggleState(true,true);
-
-			if (audio->callbacksAreActive()) {
-			//	audio->endCallbacks();
-			}
-
 			graph->getRecordNode()->setParameter(1,10.0f); // turn on recording
 
 		} else {
-
-			//audio->endCallbacks();
 			graph->getRecordNode()->setParameter(0,10.0f); // turn off recording
 
 		}
@@ -227,7 +220,6 @@ void ControlPanel::buttonClicked(Button* button)
 	} else {
 
 		if (audio->callbacksAreActive()) {
-			
 			audio->endCallbacks();
 			graph->disableSourceNode();
 			cpuMeter->updateCPU(0.0f);

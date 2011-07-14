@@ -13,9 +13,10 @@
 #include "FilterViewport.h"
 
     //==============================================================================
-   FilterViewport::FilterViewport(ProcessorGraph* pgraph)
+   FilterViewport::FilterViewport(ProcessorGraph* pgraph, TabbedComponent* tcomp)
         : message ("Drag-and-drop some rows from the top-left box onto this component!"),
-          somethingIsBeingDraggedOver (false), graph(pgraph), lastBound(5), shiftDown(false)
+          somethingIsBeingDraggedOver (false), graph(pgraph), tabComponent(tcomp), shiftDown(false),
+           insertionPoint(0), componentWantsToMove(false), indexOfMovingComponent(-1)
     {
 
       addMouseListener(this, true);
@@ -35,6 +36,10 @@
 
         if (somethingIsBeingDraggedOver)
         {
+
+            //g.setColour (colours::red);
+           // g.drawLine (lastBound)
+
             g.setColour (Colours::orange);
             //g.drawRect (0, 0, getWidth(), getHeight(), 3);
 
@@ -44,6 +49,21 @@
         }
 
         g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), 15);
+
+    }
+
+    int FilterViewport::addTab(String name, Component* component) {
+        
+        int tabIndex = tabComponent->getTabbedButtonBar().getNumTabs() + 1;
+        tabComponent->addTab(name, Colours::lightgrey, component, true, tabIndex);
+
+        return tabIndex;
+
+    }
+
+    void FilterViewport::removeTab(int index) {
+        
+        tabComponent->removeTab(index);
 
     }
 
@@ -68,14 +88,49 @@
         repaint();
     }
 
-    void FilterViewport::itemDragMove (const String& /*sourceDescription*/, Component* /*sourceComponent*/, int /*x*/, int /*y*/)
+    void FilterViewport::itemDragMove (const String& /*sourceDescription*/, Component* /*sourceComponent*/, int x, int /*y*/)
     {
+
+       // bool isShifted[editorArray.size()] = false;
+        bool foundInsertionPoint = false;
+
+        int lastCenterPoint = 0;
+        int leftEdge;
+        int centerPoint;
+
+        //std::cout << x << std::endl;
+
+        for (int n = 0; n < editorArray.size(); n++)
+        {
+            leftEdge = editorArray[n]->getX();
+            centerPoint = leftEdge + (editorArray[n]->getWidth())/2;
+            
+            if (x < centerPoint && x > lastCenterPoint) {
+                insertionPoint = n;
+                //std::cout << insertionPoint << std::endl;
+                foundInsertionPoint = true;
+            }
+
+            lastCenterPoint = centerPoint;
+        }
+
+        if (!foundInsertionPoint) {
+            insertionPoint = editorArray.size();
+        }
+
+        refreshEditors();
+
+       // std::cout << insertionPoint << " " << x << " " <<  leftEdge << " " << centerPoint << " " <<  lastCenterPoint << std::endl;
+
     }
 
     void FilterViewport::itemDragExit (const String& /*sourceDescription*/, Component* /*sourceComponent*/)
     {
         somethingIsBeingDraggedOver = false;
         repaint();
+
+        refreshEditors();
+
     }
 
     void FilterViewport::itemDropped (const String& sourceDescription, Component* /*sourceComponent*/, int /*x*/, int /*y*/)
@@ -84,23 +139,23 @@
 
         std::cout << "Item dropped." << std::endl;
 
-        GenericEditor* editor = (GenericEditor*) graph->createNewProcessor(sourceDescription);
+        GenericEditor* editor = (GenericEditor*) graph->createNewProcessor(sourceDescription, this);
 
         if (editor != 0) {
 
-            editorArray.add(editor);
-            editorArray.getLast()->setViewport(this);
+            editorArray.insert(insertionPoint,editor);
+            //editorArray.getLast()->setViewport(this);
+            //editorArray.getLast()->setTabbedComponent(tabComponent);
         
             int componentWidth = editorArray.getLast()->desiredWidth;
 
             addAndMakeVisible(editorArray.getLast());
-            editorArray.getLast()->setBounds(lastBound,5,componentWidth,getHeight()-10);
-
-            lastBound+=(componentWidth+10);
 
         }
 
         somethingIsBeingDraggedOver = false;
+                    
+        refreshEditors();
         repaint();
     }
 
@@ -113,15 +168,8 @@
         //std::cout << "Node ID: " << editorArray[indexToDelete]->nodeId << std::endl;
 
         editorArray.remove(indexToDelete,true);
-            
-        lastBound = 5;
 
-        for (int n = 0; n < editorArray.size(); n++)
-        {
-            int componentWidth = editorArray[n]->desiredWidth;
-            editorArray[n]->setBounds(lastBound,5, componentWidth, getHeight()-10);
-            lastBound+=componentWidth;
-        }
+        refreshEditors();
 
         if (editorArray.size() > 0) {
 
@@ -130,6 +178,28 @@
              } else {
                  editorArray[indexToDelete]->select();
              }
+        }
+
+    }
+
+    void FilterViewport::refreshEditors () {
+        
+        int lastBound = 5;
+
+        for (int n = 0; n < editorArray.size(); n++)
+        {
+
+            if (somethingIsBeingDraggedOver 
+                && n == insertionPoint 
+                && (n != indexOfMovingComponent && n != indexOfMovingComponent+1)) {
+                lastBound += 10;
+            }
+
+            int componentWidth = editorArray[n]->desiredWidth;
+            editorArray[n]->setBounds(lastBound,5, componentWidth, getHeight()-10);
+            lastBound+=(componentWidth + 10);
+
+
         }
 
     }
@@ -144,12 +214,8 @@
                     
                     editorArray[i-1]->select();
                     editorArray[i]->deselect();
-
-                }
-               
+                }               
             }
-
-
         } else if (key.getKeyCode() == key.rightKey) {
              
              for (int i = 0; i < editorArray.size()-1; i++) {
@@ -159,15 +225,9 @@
                     editorArray[i+1]->select();
                     editorArray[i]->deselect();
                     break;
-
-                }
-               
+                }  
             }
-
-
-
         }
-
     }
 
     bool FilterViewport::keyPressed (const KeyPress &key) {
@@ -230,8 +290,94 @@
 
     }
 
-    void FilterViewport::mouseDragged(const MouseEvent &e) {
+    void FilterViewport::mouseDrag(const MouseEvent &e) {
         
-       // std::cout << e.getMouseDownX() << " " << e.x << std::endl;
+
+        if (editorArray.contains((GenericEditor*) e.originalComponent) && e.y < 15) {
+
+
+            
+            componentWantsToMove = true;
+            indexOfMovingComponent = editorArray.indexOf((GenericEditor*) e.originalComponent);
+
+            somethingIsBeingDraggedOver = true;
+
+            bool foundInsertionPoint = false;
+
+            int lastCenterPoint = 0;
+            int leftEdge;
+            int centerPoint;
+
+            const MouseEvent event = e.getEventRelativeTo(this);
+            //std::cout << x << std::endl;
+
+            for (int n = 0; n < editorArray.size(); n++)
+            {
+                leftEdge = editorArray[n]->getX();
+                centerPoint = leftEdge + (editorArray[n]->getWidth())/2;
+            
+                if (event.x < centerPoint && event.x > lastCenterPoint) {
+                    insertionPoint = n;
+                    //std::cout << insertionPoint << std::endl;
+                    foundInsertionPoint = true;
+            }
+
+            lastCenterPoint = centerPoint;
+            }
+
+            if (!foundInsertionPoint) {
+                insertionPoint = editorArray.size();
+            }
+
+            refreshEditors();
+
+            repaint();
+
+            //std::cout << indexOfMovingComponent << " " << insertionPoint << std::endl;
+
+
+            //std::cout << "Component wants to move." << std::endl;
+
+        }
+
 
     }
+
+    void FilterViewport::mouseUp(const MouseEvent &e) {
+
+
+        if (componentWantsToMove) {
+            
+            somethingIsBeingDraggedOver = false;
+            componentWantsToMove = false;
+
+            //GenericEditor* editor = editorArray.removeAndReturn(indexOfMovingComponent);
+            //editorArray.insert
+            if (insertionPoint < indexOfMovingComponent)
+                editorArray.move(indexOfMovingComponent, insertionPoint);
+            else if (insertionPoint > indexOfMovingComponent)
+                editorArray.move(indexOfMovingComponent, insertionPoint-1);
+
+            refreshEditors();
+            repaint();
+
+        }
+
+
+    }
+
+    void FilterViewport::mouseExit(const MouseEvent &e) {
+
+        if (componentWantsToMove) {
+            
+            somethingIsBeingDraggedOver = false;
+            componentWantsToMove = false;
+
+            repaint();
+            refreshEditors();
+
+        }
+
+
+    }
+    

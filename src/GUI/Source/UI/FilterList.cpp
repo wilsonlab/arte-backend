@@ -23,6 +23,8 @@
         treeView->setDefaultOpenness(true);
         treeView->setRootItemVisible(false);
 
+        //button = new Button
+
 }
 
 FilterList::~FilterList()
@@ -68,6 +70,7 @@ ListItem::ListItem(const String name_, const String parentName_, bool containsSu
        addSubItem (new ListItem ("FFT Viewer",name,false));
     }  else if (name.equalsIgnoreCase("Utilities")) {
        addSubItem (new ListItem ("Splitter",name,false));
+       addSubItem (new ListItem ("Event Node",name,false));
     }
 
 }
