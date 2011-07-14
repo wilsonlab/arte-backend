@@ -8,20 +8,22 @@
 #include <math.h>
 #include <vector>
 
-// These variables control the current mode
-int CurrentMode = 2;
-const int NumModes = 5;
-
 // These variables set the dimensions of the rectanglar region we wish to view.
-const double xMin = 0, xMax = 400;
-const double yMin = -1*pow(2,15), yMax = pow(2,15);
 
+static double winWidth = 624, winHeight = 312;
+static double xBox = winWidth/4;
+static double yBox = winHeight/2;
+
+const double MAX_VOLT = pow(2,15);
+
+
+// ===================================
+// 		Arte Specific Variables
+// ===================================
 
 char host[] = "localhost";
 int port = 6303;
-
 NetComDat net;// = NetCom::initUdpRx(host,port);
-
 spike_net_t spike;
 int spikeCount =0;
 timeval startTime, now;
@@ -29,87 +31,68 @@ timeval startTime, now;
 int x[32];
 int y[32];
 
-void startOpenGL();
-void draw();
+// ===================================
+// 		Function Defs
+// ===================================
+
+void refreshDrawing();
 void drawBoundingBoxes();
 void drawWaveforms();
-void initRendering();
+void drawWaveformN(int n);
+
 void resizeWindow(int w, int h);
+
 void getNetSpike();
 
 
 
-// Main routine
-// Set up OpenGL, define the callbacks and start the main loop
 int main( int argc, char** argv )
 {
+	if (argc>1)
+		port = atoi(argv[1]);
+	else
+	{
+		std::cout<<"Usage: arteSpikeViewer port"<<std::endl;
+		return 0;
+	}
 
 	net = NetCom::initUdpRx(host,port);
 	srand(time(NULL));
 	gettimeofday(&startTime,NULL);
 
 	glutInit(&argc,argv);
-	startOpenGL();
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB );
+	glDisable(GL_DEPTH_TEST);
 
-	return(0);	// This line is never reached.
+	glutInitWindowPosition( 20, 60 );
+	glutInitWindowSize( winWidth, winHeight );
+
+	glutCreateWindow( "Arte Network Spike Viewer" );
+
+	glutReshapeFunc( resizeWindow );
+	glutIdleFunc( getNetSpike );
+	glutDisplayFunc( refreshDrawing );
+
+	glutMainLoop(  );
+
+	return(0);
 }
 
 void getNetSpike(void){
-	//std::cout<<"Waiting for spike  ";
 	NetCom::rxSpike(net, &spike);
 	spikeCount++;
-	draw();
-}
-
-void startOpenGL(){
-
-
-	// The image is not animated so single buffering is OK. 
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH );
-
-	// Window position (from top corner), and size (width and hieght)
-	glutInitWindowPosition( 20, 60 );
-	glutInitWindowSize( 300, 125 );
-	glutCreateWindow( "Simple Spike Viewer" );
-
-	// Initialize OpenGL as we like it..
-	initRendering();
-
-	// Set up the callback function for resizing windows
-	glutReshapeFunc( resizeWindow );
-
-	// Call this for background processing
-	 glutIdleFunc( getNetSpike );
-
-	// call this whenever window needs redrawing
-	glutDisplayFunc( draw );
-
-	// Start the main loop.  glutMainLoop never returns.
-	glutMainLoop(  );
-
+	refreshDrawing();
 }
 
 
-// Initialize OpenGL's rendering modes
-void initRendering()
-{
-	glEnable ( GL_DEPTH_TEST );
-	glEnableClientState(GL_VERTEX_ARRAY);
-}
-
-// Called when the window is resized
-//		w, h - width and height of the window in pixels.
-
-
-void draw(void)
+void refreshDrawing(void)
 {
 	//std::cout<<"Drawing Spike!  ";
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
 	glColor3f( 1.0, 1.0, 1.0 );		
 
-	drawBoundingBoxes();
-
 	drawWaveforms();
+	drawBoundingBoxes();
 
 	glutSwapBuffers();
 	glFlush();
@@ -117,65 +100,19 @@ void draw(void)
 void drawWaveforms(void){
 
 	int buffSize = spike.n_chans * spike.n_samps_per_chan;
-	int shift = pow(2,15);
-	shift = 0;
+	int shift = pow(2,14);
 
 	for (int i=0; i<buffSize; i++)
 		spike.data[i] = spike.data[i]-shift;
 
-	float dx = (xMax -xMin)/(float)(buffSize-2);
-
-	//spike.data[0] = 0 + spikeCount%50 * yMax/50;
-	//spike.data[1] = spike.data[0];
-
-
-	int sampIdx = 0;
 	glLineWidth(3.0);
 
-	// ================== Trace 1
-	glColor3f( 1.0, 0.0, 0.0 );		
-	sampIdx = 0;
-	glBegin( GL_LINE_STRIP );
-		for (int i=0; i<spike.n_samps_per_chan; i++)
-		{
-			glVertex2f(((i + 0*spike.n_samps_per_chan)*dx)+xMin, spike.data[sampIdx]);
-			sampIdx +=4;
-		}
-	glEnd();
 
-	// ================== Trace 2
-	glColor3f( 1.0, 1.0, 0.0 );		
-	sampIdx = 1;
-	glBegin( GL_LINE_STRIP );
-		for (int i=0; i<spike.n_samps_per_chan; i++)
-		{
-			glVertex2f(((i + 1*spike.n_samps_per_chan)*dx)+xMin, spike.data[sampIdx]);
-			sampIdx +=4;
-		}
-	glEnd();
-
-	// ================== Trace 3
-	glColor3f( 0.0, 1.0, 0.0 );		
-	sampIdx = 2;
-	glBegin( GL_LINE_STRIP );
-		for (int i=0; i<spike.n_samps_per_chan; i++)
-		{
-			glVertex2f(((i + 2*spike.n_samps_per_chan)*dx)+xMin, spike.data[sampIdx]);
-			sampIdx +=4;
-		}
-	glEnd();
-
-	// ================== Trace 4
-	glColor3f( 0.0, 1.0, 1.0 );		
-	sampIdx = 3;
-	glBegin( GL_LINE_STRIP );
-		for (int i=0; i<spike.n_samps_per_chan; i++)
-		{
-			glVertex2f(((i + 3*spike.n_samps_per_chan)*dx)+xMin, spike.data[sampIdx]);
-			sampIdx +=4;
-		}
-	glEnd();
-
+	// ================== Trace 1 ===========
+	//glScissor(0,0,winWidth/2, winHeight/2);	
+	glLoadIdentity();
+	for (int i=0; i<spike.n_chans; i++)
+		drawWaveformN(i);
 
 
 	gettimeofday(&now,NULL);
@@ -187,43 +124,111 @@ void drawWaveforms(void){
 
 
 }
+
+void drawWaveformN(int n)
+{
+	int sampIdx = n;
+
+	float viewDX = xBox/2;
+	float viewDY = yBox;
+	float viewX,viewY;
+	switch (n){
+	case 0:
+		glColor3f( 1.0, 0.0, 0.0);
+		viewX=0;
+		viewY=yBox;
+		break;
+	case 1:
+		glColor3f( 1.0, 1.0, 0.0);
+		viewX = xBox/2;
+		viewY = yBox;
+		break;
+	case 2:
+		glColor3f( 0.0, 1.0, 0.0);
+		viewX=0;
+		viewY=0;
+		break;
+	case 3:
+		glColor3f( 0.0, 1.0, 1.0);
+		viewX = xBox/2;
+		viewY = 0;
+		break;
+	default:
+		std::cout<<"drawing of more than 4 channels is not supported, returning! Requested:"<<n<<std::endl;
+		return;
+	}
+	glViewport(viewX,viewY,viewDX,viewDY);
+
+
+	float x = -1;
+	float dx = 2.0/(spike.n_samps_per_chan-1);
+	float dy = 2.0/((float)MAX_VOLT*2);
+	glBegin( GL_LINE_STRIP );
+	for (int i=0; i<spike.n_samps_per_chan; i++)
+	{
+		glVertex2f(x, spike.data[sampIdx]*dy);
+		sampIdx +=4;
+		x +=dx;
+	}
+	glEnd();
+}
+
+
+
+
 void drawBoundingBoxes(void){
 	
 	glLineWidth(1.0);
 	glColor3f( 1.0, 1.0, 1.0 );		
-	glBegin(GL_LINE_LOOP);
-		glVertex2f(xMin+1, yMin+1);
-		glVertex2f(xMin+1, yMax);
-		glVertex2f(xMax * 1.0/4.0, yMax);
-		glVertex2f(xMax * 1.0/4.0, yMin+.2);
+
+	// --------------------------------
+	// Draw Bounding Box for Waveforms
+	// --------------------------------
+	glViewport(0, 0, xBox, yBox*2	);
+	glBegin(GL_LINES);
+		//Horizontal Line
+		glVertex2f(-1, 0);
+		glVertex2f(1,  0);
+		//Vertical Line
+		glVertex2f(0, -1);
+		glVertex2f(0,  1);
 	glEnd();
 
-	glBegin(GL_LINE_LOOP);
-		glVertex2f(xMin+1, yMin+1);
-		glVertex2f(xMin+1, yMax);
-		glVertex2f(xMax * 2.0/4.0, yMax);
-		glVertex2f(xMax * 2.0/4.0, yMin+1);
+	glLineWidth(5);
+
+	//Right Edge LIne
+	glBegin(GL_LINES);
+		glVertex2f(1, -1);
+		glVertex2f(1,  1);
 	glEnd();
 
-	glBegin(GL_LINE_LOOP);
-		glVertex2f(xMin+1, yMin+1);
-		glVertex2f(xMin+1, yMax);
-		glVertex2f(xMax * 3.0/4.0, yMax);
-		glVertex2f(xMax * 3.0/4.0, yMin+1);
+
+	// --------------------------------
+	// Draw Bounding Box for projections
+	// --------------------------------
+	glViewport(xBox, 0, 3*xBox, yBox*2);
+	glLineWidth(1);
+	glBegin(GL_LINES);
+		//Horizontal Line
+		glVertex2f(-1, 0);
+		glVertex2f(1,  0); 
+		//left vertical line
+		glVertex2f(-1.0/3.0, -1);
+		glVertex2f(-1.0/3.0,  1);
+		//right vertical line
+		glVertex2f(1.0/3.0, -1);
+		glVertex2f(1.0/3.0,  1);
 	glEnd();
 
-	glBegin(GL_LINE_LOOP);
-		glVertex2f(xMin+1, yMin+1);
-		glVertex2f(xMin+1, yMax);
-		glVertex2f(xMax * 4.0/4.0, yMax);
-		glVertex2f(xMax * 4.0/4.0, yMin+1);
-	glEnd();
 }
 
 void resizeWindow(int w, int h)
 {
 
-
+	winWidth = w;
+	winHeight = h;
+	xBox = w/4;
+	yBox = h/2;
 	double scale, center;
 	double windowxMin, windowxMax, windowyMin, windowyMax;
 
@@ -234,6 +239,7 @@ void resizeWindow(int w, int h)
 	// Determine the min and max values for x and y that should appear in the window.
 	// The complication is that the aspect ratio of the window may not match the
 	//		aspect ratio of the scene we want to view.
+/*
 	w = (w==0) ? 1 : w;
 	h = (h==0) ? 1 : h;
 	if ( (xMax-xMin)/w < (yMax-yMin)/h ) {
@@ -256,10 +262,10 @@ void resizeWindow(int w, int h)
 	// Now that we know the max & min values for x & y that should be visible in the window,
 	//		we set up the orthographic projection.
 
-	
+*/	
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
-	glOrtho( xMin, xMax, yMin, yMax, -1, 1 );
+	glOrtho( 0, 0, winWidth, winHeight, 0, 0 );
 
 }
 
