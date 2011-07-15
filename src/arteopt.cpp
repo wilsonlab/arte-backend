@@ -27,6 +27,7 @@ neural_daq          *neural_daq_array;
 Filtered_buffer     *filtered_buffer_array;
 Trode               *trode_array;
 Lfp_bank            *lfp_bank_array;
+
 NetCom a_netcom;
 std::vector<NetCom>  netcom_vector;  // netcom is vector b/c I don't know that it has a fixed size
 
@@ -77,6 +78,7 @@ void arte_init(int argc, char *argv[], const std::string &setup_fn, const std::s
   }
   catch(...){  // find out where the xml_parse_error lives, & how to handle it
     std::cout << "XML read error was thrown - from arteopt.cpp" << std::endl;
+    exit(1);
   }
 
   arte_setup_init(argc, argv); // Use the property_tree to set global vars
