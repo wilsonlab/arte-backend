@@ -12,20 +12,21 @@
 
 
 StreamViewer::StreamViewer (GenericProcessor* parentNode, FilterViewport* vp) 
-	: GenericEditor(parentNode, vp)
+	: GenericEditor(parentNode, vp), tabIndex(-1)
 
 {
 	desiredWidth = 210;
 
-	docWindow = new DocumentWindow(T("Stream Window"), Colours::black, DocumentWindow::allButtons);
-	docWindow->centreWithSize(300,200);
-	docWindow->setUsingNativeTitleBar(true);
-	docWindow->setResizable(true,true);
-	docWindow->setVisible(true);
+	//dataWindow = new DataWindow();//(T("Stream Window"), Colours::black, DocumentWindow::allButtons);
 
-	viewport->addTab("Stream",0);
+	StreamViewerRenderer* streamList = new StreamViewerRenderer(0,0);
+	//Viewport* listViewer = new Viewport("Viewport");
+	//listViewer->setViewedComponent(streamList);
+	//streamList->setBounds(0,0,viewport->getWidth(),viewport->getHeight());
 
-	//tabIndex = 
+	tabIndex = viewport->addTab("Stream",streamList);
+	//listViewer->setBounds(0,0,300,400);
+	
 
 }
 
@@ -42,8 +43,12 @@ StreamViewer::~StreamViewer()
 	//slider = 0;
 
 	//delete(docWindow);
+	//viewport->removeTab(0);
+	if (tabIndex > -1)
+		viewport->removeTab(tabIndex);
 
 	deleteAllChildren();
+	//dataWindow = 0;
 	//slider = 0;	
 
 }
@@ -52,8 +57,8 @@ StreamViewer::~StreamViewer()
 
 //===================================================
 
-StreamViewerRenderer::StreamViewerRenderer(AudioSampleBuffer* buffer)
-	: displayBuffer(buffer)
+StreamViewerRenderer::StreamViewerRenderer(AudioSampleBuffer* buffer, int chan)
+	: displayBuffer(buffer), channel(chan), isSelected(false)
 {
 
 }
@@ -63,9 +68,21 @@ StreamViewerRenderer::~StreamViewerRenderer()
 	
 }
 
+void StreamViewerRenderer::select()
+{
+	isSelected = true;
+	glClearColor(0.0f, 1.0f, 0.25f, 0.0f);
+}
+
+void StreamViewerRenderer::deselect()
+{
+	isSelected = false;
+	glClearColor(0.0f, 0.5f, 0.25f, 0.0f);
+}
+
 void StreamViewerRenderer::newOpenGLContextCreated()
 {
-	glClearColor(0.0f, 0.5f, 0.25f, 0.0f);
+	glClearColor(0.0f, 0.5f, 0.25f, 1.0f);
 	glClearDepth (1.0);
 
 	glMatrixMode (GL_PROJECTION);
@@ -96,7 +113,7 @@ void StreamViewerRenderer::renderOpenGL()
 {
 
 	//std::cout << "Painting..." << std::endl;
-
+		
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	//glMatrixMode (GL_PROJECTION);
@@ -106,29 +123,30 @@ void StreamViewerRenderer::renderOpenGL()
 
 	int skip = 1;
 
-	//glBegin(GL_LINE_STRIP);
+	glColor3f(1,1,1);
+	glBegin(GL_LINE_STRIP);
+	glVertex2f(0,0);
+	glVertex2f(1,1);
+	glVertex2f(0,1);
+	glVertex2f(1,0);
+	glVertex2f(0,0);
+	glEnd();
 
-	int nSamples = displayBuffer->getNumSamples();
-	//std::cout << displayBuffer->getNumChannels() << std::endl;
 
-	//std::cout << *displayBuffer->getSampleData(0,1) << std::endl;
-
-	for (int chan = 0; chan < displayBuffer->getNumChannels(); chan++) {
+	// int nSamples = displayBuffer->getNumSamples();
 	
-		glBegin(GL_LINE_STRIP);
+	// glBegin(GL_LINE_STRIP);
 
-		//std::cout << "Message Received." << std::endl;
-		glColor3f(0,0,0);//1.0*chan/16,1.0*chan/16,1.0*chan/16);
+	// glColor3f(0,0,0);//1.0*chan/16,1.0*chan/16,1.0*chan/16);
 	
-		for (int n = 0; n < nSamples-skip; n+= skip )
-		{
-			glVertex2f(float(n)/nSamples,*displayBuffer->getSampleData(chan,n)+0.03+chan*0.06);
-			glVertex2f(float(n+skip)/nSamples,*displayBuffer->getSampleData(chan,n+skip)+0.03+chan*0.06);
-		}
+	// for (int n = 0; n < nSamples-skip; n+= skip )
+	// {
+	// 	glVertex2f(float(n)/nSamples,*displayBuffer->getSampleData(channel,n));
+	// 	glVertex2f(float(n+skip)/nSamples,*displayBuffer->getSampleData(channel,n+skip));
+	// }
 		
-		glEnd();
+	// glEnd();
 
-	}
 
 	glFlush();
 		
@@ -139,4 +157,35 @@ void StreamViewerRenderer::renderOpenGL()
 void StreamViewerRenderer::actionListenerCallback(const String & msg)
 {
 	repaint();
+}
+
+
+
+
+DataWindow::DataWindow()
+	: DocumentWindow ("Stream Window", 
+					  Colours::black, 
+					  DocumentWindow::allButtons)
+
+{
+	centreWithSize(300,200);
+	setUsingNativeTitleBar(true);
+	setResizable(true,true);
+	setVisible(true);
+	setTitleBarHeight(40);
+	setContentComponent(0);
+}
+
+DataWindow::~DataWindow()
+{
+	//deleteAllChildren();
+	//setContentComponent (0);
+	
+}
+
+void DataWindow::closeButtonPressed()
+{
+	setVisible(false);
+	//viewport->removeTab(0);
+
 }

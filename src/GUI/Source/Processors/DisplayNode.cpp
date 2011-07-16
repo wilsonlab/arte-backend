@@ -13,7 +13,7 @@
 #include <stdio.h>
 
 DisplayNode::DisplayNode(const String name_, int* nSamps, int nChans, const CriticalSection& lock_, int id)
-	: ResamplingNode(name_, nSamps, nChans, lock_, id, false)
+	: GenericProcessor(name_, nSamps, nChans, lock_, id)
 
 {
 	
@@ -26,9 +26,9 @@ DisplayNode::~DisplayNode()
 
 AudioProcessorEditor* DisplayNode::createEditor()
 {
-	StreamViewer* streamViewer = new StreamViewer(this, viewport);
+	Visualizer* visualizer = new Visualizer(this, viewport);
 	
-	std::cout << "Creating Stream Viewer." << std::endl;
-	return streamViewer;
+	std::cout << "Creating visualizer." << std::endl;
+	return visualizer;
 
 }

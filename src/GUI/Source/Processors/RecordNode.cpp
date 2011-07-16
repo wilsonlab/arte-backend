@@ -17,17 +17,14 @@ RecordNode::RecordNode(const String name_,
 	: GenericProcessor(name_, nSamples, numChans, lock_, id), isRecording(false)
 {
 
+	setPlayConfigDetails(numChans,0,44100.0,128);
 
-	setPlayConfigDetails(3,0,44100.0,128);
-
-	outputFile = File("./data");
+	outputFile = File("./data"); // create output file
 	outputStream = 0;
 }
 
 
 RecordNode::~RecordNode() {
-	
-	
 
 }
 

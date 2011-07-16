@@ -29,7 +29,7 @@ private:
 	Slider* slider;
 	DocumentWindow* docWindow;
 
-	int tabIndex;
+	//int tabIndex;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilterEditor);
 

@@ -43,11 +43,13 @@ private:
 
 	int SOURCE_NODE_ID;
 	const int RECORD_NODE_ID;
-	const int DISPLAY_NODE_ID;
+	const int AUDIO_NODE_ID;
 	const int OUTPUT_NODE_ID;
 	const int RESAMPLING_NODE_ID;
 
 	Array<int, CriticalSection> nodeArray; 
+
+	void createDefaultNodes();
 
 };
 

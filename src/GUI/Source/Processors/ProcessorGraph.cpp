@@ -8,64 +8,73 @@
   ==============================================================================
 */
 
-
 #include "ProcessorGraph.h"
 #include "SourceNode.h"
 #include "FilterNode.h"
 #include "GenericProcessor.h"
-#include "DisplayNode.h"
+#include "AudioNode.h"
 #include "ResamplingNode.h"
 #include "SignalGenerator.h"
 #include "RecordNode.h"
 #include "EventNode.h"
+#include "DisplayNode.h"
 #include <stdio.h>
 
 ProcessorGraph::ProcessorGraph(int numChannels) : currentNodeId(100), lastNodeId(1), 
-	SOURCE_NODE_ID(0), RECORD_NODE_ID(199), DISPLAY_NODE_ID(10), OUTPUT_NODE_ID(201), RESAMPLING_NODE_ID(202)
+	SOURCE_NODE_ID(0), 
+	RECORD_NODE_ID(199), 
+	AUDIO_NODE_ID(10), 
+	OUTPUT_NODE_ID(201), 
+	RESAMPLING_NODE_ID(202),
+	numSamplesInThisBuffer(1024)
 	
 	{
 
 	setPlayConfigDetails(0,2,44100.0, 128);
 
-	numSamplesInThisBuffer = 1024;
+	createDefaultNodes();
+
+}
+
+ProcessorGraph::~ProcessorGraph() { }
+
+
+void ProcessorGraph::createDefaultNodes()
+{
 
 	// add output node
 	AudioProcessorGraph::AudioGraphIOProcessor* on = 
 		new AudioProcessorGraph::AudioGraphIOProcessor(AudioProcessorGraph::AudioGraphIOProcessor::audioOutputNode);
 
 	// add record node
-	RecordNode* recn = new RecordNode(T("Record Node"), &numSamplesInThisBuffer, numChannels, lock, RECORD_NODE_ID);
+	RecordNode* recn = new RecordNode(T("Record Node"), &numSamplesInThisBuffer, 1024, lock, RECORD_NODE_ID);
 
-	// add display node
-	DisplayNode* dn = new DisplayNode(T("Display Node"), &numSamplesInThisBuffer, numChannels, lock, DISPLAY_NODE_ID);
+	// add audio node
+	AudioNode* an = new AudioNode(T("Audio Node"), &numSamplesInThisBuffer, 1024, lock, AUDIO_NODE_ID);
 
 	// add resampling node
-	ResamplingNode* rn = new ResamplingNode(T("Resampling Node"), &numSamplesInThisBuffer, numChannels, lock, RESAMPLING_NODE_ID, true);
+	ResamplingNode* rn = new ResamplingNode(T("Resampling Node"), &numSamplesInThisBuffer, 2, lock, RESAMPLING_NODE_ID, true);
 
 	addNode(on,OUTPUT_NODE_ID);
 	addNode(recn,RECORD_NODE_ID);
-	addNode(dn, DISPLAY_NODE_ID);
+	addNode(an, AUDIO_NODE_ID);
 	addNode(rn, RESAMPLING_NODE_ID);
 
-	 //  connect resampling node to output node
-    addConnection(RESAMPLING_NODE_ID, // sourceNodeID
-				  0, // sourceNodeChannelIndex
-				  OUTPUT_NODE_ID, // destNodeID
-				  0); // destNodeChannelIndex
+	// connect audio network
+	for (int n = 0; n < 2; n++) {
+		
+		addConnection(AUDIO_NODE_ID, n,
+		              RESAMPLING_NODE_ID, n);
+		
+		addConnection(RESAMPLING_NODE_ID, n,
+		              OUTPUT_NODE_ID, n);
 
-	addConnection(RESAMPLING_NODE_ID, // sourceNodeID
-				  1, // sourceNodeChannelIndex
-				  OUTPUT_NODE_ID, // destNodeID
-				  1); // destNodeChannelIndex
+	}
 
-
-	std::cout << "Processor graph created." << std::endl;
-
-	
+	std::cout << "Default nodes created." << std::endl;
 	
 }
 
-ProcessorGraph::~ProcessorGraph() { }
 
 void* ProcessorGraph::createNewProcessor(const String& description, FilterViewport* vp) {
 
@@ -121,6 +130,15 @@ void* ProcessorGraph::createNewProcessor(const String& description, FilterViewpo
 		}
 
 
+	} else if (processorType.equalsIgnoreCase("Visualizers")) {
+		
+		if (subProcessorType.equalsIgnoreCase("Stream Viewer")) {
+			
+			std::cout << "Creating a display node." << std::endl;
+			processor = new DisplayNode(subProcessorType, &numSamplesInThisBuffer, 16, lock, currentNodeId);
+		}
+	
+	
 	} else {
 
 		processor = new GenericProcessor(subProcessorType, &numSamplesInThisBuffer, 16, lock, id);
@@ -129,6 +147,7 @@ void* ProcessorGraph::createNewProcessor(const String& description, FilterViewpo
 
 	if (processor != 0) {
 
+		std::cout << "Adding node to graph." << std::endl;
 		addNode(processor,id);
 
 		if (false) {//id != SOURCE_NODE_ID) {
@@ -146,15 +165,9 @@ void* ProcessorGraph::createNewProcessor(const String& description, FilterViewpo
 
 			for (int chan = 0; chan < processor->getNumOutputs(); chan++) {
 
-				//std::cout << "  Connecting channel " << chan << std::endl;
 				addConnection(id, // sourceNodeID
 				  	chan, // sourceNodeChannelIndex
-				   	DISPLAY_NODE_ID, // destNodeID
-				  	chan); // destNodeChannelIndex
-
-				addConnection(id, // sourceNodeID
-				  	chan, // sourceNodeChannelIndex
-				   	RESAMPLING_NODE_ID, // destNodeID
+				   	AUDIO_NODE_ID, // destNodeID
 				  	chan); // destNodeChannelIndex
 
 				addConnection(id, // sourceNodeID

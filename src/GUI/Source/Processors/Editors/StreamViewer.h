@@ -39,6 +39,25 @@
 
 class FilterViewport;
 
+
+
+
+class DataWindow : public DocumentWindow
+{
+public:
+	DataWindow();
+	~DataWindow();
+
+	void closeButtonPressed();
+
+private:
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DataWindow);
+
+};
+
+
+
+
 class StreamViewer : public GenericEditor//,
 					 //public Slider::Listener
 {
@@ -49,7 +68,7 @@ public:
 
 private:	
 	//Slider* slider;
-	DocumentWindow* docWindow;
+	ScopedPointer <DataWindow> dataWindow;
 
 	int tabIndex;
 
@@ -58,23 +77,99 @@ private:
 };
 
 
+
+
 class StreamViewerRenderer : public OpenGLComponent,
 							 public ActionListener
 
 {
 public:
-	StreamViewerRenderer(AudioSampleBuffer* buffer);
+	StreamViewerRenderer(AudioSampleBuffer* buffer, int channel);
 	~StreamViewerRenderer();
 	void newOpenGLContextCreated();
 	void renderOpenGL();
+	void select();
+	void deselect();
 
 private:
 	AudioSampleBuffer* displayBuffer;
 
 	void actionListenerCallback(const String& msg);
 
+	int channel;
+	int isSelected;
+
 };
 
+
+class StreamList : public ListBox,
+				   public ListBoxModel
+
+{
+public:
+	StreamList()
+		: ListBox ("Stream List", 0)
+	{
+		setModel(this);
+		setMultipleSelectionEnabled (true);
+		setRowHeight(40);
+		//setBounds(0,0,getWidth(),5*20);
+		setColour(ListBox::backgroundColourId,Colours::darkgrey);
+		setColour(ListBox::outlineColourId,Colours::darkgrey);
+	}
+
+	~StreamList()
+	{
+	}
+
+	int getNumRows()
+	{
+		return 20;
+	}
+
+	void paintListBoxItem (int rowNumber,
+						   Graphics& g,
+						   int width, 
+						   int height,
+						   bool rowIsSelected)
+	{
+		if (rowIsSelected)
+			g.fillAll (Colours::lightblue);
+		else
+			g.fillAll (Colours::black.withAlpha(0.1f));
+		
+		g.setColour (Colours::yellow);
+		g.setFont (height* 0.7f);
+		g.drawText (String (rowNumber +1),
+					5, 0, width, height,
+					Justification::centredLeft, true);
+
+	}
+
+	void paint (Graphics& g)
+	{
+		g.fillAll (Colours::black);
+	}
+
+	Component* refreshComponentForRow (int rowNumber, bool isRowSelected, 
+	                                   Component* existingComponentToUpdate)
+	{
+		StreamViewerRenderer* viewer = (StreamViewerRenderer*) existingComponentToUpdate;
+
+		if (viewer == 0)
+			viewer = new StreamViewerRenderer (0, rowNumber);
+
+	
+		if (isRowSelected) {
+			viewer->select();
+			std::cout << "Row " << rowNumber << " is selected." << std::endl;
+		} else {
+			viewer->deselect();
+		}
+		
+		return viewer;
+	}
+};
 
 
 // class StreamViewer : public Component,

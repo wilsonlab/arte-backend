@@ -13,12 +13,12 @@
 
 
 #include "../../JuceLibraryCode/JuceHeader.h"
-#include "Editors/StreamViewer.h"
-#include "ResamplingNode.h"
+#include "Editors/Visualizer.h"
+#include "GenericProcessor.h"
 
 //class StreamViewer;
 
-class DisplayNode : public ResamplingNode
+class DisplayNode : public GenericProcessor
 
 {
 public:

@@ -32,7 +32,7 @@ FilterEditor::FilterEditor (GenericProcessor* parentNode, FilterViewport* vp)
 	//docWindow->setResizable(true,true);
 	//docWindow->setVisible(true);
 
-	viewport->addTab("Name",0);
+	//viewport->addTab("Name",0);
 
 	//tabIndex = 
 
@@ -52,7 +52,10 @@ FilterEditor::~FilterEditor()
 
 	//delete(docWindow);
 
+	//viewport->removeTab(0);
+
 	deleteAllChildren();
+
 	//slider = 0;	
 
 }

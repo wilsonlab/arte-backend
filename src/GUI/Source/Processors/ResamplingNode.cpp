@@ -76,6 +76,8 @@ ResamplingNode::ResamplingNode(const String name_,
 ResamplingNode::~ResamplingNode()
 {
 	filter = 0;
+	//deleteAndZero(destBuffer);
+	//deleteAndZero(tempBuffer);
 	//filterEditor = 0;
 }
 
