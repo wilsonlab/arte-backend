@@ -183,8 +183,6 @@ void buffToCommand(command_t *command, char* buff, bool c){
 
 /*------------- WAVE ------------*/
 void waveToBuff(lfp_bank_net_t* lfp, char* buff, int *blen, bool c){
-  //TODO IMPLEMENT
-  //printf("waveToBuff\n");
   
   int s;
 

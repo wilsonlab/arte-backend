@@ -27,6 +27,7 @@ class Trode{
 
   uint16_t n_chans;
   rdata_t thresholds[MAX_FILTERED_BUFFER_N_CHANS];
+  uint16_t  gains[MAX_FILTERED_BUFFER_N_CHANS];
   name_string_t spike_mode;
   uint16_t samps_before_trig;
   uint16_t samps_after_trig;
@@ -34,6 +35,7 @@ class Trode{
   uint16_t refractory_period_samps;
   uint16_t refractory_period_tics;
   uint32_t next_ok_spike_ts;
+  uint32_t total_spikes;
   
   Filtered_buffer *my_buffer;
 
@@ -60,6 +62,9 @@ class Trode{
 	    Filtered_buffer * filtered_buffer_curs);
 
   void setup_spike_array();
+  void set_thresh_uv_one_thresh_n_chans(int16_t uv_thresh, int *chan_array, int n_chans_to_set);
+  void set_thresh_uv_n_thresh_n_chans(int16_t *uv_thresh_array, int *chan_array, int n_chans_to_set);
+  void set_thresh_uv_one_thresh_all_chans(int16_t uv_thresh);
 
   void print_options();
   void print_buffers(int chan_lim, int samp_lim); // this should be handled by my_buffer, not trode

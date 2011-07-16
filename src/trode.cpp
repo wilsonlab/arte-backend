@@ -44,6 +44,7 @@ void Trode::init2(boost::property_tree::ptree &trode_pt,
   std::string tmp_spikemode;
   // assign trode-specific properties
   assign_property<uint16_t>("n_chans", &n_chans, trode_pt, default_pt, 1);
+  assign_property<uint16_t>("gains", gains, trode_pt, default_pt, n_chans);
   assign_property_ftor<rdata_t>("thresholds",  thresholds, trode_pt, default_pt, n_chans);
   assign_property<uint16_t>("samps_before_trig", &samps_before_trig, trode_pt, default_pt, 1);
   assign_property<uint16_t>("samps_after_trig" , &samps_after_trig , trode_pt, default_pt, 1);
@@ -124,6 +125,49 @@ void Trode::setup_spike_array(){
   printf("Done initializing spike structs.\n");
 }
 
+void Trode::set_thresh_uv_one_thresh_n_chans(int16_t uv_thresh, int *chan_array, int n_chans_to_set){
+
+  double thresh_at_daq_V;
+  int target_chans[MAX_FILTERED_BUFFER_N_CHANS];
+  int n_target;
+  int i;
+ 
+  if(n_chans_to_set == -1){
+    n_target = n_chans;
+    for(i = 0; i < n_target; i++){
+      target_chans[i] = i;
+    }
+  } else {
+    n_target = n_chans_to_set;
+    for(i = 0; i < n_target; i++){
+      if( chan_array[i] < n_chans ){
+	target_chans[i] = chan_array[i];
+      } else {
+	printf("Error: tried to set chan %d of trode %d which has %d chans\n", 
+	       chan_array[i], name, n_chans);
+	target_chans[i] = i;
+      }
+    }
+  }
+
+  for(i = 0; i < n_target; i++){
+    thresh_at_daq_V = (double)uv_thresh / 1000000.0 * (double)gains[i];
+    thresholds[i] = ftor(&thresh_at_daq_V);
+  }
+}
+
+void Trode::set_thresh_uv_n_thresh_n_chans(int16_t *uv_thresh_array, int *chan_array, int n_chans_to_set){
+  for(int i = 0; i < n_chans_to_set; i++){
+    set_thresh_uv_one_thresh_n_chans( uv_thresh_array[i], chan_array+i , 1 );
+    //set_thresh_uv_one_thresh_n_chans( 1, chan_array, 1 );
+  }
+}
+
+void Trode::set_thresh_uv_one_thresh_all_chans(int16_t uv_thresh){
+  // set all chans to this thresh
+  set_thresh_uv_one_thresh_n_chans( uv_thresh, NULL, -1 );
+}
+    
 
 void *trode_filter_data(void *t){
 

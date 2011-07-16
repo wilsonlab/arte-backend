@@ -34,7 +34,7 @@ class NetCom{
   static int txSpike(NetComDat net, spike_net_t* spike);
   static void rxSpike(NetComDat net, spike_net_t* spike);
   
-  static int txWave(NetComDat net, wave_t w, int nTx);
+  static int txWave(NetComDat net, lfp_bank_net_t *lfp);
   static void rxWave(NetComDat net, lfp_bank_net_t *lfp);
 
   static int txCommand(NetComDat net, command_t* the_command);
