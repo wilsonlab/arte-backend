@@ -65,19 +65,49 @@ int main(int argc, char *argv[]){
   printf("TEST\n"); fflush(stdout);
   printf("addy of this_arte_packet:%p\n",this_arte_packet); fflush(stdout); 
 
+  if( sourcetype == NETCOM_UDP_SPIKE){
+    spike_net_t* test_spike = (spike_net_t*)this_arte_packet;
+    printf("test before write_file_header: name:%d n_chans:%d\n", 
+	   test_spike->name, test_spike->n_chans);
+  }
+
+  
+
   write_file_header(this_arte_packet, argc, argv, sourcetype);
   
   printf("Finished writing file header.\n"); fflush(stdout);
+
+  if( sourcetype == NETCOM_UDP_SPIKE){
+    spike_net_t* test_spike = (spike_net_t*)this_arte_packet;
+    printf("test before first write_mwl: name:%d n_chans:%d\n", 
+	   test_spike->name, test_spike->n_chans);
+  }
   
   write_mwl(this_arte_packet, sourcetype);
   
   printf("Finished writing first packet with write_mwl.\n"); fflush(stdout);
 
+
+  if( sourcetype == NETCOM_UDP_SPIKE){
+    spike_net_t* test_spike = (spike_net_t*)this_arte_packet;
+    printf("test before loop: name:%d n_chans:%d\n", 
+	   test_spike->name, test_spike->n_chans);
+  }
+  
   if(true){
 
     while( feof(in_f) == 0){
       ok_packet = get_next_packet(this_arte_packet, sourcename, sourcetype);
       if(ok_packet){
+
+	fflush(out_f);
+	//printf("in loop...\n");
+	if( sourcetype == NETCOM_UDP_SPIKE){
+	  spike_net_t* test_spike = (spike_net_t*)this_arte_packet;
+	  printf("test before write_mwl in loop: name:%d n_chans:%d\n", 
+	 	 test_spike->name, test_spike->n_chans);
+	}
+  
    	write_mwl(this_arte_packet, sourcetype);
 	packet_count++;
       }
@@ -94,21 +124,21 @@ int main(int argc, char *argv[]){
 
 void write_mwl(void *arte_packet, packetType_t sourcetype){
   
-  spike_net_t *spike;
-  lfp_bank_net_t *lfp;
+  spike_net_t *write_spike;
+  lfp_bank_net_t *write_lfp;
   
   if( sourcetype == NETCOM_UDP_SPIKE ){
-    printf("In write_mwl: spike name:%d n_chans:%d\n", spike->name, spike->n_chans);
-    spike = (spike_net_t *)arte_packet;
-    fwrite(&(spike->ts), 1, sizeof(spike->ts), out_f);
-    fwrite(spike->data, (spike->n_chans * spike->n_samps_per_chan), sizeof(rdata_t),  out_f);
+    write_spike = (spike_net_t *)arte_packet;
+    printf("In write_mwl: spike name:%d n_chans:%d\n", write_spike->name, write_spike->n_chans);
+    fwrite(&(write_spike->ts), 1, sizeof(write_spike->ts), out_f);
+    fwrite(write_spike->data, (write_spike->n_chans * write_spike->n_samps_per_chan), sizeof(rdata_t),  out_f);
     return;
   }
 
   if( sourcetype == NETCOM_UDP_LFP ){
-    lfp = (lfp_bank_net_t *)arte_packet;
-    fwrite( &(lfp->ts), 1, sizeof(timestamp_t), out_f );
-    fwrite( lfp->data, lfp->n_chans * lfp->n_samps_per_chan,  lfp->samp_n_bytes, out_f);
+    write_lfp = (lfp_bank_net_t *)arte_packet;
+    fwrite( &(write_lfp->ts), 1, sizeof(timestamp_t), out_f );
+    fwrite( write_lfp->data, write_lfp->n_chans * write_lfp->n_samps_per_chan,  write_lfp->samp_n_bytes, out_f);
     return;
   }
 
@@ -145,7 +175,7 @@ void write_file_header(void *arte_packet, int argc, char *argv[], packetType_t s
 
 
   ps(); ps(); fprintf(out_f, "BEGINHEADER\n");
-  ps(); fprintf(out_f, " Program\tadextract\n"); //Problem?
+  ps(); fprintf(out_f, " Program:\tadextract\n"); //Problem?
   ps();   fprintf(out_f, " Program Version:\t1.18\n"); //Problem?
   ps(); fprintf(out_f, " Argc:\t%d\n", argc);
   for(int i = 1; i < argc; i++){
@@ -178,7 +208,7 @@ void write_file_header(void *arte_packet, int argc, char *argv[], packetType_t s
 
   
   if( sourcetype == NETCOM_UDP_SPIKE){
-    ps(); fprintf(out_f, " Fields\ttimestamp,%d,%d,%d waveform,%d,%d,%d\n",8,4,1,2,2,
+    ps(); fprintf(out_f, " Fields:\ttimestamp,%d,%d,%d\twaveform,%d,%d,%d\n",8,4,1,2,2,
 		  spike->n_chans * spike->n_samps_per_chan);
     //printf("spike->ts:%d  spike->name:%d, spike->n_chans:%d, spike->n_samps_per_chan:%d\n",
     //	   spike->ts, spike->name, spike->n_chans, spike->n_samps_per_chan);
@@ -186,7 +216,7 @@ void write_file_header(void *arte_packet, int argc, char *argv[], packetType_t s
 
 
   if( sourcetype == NETCOM_UDP_LFP){
-    ps(); fprintf(out_f, " Fields\ttimestamp,8,4,1,2,2,%d\n", 
+    ps(); fprintf(out_f, " Fields:\ttimestamp,8,4,1\tdata,2,2,%d\n", 
 		  lfp->n_chans * lfp->n_samps_per_chan);}
 
   ps(); fprintf(out_f, "\n");
