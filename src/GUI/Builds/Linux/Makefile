@@ -63,8 +63,9 @@ OBJECTS := \
   $(OBJDIR)/RootFinder_239a995f.o \
   $(OBJDIR)/State_22979684.o \
   $(OBJDIR)/AudioComponent_521bd9c9.o \
+  $(OBJDIR)/AudioNode_94606ff3.o \
   $(OBJDIR)/EventNode_95c842b7.o \
-  $(OBJDIR)/StreamViewer_875343ca.o \
+  $(OBJDIR)/Visualizer_d5ab35b6.o \
   $(OBJDIR)/FilterEditor_dfe1f39d.o \
   $(OBJDIR)/GenericEditor_becb2ad6.o \
   $(OBJDIR)/okFrontPanelDLL_158af498.o \
@@ -208,14 +209,19 @@ $(OBJDIR)/AudioComponent_521bd9c9.o: ../../Source/Audio/AudioComponent.cpp
 	@echo "Compiling AudioComponent.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
+$(OBJDIR)/AudioNode_94606ff3.o: ../../Source/Processors/AudioNode.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling AudioNode.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
 $(OBJDIR)/EventNode_95c842b7.o: ../../Source/Processors/EventNode.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling EventNode.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/StreamViewer_875343ca.o: ../../Source/Processors/Editors/StreamViewer.cpp
+$(OBJDIR)/Visualizer_d5ab35b6.o: ../../Source/Processors/Editors/Visualizer.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling StreamViewer.cpp"
+	@echo "Compiling Visualizer.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/FilterEditor_dfe1f39d.o: ../../Source/Processors/Editors/FilterEditor.cpp
