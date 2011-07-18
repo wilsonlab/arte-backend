@@ -10,6 +10,7 @@
 
 
 #include "DisplayNode.h"
+#include "ResamplingNode.h"
 #include <stdio.h>
 
 DisplayNode::DisplayNode(const String name_, int* nSamps, int nChans, const CriticalSection& lock_, int id)
@@ -26,7 +27,13 @@ DisplayNode::~DisplayNode()
 
 AudioProcessorEditor* DisplayNode::createEditor()
 {
+
 	Visualizer* visualizer = new Visualizer(this, viewport);
+
+	ResamplingNode* source = (ResamplingNode*) getSourceNode();
+
+	visualizer->setBuffers(source->getDestBuffer(),0);
+	visualizer->setUIComponent(getUIComponent());
 	
 	std::cout << "Creating visualizer." << std::endl;
 	return visualizer;

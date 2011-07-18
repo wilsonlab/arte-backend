@@ -26,9 +26,12 @@ public:
 	DisplayNode(const String name, int* nSamples, int nChans, const CriticalSection& lock, int nodeId);
 	~DisplayNode();
 
+
+
 	AudioProcessorEditor* createEditor();
 	
 private:
+
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DisplayNode);
 

@@ -13,9 +13,11 @@
 
 #include "../../JuceLibraryCode/JuceHeader.h"
 
+class GenericProcessor;
 class RecordNode;
 class SourceNode;
 class FilterViewport;
+class UIComponent;
 
 class ProcessorGraph : public AudioProcessorGraph
 {
@@ -23,8 +25,12 @@ public:
 	ProcessorGraph(int numChannels);
 	~ProcessorGraph();
 
-	void* createNewProcessor(const String& description, FilterViewport* viewport);
-	void removeProcessor(int nodeId);
+	void* createNewProcessor(String& description, 
+							 FilterViewport* viewport,
+							 GenericProcessor* source,
+							 GenericProcessor* dest);
+
+	void removeProcessor(GenericProcessor* processor);
 
 	bool enableSourceNode();
 	bool disableSourceNode();
@@ -39,6 +45,13 @@ public:
 	RecordNode* getRecordNode();
 	SourceNode* getSourceNode();
 
+	void setUIComponent(UIComponent* ui) {UI = ui;}
+
+	const String saveState(const File& file);
+	const String loadState(const File& file);
+
+	XmlElement* createNodeXml(GenericProcessor*);
+
 private:	
 
 	int SOURCE_NODE_ID;
@@ -47,9 +60,13 @@ private:
 	const int OUTPUT_NODE_ID;
 	const int RESAMPLING_NODE_ID;
 
-	Array<int, CriticalSection> nodeArray; 
+	//Array<int, CriticalSection> nodeArray; 
 
 	void createDefaultNodes();
+
+	UIComponent* UI;
+
+
 
 };
 

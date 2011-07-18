@@ -12,7 +12,8 @@
 
 GenericProcessor::GenericProcessor(const String name_, int* nSamps, int nChans, const CriticalSection& lock_, int id)
 	: numSamplesInThisBuffer(nSamps),
-	  name (name_), lock(lock_), nodeId(id), numInputs(nChans), numOutputs(nChans)
+	  name (name_), lock(lock_), nodeId(id), numInputs(nChans), numOutputs(nChans),
+	  sourceNode(0), destNode(0)
 {
 
 	setPlayConfigDetails(numInputs,numOutputs,44100.0,*nSamps);
@@ -46,7 +47,6 @@ void GenericProcessor::setViewport(FilterViewport* vp) {
 void GenericProcessor::prepareToPlay (double sampleRate_, int estimatedSamplesPerBlock)
 {
 	//std::cout << "Preparing to play." << std::endl;
-	//time(&lastCallbackTime);
 
 }
 
@@ -100,28 +100,6 @@ int GenericProcessor::getNodeId() {
 void GenericProcessor::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages)
 {
 	
-	/*++accumulator;
-	//std::cout << "  ja" << std::endl;
-
-	if (accumulator > 1000) {
-		
-		time(&thisCallbackTime);
-
-		double dif = difftime(thisCallbackTime, lastCallbackTime);
-		int nChans = buffer.getNumChannels();
-		int nSamps = buffer.getNumSamples();
-
-		//std::cout << name << std::endl;
-		//std::cout.precision(5);
-		//std::cout << "  Time difference for 1000 callbacks: " << dif << std::endl;
-		//std::cout << "  Buffer size: " << nSamps << " samples x " 
-		// 		  					 << nChans << " channels." 
-		// 		  					 << std::endl;
-
-		time(&lastCallbackTime);
-
-		accumulator = 0;
-
-	}*/
+	// this method must be implemented by all subclasses
 	 
 }

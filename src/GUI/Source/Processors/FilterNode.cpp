@@ -95,8 +95,11 @@ void FilterNode::releaseResources()
 
 void FilterNode::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages)
 {
+	//std::cout << "Filter node processing." << std::endl;
 
 	int nSamps = getNumSamples();
     filter->process (nSamps, buffer.getArrayOfChannels());
+
+    //std::cout << "Filter node:" << *buffer.getSampleData(0,0);
 
 }

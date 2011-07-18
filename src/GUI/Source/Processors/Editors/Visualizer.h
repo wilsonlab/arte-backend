@@ -14,6 +14,7 @@
 
 #include "../../../JuceLibraryCode/JuceHeader.h"
 #include "GenericEditor.h"
+#include "../../UI/UIComponent.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -69,10 +70,12 @@ class Visualizer : public GenericEditor,
 				   public Button::Listener
 {
 public:
-	Visualizer (GenericProcessor* parentNode, FilterViewport* vp);
+	Visualizer (GenericProcessor*, FilterViewport*);
 	~Visualizer();
 
 	void buttonClicked (Button* button);
+	void setBuffers (AudioSampleBuffer*, MidiBuffer*);
+	void setUIComponent (UIComponent* ui) {UI = ui;}
 
 private:	
 	//Slider* slider;
@@ -81,23 +84,22 @@ private:
 	SelectorButton* windowSelector;
 	SelectorButton* tabSelector;
 
+	AudioSampleBuffer* streamBuffer;
+	MidiBuffer* eventBuffer;
+	UIComponent* UI;
+
 	int tabIndex;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Visualizer);
 
 };
 
-
-
-
-
-
 class Renderer : public OpenGLComponent,
 				 public ActionListener
 
 {
 public:
-	Renderer(AudioSampleBuffer* streamBuffer, MidiBuffer* eventBuffer);
+	Renderer(AudioSampleBuffer* streamBuffer, MidiBuffer* eventBuffer, UIComponent* ui);
 	~Renderer();
 	void newOpenGLContextCreated();
 	void renderOpenGL();

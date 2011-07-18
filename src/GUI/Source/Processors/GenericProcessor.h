@@ -18,6 +18,7 @@
 #include <stdio.h>
 
 class FilterViewport;
+class UIComponent;
 
 class GenericProcessor : public AudioProcessor
 
@@ -81,6 +82,17 @@ public:
 
 	FilterViewport* viewport;
 
+	// get/set source node functions
+	GenericProcessor* getSourceNode() {return sourceNode;}
+	GenericProcessor* getDestNode() {return destNode;}
+	void setSourceNode(GenericProcessor* sn) {sourceNode = sn;}
+	void setDestNode(GenericProcessor* dn) {destNode = dn;}
+
+	AudioProcessorEditor* getEditor() {return editor;}
+
+	void setUIComponent(UIComponent* ui) {UI = ui;}
+	UIComponent* getUIComponent() {return UI;}
+
 private:
 
 	const String name;
@@ -91,8 +103,12 @@ private:
 	int numInputs;
 	int numOutputs;
 
+	GenericProcessor* sourceNode;
+	GenericProcessor* destNode;
+
+	UIComponent* UI;
+
 	AudioProcessorEditor* editor;
-	
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GenericProcessor);
 

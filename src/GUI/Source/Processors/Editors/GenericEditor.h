@@ -40,28 +40,16 @@ public:
 
 	String getName() {return name;}
 
-	//TabbedComponent* tabComponent;
-
-
 	int desiredWidth;
 	int nodeId;
 
 	FilterViewport* viewport;
+
+	AudioProcessor* getProcessor() const {return getAudioProcessor();}	
 	
 private:
 
-	AudioProcessor* getProcessor() const {
-
-		return getAudioProcessor();
-		//return static_cast <GenericProcessor*> (getAudioProcessor());
-	}	
-
 	Colour backgroundColor;
-
-
-
-	//Font* titleFont;
-
 
 	bool isSelected;
 	String name;
