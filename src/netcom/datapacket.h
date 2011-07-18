@@ -35,10 +35,9 @@
 #define MAX_BUF_LEN 2048
 void printBuff(char* buff, int blen);
 
-// Each buffer has a 2 byte header, with the first byte corresponding to 
-// the type of data contained in the buffer, the second byte is set to 0 
-// but this isn't currently required as maybe in the future we will see 
-// a need to add more information to the buffer header
+// Each buffer has a 4 byte header, with the first byte corresponding to 
+// the type of data contained in the buffer, the fourth byte is set to 0 
+// byte[1] and byte[2] are uint16_t giving the total buffer size (4 byte header + data) 
 //
 // ??should we explicity test to see if the 2nd byte is set to zero as a 
 // sanity test on the buffer? Not sure we should discuss this
@@ -104,8 +103,8 @@ struct lfp_bank_net_t{
   uint16_t    n_chans;            // bytes 8:9
   uint16_t    n_samps_per_chan;   // bytes 10:11
   uint16_t    samp_n_bytes;       // bytes 11:12
-  int16_t     data[MAX_FILTERED_BUFFER_TOTAL_SAMPLE_COUNT]; // bytes 13 : 13*s*c*b
-  rdata_t     gains[MAX_FILTERED_BUFFER_N_CHANS];              // the next 2*c bytes
+  rdata_t     data[MAX_FILTERED_BUFFER_TOTAL_SAMPLE_COUNT]; // bytes 13 : 13*s*c*b
+  int16_t     gains[MAX_FILTERED_BUFFER_N_CHANS];              // the next 2*c bytes
 };
 
 struct command_t{

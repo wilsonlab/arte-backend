@@ -271,7 +271,7 @@ void buffToWave(lfp_bank_net_t *lfp, char* buff, bool c){
   
   int n_total_samps = lfp->n_chans * lfp->n_samps_per_chan;
   int data_bytes = lfp->n_chans * lfp->n_samps_per_chan * lfp->samp_n_bytes;
-  int gain_bytes = lfp->n_chans * lfp->samp_n_bytes;
+  int gain_bytes = lfp->n_chans * 2; // gain type is int16_t
 
   memcpy( &(lfp->data), buff+cursor, data_bytes);
   for(int n = 0; n < n_total_samps; n++)
