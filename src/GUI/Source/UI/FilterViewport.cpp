@@ -21,6 +21,11 @@
 
       addMouseListener(this, true);
 
+      int numTabs = tabComponent->getTabbedButtonBar().getNumTabs();
+      for (int n = 0; n < numTabs; n++) {
+          tabArray.add(n);
+      }
+
     }
 
     FilterViewport::~FilterViewport()
@@ -53,9 +58,12 @@
     }
 
     int FilterViewport::addTab(String name, Component* component) {
-        
-        int tabIndex = tabComponent->getTabbedButtonBar().getNumTabs() + 1;
-        tabComponent->addTab(name, Colours::lightgrey, component, true, tabIndex);
+
+        int tabIndex = tabComponent->getTabbedButtonBar().getNumTabs();
+        tabComponent->addTab(name, Colours::pink, component, true, tabIndex);
+        tabComponent->getTabbedButtonBar().setCurrentTabIndex(tabIndex);
+
+        tabArray.add(tabIndex);
 
         return tabIndex;
 
@@ -63,7 +71,10 @@
 
     void FilterViewport::removeTab(int index) {
         
-        tabComponent->removeTab(index);
+        int newIndex = tabArray.indexOf(index);
+        tabArray.remove(newIndex);
+
+        tabComponent->getTabbedButtonBar().removeTab(newIndex);
 
     }
 
@@ -139,17 +150,29 @@
 
         std::cout << "Item dropped." << std::endl;
 
-        GenericEditor* editor = (GenericEditor*) graph->createNewProcessor(sourceDescription, this);
+        /// needed to remove const cast --> should be a better way to do this
+        String description = sourceDescription.substring(0);
+
+        GenericProcessor* source = 0;
+        GenericProcessor* dest = 0;
+
+        if (insertionPoint < editorArray.size()) {
+            dest = (GenericProcessor*) editorArray[insertionPoint]->getProcessor();
+        }
+
+        if (insertionPoint > 0) {
+            source = (GenericProcessor*) editorArray[insertionPoint-1]->getProcessor();
+        }
+
+        GenericEditor* editor = (GenericEditor*) graph->createNewProcessor(description, this, source, dest);
 
         if (editor != 0) {
 
             editorArray.insert(insertionPoint,editor);
-            //editorArray.getLast()->setViewport(this);
-            //editorArray.getLast()->setTabbedComponent(tabComponent);
         
-            int componentWidth = editorArray.getLast()->desiredWidth;
+            //int componentWidth = editorArray.getLast()->desiredWidth;
 
-            addAndMakeVisible(editorArray.getLast());
+            addAndMakeVisible(editorArray[insertionPoint]);
 
         }
 
@@ -159,11 +182,41 @@
         repaint();
     }
 
+    void FilterViewport::addEditor (GenericEditor* editor) {
+        
+        std::cout << "Adding editor." << std::endl;
+
+        //somethingIsBeingDraggedOver = true;
+
+        editorArray.add(editor);
+        addAndMakeVisible(editorArray.getLast());
+
+        //editor->setVisible(true);
+        childrenChanged();
+
+
+        refreshEditors();
+
+       // somethingIsBeingDraggedOver = false;
+        repaint();
+
+        resized();
+
+      // itemDragEnter ("desc", 0, 5, 5);
+      // itemDragExit ("desc", 0);
+    //{
+     //   somethingIsBeingDraggedOver = true;
+     //   repaint();
+   // }
+        //somethingIsBeingDraggedOver = true;
+
+    }
+
     void FilterViewport::deleteNode (GenericEditor* editor) {
 
         int indexToDelete = editorArray.indexOf(editor);
         
-        graph->removeProcessor(editorArray[indexToDelete]->nodeId);
+        graph->removeProcessor((GenericProcessor*) editorArray[indexToDelete]->getProcessor());
 
         //std::cout << "Node ID: " << editorArray[indexToDelete]->nodeId << std::endl;
 
@@ -179,6 +232,8 @@
                  editorArray[indexToDelete]->select();
              }
         }
+
+        //removeTab(0);
 
     }
 

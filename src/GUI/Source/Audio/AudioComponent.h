@@ -27,10 +27,6 @@ public:
 
 	bool callbacksAreActive();
 
-	// getCpuUsage
-	// addAudioCallback
-	// 
-	
 private:
 
 	bool isPlaying;

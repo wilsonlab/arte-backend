@@ -31,6 +31,8 @@ public:
 	UIComponent(ProcessorGraph* pgraph, AudioComponent* audio);
 	~UIComponent();
 
+	FilterViewport* getViewport() {return filterViewport;}
+
 private:
 	//ControlPanel* controlPanel;
 	//Viewport* dataViewport;

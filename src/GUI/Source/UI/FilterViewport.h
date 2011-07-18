@@ -69,6 +69,8 @@ public:
     void removeTab(int);
 
 
+
+
     //void tableColumnsChanged(TableHeaderComponent* tableHeader);
    // void tableColumnsResized(TableHeaderComponent* tableHeader);
    // void tableSortOrderChanged(TableHeaderComponent* tableHeader);
@@ -79,7 +81,7 @@ public:
     void itemDragExit (const String& /*sourceDescription*/, Component* /*sourceComponent*/);
     void itemDropped (const String& sourceDescription, Component* /*sourceComponent*/, int /*x*/, int /*y*/);
 
-
+    void addEditor (GenericEditor*);
 
     //=============================================================================
 
@@ -90,6 +92,7 @@ private:
     ProcessorGraph* graph;
     TabbedComponent* tabComponent;
     OwnedArray<GenericEditor, CriticalSection> editorArray;
+    Array<int> tabArray;
 
     void refreshEditors();
 

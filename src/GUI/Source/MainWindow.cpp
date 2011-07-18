@@ -24,16 +24,26 @@ MainWindow::MainWindow()
 
     // create ProcessorGraph and AudioComponent, and connect them.
     // callbacks will be set by the play button in the control panel
+    
+
     processorGraph = new ProcessorGraph(16);
     audioComponent = new AudioComponent();
     audioComponent->connectToProcessorGraph(processorGraph);
+    
     
     std::cout << "Window width = " << getWidth() << std::endl;
     std::cout << "Window height = " << getHeight() << std::endl;
 
     setContentComponent (new UIComponent(processorGraph, audioComponent), true, true);
 
+    processorGraph->setUIComponent((UIComponent*) getContentComponent());
+
     setVisible (true);
+
+   File file = File("./savedState.xml");
+   processorGraph->loadState(file);
+
+    
 
 }
 
@@ -49,6 +59,16 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::closeButtonPressed()
-{
+{ 
+    if (audioComponent->callbacksAreActive()) {
+      audioComponent->endCallbacks();
+      processorGraph->disableSourceNode();
+    }
+
+    //File file = File("./savedState.xml");
+
+    //processorGraph->saveState(file);
+
     JUCEApplication::getInstance()->systemRequestedQuit();
+
 }

@@ -23,7 +23,7 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 	
 	//BorderSize bs = BorderSize(20,20,10,10);
 
-	setBounds(0,0,800,600);
+	setBounds(0,0,920,600);
 
 	int w = getWidth();
 	int h = getHeight();
@@ -42,8 +42,14 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 	infoLabel->setColour(Label::textColourId,Colours::lightgrey);
 	
 	//addAndMakeVisible (tabbedComponent = new TabbedComponent (TabbedButtonBar::TabsAtRight));
-	dataViewport = new TabbedComponent (TabbedButtonBar::TabsAtRight);
+	dataViewport = new TabbedComponent (TabbedButtonBar::TabsAtTop);
 	dataViewport->setTabBarDepth(30);
+	dataViewport->setColour(TabbedComponent::outlineColourId,
+							Colours::darkgrey);
+	dataViewport->setColour(TabbedComponent::backgroundColourId,
+							Colours::darkgrey);
+	//dataViewport->addTab
+	//addAndMakeVisible(dataViewport);
 
 
 	// get graph from parent component
@@ -54,12 +60,15 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 	
 	//dataViewport = new Viewport();
 	//dataViewport->setViewedComponent(streamViewer);
-	//dataViewport->addTab(T("Stream Viewer"), Colours::lightgrey, streamViewer, true);
-	//addAndMakeVisible(dataViewport);
+	//dataViewport->addTab(T("Stream Viewer"), Colours::lightgrey, 0, true);
+	
 
 	//std::cout << "Created data viewport." << std::endl;
 	//dataViewport->setCurrentTabIndex (0);
-	//dataViewport->addTab(T("Blank"), Colours::lightgrey, new ListBox("Hi."), true);
+	//dataViewport->addTab(T("Blank"), Colours::green, 0, true);
+	//dataViewport->addTab(T("Blank"), Colours::blue, 0, true);
+	//dataViewport->addTab(T("arte"), Colours::purple, 0, true);
+	addAndMakeVisible(dataViewport);
 
 	filterViewport = new FilterViewport(processorGraph, dataViewport);
 	addAndMakeVisible(filterViewport);
@@ -86,6 +95,7 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 	//StreamViewer* s
 	//addActionListener(streamViewer);
 	addActionListener(controlPanel);
+	//addActionListener(processorGraph);
 	//sendActionMessage(msg);
 
 	startTimer(15);
@@ -99,7 +109,6 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 UIComponent::~UIComponent()
 {
 	deleteAllChildren();
-	delete(dataViewport);
 	delete(Miso);
 	processorGraph = 0;
 	audio = 0;

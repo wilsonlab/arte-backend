@@ -23,6 +23,8 @@ AudioComponent::AudioComponent() : isPlaying(false)
 	
 	AudioIODevice* aIOd = getCurrentAudioDevice();
 
+	std::cout << "Got audio device." << std::endl;
+
 	String devType = getCurrentAudioDeviceType();
 	String devName = aIOd->getName();
 	
