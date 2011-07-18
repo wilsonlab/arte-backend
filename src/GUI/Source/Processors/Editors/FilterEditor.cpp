@@ -21,7 +21,7 @@ FilterEditor::FilterEditor (GenericProcessor* parentNode, FilterViewport* vp)
 
 	slider = new Slider (T("Slider"));
 	slider->setBounds(25,45,200,40);
-	slider->setRange(100,5000,100);
+	slider->setRange(10,200,10);
 	slider->addListener(this);
 	addAndMakeVisible(slider);
 
