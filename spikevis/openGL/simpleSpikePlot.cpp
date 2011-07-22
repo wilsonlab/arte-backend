@@ -37,7 +37,7 @@ void *font = GLUT_BITMAP_8_BY_13;
 // Scaling Variables
 // Defines how much to shift the waveform within the viewport
 static float dV = 1.0/((float)MAX_VOLT*2);
-static double scaleShift = -.85;
+static double scaleShift = -.75;
 static float userScale = 1;
 static float dUserScale = .3;
 // ===================================
