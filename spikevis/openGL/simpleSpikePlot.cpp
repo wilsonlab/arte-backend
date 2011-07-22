@@ -230,7 +230,7 @@ void drawWaveformN(int n)
 	// Disp the threshold value
 	sprintf(txtDispBuff, "T:%d", thresh);
 	glColor3f(1.0,1.0,1.0);
-	drawString(-.9, -.9, txtDispBuff);
+	drawString(-.9, .8, txtDispBuff);
 
 	// Draw the actual waveform
 	glColor3f(1.0, 1.0, 0.6);
