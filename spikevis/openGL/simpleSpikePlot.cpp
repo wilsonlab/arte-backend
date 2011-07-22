@@ -17,7 +17,7 @@ const double MAX_VOLT = pow(2,15);
 // 		GUI Specific Variables
 // ===================================
 static double winWidth = 624, winHeight = 312;
-static double yShift = 20; // Shift the entire UI up by yShift and reserve this area for text and buttons
+static double commandWinHeight = 20; // Shift the entire UI up by commandWinHeight and reserve this area for text and buttons
 
 static double xBox = winWidth/4;
 static double yBox = winHeight/2;
@@ -34,6 +34,8 @@ static char txtDispBuff[40];
 
 void *font = GLUT_BITMAP_8_BY_13;
 
+// Defines how much to shift the waveform within the viewport
+static double yShift = -.85;
 // ===================================
 // 		Arte Specific Variables
 // ===================================
@@ -54,10 +56,6 @@ static int nProj=6;
 // ===================================
 static int spikeCount =0;
 static timeval startTime, now;
-
-// These are used to scale the waveform so it feels the dynamic range of the window
-static double scaleHack = 1;
-static double shiftHack = 0;
 
 static unsigned char msg[250];
 static int const msgLen = 250;
@@ -241,7 +239,7 @@ void drawWaveformN(int n)
 	glBegin( GL_LINE_STRIP );
 		for (int i=0; i<spike.n_samps_per_chan; i++)
 		{
-			glVertex2f(x, spike.data[sampIdx]*dy - .9);
+			glVertex2f(x, spike.data[sampIdx]*dy - yShift);
 			sampIdx +=4;
 			x +=dx;
 		}
@@ -344,7 +342,7 @@ void setViewportForCommandString(){
     float viewX = 0 + xPadding;
 	float viewY = 0 + yPadding;
     float viewDX = winWidth - 2*xPadding;
-    float viewDY =  yShift;
+    float viewDY =  commandWinHeight;
 
 	glViewport(viewX, viewY, viewDX, viewDY);
 }
@@ -371,8 +369,8 @@ void drawProjectionN(int n, int idx){
 
 	setViewportForProjectionN(n);
 
-	float dx = 2.0/((float)MAX_VOLT*2);
-	float dy = 2.0/((float)MAX_VOLT*2);
+	float dx = 1.0/((float)MAX_VOLT*2);
+	float dy = 1.0/((float)MAX_VOLT*2);
 	int d1, d2;
 	if (n==0){
 		d1 = 0;
@@ -407,7 +405,7 @@ void drawProjectionN(int n, int idx){
 	glColor3f( 1.0, 1.0, 1.0 );
 //	std::cout<<"Plotting points:"<<spike.data[idx+d1]*dx<<" "<<spike.data[idx+d2]*dy<<std::endl;
 	glBegin(GL_POINTS);
-		glVertex2f(spike.data[idx+d1]*dx, spike.data[idx+d2]*dy);
+		glVertex2f(spike.data[idx+d1]*dx - yShift, spike.data[idx+d2]*dy-yShift);
 	glEnd();
 }
 
