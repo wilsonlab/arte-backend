@@ -8,6 +8,7 @@
 #include "netcom/datapacket.h"
 
 extern FILE *main_file;
+extern pthread_mutex_t main_file_mutex;
 
 Lfp_bank::Lfp_bank(){
   std::cout << "Lfp_bank constructor called." << std::endl;
@@ -143,8 +144,11 @@ void lfp_bank_write_record(void *lfp_bank_in){
       
       // save the wave to the disk
       waveToBuff(&lfp, buff, &buff_size, false);
+      
+      pthread_mutex_lock(&main_file_mutex);
       try_fwrite <char> (buff, buff_size, main_file);
-  
+      pthread_mutex_unlock(&main_file_mutex);
+
       // printf("buff: ");
       //  for(int s = 0; s < 50; s++)
       //  printf("%c", buff[s]);

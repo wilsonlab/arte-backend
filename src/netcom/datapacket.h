@@ -85,6 +85,7 @@ struct spike_net_t{
   int16_t     gains[MAX_FILTERED_BUFFER_N_CHANS];           // the next 2*c bytes
   rdata_t     thresh[MAX_FILTERED_BUFFER_N_CHANS];          // the next b*c bytes
   uint16_t    trig_ind;                                     // the next 2 bytes
+  uint32_t    seq_num;
 };
 /*
 struct wave_t{
@@ -105,6 +106,7 @@ struct lfp_bank_net_t{
   uint16_t    samp_n_bytes;       // bytes 11:12
   rdata_t     data[MAX_FILTERED_BUFFER_TOTAL_SAMPLE_COUNT]; // bytes 13 : 13*s*c*b
   int16_t     gains[MAX_FILTERED_BUFFER_N_CHANS];              // the next 2*c bytes
+  uint32_t    seq_num;
 };
 
 struct command_t{

@@ -45,7 +45,8 @@ void spikeToBuff(spike_net_t* s, char* buff, int *buff_len, bool c){
   rdata_t  data_tx[MAX_FILTERED_BUFFER_TOTAL_SAMPLE_COUNT];
   int16_t  gains_tx[MAX_FILTERED_BUFFER_N_CHANS];
   rdata_t  thresh_tx[MAX_FILTERED_BUFFER_N_CHANS];
-  uint16_t trig_ind_tx = hton32c(s->trig_ind, c);
+  uint16_t trig_ind_tx = hton16c(s->trig_ind, c);
+  uint32_t seq_num_tx = hton32c(s->seq_num, c);
 
    for(int i = 0; i < s->n_chans * s->n_samps_per_chan; i++){
      // ASSUMES 16-bit data!
@@ -77,6 +78,8 @@ void spikeToBuff(spike_net_t* s, char* buff, int *buff_len, bool c){
    cursor += 2*s->n_chans;
    memcpy(buff+cursor, &trig_ind_tx,         2);
    cursor += 2;
+   memcpy(buff+cursor, &seq_num_tx,          4);
+   cursor += 4;
 
    cursor_tx = hton16c(cursor,c);
    memcpy(buff+1,      &cursor_tx,           2);
@@ -133,6 +136,10 @@ void buffToSpike( spike_net_t *s, char* buff, bool c){
   memcpy( &(s->trig_ind),      buff+cursor, 2);
   s->trig_ind = ntoh16c(s->trig_ind, c);
   cursor += 2;
+  
+  memcpy( &(s->seq_num),       buff+cursor, 4);
+  s->seq_num = ntoh32c(s->seq_num, c);
+  cursor += 4;
 
 }
 

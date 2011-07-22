@@ -16,6 +16,7 @@
 #include <time.h>
 
 extern FILE *main_file;
+extern pthread_mutex_t main_file_mutex;
 
 extern uint32_t timestamp;
 

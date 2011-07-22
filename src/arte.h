@@ -24,3 +24,4 @@ extern int n_trodes;
 extern int n_lfp_banks;
 
 extern FILE *main_file;
+extern pthread_mutex_t main_file_mutex;

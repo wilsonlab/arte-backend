@@ -11,6 +11,7 @@
 #include "process_command.h"
 
 FILE *main_file;
+pthread_mutex_t main_file_mutex;
 
 bool acquiring = false;
 
@@ -62,6 +63,8 @@ NetComDat command_netcom_dat;
 void arte_init(int argc, char *argv[], const std::string &setup_fn, const std::string &session_fn){
 
   timestamp = 0;
+
+  pthread_mutex_init(&main_file_mutex, NULL);
 
   if(!setup_fn.empty())
     setup_config_filename = setup_fn.data();
@@ -177,10 +180,11 @@ void arte_session_init(int argc, char *argv[]){
   trode_array           = new Trode           [n_trodes];
   lfp_bank_array        = new Lfp_bank        [n_lfp_banks];
 
-  // make itterators point to first element of each array
-  Filtered_buffer * fb_curs = filtered_buffer_array;
-  Trode           * trode_turs = trode_array;
-  Lfp_bank        * lfp_bank_curs = lfp_bank_array;
+
+   // make itterators point to first element of each array
+   Filtered_buffer * fb_curs = filtered_buffer_array;
+   Trode           * trode_curs = trode_array;
+   Lfp_bank        * lfp_bank_curs = lfp_bank_array;
   
 
   // *********** Start Initializing Trode Objects ************* //

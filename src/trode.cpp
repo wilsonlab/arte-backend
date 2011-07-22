@@ -13,6 +13,7 @@
 
 int tmp;
 extern FILE *main_file;
+extern pthread_mutex_t main_file_mutex;
 
 Trode::Trode(){
   has_sockfd = false;
@@ -54,6 +55,7 @@ void Trode::init2(boost::property_tree::ptree &trode_pt,
 
   n_samps_per_spike = samps_before_trig + samps_after_trig + 1;
   my_buffer = fb_curs;
+  total_spikes = 0;
 
   // Filtered_buffer::init() should take 2 property trees and a min sample number
   // We need at very least n_samps_before + n_samps_after + 1 for the trig sample + 1 for padding
@@ -119,8 +121,10 @@ void Trode::setup_spike_array(){
       spike_array[n].data[m] = m;
     for(int m = 0; m < n_chans; m++)
       spike_array[n].gains[m] = 1;
+    for(int m = 0; m < n_chans; m++)
+      spike_array[n].thresh[m] = thresholds[m];
     spike_array[n].trig_ind = samps_before_trig;
-
+    spike_array[n].seq_num = 0;
   }
   printf("Done initializing spike structs.\n");
 }
@@ -194,6 +198,9 @@ void *trode_filter_data(void *t){
 	
 	if(false & ((Trode*)t)->name == 0)
 	  printf("Got inside the if block.\n");
+
+	((Trode*)t)->spike_array[n].seq_num = ((Trode*)t)->total_spikes;
+	((Trode*)t)->total_spikes++;
 
 	spike_to_disk(&((Trode*)t)->spike_array[n]);
 	spike_to_net(&((Trode*)t)->spike_array[n], (Trode*)t);
@@ -341,8 +348,10 @@ void spike_to_disk(spike_net_t *spike){
   // TODO: Get this part thread-safe, needz mutex
   
   spikeToBuff(spike, buff, &buff_size, false);
-  try_fwrite <char> (buff, buff_size, main_file);
   
+  pthread_mutex_lock(&main_file_mutex);
+  try_fwrite <char> (buff, buff_size, main_file);
+  pthread_mutex_unlock(&main_file_mutex);
  
 }
 
