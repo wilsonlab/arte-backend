@@ -227,7 +227,7 @@ void drawWaveformN(int n)
 
 	float x = -1;
 	float dx = 2.0/(spike.n_samps_per_chan-1);
-	float dy = 2.0/((float)MAX_VOLT*2);
+	float dy = 1.0/((float)MAX_VOLT*2);
 
 	int	sampIdx = n;
 	int thresh = spike.thresh[n];
@@ -241,7 +241,7 @@ void drawWaveformN(int n)
 	glBegin( GL_LINE_STRIP );
 		for (int i=0; i<spike.n_samps_per_chan; i++)
 		{
-			glVertex2f(x, spike.data[sampIdx]*dy);
+			glVertex2f(x, spike.data[sampIdx]*dy - .9);
 			sampIdx +=4;
 			x +=dx;
 		}
