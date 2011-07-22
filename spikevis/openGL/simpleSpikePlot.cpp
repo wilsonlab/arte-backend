@@ -251,7 +251,7 @@ void drawWaveformN(int n)
 	glEnable(GL_LINE_STIPPLE);
 	glBegin( GL_LINE_STRIP );
 		glVertex2f(-1.0, scaleVoltage(thresh));
-		glVertex2f( 1.0, svaleVoltage(thresh));
+		glVertex2f( 1.0, scaleVoltage(thresh));
 	glEnd();		
 	glDisable(GL_LINE_STIPPLE);
 }
