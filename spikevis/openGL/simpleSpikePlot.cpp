@@ -35,7 +35,7 @@ static char txtDispBuff[40];
 void *font = GLUT_BITMAP_8_BY_13;
 
 // Defines how much to shift the waveform within the viewport
-static double yShift = -.85;
+static double yShift = -1.85;
 // ===================================
 // 		Arte Specific Variables
 // ===================================
