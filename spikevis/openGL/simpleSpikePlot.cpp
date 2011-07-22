@@ -146,8 +146,6 @@ int main( int argc, char** argv )
 void getNetSpike(void){
 
 	NetCom::rxSpike(net, &spike);
-	for (int i=0; i<(spike.n_chans * spike.n_samps_per_chan); i++)
-		spike.data[i] = (spike.data[i] + shiftHack) * scaleHack;
 	spikeCount++;
 	refreshDrawing();
 }
