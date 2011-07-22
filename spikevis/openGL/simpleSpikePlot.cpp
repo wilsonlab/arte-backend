@@ -56,8 +56,8 @@ static int spikeCount =0;
 static timeval startTime, now;
 
 // These are used to scale the waveform so it feels the dynamic range of the window
-static double scaleHack = 1.5;
-static double shiftHack = -1.5*pow(2,13);
+static double scaleHack = 1;
+static double shiftHack = 0;
 
 static unsigned char msg[250];
 static int const msgLen = 250;
@@ -231,7 +231,6 @@ void drawWaveformN(int n)
 
 	int	sampIdx = n;
 	int thresh = spike.thresh[n];
-
 	// Disp the threshold value
 	sprintf(txtDispBuff, "T:%d", thresh);
 	glColor3f(1.0,1.0,1.0);
