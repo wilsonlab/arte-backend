@@ -86,7 +86,7 @@ spike_net_t genFakeSpike(){
                 for (int j=0; j<s.n_chans; j++){
 						int n = 0;
 						if (noise>0)
-							n = rand() % noise;
+							n = (rand() % (noise*2))-noise;
 
                         s.data[idx++] =  (trace[dataIdx]*200) + n;
                 }
