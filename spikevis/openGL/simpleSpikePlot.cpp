@@ -34,9 +34,12 @@ static char txtDispBuff[40];
 
 void *font = GLUT_BITMAP_8_BY_13;
 
+// Scaling Variables
 // Defines how much to shift the waveform within the viewport
 static float dV = 1.0/((float)MAX_VOLT*2);
 static double scaleShift = -.85;
+static float userScale = 1;
+static float dUserScale = .3;
 // ===================================
 // 		Arte Specific Variables
 // ===================================
@@ -87,6 +90,7 @@ int calcWaveMaxInd();
 
 void resizeWindow(int w, int h);
 
+float scaleVoltage(int v);
 // ===================================
 // 		Keyboard & Command Function Headers
 // ===================================
@@ -235,7 +239,7 @@ void drawWaveformN(int n)
 	glBegin( GL_LINE_STRIP );
 		for (int i=0; i<spike.n_samps_per_chan; i++)
 		{
-			glVertex2f(x, spike.data[sampIdx]*dV + scaleShift);
+			glVertex2f(x, scaleVoltage(spike.data[sampIdx]));
 			sampIdx +=4;
 			x +=dx;
 		}
@@ -400,7 +404,7 @@ void drawProjectionN(int n, int idx){
 //	std::cout<<"Plotting points:"<<spike.data[idx+d1]*dx<<" "<<spike.data[idx+d2]*dy<<std::endl;
 	glBegin(GL_POINTS);
 //		glVertex2f(spike.data[idx+d1], spike.data[idx+d2]);
-		glVertex2f(spike.data[idx+d1]*dV + scaleShift, spike.data[idx+d2]*dV + scaleShift);
+		glVertex2f(scaleVoltage(spike.data[idx+d1]), scaleVoltage(spike.data[idx+d2]));
 	glEnd();
 }
 
@@ -472,21 +476,29 @@ void resizeWindow(int w, int h)
 void keyPressedFn(unsigned char key, int x, int y){
 
 	switch (key){
-		case 	3:  // CTRL+C
+		case 3:  // CTRL+C
 			clearWindow();
 		break;
 
-		case	15: // CTRL+O
+		case 15: // CTRL+O
 			toggleOverlay();
 		break;
 
-		case	13: // RETURN KEY
+		case 13: // RETURN KEY
 			executeCommand(msg);
 			bzero(msg,msgLen);
 			cIdx = 0;
 			eraseCommandString();
 		break;
-
+		case '=':
+		case '+':
+			userScale += dUserScale;
+			break;
+		case '-':
+			userScale -= dUserScale;
+			if (userScale<1)
+				userScale = 1;
+			break;
 		case 8: // DEL Key is pressed
 			if (cIdx<=0) //if the command string is empty ignore the keypress
 				return;
@@ -538,3 +550,10 @@ void clearWindow(){
 void toggleOverlay(){
 	clearWave = !clearWave;
 }
+
+float scaleVoltage(int v){
+	return ((float)v * dV  * userScale) + scaleShift;
+}
+
+
+
