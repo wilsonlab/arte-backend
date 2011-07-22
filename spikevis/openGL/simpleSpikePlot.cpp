@@ -35,7 +35,8 @@ static char txtDispBuff[40];
 void *font = GLUT_BITMAP_8_BY_13;
 
 // Defines how much to shift the waveform within the viewport
-static double yShift = .85;
+static float dV = 1.0/((float)MAX_VOLT*2);
+static double scaleShift = -.85;
 // ===================================
 // 		Arte Specific Variables
 // ===================================
@@ -145,7 +146,7 @@ int main( int argc, char** argv )
 
 void getNetSpike(void){
 
-	NetCom::rxSpike(net, &spike);
+ 	NetCom::rxSpike(net, &spike);
 	spikeCount++;
 	refreshDrawing();
 }
@@ -221,23 +222,21 @@ void drawWaveformN(int n)
 {
 	setViewportForWaveN(n);
 
-	float x = -1;
-	float dx = 2.0/(spike.n_samps_per_chan-1);
-	float dy = 1.0/((float)MAX_VOLT*2);
-
-	int	sampIdx = n;
-	int thresh = spike.thresh[n];
 	// Disp the threshold value
+	int thresh = spike.thresh[n];
 	sprintf(txtDispBuff, "T:%d", thresh);
 	glColor3f(1.0,1.0,1.0);
 	drawString(-.9, .8, txtDispBuff);
 
 	// Draw the actual waveform
+	float dx = 2.0/(spike.n_samps_per_chan-1);
+	float x = -1;
+	int	sampIdx = n;
 	glColor3f(1.0, 1.0, 0.6);
 	glBegin( GL_LINE_STRIP );
 		for (int i=0; i<spike.n_samps_per_chan; i++)
 		{
-			glVertex2f(x, spike.data[sampIdx]*dy - yShift);
+			glVertex2f(x, spike.data[sampIdx]*dV + scaleShift);
 			sampIdx +=4;
 			x +=dx;
 		}
@@ -248,8 +247,8 @@ void drawWaveformN(int n)
 	glLineStipple(4, 0xAAAA);
 	glEnable(GL_LINE_STIPPLE);
 	glBegin( GL_LINE_STRIP );
-		glVertex2f(-1.0, thresh*dy);
-		glVertex2f( 1.0, thresh*dy);
+		glVertex2f(-1.0, thresh*dV + scaleShift);
+		glVertex2f( 1.0, thresh*dV + scaleShift);
 	glEnd();		
 	glDisable(GL_LINE_STIPPLE);
 }
@@ -367,8 +366,6 @@ void drawProjectionN(int n, int idx){
 
 	setViewportForProjectionN(n);
 
-	float dx = 1.0/((float)MAX_VOLT*2);
-	float dy = 1.0/((float)MAX_VOLT*2);
 	int d1, d2;
 	if (n==0){
 		d1 = 0;
@@ -403,7 +400,8 @@ void drawProjectionN(int n, int idx){
 	glColor3f( 1.0, 1.0, 1.0 );
 //	std::cout<<"Plotting points:"<<spike.data[idx+d1]*dx<<" "<<spike.data[idx+d2]*dy<<std::endl;
 	glBegin(GL_POINTS);
-		glVertex2f(spike.data[idx+d1]*dx - yShift, spike.data[idx+d2]*dy-yShift);
+//		glVertex2f(spike.data[idx+d1], spike.data[idx+d2]);
+		glVertex2f(spike.data[idx+d1]*dV + scaleShift, spike.data[idx+d2]*dV + scaleShift);
 	glEnd();
 }
 
