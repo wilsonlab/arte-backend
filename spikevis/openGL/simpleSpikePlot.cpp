@@ -247,12 +247,16 @@ void drawWaveformN(int n)
 			x +=dx;
 		}
 	glEnd();
+
 	// Draw the threshold line
 	glColor3f(1.0, 0.0, 0.0);
+	glLineStipple(4, 0xAAAA);
+	glEnable(GL_LINE_STIPPLE);
 	glBegin( GL_LINE_STRIP );
 		glVertex2f(-1.0, thresh*dy);
 		glVertex2f( 1.0, thresh*dy);
 	glEnd();		
+	glDisable(GL_LINE_STIPPLE);
 }
 
 
