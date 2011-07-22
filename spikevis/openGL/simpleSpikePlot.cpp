@@ -37,9 +37,12 @@ void *font = GLUT_BITMAP_8_BY_13;
 // Scaling Variables
 // Defines how much to shift the waveform within the viewport
 static float dV = 1.0/((float)MAX_VOLT*2);
-static double scaleShift = -.75;
 static float userScale = 1;
 static float dUserScale = .3;
+
+static float voltShift = -.85;
+static float userShift = 0;
+static float dUserShift = .05;
 // ===================================
 // 		Arte Specific Variables
 // ===================================
@@ -90,7 +93,7 @@ int calcWaveMaxInd();
 
 void resizeWindow(int w, int h);
 
-float scaleVoltage(int v);
+float scaleVoltage(int v, bool);
 // ===================================
 // 		Keyboard & Command Function Headers
 // ===================================
@@ -239,7 +242,7 @@ void drawWaveformN(int n)
 	glBegin( GL_LINE_STRIP );
 		for (int i=0; i<spike.n_samps_per_chan; i++)
 		{
-			glVertex2f(x, scaleVoltage(spike.data[sampIdx]));
+			glVertex2f(x, scaleVoltage(spike.data[sampIdx], true));
 			sampIdx +=4;
 			x +=dx;
 		}
@@ -250,8 +253,8 @@ void drawWaveformN(int n)
 	glLineStipple(4, 0xAAAA);
 	glEnable(GL_LINE_STIPPLE);
 	glBegin( GL_LINE_STRIP );
-		glVertex2f(-1.0, scaleVoltage(thresh));
-		glVertex2f( 1.0, scaleVoltage(thresh));
+		glVertex2f(-1.0, scaleVoltage(thresh, true));
+		glVertex2f( 1.0, scaleVoltage(thresh, true));
 	glEnd();		
 	glDisable(GL_LINE_STIPPLE);
 }
@@ -404,7 +407,7 @@ void drawProjectionN(int n, int idx){
 //	std::cout<<"Plotting points:"<<spike.data[idx+d1]*dx<<" "<<spike.data[idx+d2]*dy<<std::endl;
 	glBegin(GL_POINTS);
 //		glVertex2f(spike.data[idx+d1], spike.data[idx+d2]);
-		glVertex2f(scaleVoltage(spike.data[idx+d1]), scaleVoltage(spike.data[idx+d2]));
+		glVertex2f(scaleVoltage(spike.data[idx+d1], false), scaleVoltage(spike.data[idx+d2], false));
 	glEnd();
 }
 
@@ -474,7 +477,7 @@ void resizeWindow(int w, int h)
 
 
 void keyPressedFn(unsigned char key, int x, int y){
-
+	std::cout<<"Key Pressed:"<<key<<" value:"<<(int)key<<std::endl;
 	switch (key){
 		case 3:  // CTRL+C
 			clearWindow();
@@ -491,13 +494,21 @@ void keyPressedFn(unsigned char key, int x, int y){
 			eraseCommandString();
 		break;
 		case '=':
-		case '+':
 			userScale += dUserScale;
 			break;
 		case '-':
 			userScale -= dUserScale;
 			if (userScale<1)
 				userScale = 1;
+			break;
+		case '_':
+			userShift -= dUserShift;
+			std::cout<<"User shift lowered:"<<userShift<<std::endl;
+			break;		
+		case '+':
+			userShift += dUserShift;
+			std::cout<<"User shift raised:"<<userShift<<std::endl;
+
 			break;
 		case 8: // DEL Key is pressed
 			if (cIdx<=0) //if the command string is empty ignore the keypress
@@ -551,8 +562,11 @@ void toggleOverlay(){
 	clearWave = !clearWave;
 }
 
-float scaleVoltage(int v){
-	return ((float)v * dV  * userScale) + scaleShift;
+float scaleVoltage(int v, bool shift){
+	if (shift)
+		return ((float)v * dV * userScale) + voltShift + userShift;
+	else
+		return ((float)v * dV * userScale) + voltShift;
 }
 
 
