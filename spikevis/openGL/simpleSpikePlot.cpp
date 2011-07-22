@@ -162,7 +162,6 @@ void refreshDrawing(void)
 
 	if (clearWave)
 		eraseWaveforms();
-	eraseCommandString();
 
 	drawWaveforms();
 	drawProjections();
@@ -485,12 +484,14 @@ void keyPressedFn(unsigned char key, int x, int y){
 			executeCommand(msg);
 			bzero(msg,msgLen);
 			cIdx = 0;
+			eraseCommandString();
 		break;
 
 		case 8: // DEL Key is pressed
 			if (cIdx<=0) //if the command string is empty ignore the keypress
 				return;
 			msg[--cIdx] = 0; //backup the cursor and set the current char to 0
+			eraseCommandString();
 			break;
 
 		default:
@@ -502,6 +503,7 @@ void keyPressedFn(unsigned char key, int x, int y){
 void dispCommandString(){
 	if (cIdx>0)
 	{
+		
 		setViewportForCommandString();
 		//Draw a black rectangle to cover up whatever was previously visible
 		glColor3f(0.0, 0.0, 0.0);
