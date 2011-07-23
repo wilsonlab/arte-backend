@@ -28,7 +28,7 @@ int main (int argc, char *argv[]){
   //printf("before init\n");
   //fflush(stdout);
   
-  my_netcomdat = my_netcom.initUdpRx( argv[1], port_num );
+  my_netcomdat = my_netcom.initUdpRx( argv[1], argv[2] );
   //printf("after init\n");
   //fflush(stdout);
   while(1){

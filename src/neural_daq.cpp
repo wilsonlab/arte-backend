@@ -486,7 +486,7 @@ void *process_lfp_bank(void *thread_data){
   pthread_exit(NULL);
 }
 
-int32 CVICALLBACK DoneCallback(TaskHandle taskHandle, int32 status, void *callbackData){
+int32 CVICALLBACK DoneCallback( TaskHandle taskHandle, int32 status, void *callbackData){
   std::cout << "DoneCallback Called." << std::endl;
   neural_daq nd = find_neural_daq_by_taskhandle(taskHandle);
   print_neural_daq(nd);

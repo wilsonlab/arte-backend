@@ -127,7 +127,7 @@ void arte_setup_init(int argc, char *argv[]){
   if( !strcmp("none",command_port_str.c_str()) == 0 ){
     int command_port_num;
     sscanf(command_port_str.c_str(), "%d", &command_port_num);
-    command_netcom_dat = command_netcom.initUdpRx( host_char, command_port_num );
+    command_netcom_dat = command_netcom.initUdpRx( host_char, port_char );
     int rc;
     long t;
     pthread_t command_thread;
