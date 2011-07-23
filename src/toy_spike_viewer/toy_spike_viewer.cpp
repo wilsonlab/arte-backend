@@ -3,6 +3,7 @@
 #include "../netcom/datapacket.h"
 #include "plot_waveforms.h"
 
+uint32_t n_spikes_caught;
 //void watch_net( char host_ip[INET6_ADDRSTRLEN], int port_num ){
 //
 //}
@@ -19,6 +20,7 @@ int main (int argc, char *argv[]){
 
   int last_drawn_ts = 0;
   int min_wait = 0;
+  n_spikes_caught = 0;
 
   if(argc != 3){
     printf("Usage: toy_wave_viewer host port\n");
@@ -38,7 +40,7 @@ int main (int argc, char *argv[]){
 
     if(false){   // just get buffer as a buffer
       NetCom::rxBuff(my_netcomdat, buff, &buff_len);
-    
+      n_spikes_caught++;
       //printf("%c|",buff[0]);
       //fflush(stdout);
       if(false){
@@ -54,6 +56,7 @@ int main (int argc, char *argv[]){
       //      printf("before rxwave\n");
       //fflush(stdout);
       NetCom::rxSpike( my_netcomdat, &spike );
+      n_spikes_caught++;
       //printf("after rxwave\n");
       //fflush(stdout);
       

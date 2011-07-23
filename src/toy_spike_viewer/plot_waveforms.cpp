@@ -3,6 +3,8 @@
 
 #define MAX_N_ROWS 200
 
+extern uint32_t n_spikes_caught;
+
 void plot_waveforms(spike_net_t *spike, int max_y, int n_rows, int row_for_zero_y){
 
   int row_min_y[MAX_N_ROWS];
@@ -43,6 +45,10 @@ void plot_waveforms(spike_net_t *spike, int max_y, int n_rows, int row_for_zero_
   for(n = 0; n < n_disp_cols; n++){
     printf("-");
   }
-  printf("\n%f\n",(float)spike->ts/10000);
+  printf("\nSeq_diff: %d  Ts: %f  ArtE_count: %d  Our count: %d\n",
+	 (spike->seq_num+1) - n_spikes_caught,
+	 (float)spike->ts/10000,
+	 spike->seq_num + 1,
+	 n_spikes_caught);
 
 }
