@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
-#include <GL/glut.h>	// OpenGL Graphics Utility Library
+#include <GLUT/glut.h>	// OpenGL Graphics Utility Library
 #include "netcom.h"
 #include "datapacket.h"
 #include <math.h>
@@ -47,8 +47,8 @@ static float dUserShift = .05;
 // 		Arte Specific Variables
 // ===================================
 
-static char host[] = "localhost";
-static int port = 6303;
+static char host[] = "127.0.0.1";
+static char * port;
 static NetComDat net; // = NetCom::initUdpRx(host,port);
 static spike_net_t spike;
 
@@ -113,28 +113,31 @@ void getNetSpike();
 int main( int argc, char** argv )
 {
 	if (argc>1)
-		port = atoi(argv[1]);
+		port = argv[1];
 	else
 	{
 		std::cout<<"Usage: arteSpikeViewer port"<<std::endl;
 		return 0;
 	}
 
+
 	bzero(msg, msgLen);
 	net = NetCom::initUdpRx(host,port);
 	srand(time(NULL));
 	gettimeofday(&startTime,NULL);
 
+
 	glutInit(&argc,argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB );
-	glDisable(GL_DEPTH_TEST);
+
+//	glDisable(GL_DEPTH_TEST);
 
 	glutInitWindowPosition( 20, 60 );
 	glutInitWindowSize( winWidth, winHeight);
 
 	char windowTitle[100]; 
 
-	sprintf(windowTitle, "Arte Spike Viewer: %d", port);
+	sprintf(windowTitle, "Arte Spike Viewer: (port)");
 
 	glutCreateWindow(windowTitle);
 	glutReshapeFunc( resizeWindow );
