@@ -8,7 +8,7 @@ NetComDat NetCom::initUdpTx(char host[], int port){
 	hostent *he;
 	int numbytes;
 	int broadcast = 1;
-	
+
 	if ((he=gethostbyname(host))==NULL){
 	  perror("gethostname");
 	  printf("gethostbyname error.\n");
@@ -40,32 +40,44 @@ NetComDat NetCom::initUdpTx(char host[], int port){
 	return net;
 }
 
-NetComDat NetCom::initUdpRx(char host[], int portIn){
+NetComDat NetCom::initUdpRx(char host[], char * port){
 
-	std::stringstream ss;
-	ss<<portIn;
-	const char * port = ss.str().c_str();
+//	std::stringstream ss;
+//	ss<<portIn;
 
+//	const char * port = ss.str().c_str();
+//	const char port[] = "ndmp";
 	int sockfd;
-        struct addrinfo hints, *servinfo, *p;
-        int rv;
-        struct sockaddr_storage their_addr;
-        socklen_t addr_len;
-        char s[INET6_ADDRSTRLEN];
-	
+    struct addrinfo hints, *servinfo, *p;
+    int rv;
+    struct sockaddr_storage their_addr;
+    socklen_t addr_len;
+    char s[INET6_ADDRSTRLEN];
+
 	NetComDat net;
 
-        memset(&hints, 0, sizeof hints);
-        hints.ai_family = AF_UNSPEC; // set to AF_INET to force IPv4
-        hints.ai_socktype = SOCK_DGRAM;
-        hints.ai_flags = AI_PASSIVE; // use my IP
+    memset(&hints, 0, sizeof hints);
+    hints.ai_family = AF_UNSPEC; // set to AF_INET to force IPv4
+    hints.ai_socktype = SOCK_DGRAM;
+    hints.ai_flags = AI_PASSIVE  |  AI_NUMERICSERV; // use my IP
 
 	std::cout<<"Listening to port:"<<port<<" from IP:"<<host<<std::endl;
-        if ((rv = getaddrinfo(NULL, port, &hints, &servinfo)) != 0) {
-                fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
-                return net;
-        }
-
+	std::cout<<strlen(port)<<" str len"<<std::endl;
+/*
+	 memset(&hints, 0, sizeof hints);
+    hints.ai_family = AF_UNSPEC; // set to AF_INET to force IPv4
+    hints.ai_socktype = SOCK_DGRAM;
+    hints.ai_flags = AI_PASSIVE; // use my IP
+    
+	int rv1 = getaddrinfo(NULL, port, &hints, &servinfo);
+    std::cout<<"RV1:"<<rv1<<std::endl;
+*/
+	if ((rv = getaddrinfo(NULL, port, &hints, &servinfo)) != 0) {
+			std::cout<<"RV VALUE:"<<rv<<std::endl;
+	        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
+            return net;
+    }
+	std::cout<<"this line is never reached!"<<std::endl;
         // loop through all the results and bind to the first we can
         for(p = servinfo; p != NULL; p = p->ai_next) {
 //		std::cout<<"\t"<< p->ai_canonname<<"----"<<std::endl;
@@ -94,7 +106,7 @@ NetComDat NetCom::initUdpRx(char host[], int portIn){
 
 	net.sockfd = sockfd;
 	net.their_addr =  their_addr;
-	
+	std::cout<<"returning a net object"<<std::endl;
 	return net;
 }
 
