@@ -7,6 +7,7 @@
 #include "datapacket.h"
 #include <math.h>
 #include <vector>
+#include <pthread.h>
 
 // these offsets create padding between the different plots
 // making a more pleasing display
@@ -25,14 +26,12 @@ static double yBox = winHeight/2;
 static double xPadding = 2;
 static double yPadding = 2;
 
-static double waveformLineWidth = 1;
-static float waveformColor[3] = {1.0, 0.0, 0.0};
-
+static double const waveformLineWidth = 1;
 static bool clearWave = true;
-
 static char txtDispBuff[40];
 
 void *font = GLUT_BITMAP_8_BY_13;
+static int drawTimeout = (1e6)/30;
 
 // Scaling Variables
 // Defines how much to shift the waveform within the viewport
@@ -44,35 +43,57 @@ static float voltShift = -.85;
 static float userShift = 0;
 static float dUserShift = .05;
 // ===================================
-// 		Arte Specific Variables
+// 		Network Variables
 // ===================================
 
 static char host[] = "127.0.0.1";
 static char * port;
 static NetComDat net; // = NetCom::initUdpRx(host,port);
-static spike_net_t spike;
+
 
 // ===================================
-// 		Data Format Specific Variables
+// 		Data Variables
 // ===================================
+static spike_net_t spikeOld;
 static int nChan=4;
 static int nProj=6;
+
+static int const spikeBuffSize = 500;
+static spike_net_t spikeBuff[spikeBuffSize];
+static spike_net_t spike;
+static int nSpikes = 0;
+static int readIdx = 0;
+static int writeIdx = 0;
 
 // ===================================
 // 		Misc Variables
 // ===================================
-static int spikeCount =0;
+static int totalSpikesRead =0;
 static timeval startTime, now;
 
-static unsigned char msg[250];
-static int const msgLen = 250;
+static int const cmdStrLen = 250;
+static unsigned char cmd[cmdStrLen];
 static int cIdx = 0;
 
 // ===================================
-// 		General Function Headers
+// 		Command Variables
 // ===================================
+static int const CMD_MAX_LEN = 25;
+static int const CMD_THOLD_ALL = 'T';
+static int const CMD_THOLD_SINGLE = 't';
+static int const CMD_GAIN_ALL = 'G';
+static int const CMD_GAIN_SINGLE = 'g';
+static int const CMD_NULL = 0;
+static int currentCommand = 0;
+static bool enteringCommand = false;
 
-void initTextures();
+// ===================================
+// 		General Functions
+// ===================================
+int incrementIdx(int i);
+bool tryToGetSpike(spike_net_t *s);
+
+void idleFn();
 void refreshDrawing();
 void drawBoundingBoxes();
 void eraseWaveforms();
@@ -102,12 +123,13 @@ void toggleOverlay();
 void clearWindow();
 
 void keyPressedFn(unsigned char key, int x, int y);
+void enterCommandArg(char key);
 void dispCommandString();
 
 bool executeCommand(unsigned char * cmd);
 
 void drawString(float x, float y, char *string);
-void getNetSpike();
+void *getNetSpike(void *ptr);
 
 
 int main( int argc, char** argv )
@@ -121,8 +143,11 @@ int main( int argc, char** argv )
 	}
 
 
-	bzero(msg, msgLen);
+	bzero(cmd, cmdStrLen);
+	pthread_t netThread;
 	net = NetCom::initUdpRx(host,port);
+	pthread_create(&netThread, NULL, getNetSpike, (void *)NULL);
+	
 	srand(time(NULL));
 	gettimeofday(&startTime,NULL);
 
@@ -135,17 +160,17 @@ int main( int argc, char** argv )
 	glutInitWindowPosition( 20, 60 );
 	glutInitWindowSize( winWidth, winHeight);
 
-	char windowTitle[100]; 
+	char windowTitle[100];
 
 	sprintf(windowTitle, "Arte Spike Viewer: (port)");
 
 	glutCreateWindow(windowTitle);
 	glutReshapeFunc( resizeWindow );
-	glutIdleFunc( getNetSpike );
+//	glutIdleFunc( getNetSpike );
+	glutIdleFunc( idleFn );
 	glutDisplayFunc( refreshDrawing );
-	glutKeyboardFunc(keyPressedFn);	
+	glutKeyboardFunc(keyPressedFn);
 
-	
 	std::cout<<"Starting the GLUT main Loop"<<std::endl;
 	glutMainLoop(  );
 
@@ -153,21 +178,63 @@ int main( int argc, char** argv )
 }
 
 
+bool tryToGetSpike(spike_net_t *s){
 
-void getNetSpike(void){
+	if  (readIdx==writeIdx || nSpikes==0)
+		return false;
 
- 	NetCom::rxSpike(net, &spike);
-	spikeCount++;
-	refreshDrawing();
+	// Copy the spike data
+	s->name 	= spikeBuff[readIdx].name;
+	s->n_chans 	= spikeBuff[readIdx].n_chans;
+	s->n_samps_per_chan = spikeBuff[readIdx].n_samps_per_chan;
+	s->samp_n_bytes 	= spikeBuff[readIdx].samp_n_bytes;
+	for (int i=0; i < spikeBuff[readIdx].n_chans *  spikeBuff[readIdx].n_samps_per_chan; i++)
+		s->data[i] = spikeBuff[readIdx].data[i];
+//	s->data 	= spikeBuff[readIdx].data;
+	for (int i=0; i < spikeBuff[readIdx].n_chans; i++){
+		s->gains[i] = spikeBuff[readIdx].gains[i];
+		s->thresh[i]= spikeBuff[readIdx].thresh[i];
+	}
+
+	readIdx = incrementIdx(readIdx);
+	nSpikes--;
+
+
+	return true;
 }
 
 
+
+void *getNetSpike(void *ptr){
+
+// 	NetCom::rxSpike(net, &spike);
+	while(true)
+	{
+		spike_net_t s;
+		NetCom::rxSpike(net, &s);
+		spikeBuff[writeIdx] = s;
+		writeIdx = incrementIdx(writeIdx);
+		nSpikes+=1;
+		totalSpikesRead++;
+	}
+
+//	std::cout<<"acquired spike writeIdx:"<<writeIdx<<" readIdx:"<<readIdx<<" N in Buffer:"<<nSpikes<<std::endl;	
+
+//	refreshDrawing();
+}
+
+
+void idleFn(void){
+
+	if (tryToGetSpike(&spike) || enteringCommand)
+		refreshDrawing();
+
+}
 
 
 void refreshDrawing(void)
 {
 //	std::cout<<" ------ Refresh Drawing -------"<<std::endl;
-
 //	glClear(GL_COLOR_BUFFER_BIT);
 
 	if (clearWave)
@@ -177,19 +244,11 @@ void refreshDrawing(void)
 	drawProjections();
 	drawBoundingBoxes();
 
-	// draw the bounding boxes last so they are "ON TOP" of everything else
 	dispCommandString();
 	glutSwapBuffers();
 	glFlush();
 
-	long dt = (now.tv_usec - startTime.tv_usec);
-	if (spikeCount%1000==0)
-		std::cout<<"Spike count:" << spikeCount<<"  DT"<<dt<<"  Frame rate:"<<1e6/dt<<std::endl;
-	startTime.tv_usec = now.tv_usec;;
-
 }
-
-
 
 void eraseWaveforms(){
 // Note that we only want to erase the waveforms not the projections.
@@ -233,6 +292,7 @@ void drawWaveformN(int n)
 
 	// Disp the threshold value
 	int thresh = spike.thresh[n];
+
 	sprintf(txtDispBuff, "T:%d", thresh);
 	glColor3f(1.0,1.0,1.0);
 	drawString(-.9, .8, txtDispBuff);
@@ -348,6 +408,7 @@ void setViewportForCommandString(){
     float viewX = 0 + xPadding;
 	float viewY = 0 + yPadding;
     float viewDX = winWidth - 2*xPadding;
+		viewDX = xBox - 2*xPadding;
     float viewDY =  commandWinHeight;
 
 	glViewport(viewX, viewY, viewDX, viewDY);
@@ -356,7 +417,7 @@ void setViewportForCommandString(){
 
 
 void drawProjections(){
-
+//	std::cout<<"Drawing the projections"<<std::endl;
 	int maxIdx = calcWaveMaxInd();
 
 	//std::cout<<"Wave Max Ind:"<<maxIdx<<" on Channel:"<<maxIdx%4<<std::endl;	
@@ -480,22 +541,28 @@ void resizeWindow(int w, int h)
 
 
 void keyPressedFn(unsigned char key, int x, int y){
+
 	std::cout<<"Key Pressed:"<<key<<" value:"<<(int)key<<std::endl;
+
+	if (enteringCommand){
+		enterCommandArg(key);
+		return;
+	}
 	switch (key){
-		case 3:  // CTRL+C
+
+		//Clear the windows
+		case 'c':
+		case 'C':  
 			clearWindow();
 		break;
 
-		case 15: // CTRL+O
+		//Waveform Overlay
+		case 'o': 
+		case 'O':
 			toggleOverlay();
 		break;
 
-		case 13: // RETURN KEY
-			executeCommand(msg);
-			bzero(msg,msgLen);
-			cIdx = 0;
-			eraseCommandString();
-		break;
+		// Scale Waveforms and Projections
 		case '=':
 			userScale += dUserScale;
 			break;
@@ -504,6 +571,7 @@ void keyPressedFn(unsigned char key, int x, int y){
 			if (userScale<1)
 				userScale = 1;
 			break;
+		// Shift the waveforms only
 		case '_':
 			userShift -= dUserShift;
 			std::cout<<"User shift lowered:"<<userShift<<std::endl;
@@ -513,23 +581,62 @@ void keyPressedFn(unsigned char key, int x, int y){
 			std::cout<<"User shift raised:"<<userShift<<std::endl;
 
 			break;
-		case 8: // DEL Key is pressed
-			if (cIdx<=0) //if the command string is empty ignore the keypress
+		case CMD_GAIN_SINGLE:
+			enteringCommand = true;
+			currentCommand = CMD_GAIN_SINGLE;
+			break;	
+		case CMD_GAIN_ALL:
+			enteringCommand = true;
+			currentCommand = CMD_GAIN_ALL;
+			break;
+		case CMD_THOLD_SINGLE:
+			enteringCommand = true;
+			currentCommand = CMD_THOLD_SINGLE;
+			break;	
+		case CMD_THOLD_ALL:
+			enteringCommand = true;
+			currentCommand = CMD_THOLD_ALL;
+			break;
+
+		}
+ }
+void enterCommandArg(char key){
+	switch(key){
+		// Erase command string
+		case 8: //  Backspace Key
+		case 127: // MAC Delete key is pressed
+			if (cIdx<=0){ //if the command string is empty ignore the keypress
+				enteringCommand = false;
 				return;
-			msg[--cIdx] = 0; //backup the cursor and set the current char to 0
+			}
+			cmd[--cIdx] = 0; //backup the cursor and set the current char to 0
 			eraseCommandString();
 			break;
+
+		case 13: // RETURN KEY
+			executeCommand(cmd);
+			bzero(cmd,cmdStrLen);
+			cIdx = 0;
+			eraseCommandString();
+			enteringCommand = false;
+			refreshDrawing(); // to erase the command window if no spikes are coming in
+		break;
 
 		default:
 			if(key<' ') // if not a valid Alpha Numeric Char ignore it
 				return;
-			msg[cIdx++] = key;
+			cmd[cIdx] = key;
+			if (cIdx<CMD_MAX_LEN)
+				cIdx+=1;
+				std::cout<<cIdx<<std::endl;
+
 	}
+
+
 }
 void dispCommandString(){
-	if (cIdx>0)
+	if (enteringCommand)
 	{
-		
 		setViewportForCommandString();
 		//Draw a black rectangle to cover up whatever was previously visible
 		glColor3f(0.0, 0.0, 0.0);
@@ -537,8 +644,16 @@ void dispCommandString(){
 		//Draw the white bounding box
 		glColor3f(1.0, 1.0, 1.0);
 		drawViewportEdge();
+
+		// Prepend the command char and :  for display purposes
+		char dispCmd[CMD_MAX_LEN+2];
+		bzero(dispCmd, CMD_MAX_LEN);
+		for (int i=0; i<cIdx; i++)
+			dispCmd[i+2] = cmd[i];
+		dispCmd[0] = currentCommand;
+		dispCmd[1] = ':';
 		//draw the actuall string
-		drawString(-.99,-.35, (char*)msg);
+		drawString(-.95,-.35, (char*)dispCmd);
 	}
 }
 
@@ -555,6 +670,20 @@ void drawString(float x, float y, char *string){
 bool executeCommand(unsigned char *cmd){
 	int len = sizeof(cmd);
 	std::cout<<"Executing command:"<<cmd<<std::endl;
+	switch(currentCommand){
+
+		case CMD_THOLD_ALL:
+		std::cout<<"Changing all thresholds!"<<std::endl;
+
+		break;
+		case CMD_THOLD_SINGLE:
+		std::cout<<"Changing a single threshold!"<<std::endl;
+
+		break;
+	}
+
+	currentCommand  = CMD_NULL;
+
 }
 
 void clearWindow(){
@@ -573,4 +702,10 @@ float scaleVoltage(int v, bool shift){
 }
 
 
+int incrementIdx(int i){
+	if(i==spikeBuffSize-1)
+		return 0;
+	else
+		return i+1;
 
+}
