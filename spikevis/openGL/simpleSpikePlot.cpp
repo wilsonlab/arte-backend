@@ -78,11 +78,19 @@ static int cIdx = 0;
 // ===================================
 // 		Command Variables
 // ===================================
-static int const CMD_MAX_LEN = 16;
+static int const CMD_CLEAR_WIN = 'c';
+static int const CMD_TOGGLE_OVERLAY = 'o';
+static int const CMD_SCALE_UP = '=';
+static int const CMD_SCALE_DOWN = '-';
+static int const CMD_SHIFT_UP = '+';
+static int const CMD_SHIFT_DOWN = '_';
+
+static int const CMD_STR_MAX_LEN = 16;
 static int const CMD_THOLD_ALL = 'T';
 static int const CMD_THOLD_SINGLE = 't';
 static int const CMD_GAIN_ALL = 'G';
 static int const CMD_GAIN_SINGLE = 'g';
+static int const CMD_SET_POST_SAMPS = 'N';
 static int const CMD_NULL = 0;
 static int currentCommand = 0;
 static bool enteringCommand = false;
@@ -123,7 +131,7 @@ void toggleOverlay();
 void clearWindow();
 
 void keyPressedFn(unsigned char key, int x, int y);
-void enterCommandArg(char key);
+void enterCommandStr(char key);
 void dispCommandString();
 
 bool executeCommand(unsigned char * cmd);
@@ -547,62 +555,55 @@ void keyPressedFn(unsigned char key, int x, int y){
 	std::cout<<"Key Pressed:"<<key<<" value:"<<(int)key<<std::endl;
 
 	if (enteringCommand){
-		enterCommandArg(key);
+		enterCommandStr(key);
 		return;
 	}
 	switch (key){
 
 		//Clear the windows
-		case 'c':
-		case 'C':  
+//		case 'C':  
+		case CMD_CLEAR_WIN:
 			clearWindow();
 		break;
 
 		//Waveform Overlay
-		case 'o': 
-		case 'O':
+//		case 'O':
+		case CMD_TOGGLE_OVERLAY: 
 			toggleOverlay();
 		break;
 
 		// Scale Waveforms and Projections
-		case '=':
+		case CMD_SCALE_UP:
 			userScale += dUserScale;
 			break;
-		case '-':
+		case CMD_SCALE_DOWN:
 			userScale -= dUserScale;
 			if (userScale<1)
 				userScale = 1;
 			break;
 		// Shift the waveforms only
-		case '_':
+		case CMD_SHIFT_UP:
+			userShift += dUserShift;
+			std::cout<<"User shift raised:"<<userShift<<std::endl;
+			break;
+		case CMD_SHIFT_DOWN:
 			userShift -= dUserShift;
 			std::cout<<"User shift lowered:"<<userShift<<std::endl;
 			break;		
-		case '+':
-			userShift += dUserShift;
-			std::cout<<"User shift raised:"<<userShift<<std::endl;
 
-			break;
+		// Commands that require additional user input
 		case CMD_GAIN_SINGLE:
-			enteringCommand = true;
-			currentCommand = CMD_GAIN_SINGLE;
-			break;	
 		case CMD_GAIN_ALL:
-			enteringCommand = true;
-			currentCommand = CMD_GAIN_ALL;
-			break;
 		case CMD_THOLD_SINGLE:
-			enteringCommand = true;
-			currentCommand = CMD_THOLD_SINGLE;
-			break;	
 		case CMD_THOLD_ALL:
+		case CMD_SET_POST_SAMPS:
 			enteringCommand = true;
-			currentCommand = CMD_THOLD_ALL;
+			currentCommand = key;
 			break;
 
 		}
  }
-void enterCommandArg(char key){
+void enterCommandStr(char key){
 	switch(key){
 		// Erase command string
 		case 8: //  Backspace Key
@@ -628,7 +629,7 @@ void enterCommandArg(char key){
 			if(key<' ') // if not a valid Alpha Numeric Char ignore it
 				return;
 			cmd[cIdx] = key;
-			if (cIdx<CMD_MAX_LEN)
+			if (cIdx<CMD_STR_MAX_LEN)
 				cIdx+=1;
 				std::cout<<cIdx<<std::endl;
 			std::cout<<cmd<<std::endl;
@@ -648,8 +649,8 @@ void dispCommandString(){
 		drawViewportEdge();
 
 		// Prepend the command char and :  for display purposes
-		char dispCmd[CMD_MAX_LEN+3];
-		bzero(dispCmd, CMD_MAX_LEN+3);
+		char dispCmd[CMD_STR_MAX_LEN+3];
+		bzero(dispCmd, CMD_STR_MAX_LEN+3);
 		for (int i=0; i<cIdx; i++)
 			dispCmd[i+2] = cmd[i];
 		dispCmd[0] = currentCommand;
