@@ -71,14 +71,14 @@ static int writeIdx = 0;
 static int totalSpikesRead =0;
 static timeval startTime, now;
 
-static int const cmdStrLen = 250;
+static int const cmdStrLen = 50;
 static unsigned char cmd[cmdStrLen];
 static int cIdx = 0;
 
 // ===================================
 // 		Command Variables
 // ===================================
-static int const CMD_MAX_LEN = 25;
+static int const CMD_MAX_LEN = 16;
 static int const CMD_THOLD_ALL = 'T';
 static int const CMD_THOLD_SINGLE = 't';
 static int const CMD_GAIN_ALL = 'G';
@@ -239,6 +239,8 @@ void refreshDrawing(void)
 
 	if (clearWave)
 		eraseWaveforms();
+
+//	glHint(GL_LINE_SMOOTH_HINT);
 
 	drawWaveforms();
 	drawProjections();
@@ -629,7 +631,7 @@ void enterCommandArg(char key){
 			if (cIdx<CMD_MAX_LEN)
 				cIdx+=1;
 				std::cout<<cIdx<<std::endl;
-
+			std::cout<<cmd<<std::endl;
 	}
 
 
@@ -646,8 +648,8 @@ void dispCommandString(){
 		drawViewportEdge();
 
 		// Prepend the command char and :  for display purposes
-		char dispCmd[CMD_MAX_LEN+2];
-		bzero(dispCmd, CMD_MAX_LEN);
+		char dispCmd[CMD_MAX_LEN+3];
+		bzero(dispCmd, CMD_MAX_LEN+3);
 		for (int i=0; i<cIdx; i++)
 			dispCmd[i+2] = cmd[i];
 		dispCmd[0] = currentCommand;
