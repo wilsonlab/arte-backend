@@ -134,6 +134,8 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
       this_nd.task_handle = 0; // dunno why, but most examples do this 0 init
       buffer_size = buffer_samps_per_chan * this_nd.n_chans;
       daq_err_check( (DAQmxCreateTask(this_nd.dev_name, &(this_nd.task_handle))) );
+
+      
       for (int c = 0; c < this_nd.n_chans; c++){
 	sprintf(channel_name, "%s/ai%d", this_nd.dev_name, c);
 	daq_err_check ( DAQmxCreateAIVoltageChan(this_nd.task_handle,channel_name,"",DAQmx_Val_RSE,NEURAL_DAQ_V_MIN,NEURAL_DAQ_V_MAX,DAQmx_Val_Volts,NULL) );
