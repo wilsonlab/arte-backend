@@ -27,11 +27,11 @@ static double xPadding = 2;
 static double yPadding = 2;
 
 static double const waveformLineWidth = 1;
-static bool clearWave = true;
+static bool disableWaveOverlay = true;
 static char txtDispBuff[40];
 
 void *font = GLUT_BITMAP_8_BY_13;
-static int drawTimeout = (1e6)/30;
+static int TIMEOUT = (1e6)/500;
 
 // Scaling Variables
 // Defines how much to shift the waveform within the viewport
@@ -86,10 +86,10 @@ static int const CMD_SHIFT_UP = '+';
 static int const CMD_SHIFT_DOWN = '_';
 
 static int const CMD_STR_MAX_LEN = 16;
-static int const CMD_THOLD_ALL = 'T';
-static int const CMD_THOLD_SINGLE = 't';
-static int const CMD_GAIN_ALL = 'G';
-static int const CMD_GAIN_SINGLE = 'g';
+static int const CMD_THOLD_ALL = 't';
+static int const CMD_THOLD_SINGLE = 'T';
+static int const CMD_GAIN_ALL = 'g';
+static int const CMD_GAIN_SINGLE = 'G';
 static int const CMD_SET_POST_SAMPS = 'N';
 static int const CMD_NULL = 0;
 static int currentCommand = 0;
@@ -162,9 +162,7 @@ int main( int argc, char** argv )
 
 	glutInit(&argc,argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB );
-
 //	glDisable(GL_DEPTH_TEST);
-
 	glutInitWindowPosition( 20, 60 );
 	glutInitWindowSize( winWidth, winHeight);
 
@@ -198,7 +196,7 @@ bool tryToGetSpike(spike_net_t *s){
 	s->samp_n_bytes 	= spikeBuff[readIdx].samp_n_bytes;
 	for (int i=0; i < spikeBuff[readIdx].n_chans *  spikeBuff[readIdx].n_samps_per_chan; i++)
 		s->data[i] = spikeBuff[readIdx].data[i];
-//	s->data 	= spikeBuff[readIdx].data;
+
 	for (int i=0; i < spikeBuff[readIdx].n_chans; i++){
 		s->gains[i] = spikeBuff[readIdx].gains[i];
 		s->thresh[i]= spikeBuff[readIdx].thresh[i];
@@ -206,16 +204,13 @@ bool tryToGetSpike(spike_net_t *s){
 
 	readIdx = incrementIdx(readIdx);
 	nSpikes--;
-
-
+	
 	return true;
 }
 
 
 
 void *getNetSpike(void *ptr){
-
-// 	NetCom::rxSpike(net, &spike);
 	while(true)
 	{
 		spike_net_t s;
@@ -225,44 +220,31 @@ void *getNetSpike(void *ptr){
 		nSpikes+=1;
 		totalSpikesRead++;
 	}
-
-//	std::cout<<"acquired spike writeIdx:"<<writeIdx<<" readIdx:"<<readIdx<<" N in Buffer:"<<nSpikes<<std::endl;	
-
-//	refreshDrawing();
 }
 
 
 void idleFn(void){
-
 	if (tryToGetSpike(&spike) || enteringCommand)
 		refreshDrawing();
-
+    usleep(TIMEOUT);
 }
 
 
 void refreshDrawing(void)
 {
-//	std::cout<<" ------ Refresh Drawing -------"<<std::endl;
-//	glClear(GL_COLOR_BUFFER_BIT);
-
-	if (clearWave)
+	if (disableWaveOverlay)
 		eraseWaveforms();
-
-//	glHint(GL_LINE_SMOOTH_HINT);
 
 	drawWaveforms();
 	drawProjections();
 	drawBoundingBoxes();
-
 	dispCommandString();
+
 	glutSwapBuffers();
 	glFlush();
-
 }
 
 void eraseWaveforms(){
-// Note that we only want to erase the waveforms not the projections.
-// the projections are simply drawn as points and not state is saved 
 
 	for (int i=0; i<nChan; i++)
 	{
@@ -270,29 +252,20 @@ void eraseWaveforms(){
 		glColor3f(0,0,0);
 		glRectf(-1, -1, 2, 2);
 	}
-
 }
 
 void eraseCommandString(){
 	setViewportForCommandString();
 	glColor3f(0,0,0);
-	glRectf(-1, -1, 2, 20);
+	glRectf(-1, -1, 2, 2);
 }
 
 
 void drawWaveforms(void){
 
-//	std::cout<<"Drawing waveforms"<<std::endl;
-
-	int buffSize = spike.n_chans * spike.n_samps_per_chan;
-
 	glLineWidth(waveformLineWidth);
-
 	for (int i=0; i<spike.n_chans; i++) 
 			drawWaveformN(i);
-
-	gettimeofday(&now,NULL);
-
 }
 
 
@@ -302,7 +275,6 @@ void drawWaveformN(int n)
 
 	// Disp the threshold value
 	int thresh = spike.thresh[n];
-
 	sprintf(txtDispBuff, "T:%d", thresh);
 	glColor3f(1.0,1.0,1.0);
 	drawString(-.9, .8, txtDispBuff);
@@ -310,7 +282,7 @@ void drawWaveformN(int n)
 	// Draw the actual waveform
 	float dx = 2.0/(spike.n_samps_per_chan-1);
 	float x = -1;
-	int	sampIdx = n;
+	int	sampIdx = n; 
 	glColor3f(1.0, 1.0, 0.6);
 	glBegin( GL_LINE_STRIP );
 		for (int i=0; i<spike.n_samps_per_chan; i++)
@@ -322,8 +294,8 @@ void drawWaveformN(int n)
 	glEnd();
 
 	// Draw the threshold line
-	glColor3f(1.0, 0.0, 0.0);
-	glLineStipple(4, 0xAAAA);
+	glColor3f(1.0, 0.0, 0.0); // set threshold line to red
+	glLineStipple(4, 0xAAAA); // make line a dashed line
 	glEnable(GL_LINE_STIPPLE);
 	glBegin( GL_LINE_STRIP );
 		glVertex2f(-1.0, scaleVoltage(thresh, true));
@@ -362,11 +334,7 @@ void setViewportForWaveN(int n){
 	viewY = viewY + yPadding;
 	viewDX = viewDX - 2*xPadding;
 	viewDY = viewDY - 2*yPadding;
-
-	//std::cout<<"Setting waveform viewport N:"<<n<<" X:"<<viewX<<" Y:"<<viewY<<" dx:"<<viewDX<<" dy:"<<viewDY<<std::endl;
-
 	glViewport(viewX,viewY,viewDX,viewDY);
-
 }
 
 
@@ -416,9 +384,8 @@ void setViewportForProjectionN(int n){
 void setViewportForCommandString(){
 
     float viewX = 0 + xPadding;
-	float viewY = 0 + yPadding;
-    float viewDX = winWidth - 2*xPadding;
-		viewDX = xBox - 2*xPadding;
+    float viewY = 0 + yPadding;
+    float viewDX = xBox - 2*xPadding;
     float viewDY =  commandWinHeight;
 
 	glViewport(viewX, viewY, viewDX, viewDY);
@@ -427,16 +394,12 @@ void setViewportForCommandString(){
 
 
 void drawProjections(){
-//	std::cout<<"Drawing the projections"<<std::endl;
+
 	int maxIdx = calcWaveMaxInd();
 
-	//std::cout<<"Wave Max Ind:"<<maxIdx<<" on Channel:"<<maxIdx%4<<std::endl;	
 	maxIdx = maxIdx  - maxIdx%4;  
-	// shift the index of the peak waveform to the first channel
-    // this should make future indexing  less confusing
 
-	// MAGIC NUMBER HACK, YUCK!!!!! I NEED TO FIX THIS WITH PROPER LOGIC
-	for (int i=0; i<6; i++) // <----------------------------------------
+	for (int i=0; i<nProj; i++) // <----------------------------------------
 		drawProjectionN(i, maxIdx);
 
 }
@@ -478,9 +441,7 @@ void drawProjectionN(int n, int idx){
 	}
 
 	glColor3f( 1.0, 1.0, 1.0 );
-//	std::cout<<"Plotting points:"<<spike.data[idx+d1]*dx<<" "<<spike.data[idx+d2]*dy<<std::endl;
 	glBegin(GL_POINTS);
-//		glVertex2f(spike.data[idx+d1], spike.data[idx+d2]);
 		glVertex2f(scaleVoltage(spike.data[idx+d1], false), scaleVoltage(spike.data[idx+d2], false));
 	glEnd();
 }
@@ -501,8 +462,6 @@ int  calcWaveMaxInd(){
 
 
 void drawBoundingBoxes(void){
-
-//	std::cout<<"Drawing bounding boxes"<<std::endl;
 
 	glColor3f(1.0, 1.0, 1.0);
 	for (int i=0; i<nChan; i++)
@@ -532,7 +491,6 @@ void drawViewportEdge(){
 
 void resizeWindow(int w, int h)
 {
-
 	winWidth = w;
 	winHeight = h;
 
@@ -559,19 +517,12 @@ void keyPressedFn(unsigned char key, int x, int y){
 		return;
 	}
 	switch (key){
-
-		//Clear the windows
-//		case 'C':  
 		case CMD_CLEAR_WIN:
 			clearWindow();
 		break;
-
-		//Waveform Overlay
-//		case 'O':
 		case CMD_TOGGLE_OVERLAY: 
 			toggleOverlay();
 		break;
-
 		// Scale Waveforms and Projections
 		case CMD_SCALE_UP:
 			userScale += dUserScale;
@@ -590,9 +541,7 @@ void keyPressedFn(unsigned char key, int x, int y){
 			userShift -= dUserShift;
 			std::cout<<"User shift lowered:"<<userShift<<std::endl;
 			break;		
-
 		// Commands that require additional user input
-		case CMD_GAIN_SINGLE:
 		case CMD_GAIN_ALL:
 		case CMD_THOLD_SINGLE:
 		case CMD_THOLD_ALL:
@@ -600,7 +549,6 @@ void keyPressedFn(unsigned char key, int x, int y){
 			enteringCommand = true;
 			currentCommand = key;
 			break;
-
 		}
  }
 void enterCommandStr(char key){
@@ -615,7 +563,6 @@ void enterCommandStr(char key){
 			cmd[--cIdx] = 0; //backup the cursor and set the current char to 0
 			eraseCommandString();
 			break;
-
 		case 13: // RETURN KEY
 			executeCommand(cmd);
 			bzero(cmd,cmdStrLen);
@@ -624,7 +571,6 @@ void enterCommandStr(char key){
 			enteringCommand = false;
 			refreshDrawing(); // to erase the command window if no spikes are coming in
 		break;
-
 		default:
 			if(key<' ') // if not a valid Alpha Numeric Char ignore it
 				return;
@@ -632,11 +578,10 @@ void enterCommandStr(char key){
 			if (cIdx<CMD_STR_MAX_LEN)
 				cIdx+=1;
 				std::cout<<cIdx<<std::endl;
-			std::cout<<cmd<<std::endl;
+			std::cout<<"Command Entered:"<<cmd<<std::endl;
 	}
-
-
 }
+
 void dispCommandString(){
 	if (enteringCommand)
 	{
@@ -672,21 +617,17 @@ void drawString(float x, float y, char *string){
 
 bool executeCommand(unsigned char *cmd){
 	int len = sizeof(cmd);
+
 	std::cout<<"Executing command:"<<cmd<<std::endl;
 	switch(currentCommand){
-
 		case CMD_THOLD_ALL:
 		std::cout<<"Changing all thresholds!"<<std::endl;
-
 		break;
 		case CMD_THOLD_SINGLE:
 		std::cout<<"Changing a single threshold!"<<std::endl;
-
 		break;
 	}
-
 	currentCommand  = CMD_NULL;
-
 }
 
 void clearWindow(){
@@ -694,7 +635,7 @@ void clearWindow(){
 }
 
 void toggleOverlay(){
-	clearWave = !clearWave;
+	disableWaveOverlay = !disableWaveOverlay;
 }
 
 float scaleVoltage(int v, bool shift){
@@ -704,11 +645,9 @@ float scaleVoltage(int v, bool shift){
 		return ((float)v * dV * userScale) + voltShift;
 }
 
-
 int incrementIdx(int i){
 	if(i==spikeBuffSize-1)
 		return 0;
 	else
 		return i+1;
-
 }
