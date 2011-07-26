@@ -86,14 +86,15 @@ static int const CMD_SHIFT_UP = '+';
 static int const CMD_SHIFT_DOWN = '_';
 
 static int const CMD_STR_MAX_LEN = 16;
-static int const CMD_THOLD_ALL = 't';
-static int const CMD_THOLD_SINGLE = 'T';
-static int const CMD_GAIN_ALL = 'g';
-static int const CMD_GAIN_SINGLE = 'G';
+static int const CMD_THOLD_ALL = 'T';
+static int const CMD_THOLD_SINGLE = 't';
+static int const CMD_GAIN_ALL = 'G';
+static int const CMD_GAIN_SINGLE = 'g';
 static int const CMD_SET_POST_SAMPS = 'N';
 static int const CMD_NULL = 0;
 static int currentCommand = 0;
 static bool enteringCommand = false;
+static int selectedWaveform = 0;
 
 // ===================================
 // 		General Functions
@@ -115,6 +116,7 @@ void drawViewportEdge();
 
 void drawWaveforms();
 void drawWaveformN(int n);
+void drawSelectedWaveform();
 
 void drawProjections();
 void drawProjectionN(int n, int idx);
@@ -131,6 +133,7 @@ void toggleOverlay();
 void clearWindow();
 
 void keyPressedFn(unsigned char key, int x, int y);
+void specialKeyFn(int key, int x, int y);
 void enterCommandStr(char key);
 void dispCommandString();
 
@@ -176,6 +179,7 @@ int main( int argc, char** argv )
 	glutIdleFunc( idleFn );
 	glutDisplayFunc( refreshDrawing );
 	glutKeyboardFunc(keyPressedFn);
+	glutSpecialFunc(specialKeyFn);
 
 	std::cout<<"Starting the GLUT main Loop"<<std::endl;
 	glutMainLoop(  );
@@ -238,6 +242,7 @@ void refreshDrawing(void)
 	drawWaveforms();
 	drawProjections();
 	drawBoundingBoxes();
+ 	drawSelectedWaveform();
 	dispCommandString();
 
 	glutSwapBuffers();
@@ -476,7 +481,12 @@ void drawBoundingBoxes(void){
 	}
 }
 
-
+void drawSelectedWaveform(){
+  setViewportForWaveN(selectedWaveform);
+  glLineWidth(3);
+  glColor3f(0.6, 0.6, 1.0);
+  drawViewportEdge();
+}
 
 void drawViewportEdge(){
 	glBegin(GL_LINE_LOOP);
@@ -507,7 +517,28 @@ void resizeWindow(int w, int h)
 	refreshDrawing();
 }
 
-
+void specialKeyFn(int key, int x, int y){
+	std::cout<<"Key Pressed:"<<key<<std::endl;
+    switch(key){
+      case 100: // left
+        selectedWaveform -=1;
+        break;
+      case 101: // up
+        selectedWaveform -=2;
+        break;
+      case 102: // right
+        selectedWaveform +=1;
+        break;
+      case 103: //down
+        selectedWaveform +=2;
+        break;
+    }
+    if (selectedWaveform<0)
+        selectedWaveform +=4;
+    if (selectedWaveform>=4)
+        selectedWaveform -=4;
+            
+}
 void keyPressedFn(unsigned char key, int x, int y){
 
 	std::cout<<"Key Pressed:"<<key<<" value:"<<(int)key<<std::endl;
