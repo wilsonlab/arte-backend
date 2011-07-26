@@ -26,6 +26,7 @@ int main(int argc, char* argv[]){
 		noise = atoi(argv[4]);
 	else
 		noise = 0;
+	std::cout<<"noise: "<<noise<<std::endl;
 
 	srand( time(NULL));
 
