@@ -10,26 +10,11 @@
 
 */
 
-#ifndef __APPHEADERFILE_47426FFB__
-#define __APPHEADERFILE_47426FFB__
+#ifndef __APPHEADERFILE_6E86DF1F__
+#define __APPHEADERFILE_6E86DF1F__
 
 #include "AppConfig.h"
-#if defined (JUCER_LINUX_MAKE_7346DA2A)
- #include "juce_amalgamated.h"
-#elif defined (JUCER_VS2010_78A501D)
- #include "../../../../../Programming/C++/juce/juce_amalgamated.h"
-#elif defined (JUCER_VS2008_78A5006)
- #include "../../../../../Programming/C++/juce/juce_amalgamated.h"
-#elif defined (JUCER_VS2005_78A5003)
- #include "../../../../../Programming/C++/juce/juce_amalgamated.h"
-#elif defined (JUCER_MSVC6_734A9119)
- #include "../../../../../Programming/C++/juce/juce_amalgamated.h"
-#elif defined (JUCER_XCODE_IPHONE_5BC26AE3)
- #include "/Users/Josh/Documents/Programming/C++/juce/juce_amalgamated.h"
-#elif defined (JUCER_XCODE_MAC_F6D2F4CF)
- #include "/Users/Josh/Documents/Programming/C++/juce/juce_amalgamated.h"
-#endif
-#include "BinaryData.h"
+#include "juce_amalgamated.h"
 
 namespace ProjectInfo
 {
@@ -38,4 +23,4 @@ namespace ProjectInfo
     const int          versionNumber  = 0x10000;
 }
 
-#endif   // __APPHEADERFILE_47426FFB__
+#endif   // __APPHEADERFILE_6E86DF1F__

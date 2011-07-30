@@ -88,7 +88,6 @@ OBJECTS := \
   $(OBJDIR)/UIComponent_d667ba37.o \
   $(OBJDIR)/MainWindow_499ac812.o \
   $(OBJDIR)/Main_90ebc5c2.o \
-  $(OBJDIR)/BinaryData_ce4232d4.o \
   $(OBJDIR)/JuceLibraryCode1_682c927f.o \
   $(OBJDIR)/JuceLibraryCode2_683aaa00.o \
   $(OBJDIR)/JuceLibraryCode3_6848c181.o \
@@ -332,11 +331,6 @@ $(OBJDIR)/MainWindow_499ac812.o: ../../Source/MainWindow.cpp
 $(OBJDIR)/Main_90ebc5c2.o: ../../Source/Main.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling Main.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/BinaryData_ce4232d4.o: ../../JuceLibraryCode/BinaryData.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling BinaryData.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/JuceLibraryCode1_682c927f.o: ../../JuceLibraryCode/JuceLibraryCode1.cpp
