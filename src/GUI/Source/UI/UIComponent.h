@@ -45,7 +45,7 @@ private:
 	AudioComponent* audio;
 
 	Label* infoLabel;
-	Font* Miso;
+	//Font* Miso;
 
 	const String msg;
 

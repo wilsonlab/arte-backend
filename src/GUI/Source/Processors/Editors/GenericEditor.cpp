@@ -116,7 +116,7 @@ void GenericEditor::paint (Graphics& g)
 
 	Font titleFont = Font(14.0, Font::plain);
 
-	titleFont.setTypefaceName(T("Miso"));
+	//titleFont.setTypefaceName(T("Miso"));
 
 	g.setFont(titleFont);
 	g.drawText(name, 8, 4, 100, 7, Justification::left, false);

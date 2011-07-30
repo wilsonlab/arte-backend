@@ -32,13 +32,13 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 	std::cout << "Component height = " << h << std::endl;
 
 	// initialize fonts
-	Miso = new Font(14.0, Font::plain);
-	Miso->setTypefaceName(T("Miso"));
+	//Miso = new Font(14.0, Font::plain);
+	//Miso->setTypefaceName(T("Miso"));
 
 	// initialize labels
 	infoLabel = new Label (T("Info Label"), "arte alpha v0.0");
 	addAndMakeVisible(infoLabel);
-	infoLabel->setFont(*Miso);
+	//infoLabel->setFont(*Miso);
 	infoLabel->setColour(Label::textColourId,Colours::lightgrey);
 	
 	//addAndMakeVisible (tabbedComponent = new TabbedComponent (TabbedButtonBar::TabsAtRight));
@@ -109,7 +109,7 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 UIComponent::~UIComponent()
 {
 	deleteAllChildren();
-	delete(Miso);
+	//delete(Miso);
 	processorGraph = 0;
 	audio = 0;
 }
@@ -121,7 +121,7 @@ void UIComponent::resized()
 	int h = getHeight();
 
 	if (infoLabel != 0)
-		infoLabel->setBounds(w-80,h-30,100,30);
+		infoLabel->setBounds(w-90,h-25,100,30);
 	
 	if (dataViewport != 0) {
 		dataViewport->setBounds(240,60,w-260,h-250);
@@ -130,7 +130,7 @@ void UIComponent::resized()
 	}
 	
 	if (filterViewport != 0)
-		filterViewport->setBounds(25,h-140,w-50,125);
+		filterViewport->setBounds(25,h-145,w-50,125);
 		//filterViewport->setBounds(730-h, 140, 120, w-100); //(-500,h-500,200,800);
 		//filterViewport->setTransform(AffineTransform::rotation(-double_Pi/2,
     	//       filterViewport->getX(),filterViewport->getY()));

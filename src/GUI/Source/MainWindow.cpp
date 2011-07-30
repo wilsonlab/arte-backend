@@ -40,8 +40,9 @@ MainWindow::MainWindow()
 
     setVisible (true);
 
-   File file = File("./savedState.xml");
-   processorGraph->loadState(file);
+  // // uncomment next two lines to load saved state on startup:
+  //  File file = File("./savedState.xml");
+  //  processorGraph->loadState(file);
 
     
 
@@ -65,8 +66,8 @@ void MainWindow::closeButtonPressed()
       processorGraph->disableSourceNode();
     }
 
+    // // uncomment next two lines to save state on quit:
     //File file = File("./savedState.xml");
-
     //processorGraph->saveState(file);
 
     JUCEApplication::getInstance()->systemRequestedQuit();
