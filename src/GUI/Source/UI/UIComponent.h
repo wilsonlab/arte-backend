@@ -15,10 +15,11 @@
 #include "ControlPanel.h"
 #include "FilterList.h"
 #include "FilterViewport.h"
-//#include "StreamViewer.h"
+#include "MessageCenter.h"
 #include "../Processors/DisplayNode.h"
 #include "../Processors/ProcessorGraph.h"
 #include "../Audio/AudioComponent.h"
+
 
 class UIComponent : public Component,
 				    public DragAndDropContainer,
@@ -40,6 +41,7 @@ private:
 	FilterViewport* filterViewport;
 	FilterList* filterList;
 	ControlPanel* controlPanel;
+	MessageCenter* messageCenter;
 
 	ProcessorGraph* processorGraph;
 	AudioComponent* audio;

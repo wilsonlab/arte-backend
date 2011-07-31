@@ -120,7 +120,7 @@ Renderer::~Renderer()
 
 void Renderer::newOpenGLContextCreated()
 {
-	glClearColor(0.2f, 0.5f, 0.75f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClearDepth (1.0);
 
 	glMatrixMode (GL_PROJECTION);
@@ -178,7 +178,15 @@ void Renderer::renderOpenGL()
 		glBegin(GL_LINE_STRIP);
 
 		//std::cout << "Message Received." << std::endl;
-		glColor3f(0,0,0);//1.0*chan/16,1.0*chan/16,1.0*chan/16);
+		if (chan % 4 == 0)
+			glColor3f(1.0,1.0,0);//1.0*chan/16,1.0*chan/16,1.0*chan/16);
+		else if (chan % 4 == 1)
+			glColor3f(0,1.0,0);
+		else if (chan % 4 == 2)
+			glColor3f(1.0,0.5,0);
+		else
+			glColor3f(1.0,0.0,0.75);
+
 	
 		for (int n = 0; n < nSamples-skip; n+= skip )
 		{

@@ -24,13 +24,15 @@
 ProcessorGraph::ProcessorGraph(int numChannels) : currentNodeId(100), lastNodeId(1), 
 	SOURCE_NODE_ID(0), 
 	RECORD_NODE_ID(199), 
-	AUDIO_NODE_ID(10), 
+	AUDIO_NODE_ID(200), 
 	OUTPUT_NODE_ID(201), 
 	RESAMPLING_NODE_ID(202),
 	numSamplesInThisBuffer(1024)
 	
 	{
 
+	// ProcessorGraph will always have 0 inputs (all content is generated within graph)
+	// but it will have N outputs, where N is the number of channels for the audio monitor
 	setPlayConfigDetails(0,2,44100.0, 128);
 
 	createDefaultNodes();
@@ -43,17 +45,17 @@ ProcessorGraph::~ProcessorGraph() { }
 void ProcessorGraph::createDefaultNodes()
 {
 
-	// add output node
+	// add output node -- sends output to the audio card
 	AudioProcessorGraph::AudioGraphIOProcessor* on = 
 		new AudioProcessorGraph::AudioGraphIOProcessor(AudioProcessorGraph::AudioGraphIOProcessor::audioOutputNode);
 
-	// add record node
+	// add record node -- sends output to disk
 	RecordNode* recn = new RecordNode(T("Record Node"), &numSamplesInThisBuffer, 1024, lock, RECORD_NODE_ID);
 
-	// add audio node
+	// add audio node -- takes all inputs and selects those to be used for audio monitoring
 	AudioNode* an = new AudioNode(T("Audio Node"), &numSamplesInThisBuffer, 1024, lock, AUDIO_NODE_ID);
 
-	// add resampling node
+	// add resampling node -- resamples continuous signals to 44.1kHz
 	ResamplingNode* rn = new ResamplingNode(T("Resampling Node"), &numSamplesInThisBuffer, 2, lock, RESAMPLING_NODE_ID, true);
 
 	addNode(on,OUTPUT_NODE_ID);
@@ -77,6 +79,8 @@ void ProcessorGraph::createDefaultNodes()
 }
 
 
+
+
 void* ProcessorGraph::createNewProcessor(String& description,
 										 FilterViewport* vp,
 										 GenericProcessor* source,
@@ -95,6 +99,8 @@ void* ProcessorGraph::createNewProcessor(String& description,
 
 	if (processorType.equalsIgnoreCase("Data Sources")) {
 
+		sendActionMessage("New source node created.");
+
 		std::cout << "Creating a new data source." << std::endl;
 		processor = new SourceNode(description, &numSamplesInThisBuffer, 16, lock, id);
 		processor->setDestNode(dest);
@@ -107,6 +113,8 @@ void* ProcessorGraph::createNewProcessor(String& description,
 		connectToAudioAndRecordNodes = true;
 
 	} else if (processorType.equalsIgnoreCase("Filters")) {
+
+		sendActionMessage("New filter node created.");
 
 		if (subProcessorType.equalsIgnoreCase("Bandpass Filter")) {
 			std::cout << "Creating a new filter." << std::endl;
@@ -270,6 +278,8 @@ void* ProcessorGraph::createNewProcessor(String& description,
 	}
 
 }
+
+
 
 void ProcessorGraph::removeProcessor(GenericProcessor* processor) {
 	

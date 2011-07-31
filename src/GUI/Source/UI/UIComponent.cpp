@@ -20,6 +20,7 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 	filterViewport = 0;
 	controlPanel = 0;
 	filterList = 0;
+	messageCenter = 0;
 	
 	//BorderSize bs = BorderSize(20,20,10,10);
 
@@ -91,7 +92,10 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 	filterList = new FilterList();
 	addAndMakeVisible(filterList);
 
-	
+	messageCenter = new MessageCenter();
+	processorGraph->addActionListener(messageCenter);
+	addAndMakeVisible(messageCenter);
+
 	//StreamViewer* s
 	//addActionListener(streamViewer);
 	addActionListener(controlPanel);
@@ -121,7 +125,7 @@ void UIComponent::resized()
 	int h = getHeight();
 
 	if (infoLabel != 0)
-		infoLabel->setBounds(w-90,h-25,100,30);
+		infoLabel->setBounds(w-95,h-30,100,30);
 	
 	if (dataViewport != 0) {
 		dataViewport->setBounds(240,60,w-260,h-250);
@@ -130,7 +134,7 @@ void UIComponent::resized()
 	}
 	
 	if (filterViewport != 0)
-		filterViewport->setBounds(25,h-145,w-50,125);
+		filterViewport->setBounds(20,h-175,w-45,125);
 		//filterViewport->setBounds(730-h, 140, 120, w-100); //(-500,h-500,200,800);
 		//filterViewport->setTransform(AffineTransform::rotation(-double_Pi/2,
     	//       filterViewport->getX(),filterViewport->getY()));
@@ -140,6 +144,9 @@ void UIComponent::resized()
 
 	if (filterList != 0)
 		filterList->setBounds(20,60,192,h-300);
+
+	if (messageCenter != 0)
+		messageCenter->setBounds(20,h-40,w-120,20);
 
 }
 

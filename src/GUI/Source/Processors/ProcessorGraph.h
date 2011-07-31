@@ -19,7 +19,8 @@ class SourceNode;
 class FilterViewport;
 class UIComponent;
 
-class ProcessorGraph : public AudioProcessorGraph
+class ProcessorGraph : public AudioProcessorGraph,
+					   public ActionBroadcaster
 {
 public:
 	ProcessorGraph(int numChannels);

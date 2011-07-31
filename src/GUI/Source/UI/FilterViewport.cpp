@@ -167,13 +167,8 @@
         GenericEditor* editor = (GenericEditor*) graph->createNewProcessor(description, this, source, dest);
 
         if (editor != 0) {
-
             editorArray.insert(insertionPoint,editor);
-        
-            //int componentWidth = editorArray.getLast()->desiredWidth;
-
             addAndMakeVisible(editorArray[insertionPoint]);
-
         }
 
         somethingIsBeingDraggedOver = false;
@@ -253,7 +248,6 @@
             int componentWidth = editorArray[n]->desiredWidth;
             editorArray[n]->setBounds(lastBound,5, componentWidth, getHeight()-10);
             lastBound+=(componentWidth + 10);
-
 
         }
 

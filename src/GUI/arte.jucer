@@ -156,6 +156,10 @@
               file="Source/Processors/ProcessorGraph.h"/>
       </GROUP>
       <GROUP id="RNGb1yR" name="UI">
+        <FILE id="rRa3X6v" name="MessageCenter.cpp" compile="1" resource="0"
+              file="Source/UI/MessageCenter.cpp"/>
+        <FILE id="Gwnvgdy" name="MessageCenter.h" compile="0" resource="0"
+              file="Source/UI/MessageCenter.h"/>
         <FILE id="aX0rCd0" name="FilterViewport.cpp" compile="1" resource="0"
               file="Source/UI/FilterViewport.cpp"/>
         <FILE id="4X2rynr" name="FilterViewport.h" compile="0" resource="0"

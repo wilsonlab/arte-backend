@@ -88,7 +88,7 @@ void CPUMeter::paint(Graphics& g)
 {
 	g.fillAll(Colours::grey);
 	
-	g.setColour(Colours::orange);
+	g.setColour(Colours::yellow);
 	g.fillRect(0.0f,0.0f,getWidth()*cpu,float(getHeight()));
 
 	g.setColour(Colours::black);
