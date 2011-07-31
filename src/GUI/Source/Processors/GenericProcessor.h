@@ -85,8 +85,11 @@ public:
 	// get/set source node functions
 	GenericProcessor* getSourceNode() {return sourceNode;}
 	GenericProcessor* getDestNode() {return destNode;}
-	void setSourceNode(GenericProcessor* sn) {sourceNode = sn;}
-	void setDestNode(GenericProcessor* dn) {destNode = dn;}
+	void setSourceNode(GenericProcessor* sn);
+	void setDestNode(GenericProcessor* dn);
+
+	virtual bool isSource() {return false;}
+	virtual bool isSink() {return false;}
 
 	AudioProcessorEditor* getEditor() {return editor;}
 

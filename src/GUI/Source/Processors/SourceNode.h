@@ -40,6 +40,7 @@ public:
 	void enable();
 	void disable();
 
+	bool isSource() {return true;}
 	
 private:
 

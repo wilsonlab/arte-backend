@@ -31,6 +31,8 @@ public:
 							 GenericProcessor* source,
 							 GenericProcessor* dest);
 
+	GenericProcessor* createProcessorFromDescription(String& description);
+
 	void removeProcessor(GenericProcessor* processor);
 
 	bool enableSourceNode();

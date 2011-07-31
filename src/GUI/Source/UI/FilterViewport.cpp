@@ -45,7 +45,7 @@
             //g.setColour (colours::red);
            // g.drawLine (lastBound)
 
-            g.setColour (Colours::orange);
+            g.setColour (Colours::magenta);
             //g.drawRect (0, 0, getWidth(), getHeight(), 3);
 
         } else {

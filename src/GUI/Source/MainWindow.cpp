@@ -41,8 +41,8 @@ MainWindow::MainWindow()
     setVisible (true);
 
   // // uncomment next two lines to load saved state on startup:
-  //  File file = File("./savedState.xml");
-  //  processorGraph->loadState(file);
+    File file = File("./savedState.xml");
+    processorGraph->loadState(file);
 
     
 

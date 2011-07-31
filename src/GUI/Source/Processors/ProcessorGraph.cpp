@@ -79,130 +79,50 @@ void ProcessorGraph::createDefaultNodes()
 }
 
 
-
-
 void* ProcessorGraph::createNewProcessor(String& description,
 										 FilterViewport* vp,
 										 GenericProcessor* source,
 										 GenericProcessor* dest) {
 
-	int splitPoint = description.indexOf("/");
-	String processorType = description.substring(0,splitPoint);
-	String subProcessorType = description.substring(splitPoint+1);
+	GenericProcessor* processor = createProcessorFromDescription(description);
 
-	std::cout << processorType << "::" << subProcessorType << std::endl;
+	int id = ++currentNodeId-1;
 
-	GenericProcessor* processor = 0;
+	//std::cout << "Current node ID: " << currentNodeId << std::endl;
+	//std::cout << "ID: " << id << std::endl;
 
-	int id = ++currentNodeId;
 	bool connectToAudioAndRecordNodes = false;
-
-	if (processorType.equalsIgnoreCase("Data Sources")) {
-
-		sendActionMessage("New source node created.");
-
-		std::cout << "Creating a new data source." << std::endl;
-		processor = new SourceNode(description, &numSamplesInThisBuffer, 16, lock, id);
-		processor->setDestNode(dest);
-		
-		if (dest != 0)
-			dest->setSourceNode(processor);
-
-		SOURCE_NODE_ID = id;
-
-		connectToAudioAndRecordNodes = true;
-
-	} else if (processorType.equalsIgnoreCase("Filters")) {
-
-		sendActionMessage("New filter node created.");
-
-		if (subProcessorType.equalsIgnoreCase("Bandpass Filter")) {
-			std::cout << "Creating a new filter." << std::endl;
-			processor = new FilterNode(description, &numSamplesInThisBuffer, getSourceNode()->getNumOutputs(), lock, id);
-
-		} else if (subProcessorType.equalsIgnoreCase("Resampler")) {
-			std::cout << "Creating a new resampler." << std::endl;
-			processor = new ResamplingNode(description, &numSamplesInThisBuffer, getSourceNode()->getNumOutputs(), lock, id, false);
-		} 
-
-		processor->setSourceNode(source);
-		processor->setDestNode(dest);
-
-		processor->setNumInputs(getSourceNode()->getNumOutputs());
-		processor->setNumOutputs(getSourceNode()->getNumOutputs());
-
-		if (dest != 0)
-			dest->setSourceNode(processor);
-		
-		if (source != 0)
-			source->setDestNode(processor);
-
-		 connectToAudioAndRecordNodes = true;
-
-	} else if (processorType.equalsIgnoreCase("Utilities")) {
-		
-		if (subProcessorType.equalsIgnoreCase("Event Node")) {
-			
-			if (SOURCE_NODE_ID == 0) {
-				SOURCE_NODE_ID = id;
-				std::cout << "Creating a new event source." << std::endl;
-				processor = new EventNode(description, &numSamplesInThisBuffer, 2, lock, SOURCE_NODE_ID, true);
-			} else {
-				std::cout << "Creating a new event receiver." << std::endl;
-				processor = new EventNode(description, &numSamplesInThisBuffer, 2, lock, currentNodeId, false);
-				
-				std::cout << midiChannelIndex << " is MIDI index." << std::endl;
-
-			}
-
-		}
-
-		processor->setSourceNode(source);
-		processor->setDestNode(dest);
-
-		if (dest != 0)
-			dest->setSourceNode(processor);
-		
-		if (source != 0)
-			source->setDestNode(processor);
-
-	} else if (processorType.equalsIgnoreCase("Visualizers")) {
-		
-		if (subProcessorType.equalsIgnoreCase("Stream Viewer")) {
-			
-			std::cout << "Creating a display node." << std::endl;
-			processor = new DisplayNode(description, &numSamplesInThisBuffer, getSourceNode()->getNumOutputs(), lock, currentNodeId);
-		}
-
-		processor->setSourceNode(source);
-
-		//processor = (DisplayNode*) processor;
-		processor->setUIComponent(UI);
-
-		if (source != 0)
-			source->setDestNode(processor);
-	
-	}// else {
-
-		//processor = new GenericProcessor(subProcessorType, &numSamplesInThisBuffer, 16, lock, id);
-
-	//}
 
 	if (processor != 0) {
 
 		std::cout << "  Adding node to graph with ID number " << id << std::endl;
+		
 		addNode(processor,id);
+
+		processor->setSourceNode(source);
+		processor->setDestNode(dest);
+		
+		if (!processor->isSink()) {
+			connectToAudioAndRecordNodes = true;
+		}
+
+		if (processor->isSource()) {
+			SOURCE_NODE_ID = id;
+		}
 
 		// need to update source and dest, in case the processor is a source or a visualizer
 		source = processor->getSourceNode();
 		dest = processor->getDestNode();
 
-
+		if (dest != 0) 
+			dest->setSourceNode(processor);
+		
+		if (source != 0)
+			source->setDestNode(processor);
+		
 		if (source != 0) {
 		
 			std::cout << "   Connecting to source node " << source->getNodeId() << std::endl;
-			
-
 
 			for (int chan = 0; chan < processor->getNumInputs(); chan++) {
 
@@ -228,9 +148,6 @@ void* ProcessorGraph::createNewProcessor(String& description,
 		if (dest != 0) {
 
 			std::cout << "   Connecting to destination node " << dest->getNodeId() << std::endl;
-
-			
-			
 
 			for (int chan = 0; chan < processor->getNumOutputs(); chan++) {
 				//std::cout << "1";
@@ -269,16 +186,84 @@ void* ProcessorGraph::createNewProcessor(String& description,
 
 		}
 
-
 		processor->setViewport(vp);
 		return processor->createEditor();
 
 	} else {
+
+		sendActionMessage("Not a valid processor type.");
+
 		return 0;
 	}
 
 }
 
+
+GenericProcessor* ProcessorGraph::createProcessorFromDescription(String& description)
+{
+	int splitPoint = description.indexOf("/");
+	String processorType = description.substring(0,splitPoint);
+	String subProcessorType = description.substring(splitPoint+1);
+
+	std::cout << processorType << "::" << subProcessorType << std::endl;
+
+	GenericProcessor* processor = 0;
+
+	if (processorType.equalsIgnoreCase("Data Sources")) {
+
+		sendActionMessage("New source node created.");
+
+		std::cout << "Creating a new data source." << std::endl;
+		processor = new SourceNode(description, &numSamplesInThisBuffer, 16, lock, currentNodeId);
+
+	} else if (processorType.equalsIgnoreCase("Filters")) {
+
+		sendActionMessage("New filter node created.");
+
+		if (subProcessorType.equalsIgnoreCase("Bandpass Filter")) {
+			std::cout << "Creating a new filter." << std::endl;
+			processor = new FilterNode(description, &numSamplesInThisBuffer, 16, lock, currentNodeId);
+
+		} else if (subProcessorType.equalsIgnoreCase("Resampler")) {
+			std::cout << "Creating a new resampler." << std::endl;
+			processor = new ResamplingNode(description, &numSamplesInThisBuffer, 16, lock, currentNodeId, false);
+		} 
+
+	// } else if (processorType.equalsIgnoreCase("Utilities")) {
+		
+	// 	if (subProcessorType.equalsIgnoreCase("Event Node")) {
+			
+	// 		if (SOURCE_NODE_ID == 0) {
+	// 			SOURCE_NODE_ID = id;
+	// 			std::cout << "Creating a new event source." << std::endl;
+	// 			processor = new EventNode(description, &numSamplesInThisBuffer, 2, lock, SOURCE_NODE_ID, true);
+	// 		} else {
+	// 			std::cout << "Creating a new event receiver." << std::endl;
+	// 			processor = new EventNode(description, &numSamplesInThisBuffer, 2, lock, currentNodeId, false);
+				
+	// 			std::cout << midiChannelIndex << " is MIDI index." << std::endl;
+
+	// 		}
+
+	// 	}
+
+	} else if (processorType.equalsIgnoreCase("Visualizers")) {
+
+		sendActionMessage("New visualizer created.");
+		
+		if (subProcessorType.equalsIgnoreCase("Stream Viewer")) {
+			
+			std::cout << "Creating a display node." << std::endl;
+			processor = new DisplayNode(description, &numSamplesInThisBuffer, 16, lock, currentNodeId);
+
+			processor->setUIComponent(UI);
+		}
+	
+	}
+
+	return processor;
+
+}
 
 
 void ProcessorGraph::removeProcessor(GenericProcessor* processor) {
@@ -318,7 +303,7 @@ void ProcessorGraph::removeProcessor(GenericProcessor* processor) {
 }
 
 bool ProcessorGraph::enableSourceNode() {
-	//std::cout << "Enabling source node..." << std::endl;
+	std::cout << "Enabling source node..." << std::endl;
 	SourceNode* sn = getSourceNode();
 
 	if (sn != 0) {
@@ -331,7 +316,7 @@ bool ProcessorGraph::enableSourceNode() {
 
 bool ProcessorGraph::disableSourceNode() {
 
-	//std::cout << "Disabling source node..." << std::endl;
+	std::cout << "Disabling source node..." << std::endl;
 	SourceNode* sn = getSourceNode();
 
 	if (sn != 0) {

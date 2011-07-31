@@ -69,6 +69,22 @@ int GenericProcessor::getNumSamples() {
 	return numRead;
 }
 
+void GenericProcessor::setSourceNode(GenericProcessor* sn)
+{
+	if (!isSource())
+		sourceNode = sn;
+	else
+		sourceNode = 0;
+}
+
+void GenericProcessor::setDestNode(GenericProcessor* dn)
+{
+	if (!isSink())
+		destNode = dn;
+	else
+		destNode = 0;
+}
+
 int GenericProcessor::getNumInputs() {
 	return numInputs;
 }

@@ -26,9 +26,9 @@ public:
 	DisplayNode(const String name, int* nSamples, int nChans, const CriticalSection& lock, int nodeId);
 	~DisplayNode();
 
-
-
 	AudioProcessorEditor* createEditor();
+
+	bool isSink() {return true;}
 	
 private:
 
