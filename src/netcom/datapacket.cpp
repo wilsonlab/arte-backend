@@ -203,6 +203,7 @@ void waveToBuff(lfp_bank_net_t* lfp, char* buff, int *blen, bool c){
   uint16_t bytes_per_samp_tx =   hton16c(lfp->samp_n_bytes, c);
   rdata_t data_tx[MAX_FILTERED_BUFFER_TOTAL_SAMPLE_COUNT];  // find out the right minimum size for this array
   int16_t gain_tx[MAX_FILTERED_BUFFER_N_CHANS];
+  uint32_t seq_tx = 			 hton32c(lfp->seq_num, c);
 
   // flip all the elements in data
   // THIS ASSUMES 16 BIT SAMPLES
@@ -227,10 +228,12 @@ void waveToBuff(lfp_bank_net_t* lfp, char* buff, int *blen, bool c){
   memcpy(buff+cursor, &bytes_per_samp_tx, 2);
   cursor += 2;
   // is this next line right?  &data_tx or data_tx ???
-  memcpy(buff+cursor, &data_tx                        , (s=(lfp->n_chans * lfp->n_samps_per_chan * lfp->samp_n_bytes)));
+  memcpy(buff+cursor, &data_tx						  , (s=(lfp->n_chans * lfp->n_samps_per_chan * lfp->samp_n_bytes)));
   cursor += s;
   memcpy(buff+cursor, &gain_tx                        , (s=(lfp->n_chans * 2)));
   cursor += s;
+  memcpy(buff+cursor, &seq_tx						  ,  4);
+  cursor += 4;
 
   // NEW
   cursor_tx = hton16c(cursor, c);
@@ -254,7 +257,6 @@ void buffToWave(lfp_bank_net_t *lfp, char* buff, bool c){
   //TODO IMPLEMENT
   int cursor = 4;  // skip over the packet_type field
 
-  
 
   memcpy( &(lfp->ts), buff+cursor, 4);
   lfp->ts = ntoh32c(lfp->ts, c);
@@ -279,6 +281,7 @@ void buffToWave(lfp_bank_net_t *lfp, char* buff, bool c){
   int n_total_samps = lfp->n_chans * lfp->n_samps_per_chan;
   int data_bytes = lfp->n_chans * lfp->n_samps_per_chan * lfp->samp_n_bytes;
   int gain_bytes = lfp->n_chans * 2; // gain type is int16_t
+  int seq_bytes = 4; //uint32_t
 
   memcpy( &(lfp->data), buff+cursor, data_bytes);
   for(int n = 0; n < n_total_samps; n++)
@@ -290,5 +293,8 @@ void buffToWave(lfp_bank_net_t *lfp, char* buff, bool c){
     lfp->gains[n] = ntoh16c(lfp->gains[n], c);
   cursor += gain_bytes;
 
+  memcpy( &(lfp->seq_num),       buff+cursor, 4);
+  lfp->seq_num = ntoh32c(lfp->seq_num, c);
+  cursor += 4;
 }
  

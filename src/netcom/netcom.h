@@ -27,22 +27,22 @@ class NetCom{
  public:
   static NetComDat initUdpTx(char host[], int port);
   static NetComDat initUdpRx(char host[], char * port);
-  
+
   static int txTs(NetComDat net, timestamp_t count, int nTx);
   static timestamp_t rxTs(NetComDat net);
-  
+
   static int txSpike(NetComDat net, spike_net_t* spike);
   static void rxSpike(NetComDat net, spike_net_t* spike);
-  
+
   static int txWave(NetComDat net, lfp_bank_net_t *lfp);
   static void rxWave(NetComDat net, lfp_bank_net_t *lfp);
 
   static int txCommand(NetComDat net, command_t* the_command);
   static void rxCommand(NetComDat net, command_t* the_command);
-  
+
   static void txBuff(NetComDat net, char * buff, int buff_len);
   static void rxBuff(NetComDat net, char * buff, int *buff_len);
-  
+
 };
 
 void *get_in_addr(struct sockaddr *sa);

@@ -1,22 +1,22 @@
 #if defined(__linux__)
-#include <byteswap.h>
+	#include <byteswap.h>
 #else
 
-#ifndef _BYTESWAP_H
-#define _BYTESWAP_H
-static inline unsigned short bswap_16(unsigned short x) {
-return (x>>8) | (x<<8);
-}
+	#ifndef _BYTESWAP_H
+	#define _BYTESWAP_H
+		static inline unsigned short bswap_16(unsigned short x) {
+			return (x>>8) | (x<<8);
+		}
 
-static inline unsigned int bswap_32(unsigned int x) {
-return (bswap_16(x&0xffff)<<16) | (bswap_16(x>>16));
-}
+		static inline unsigned int bswap_32(unsigned int x) {
+			return (bswap_16(x&0xffff)<<16) | (bswap_16(x>>16));
+		}
 
-static inline unsigned long long bswap_64(unsigned long long x) {
-return (((unsigned long long)bswap_32(x&0xffffffffull))<<32) |
-(bswap_32(x>>32));
-}
-#endif
+		static inline unsigned long long bswap_64(unsigned long long x) {
+			return (((unsigned long long)bswap_32(x&0xffffffffull))<<32) |
+			(bswap_32(x>>32));
+		}
+	#endif
 #endif
 
 #include <vector>
@@ -57,46 +57,8 @@ return (((unsigned long long)bswap_32(x&0xffffffffull))<<32) |
 #define MAX_BUF_LEN 2048
 void printBuff(char* buff, int blen);
 
-// Each buffer has a 4 byte header, with the first byte corresponding to 
-// the type of data contained in the buffer, the fourth byte is set to 0 
-// byte[1] and byte[2] are uint16_t giving the total buffer size (4 byte header + data) 
-//
-// ??should we explicity test to see if the 2nd byte is set to zero as a 
-// sanity test on the buffer? Not sure we should discuss this
-//
-// Unless otherwise specified byts in each packet are arranged 
-// such that the first var in the type def corresponds to 
-// the first set of bytes in the buffer, the next var is found in the 
-// directly after the bytes allocated for the previous var and so on.
-// Each var uses exactly the number of bytes in the buffer that uses in 
-// the struct, for Example:
-//
-// if I had  struct data_t{
-// uint8_t v1;
-// uint8_t v2;
-// uint16_t v3;
-// };
-//
-// the data in the packed buffer would look like:
-// [BYTE0 |  BYTE1 | BYTE2 | BYTE3 | BYTE4 | BYTE5 ]
-// [DTYPE |    0   | VAR1  |  VAR2 |  VAR3 | VAR3  ]
-//
-
-
 typedef uint32_t timestamp_t;
-/*
-struct spike_t{
-	timestamp_t ts;
-	uint8_t src;
-	uint8_t filt;
-	uint8_t nChan;
-	uint8_t nSamp;
-	std::vector<uint16_t> gain;
-	std::vector<uint16_t> thold;
-	std::vector<uint16_t> data;
-};*/
 
-// Greg's alternative for a spike pre-packet struct
 struct spike_net_t{
   timestamp_t ts;                                           // bytes 2:5
   uint16_t    name;                                         // bytes 6:7
@@ -109,17 +71,7 @@ struct spike_net_t{
   uint16_t    trig_ind;                                     // the next 2 bytes
   uint32_t    seq_num;
 };
-/*
-struct wave_t{
-	timestamp_t ts;
-	uint8_t src;
-	uint8_t filt;
-	std::vector<uint16_t> gain;
-	std::vector<uint16_t> nSamp;
-	std::vector<uint16_t> data;
-};*/
 
-// Greg's alternative for a lfp_bank pre-packet struct
 struct lfp_bank_net_t{
   timestamp_t ts;                 // bytes 2:5
   uint16_t    name;               // bytes 6:7  does this field exist for lfp_banks?
@@ -135,9 +87,6 @@ struct command_t{
   uint16_t n_char;
   char command_str[MAX_COMMAND_STR_LEN];
 };
-
-// The xxToBuff functions add the appropriate buffer headers, the user 
-// does not have to worry about adding the headers by hand	
 
 void tsToBuff(timestamp_t* s,char* buff, int blen, bool c);
 timestamp_t buffToTs(char* buff, int blen, bool c);

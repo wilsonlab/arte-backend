@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
-
 #include "netcom.h"
 #include "datapacket.h"
 #include <math.h>
@@ -19,7 +18,6 @@
 // making a more pleasing display
 
 const double MAX_VOLT = pow(2,15);
-
 // ===================================
 // 		GUI Specific Variables
 // ===================================
@@ -37,7 +35,7 @@ static bool disableWaveOverlay = true;
 static char txtDispBuff[40];
 
 void *font = GLUT_BITMAP_8_BY_13;
-static int TIMEOUT = (1e6)/500;
+static int TIMEOUT = (1e6)/100;
 
 // Scaling Variables
 // Defines how much to shift the waveform within the viewport
@@ -64,7 +62,6 @@ static NetComDat net; // = NetCom::initUdpRx(host,port);
 // ===================================
 // 		Data Variables
 // ===================================
-static spike_net_t spikeOld;
 static int nChan=4;
 static int nProj=6;
 
@@ -244,9 +241,10 @@ void *getNetSpike(void *ptr){
 
 
 void idleFn(void){
-	//if (tryToGetSpike(&spike) || enteringCommand)
-	tryToGetSpike(&spike);
+	do{
+//	tryToGetSpike(&spike);
 	refreshDrawing();
+	}while(tryToGetSpike(&spike));
     usleep(TIMEOUT);
 }
 
