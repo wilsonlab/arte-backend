@@ -26,7 +26,7 @@ GenericEditor::GenericEditor (GenericProcessor* owner, FilterViewport* vp)
 
 	//titleFont->setTypefaceName(T("Miso"));
 
-	backgroundColor = Colour(r.nextInt(255), r.nextInt(255), r.nextInt(255));
+	backgroundColor = Colour(3, 143, 255);
 
 }
 
