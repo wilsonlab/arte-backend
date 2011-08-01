@@ -49,6 +49,9 @@ static float dUserShift = .05;
 static char host[] = "127.0.0.1";
 static char * port;
 static NetComDat net; // = NetCom::initUdpRx(host,port);
+static int const spikeBuffSize = 500;
+static int dispIdx;
+static int readIdx;
 
 
 // ===================================
@@ -74,7 +77,12 @@ static timeval startTime, now;
 static int const cmdStrLen = 50;
 static unsigned char cmd[cmdStrLen];
 static int cIdx = 0;
+// ===================================
+// 		
+// ===================================
 
+void initNetworkRxThread();
+void checkForNewSpikes();
 // ===================================
 // 		Command Variables
 // ===================================
@@ -143,6 +151,7 @@ void drawString(float x, float y, char *string);
 void *getNetSpike(void *ptr);
 
 
+
 int main( int argc, char** argv )
 {
 	if (argc>1)
@@ -187,6 +196,7 @@ int main( int argc, char** argv )
 	return(0);
 }
 
+void initNetworkRxThread(){
 
 bool tryToGetSpike(spike_net_t *s){
 
