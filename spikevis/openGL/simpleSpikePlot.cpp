@@ -9,7 +9,6 @@
 #include <stdio.h>
 #include <iostream>
 
-#include <GLUT/glut.h>	// OpenGL Graphics Utility Library
 #include "netcom.h"
 #include "datapacket.h"
 #include <math.h>
