@@ -44,7 +44,7 @@ public:
 	
 private:
 
-	const String name;
+	//const String name;
 
 	DataThread* dataThread;
 	DataBuffer* inputBuffer;

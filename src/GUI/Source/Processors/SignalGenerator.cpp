@@ -13,20 +13,18 @@
 //#include "SourceNodeEditor.h"
 #include <stdio.h>
 
-SignalGenerator::SignalGenerator()
-	: frequency(10.0),
+SignalGenerator::SignalGenerator(const String name_, int* nSamps, int nChans, const CriticalSection& lock_, int id)
+	: GenericProcessor(name_, nSamps, nChans, lock_, id),
+	  frequency(10.0),
 	  sampleRate (44100.0),
 	  currentPhase (0.0),
 	  phasePerSample (0.0),
-	  amplitude (0.5f),
-	  name (T("Sine wave source"))
+	  amplitude (0.02f)
 	
 {
 
-	setPlayConfigDetails(0, // numInputChannels
-						 16, // numOutputChannels
-						 44100.0, // expected sample rate
-						 128); // expected number of samples per buffer
+	setNumOutputs(16);
+	setNumInputs(0);
 
 }
 
@@ -62,6 +60,14 @@ void SignalGenerator::prepareToPlay (double sampleRate_, int estimatedSamplesPer
 	sampleRate = sampleRate_;
 	phasePerSample = double_Pi * 2.0 / (sampleRate / frequency);
 	//std::cout << "Prepare to play: " << std::endl;
+}
+
+void SignalGenerator::enable () {
+	
+}
+
+void SignalGenerator::disable() {
+	
 }
 
 void SignalGenerator::releaseResources() 

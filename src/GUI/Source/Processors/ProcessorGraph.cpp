@@ -211,10 +211,21 @@ GenericProcessor* ProcessorGraph::createProcessorFromDescription(String& descrip
 
 	if (processorType.equalsIgnoreCase("Data Sources")) {
 
-		sendActionMessage("New source node created.");
+		if (subProcessorType.equalsIgnoreCase("Intan Demo Board")) {
 
-		std::cout << "Creating a new data source." << std::endl;
-		processor = new SourceNode(description, &numSamplesInThisBuffer, 16, lock, currentNodeId);
+			sendActionMessage("New source node created.");
+
+			std::cout << "Creating a new data source." << std::endl;
+			processor = new SourceNode(description, &numSamplesInThisBuffer, 16, lock, currentNodeId);
+
+		} else if (subProcessorType.equalsIgnoreCase("Signal Generator")) {
+			
+			sendActionMessage("New signal generator created.");
+
+			std::cout << "Creating a new signal generator." << std::endl;
+			processor = new SignalGenerator(description, &numSamplesInThisBuffer, 16, lock, currentNodeId);
+
+		}
 
 	} else if (processorType.equalsIgnoreCase("Filters")) {
 
