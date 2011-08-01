@@ -43,6 +43,8 @@ AudioProcessorEditor* AudioNode::createEditor()
 void AudioNode::setParameter (int parameterIndex, float newValue)
 {
 	// change left channel, right channel, or volume
+	if (parameterIndex == 1) // volume level
+		volume = newValue;
 
 }
 

@@ -18,7 +18,15 @@
 
 class AudioNode;
 
-class AudioEditor : public AudioProcessorEditor
+class MuteButton : public DrawableButton
+{
+	public:
+		MuteButton();
+		~MuteButton();	
+};
+
+class AudioEditor : public AudioProcessorEditor,
+					public Button::Listener
 
 {
 public:
@@ -43,7 +51,11 @@ public:
 	
 private:
 
+	void buttonClicked (Button* button);
+
 	Colour backgroundColor;
+
+	MuteButton* muteButton;
 
 	bool isSelected;
 	String name;

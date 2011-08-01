@@ -11,6 +11,36 @@
 
 #include "AudioEditor.h"
 
+
+MuteButton::MuteButton()
+	: DrawableButton (T("Mute button"), DrawableButton::ImageFitted)
+{
+	DrawablePath normal, over, down;
+
+	    Path p;
+        p.addEllipse (0.0,0.0,20.0,20.0);
+        normal.setPath (p);
+        normal.setFill (Colours::lightgrey);
+        normal.setStrokeThickness (0.0f);
+
+        over.setPath (p);
+        over.setFill (Colours::black);
+        over.setStrokeFill (Colours::black);
+        over.setStrokeThickness (5.0f);
+
+        setImages (&normal, &over, &over);
+        setBackgroundColours(Colours::darkgrey, Colours::purple);
+        setClickingTogglesState (true);
+        setTooltip ("Toggle a state.");
+
+
+
+}
+
+MuteButton::~MuteButton()
+{
+}
+
 AudioEditor::AudioEditor (AudioNode* owner) 
 	: AudioProcessorEditor (owner), isSelected(false),
 	  desiredWidth(150)
@@ -20,7 +50,13 @@ AudioEditor::AudioEditor (AudioNode* owner)
 
 	nodeId = owner->getNodeId();
 
-	backgroundColor = Colour(3, 143, 255);
+	backgroundColor = Colours::lightgrey.withAlpha(0.5f);
+
+	muteButton = new MuteButton();
+	muteButton->addListener(this);
+	muteButton->setBounds(95,5,15,15);
+	muteButton->setToggleState(false,false);
+	addAndMakeVisible(muteButton);
 
 }
 
@@ -68,6 +104,22 @@ void AudioEditor::deselect()
 	setWantsKeyboardFocus(false);
 }
 
+void AudioEditor::buttonClicked(Button* button)
+{
+	if (button == muteButton)
+	{
+		
+		if(muteButton->getToggleState()) {
+			getAudioProcessor()->setParameter(1,0.0f);
+			std::cout << "Mute on." << std::endl;
+	    } else {
+	    	getAudioProcessor()->setParameter(1,1.0f);
+	    	std::cout << "Mute off." << std::endl;
+	    }
+	}
+
+}
+
 void AudioEditor::paint (Graphics& g)
 {
 
@@ -96,6 +148,6 @@ void AudioEditor::paint (Graphics& g)
 	// //titleFont.setTypefaceName(T("Miso"));
 
 	 g.setFont(titleFont);
-	 g.drawText(name, 8, 10, 100, 7, Justification::left, false);
+	 g.drawText("Audio Editor", 8, 10, 100, 7, Justification::left, false);
 
 }
