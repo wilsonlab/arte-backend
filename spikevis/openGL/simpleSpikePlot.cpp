@@ -244,8 +244,9 @@ void *getNetSpike(void *ptr){
 
 
 void idleFn(void){
-	if (tryToGetSpike(&spike) || enteringCommand)
-		refreshDrawing();
+	//if (tryToGetSpike(&spike) || enteringCommand)
+	tryToGetSpike(&spike);
+	refreshDrawing();
     usleep(TIMEOUT);
 }
 
