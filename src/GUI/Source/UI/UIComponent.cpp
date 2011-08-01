@@ -143,7 +143,7 @@ void UIComponent::resized()
 		controlPanel->setBounds(20,10,w-20,25);
 
 	if (filterList != 0)
-		filterList->setBounds(20,60,192,h-300);
+		filterList->setBounds(20,60,192,h-280);
 
 	if (messageCenter != 0)
 		messageCenter->setBounds(20,h-40,w-120,20);

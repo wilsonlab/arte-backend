@@ -15,7 +15,7 @@
 
 SignalGenerator::SignalGenerator(const String name_, int* nSamps, int nChans, const CriticalSection& lock_, int id)
 	: GenericProcessor(name_, nSamps, nChans, lock_, id),
-	  frequency(10.0),
+	  frequency(25.0),
 	  sampleRate (44100.0),
 	  currentPhase (0.0),
 	  phasePerSample (0.0),
