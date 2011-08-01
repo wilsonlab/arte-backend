@@ -91,6 +91,9 @@ public:
 	virtual bool isSource() {return false;}
 	virtual bool isSink() {return false;}
 
+	virtual void enable() {}
+	virtual void disable() {}
+
 	AudioProcessorEditor* getEditor() {return editor;}
 
 	void setUIComponent(UIComponent* ui) {UI = ui;}

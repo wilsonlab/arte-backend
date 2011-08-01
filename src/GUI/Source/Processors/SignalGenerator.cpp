@@ -64,10 +64,14 @@ void SignalGenerator::prepareToPlay (double sampleRate_, int estimatedSamplesPer
 
 void SignalGenerator::enable () {
 	
+	std::cout << "Signal generator received enable signal." << std::endl;
+
 }
 
 void SignalGenerator::disable() {
 	
+	std::cout << "Signal generator received disable signal." << std::endl;
+
 }
 
 void SignalGenerator::releaseResources() 

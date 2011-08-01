@@ -315,7 +315,7 @@ void ProcessorGraph::removeProcessor(GenericProcessor* processor) {
 
 bool ProcessorGraph::enableSourceNode() {
 	std::cout << "Enabling source node..." << std::endl;
-	SourceNode* sn = getSourceNode();
+	GenericProcessor* sn = getSourceNode();
 
 	if (sn != 0) {
 		sn->enable();
@@ -328,7 +328,7 @@ bool ProcessorGraph::enableSourceNode() {
 bool ProcessorGraph::disableSourceNode() {
 
 	std::cout << "Disabling source node..." << std::endl;
-	SourceNode* sn = getSourceNode();
+	GenericProcessor* sn = getSourceNode();
 
 	if (sn != 0) {
 		sn->disable();
@@ -346,11 +346,11 @@ RecordNode* ProcessorGraph::getRecordNode() {
 
 }
 
-SourceNode* ProcessorGraph::getSourceNode() {
+GenericProcessor* ProcessorGraph::getSourceNode() {
 
 	if (SOURCE_NODE_ID != 0) {
 		Node* node = getNodeForId(SOURCE_NODE_ID);
-		return (SourceNode*) node->getProcessor();
+		return (GenericProcessor*) node->getProcessor();
 	} else {
 		return 0;
 	}

@@ -46,7 +46,7 @@ public:
 	const CriticalSection lock;
 
 	RecordNode* getRecordNode();
-	SourceNode* getSourceNode();
+	GenericProcessor* getSourceNode();
 
 	void setUIComponent(UIComponent* ui) {UI = ui;}
 
