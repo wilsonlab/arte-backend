@@ -136,6 +136,9 @@ ControlPanel::ControlPanel(ProcessorGraph* graph_, AudioComponent* audio_) :
 			graph (graph_), audio(audio_)
 {
 
+	audioEditor = (AudioEditor*) graph->getAudioNode()->createEditor();
+	addAndMakeVisible(audioEditor);
+
 	playButton = new PlayButton();
 	playButton->addListener (this);
 	addAndMakeVisible(playButton);
@@ -180,6 +183,9 @@ void ControlPanel::resized()
 
 	if (diskMeter != 0)
 		diskMeter->setBounds(150,h/4,h*4,h/2);
+
+	if (audioEditor != 0)
+		audioEditor->setBounds(w-h*12,0,h*5,h);
 }
 
 void ControlPanel::buttonClicked(Button* button) 

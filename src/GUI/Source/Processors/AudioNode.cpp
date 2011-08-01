@@ -30,6 +30,15 @@ AudioNode::~AudioNode() {
 
 }
 
+AudioProcessorEditor* AudioNode::createEditor()
+{
+	
+	AudioEditor* editor = new AudioEditor(this);
+	
+	return editor; 
+
+}
+
 
 void AudioNode::setParameter (int parameterIndex, float newValue)
 {

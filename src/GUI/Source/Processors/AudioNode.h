@@ -16,6 +16,7 @@
 #include <stdio.h>
 
 #include "GenericProcessor.h"
+#include "Editors/AudioEditor.h"
 
 class AudioNode : public GenericProcessor
 {
@@ -30,6 +31,8 @@ public:
 	void processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages);
 
 	void setParameter (int parameterIndex, float newValue);
+
+	AudioProcessorEditor* createEditor();
 	
 private:
 

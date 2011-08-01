@@ -65,6 +65,7 @@ OBJECTS := \
   $(OBJDIR)/AudioComponent_521bd9c9.o \
   $(OBJDIR)/AudioNode_94606ff3.o \
   $(OBJDIR)/EventNode_95c842b7.o \
+  $(OBJDIR)/AudioEditor_fb2c6555.o \
   $(OBJDIR)/Visualizer_d5ab35b6.o \
   $(OBJDIR)/FilterEditor_dfe1f39d.o \
   $(OBJDIR)/GenericEditor_becb2ad6.o \
@@ -217,6 +218,11 @@ $(OBJDIR)/AudioNode_94606ff3.o: ../../Source/Processors/AudioNode.cpp
 $(OBJDIR)/EventNode_95c842b7.o: ../../Source/Processors/EventNode.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling EventNode.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/AudioEditor_fb2c6555.o: ../../Source/Processors/Editors/AudioEditor.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling AudioEditor.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/Visualizer_d5ab35b6.o: ../../Source/Processors/Editors/Visualizer.cpp

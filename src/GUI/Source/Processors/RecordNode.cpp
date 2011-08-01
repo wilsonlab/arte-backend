@@ -21,6 +21,7 @@ RecordNode::RecordNode(const String name_,
 
 	outputFile = File("./data"); // create output file
 	outputStream = 0;
+	
 }
 
 

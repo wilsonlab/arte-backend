@@ -100,6 +100,9 @@
         <FILE id="hGnGAjh" name="EventNode.cpp" compile="1" resource="0" file="Source/Processors/EventNode.cpp"/>
         <FILE id="dUtRN6" name="EventNode.h" compile="0" resource="0" file="Source/Processors/EventNode.h"/>
         <GROUP id="AqvwO6w" name="Editors">
+          <FILE id="Nw6Lpmq" name="AudioEditor.cpp" compile="1" resource="0"
+                file="Source/Processors/Editors/AudioEditor.cpp"/>
+          <FILE id="atkKPmM" name="AudioEditor.h" compile="0" resource="0" file="Source/Processors/Editors/AudioEditor.h"/>
           <FILE id="uUxETyg" name="Visualizer.cpp" compile="1" resource="0" file="Source/Processors/Editors/Visualizer.cpp"/>
           <FILE id="5gfidy" name="Visualizer.h" compile="0" resource="0" file="Source/Processors/Editors/Visualizer.h"/>
           <FILE id="4sHjKNc" name="FilterEditor.cpp" compile="1" resource="0"

@@ -18,6 +18,7 @@ class RecordNode;
 class SourceNode;
 class FilterViewport;
 class UIComponent;
+class AudioNode;
 
 class ProcessorGraph : public AudioProcessorGraph,
 					   public ActionBroadcaster
@@ -47,6 +48,7 @@ public:
 
 	RecordNode* getRecordNode();
 	GenericProcessor* getSourceNode();
+	AudioNode* getAudioNode();
 
 	void setUIComponent(UIComponent* ui) {UI = ui;}
 

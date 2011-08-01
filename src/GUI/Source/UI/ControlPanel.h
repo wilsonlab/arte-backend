@@ -13,6 +13,7 @@
 
 #include "../../JuceLibraryCode/JuceHeader.h"
 #include "../Audio/AudioComponent.h"
+#include "../Processors/Editors/AudioEditor.h"
 #include "../Processors/ProcessorGraph.h"
 #include "../Processors/RecordNode.h"
 
@@ -86,6 +87,7 @@ private:
 	DiskSpaceMeter* diskMeter;
 	AudioComponent* audio;
 	ProcessorGraph* graph;
+	AudioEditor* audioEditor;
 
 	void resized();
 	void buttonClicked(Button* button);

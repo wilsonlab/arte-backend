@@ -339,6 +339,13 @@ bool ProcessorGraph::disableSourceNode() {
 }
 
 
+AudioNode* ProcessorGraph::getAudioNode() {
+	
+	Node* node = getNodeForId(AUDIO_NODE_ID);
+	return (AudioNode*) node->getProcessor();
+
+}
+
 RecordNode* ProcessorGraph::getRecordNode() {
 	
 	Node* node = getNodeForId(RECORD_NODE_ID);
