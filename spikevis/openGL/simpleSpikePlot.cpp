@@ -1,7 +1,14 @@
+#if defined(__linux__)
+	#include <GL/glut.h>
+#else
+	#include <GLUT/glut.h>
+#endif
+
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
+
 #include <GLUT/glut.h>	// OpenGL Graphics Utility Library
 #include "netcom.h"
 #include "datapacket.h"
@@ -42,6 +49,11 @@ static float dUserScale = .3;
 static float voltShift = -.85;
 static float userShift = 0;
 static float dUserShift = .05;
+
+static float const colWave[3] = {1.0, 1.0, 0.6};
+static float const colThres[3] = {1.0, 0.1, 0.1};
+static float const colSelected[3] = {1.0, 1.0, 1.0};
+static float const colFont[3] = {1.0, 1.0, 1.0};
 // ===================================
 // 		Network Variables
 // ===================================
@@ -49,10 +61,6 @@ static float dUserShift = .05;
 static char host[] = "127.0.0.1";
 static char * port;
 static NetComDat net; // = NetCom::initUdpRx(host,port);
-static int const spikeBuffSize = 500;
-static int dispIdx;
-static int readIdx;
-
 
 // ===================================
 // 		Data Variables
@@ -196,7 +204,6 @@ int main( int argc, char** argv )
 	return(0);
 }
 
-void initNetworkRxThread(){
 
 bool tryToGetSpike(spike_net_t *s){
 
@@ -252,7 +259,7 @@ void refreshDrawing(void)
 	drawWaveforms();
 	drawProjections();
 	drawBoundingBoxes();
- 	drawSelectedWaveform();
+ 	//drawSelectedWaveform();
 	dispCommandString();
 
 	glutSwapBuffers();
@@ -264,7 +271,10 @@ void eraseWaveforms(){
 	for (int i=0; i<nChan; i++)
 	{
 		setViewportForWaveN(i);
-		glColor3f(0,0,0);
+		if (i==selectedWaveform)
+			glColor3f(.15,.15,.15);
+		else	
+			glColor3f(0,0,0);
 		glRectf(-1, -1, 2, 2);
 	}
 }
@@ -291,14 +301,14 @@ void drawWaveformN(int n)
 	// Disp the threshold value
 	int thresh = spike.thresh[n];
 	sprintf(txtDispBuff, "T:%d", thresh);
-	glColor3f(1.0,1.0,1.0);
+	glColor3f(colFont[0],colFont[1],colFont[2]);
 	drawString(-.9, .8, txtDispBuff);
 
 	// Draw the actual waveform
 	float dx = 2.0/(spike.n_samps_per_chan-1);
 	float x = -1;
 	int	sampIdx = n; 
-	glColor3f(1.0, 1.0, 0.6);
+	glColor3f(colWave[0], colWave[1], colWave[2]);
 	glBegin( GL_LINE_STRIP );
 		for (int i=0; i<spike.n_samps_per_chan; i++)
 		{
@@ -309,7 +319,7 @@ void drawWaveformN(int n)
 	glEnd();
 
 	// Draw the threshold line
-	glColor3f(1.0, 0.0, 0.0); // set threshold line to red
+	glColor3f(colThres[0], colThres[1], colThres[2]); // set threshold line to red
 	glLineStipple(4, 0xAAAA); // make line a dashed line
 	glEnable(GL_LINE_STIPPLE);
 	glBegin( GL_LINE_STRIP );
@@ -493,8 +503,8 @@ void drawBoundingBoxes(void){
 
 void drawSelectedWaveform(){
   setViewportForWaveN(selectedWaveform);
-  glLineWidth(3);
-  glColor3f(0.6, 0.6, 1.0);
+  glLineWidth(2);
+  glColor3f(colSelected[0], colSelected[1], colSelected[2]);
   drawViewportEdge();
 }
 
@@ -530,16 +540,16 @@ void resizeWindow(int w, int h)
 void specialKeyFn(int key, int x, int y){
 	std::cout<<"Key Pressed:"<<key<<std::endl;
     switch(key){
-      case 100: // left
+      case GLUT_KEY_LEFT: // left
         selectedWaveform -=1;
         break;
-      case 101: // up
+      case GLUT_KEY_UP: // up
         selectedWaveform -=2;
         break;
-      case 102: // right
+      case GLUT_KEY_RIGHT: // right
         selectedWaveform +=1;
         break;
-      case 103: //down
+      case GLUT_KEY_DOWN: //down
         selectedWaveform +=2;
         break;
     }
@@ -584,6 +594,7 @@ void keyPressedFn(unsigned char key, int x, int y){
 			break;		
 		// Commands that require additional user input
 		case CMD_GAIN_ALL:
+		case CMD_GAIN_SINGLE:
 		case CMD_THOLD_SINGLE:
 		case CMD_THOLD_ALL:
 		case CMD_SET_POST_SAMPS:
@@ -599,6 +610,8 @@ void enterCommandStr(char key){
 		case 127: // MAC Delete key is pressed
 			if (cIdx<=0){ //if the command string is empty ignore the keypress
 				enteringCommand = false;
+				eraseCommandString();
+				currentCommand = NULL;
 				return;
 			}
 			cmd[--cIdx] = 0; //backup the cursor and set the current char to 0
@@ -619,7 +632,7 @@ void enterCommandStr(char key){
 			if (cIdx<CMD_STR_MAX_LEN)
 				cIdx+=1;
 				std::cout<<cIdx<<std::endl;
-			std::cout<<"Command Entered:"<<cmd<<std::endl;
+//			std::cout<<"Command Entered:"<<cmd<<std::endl;
 	}
 }
 
