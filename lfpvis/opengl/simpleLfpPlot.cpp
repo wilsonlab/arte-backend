@@ -1,8 +1,13 @@
+#if defined(__linux__)
+	#include <GL/glut.h>
+#else // assume OS X
+	#include <GLUT/glut.h>
+#endif
+
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
-#include <GLUT/glut.h>	// OpenGL Graphics Utility Library
 #include "netcom.h"
 #include "datapacket.h"
 #include <math.h>
@@ -13,14 +18,13 @@
 // making a more pleasing display
 
 const double MAX_VOLT = pow(2,15);
-
 // ===================================
 // 		GUI Specific Variables
 // ===================================
 static double winWidth = 624, winHeight = 312;
 static double commandWinHeight = 20; // Shift the entire UI up by commandWinHeight and reserve this area for text and buttons
 
-static double xBox = winWidth;
+static double xBox = 60;
 static double yBox = winHeight/8;
 
 static double xPadding = 2;
@@ -42,6 +46,11 @@ static float dUserScale = .3;
 static float voltShift = -.85;
 static float userShift = 0;
 static float dUserShift = .05;
+
+static int colWave[64];
+static float const colSelected[3] = {0.4, 0.4, 0.4};
+static float const colFont[3] = {1.0, 1.0, 1.0};
+
 // ===================================
 // 		Network Variables
 // ===================================
@@ -82,13 +91,21 @@ static int const CMD_SCALE_UP = '=';
 static int const CMD_SCALE_DOWN = '-';
 static int const CMD_SHIFT_UP = '+';
 static int const CMD_SHIFT_DOWN = '_';
+static int const CMD_PREV_COL = '[';
+static int const CMD_NEXT_COL = ']';
 
 static int const CMD_STR_MAX_LEN = 16;
 static int const CMD_GAIN_ALL = 'g';
 static int const CMD_GAIN_SINGLE = 'G';
 static int const CMD_NULL = 0;
+
+static int const KEY_DEL = 127;
+static int const KEY_BKSP = 8;
+static int const KEY_ENTER = 13;
+
 static int currentCommand = 0;
 static bool enteringCommand = false;
+static int selectedWaveform = 0;
 
 // ===================================
 // 		General Functions
@@ -98,21 +115,25 @@ bool tryToGetlfp(lfp_bank_net_t *s);
 
 void idleFn();
 void refreshDrawing();
-void drawBoundingBox();
+void drawInfoBox();
 void eraseWaveforms();
 void eraseCommandString();
 
-void setViewportForWaveN(int n);
+void setViewportforWaveInfoN(int n);
+void setViewportForWaves();
 void setViewportForCommandString();
+void setWaveformColor(int col);
 
 void drawViewportEdge();
 
 void drawWaveforms();
 void drawWaveformN(int n);
+void setWaveformColor(int c);
+void highlightSelectedWaveform();
 
 void resizeWindow(int w, int h);
 
-float scaleVoltage(int v, bool);
+float scaleVoltage(int v, int chan, int totChans);
 // ===================================
 // 		Keyboard & Command Function Headers
 // ===================================
@@ -121,6 +142,8 @@ void toggleOverlay();
 void clearWindow();
 
 void keyPressedFn(unsigned char key, int x, int y);
+void specialKeyFn(int key, int x, int y);
+
 void enterCommandStr(char key);
 void dispCommandString();
 
@@ -141,6 +164,7 @@ int main( int argc, char** argv )
 	}
 
 
+	bzero(colWave, 64);
 	bzero(cmd, cmdStrLen);
 	pthread_t netThread;
 	net = NetCom::initUdpRx(host,port);
@@ -165,6 +189,7 @@ int main( int argc, char** argv )
 	glutIdleFunc( idleFn );
 	glutDisplayFunc( refreshDrawing );
 	glutKeyboardFunc(keyPressedFn);
+	glutSpecialFunc(specialKeyFn);
 
 	std::cout<<"Starting the GLUT main Loop"<<std::endl;
 	glutMainLoop(  );
@@ -224,21 +249,26 @@ void refreshDrawing(void)
 		eraseWaveforms();
 
 	drawWaveforms();
-	drawBoundingBox();
-	dispCommandString();
+	drawInfoBox();
 
+	dispCommandString();
+      	
 	glutSwapBuffers();
 	glFlush();
 }
 
 void eraseWaveforms(){
 
-	for (int i=0; i<nChan; i++)
-	{
-		setViewportForWaveN(i);
-		glColor3f(0,0,0);
-		glRectf(-1, -1, 2, 2);
-	}
+	glViewport( xPadding, 0, winWidth-xPadding, winHeight );	// View port uses whole window
+
+	glColor3f(0,0,0);
+	glRectf(-1, -1, 2, 2);
+	
+	glLineWidth(1);
+	glColor3f(1.0, 1.0, 1.0);
+
+	drawViewportEdge();
+
 }
 
 void eraseCommandString(){
@@ -250,110 +280,107 @@ void eraseCommandString(){
 
 void drawWaveforms(void){
 
+	setViewportForWaves();
 	glLineWidth(waveformLineWidth);
 	for (int i=0; i<lfp.n_chans; i++) 
 			drawWaveformN(i);
 }
 
 
-void drawWaveformN(int n)
-{
-	setViewportForWaveN(n);
-
+void drawWaveformN(int n){
 	// Draw the actual waveform
 	float dx = 2.0/(lfp.n_samps_per_chan-1);
 	float x = -1;
 	int	sampIdx = n; 
 	glColor3f(1.0, 1.0, 0.6);
+	setWaveformColor(colWave[n]);
 	glBegin( GL_LINE_STRIP );
 		for (int i=0; i<lfp.n_samps_per_chan; i++)
 		{
-			glVertex2f(x, scaleVoltage(lfp.data[sampIdx], true));
+			glVertex2f(x, scaleVoltage(lfp.data[sampIdx], n, nChan));
 			sampIdx +=4;
 			x +=dx;
 		}
 	glEnd();
-
-	// Draw the waveform marker line
-	glColor3f(1.0, 0.0, 0.0); // set threshold line to red
-	glBegin( GL_LINE_STRIP );
-		glVertex2f(-1.0, 0);
-		glVertex2f( 0, 0);
-	glEnd();		
 }
 
+void setViewportForWaveInfoN(int n){
+  float viewDx = xBox;
+  float viewDy = yBox+.5;
+  float viewX = xPadding;
+  float viewY = (nChan - (n+1)) * yBox;
+  
+  glViewport(viewX, viewY, viewDx, viewDy);
 
-void setViewportForWaveN(int n){
-	float viewDX = winWidth - 2*xPadding;
-	float viewDY = yBox - 2*yPadding;
-	float viewX = 0 + xPadding;
+}
+void setViewportForWaves(){
+	
+	glViewport( xBox+xPadding, 0, winWidth-xBox-xPadding, winHeight-yPadding );	// View port uses whole window
+	/*
+	float viewDX = winWidth - xBox - 3*xPadding;
+	float viewDY = yBox - 3*yPadding;
+	float viewX = xBox + xPadding;
 	float viewY = (nChan - (n+1)) * yBox  + yPadding;   
     
-	glViewport(viewX,viewY,viewDX,viewDY);
+	glViewport(viewX,viewY,viewDX,viewDY);*/
 }
 
 
-void setViewportForProjectionN(int n){
-//	std::cout<<"Setting viewport on projection:"<<n<<std::endl;
-    float viewDX = xBox;
-    float viewDY = yBox;
-    float viewX,viewY;
-
-    switch (n){
-    case 0:
-        viewX=xBox;
-        viewY=yBox;
-        break;
-    case 1:
-        viewX = xBox*2;
-        viewY = yBox;
-        break;
-    case 2:
-        viewX=xBox*3;
-        viewY=yBox;
-        break;
-    case 3:
-        viewX = xBox;
-        viewY = 0;
-        break;
-    case 4:
-        viewX = xBox*2;
-        viewY = 0;
-        break;
-    case 5:
-        viewX = xBox*3;
-        viewY = 0;
-        break;
-    default:
-        std::cout<<"drawing of more than 4 channels is not supported, returning! Requested:"<<n<<std::endl;
-        return;
-    }
-	viewX = viewX + xPadding;
-	viewY = viewY + yPadding;
-	viewDX = viewDX - 2*xPadding;
-	viewDY = viewDY - 2*yPadding;
-
-
-	glViewport(viewX, viewY, viewDX, viewDY);
-}
 void setViewportForCommandString(){
 
     float viewX = 0 + xPadding;
     float viewY = 0 + yPadding;
-    float viewDX = xBox - 2*xPadding;
+    float viewDX = xBox*3;
     float viewDY =  commandWinHeight;
 
 	glViewport(viewX, viewY, viewDX, viewDY);
 }
-
-void drawBoundingBox(void){
-
-	glColor3f(1.0, 1.0, 1.0);
-	glViewport( 0, 0, winWidth, winHeight );	// View port uses whole window
-	drawViewportEdge();
-	
+void setWaveformColor(int c){
+	std::cout<<"\t Setting color:"<<c<<std::endl;
+	switch(c){
+		case 0: // red
+			glColor3f(1.0, 0.0, 0.0);
+			break;
+		case 1: // white
+			glColor3f(1.0, 1.0, 0.0);
+		case 2: // green
+			glColor3f(0.0, 1.0, 0.0);
+			break;
+		case 3: //
+			glColor3f(0.0, 1.0, 1.0);
+			break;
+		case 4:
+			glColor3f(0.0, 0.0, 1.0);
+		case 5:
+			glColor3f(1.0, 0.0, 1.0);
+		case 6:
+			glColor3f(0.0, 0.0, 0.0);
+		default:
+			glColor3f(1.0, 1.0, 1.0);
+	}	
 }
 
+void drawInfoBox(void){
+
+
+	char txt[20];
+	bzero(txt,20);
+    glLineWidth(1.0);
+    for (int i=0; i<nChan; i++){
+    	setViewportForWaveInfoN(i);
+	  	if (i==selectedWaveform)
+			glColor3f(.25, .25, .25);
+		else 
+			glColor3f(0, 0, 0);
+		glRectf(-1, -1, 2, 2);
+		
+		glColor3f(1.0, 1.0, 1.0);
+    	drawViewportEdge();
+
+		sprintf(txt, "T:18.%d", i);
+		drawString(-.9, -.2, txt);
+    }
+}
 
 
 void drawViewportEdge(){
@@ -384,6 +411,23 @@ void resizeWindow(int w, int h)
 	refreshDrawing();
 }
 
+
+void specialKeyFn(int key, int x, int y){
+	std::cout<<"Key Pressed:"<<key<<std::endl;
+    switch(key){
+      case GLUT_KEY_UP: // up
+        selectedWaveform -=1;
+        break;
+      case GLUT_KEY_DOWN: //down
+        selectedWaveform +=1;
+        break;
+    }
+    if (selectedWaveform<0)
+        selectedWaveform +=nChan;
+    if (selectedWaveform>=nChan)
+        selectedWaveform -=nChan;
+	std::cout<<"SelectedWaveform:"<<selectedWaveform<<std::endl;
+}
 
 void keyPressedFn(unsigned char key, int x, int y){
 
@@ -423,13 +467,23 @@ void keyPressedFn(unsigned char key, int x, int y){
 			enteringCommand = true;
 			currentCommand = key;
 			break;
+		case CMD_PREV_COL:
+			colWave[selectedWaveform]--;
+			std::cout<<"Wave:"<<selectedWaveform<<" set to color:"<<colWave[selectedWaveform]<<std::endl;
+		break;
+		case CMD_NEXT_COL:
+			colWave[selectedWaveform]++;
+			std::cout<<"Wave:"<<selectedWaveform<<" set to color:"<<colWave[selectedWaveform]<<std::endl;
+		break;
 		}
+
  }
 void enterCommandStr(char key){
+	std::cout<<"Entering command";
 	switch(key){
 		// Erase command string
-		case 8: //  Backspace Key
-		case 127: // MAC Delete key is pressed
+		case KEY_BKSP: //  Backspace Key
+		case KEY_DEL: // MAC Delete key is pressed
 			if (cIdx<=0){ //if the command string is empty ignore the keypress
 				enteringCommand = false;
 				return;
@@ -437,7 +491,7 @@ void enterCommandStr(char key){
 			cmd[--cIdx] = 0; //backup the cursor and set the current char to 0
 			eraseCommandString();
 			break;
-		case 13: // RETURN KEY
+		case KEY_ENTER: // RETURN KEY
 			executeCommand(cmd);
 			bzero(cmd,cmdStrLen);
 			cIdx = 0;
@@ -454,7 +508,9 @@ void enterCommandStr(char key){
 				std::cout<<cIdx<<std::endl;
 			std::cout<<"Command Entered:"<<cmd<<std::endl;
 	}
+	
 }
+
 
 void dispCommandString(){
 	if (enteringCommand)
@@ -504,11 +560,8 @@ void toggleOverlay(){
 	disableWaveOverlay = !disableWaveOverlay;
 }
 
-float scaleVoltage(int v, bool shift){
-	if (shift)
-		return ((float)v * dV * userScale) + voltShift + userShift;
-	else
-		return ((float)v * dV * userScale) + voltShift;
+float scaleVoltage(int v, int chan, int totChans){	
+		return 1 - ((float)v * dV/nChan * userScale) + voltShift + userShift + chan*2.0/nChan;
 }
 
 int incrementIdx(int i){
