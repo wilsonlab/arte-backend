@@ -29,12 +29,12 @@ const int MAX_INT = pow(2,16);
 // ===================================
 
 static int winWidth = 1560, winHeight = 540;
-static double commandWinHeight = 20; // Shift the entire UI up by commandWinHeight and reserve this area for text and buttons
+static double commandWinHeight = 20;
 
-static double xBox = 60;
+static double xBox = 75;
 static double yBox = winHeight/8;
 
-static double xPadding = 2;
+static double xPadding = 1;
 static double yPadding = 2;
 
 static double const waveformLineWidth = 1;
@@ -42,8 +42,8 @@ static bool disableWaveOverlay = true;
 static char txtDispBuff[40];
 
 void *font = GLUT_BITMAP_8_BY_13;
-static int IDLE_SLEEP_USEC = (1e6)/100;
-static int NET_SLEEP_USEC = (1e6)/2000;
+static int IDLE_SLEEP_USEC = (1e6)/40;
+static int NET_SLEEP_USEC = (1e6)/1000;
 
 
 // ===================================
@@ -65,7 +65,6 @@ static float voltShift = 0;
 static float userShift = 0;
 static float dUserShift = .01 * pow(2,16);
 
-static int colWave[64];
 static float const colSelected[3] = {0.4, 0.4, 0.4};
 static float const colFont[3] = {1.0, 1.0, 1.0};
 
@@ -116,6 +115,8 @@ static int dXPos = xRange/(maxIdx);
 static const int MAX_N_CHAN = 32;
 static const int MAX_N_SAMP = 4000;
 static int waves[MAX_N_CHAN][MAX_N_SAMP];
+static int colWave[MAX_N_CHAN];
+
 
 
 // ===================================
@@ -137,6 +138,8 @@ static int const CMD_SCALE_UP = '=';
 static int const CMD_SCALE_DOWN = '-';
 static int const CMD_SHIFT_UP = '+';
 static int const CMD_SHIFT_DOWN = '_';
+static int const CMD_RESET_SCALE = 'r';
+
 static int const CMD_PREV_COL = '[';
 static int const CMD_NEXT_COL = ']';
 
@@ -221,7 +224,9 @@ int main( int argc, char** argv )
 	std::cout<<" Starting up Arte Lfp Viewer"<<std::endl;
 	std::cout<<"================================================"<<std::endl;
 
-	bzero(colWave, 32);
+	for (int i=0; i<MAX_N_CHAN; i++)
+		colWave[i] = i;
+//	bzero(colWave, 32);
 	bzero(cmd, cmdStrLen);
 	bzero(waves,  sizeof(waves[0][0]) * MAX_N_CHAN * MAX_N_SAMP);
 
@@ -256,15 +261,16 @@ int main( int argc, char** argv )
 	return(0);
 }
 void *readNetworkLfpData(void *ptr){
+	
+	lfp_bank_net_t l;
+
 	while(true)
 	{
-		lfp_bank_net_t l;
 		NetCom::rxWave(net, &l);
 		lfpBuff[IND(writeInd)] = l;
 		writeInd++;
-		nBuff+=1;
-		totalBuffsRead++;
-		usleep(NET_SLEEP_USEC);
+//		nBuff+=1;
+//		totalBuffsRead++;
 	}
 }
 
@@ -305,9 +311,11 @@ bool tryToGetLfp(lfp_bank_net_t *l){
 
 void updateNChans(int n){
 	nChans = n;
-	yBox = winHeight/nChans;
+	yBox = (double)winHeight/nChans;
 	if (nChans==15) // used for profiling, gprof requires a call to exit() 
 		exit(0);
+	clearWindow();
+	curSeqNum = 0;
 
 }
 void updateNSamps(int n){
@@ -315,6 +323,8 @@ void updateNSamps(int n){
 	sampRate = 1000 * nSampsPerChan;
 	maxIdx = winDt * sampRate;
 	dXPos = xRange/(maxIdx);
+	clearWindow();
+	curSeqNum = 0;
 }
 
 void updateWaveArray(){
@@ -378,12 +388,22 @@ void idleFn(void){
 void refreshDrawing(void)
 {
 
+	glViewport(0, 0, winWidth, winHeight);
 	glLoadIdentity ();
-	
+	glColor3f(1.0, 1.0, 1.0);
+//	glBegin(GL_LINE_LOOP);
+//		glVertex2f(-.999, -.999);
+//		glVertex2f(-.999,  .999);
+//		glVertex2f( .999,  .999);
+//		glVertex2f( .999, -.999);
+//	glEnd();
+	drawViewportEdge();
+
 	drawWaveforms();
 	drawInfoBox();
 
 	dispCommandString();
+
 	glutSwapBuffers();
 	glFlush();
 }
@@ -399,10 +419,10 @@ void eraseOldWaveform(){
 	glColor3f(0.0, 0.0, 0.0);
 
 	glBegin(GL_POLYGON);
-		glVertex2i(x, 0);
+		glVertex2i(x, PIX_TO_X(0));
 		glVertex2i(x, MAX_INT);
 		glVertex2i(x+dx, MAX_INT);
-		glVertex2i(x+dx, 0);
+		glVertex2i(x+dx, PIX_TO_X(0));
 	glEnd();
 
 }
@@ -486,25 +506,16 @@ void setViewportForWaveInfoN(int n){
   float viewY = (nChans - (n+1)) * yBox;
 
   glViewport(viewX, viewY, viewDx, viewDy);
+
 }
 void setViewportForWaves(){
-
 
 	glViewport( xBox+xPadding, 0, winWidth-xBox-xPadding, winHeight-yPadding );	// View port uses whole window
 	glLoadIdentity ();
 	glTranslatef(-1.0, -1.0, 0.0);
 	glScalef(xScale, yScale, 0);
-//	glFrustum(0.0, 2^16, 0.0, 2^16, 0, 2^16);
 
-	/*
-	float viewDX = winWidth - xBox - 3*xPadding;
-	float viewDY = yBox - 3*yPadding;
-	float viewX = xBox + xPadding;
-	float viewY = (nChans - (n+1)) * yBox  + yPadding;
-
-	glViewport(viewX,viewY,viewDX,viewDY);*/
 }
-
 
 void setViewportForCommandString(){
 
@@ -517,31 +528,46 @@ void setViewportForCommandString(){
 }
 void setWaveformColor(int c){
 
-	int nColor = 8;
+	int nColor = 13;
 	switch(c%nColor){
 		case 0: // red
 			glColor3f(1.0, 0.0, 0.0);
 			break;
-		case 1: // white
-		glColor3f(1.0, 1.0, 0.0);
+		case 1: // red
+			glColor3f(1.0, 0.5, 0.0);
 			break;
-		case 2: // green
+		case 2: // red
+			glColor3f(1.0, 1.0, 0.0);
+			break;
+		case 3: // red
+			glColor3f(0.5, 1.0, 0.0);
+			break;
+		case 4: // white
 			glColor3f(0.0, 1.0, 0.0);
 			break;
-		case 3: //
+		case 5: // green
+			glColor3f(0.0, 1.0, 0.5);
+			break;
+		case 6: //
 			glColor3f(0.0, 1.0, 1.0);
 			break;
-		case 4:
+		case 7:
+			glColor3f(0.0, 0.5, 1.0);
+			break;
+		case 8:
 			glColor3f(0.0, 0.0, 1.0);
 			break;
-		case 5:
+		case 9:
+			glColor3f(0.5, 0.0, 1.0);
+			break;
+		case 10:
 			glColor3f(1.0, 0.0, 1.0);
 			break;
-		case 6:
-			glColor3f(0.0, 0.0, 0.0);
+		case 11:
+			glColor3f(1.0, 0.0, 0.5);
 			break;
 		default:
-			glColor3f(1.0, 1.0, 1.0);
+			glColor3f(1.0, 0.0, 1.0);
 	}	
 }
 
@@ -563,7 +589,7 @@ void drawInfoBox(void){
 
 		setWaveformColor(colWave[i]);
 		sprintf(txt, "T:18.%d", i);
-		drawString(-.9, -.2, txt);
+		drawString(-.8, -.2, txt);
     }
 }
 
@@ -649,12 +675,15 @@ void keyPressedFn(unsigned char key, int x, int y){
 		// Shift the waveforms only
 		case CMD_SHIFT_UP:
 			userShift += dUserShift;
-			std::cout<<"User shift raised:"<<userShift<<std::endl;
 			break;
 		case CMD_SHIFT_DOWN:
 			userShift -= dUserShift;
-			std::cout<<"User shift lowered:"<<userShift<<std::endl;
 			break;		
+		case CMD_RESET_SCALE:
+			userShift = 0;
+			userScale = 1;
+			clearWindow();
+			break;
 		// Commands that require additional user input
 		case CMD_GAIN_ALL:
 			enteringCommand = true;
