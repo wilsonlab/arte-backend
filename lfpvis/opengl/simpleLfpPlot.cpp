@@ -269,8 +269,6 @@ void *readNetworkLfpData(void *ptr){
 		NetCom::rxWave(net, &l);
 		lfpBuff[IND(writeInd)] = l;
 		writeInd++;
-//		nBuff+=1;
-//		totalBuffsRead++;
 	}
 }
 
@@ -343,7 +341,7 @@ void updateWaveArray(){
 
 	// if we receive a packet from the future, set the future as now and set everything
 	// that was skipped to zero?
-	/*
+	
 	else if(lfp.seq_num > curSeqNum+1)
 	{
 		while (lfp.seq_num-1 > curSeqNum)
@@ -357,7 +355,7 @@ void updateWaveArray(){
 			curSeqNum++;
 		}
 	}
-	*/
+	
 
 	else if(lfp.seq_num == curSeqNum) // if we have the same packet as last time
 		return;
@@ -369,7 +367,7 @@ void updateWaveArray(){
 			waves[j][IDX(dIdx)] = lfp.data[k++];
 		dIdx++;
 	}
-
+	
 	curSeqNum = lfp.seq_num;
 }
 
@@ -378,10 +376,10 @@ void idleFn(void){
 	do{
 		
 		updateWaveArray();
-		refreshDrawing();
 
 	}while(tryToGetLfp(&lfp));
-
+	
+	refreshDrawing();
     usleep(IDLE_SLEEP_USEC);
 }
 
@@ -457,7 +455,7 @@ void drawWaveforms(void){
 	{
 		return;	
 	}
-
+	while(pIdx<dIdx){
 	// Draw the line cursor
 
 	setViewportForWaves();
@@ -475,7 +473,7 @@ void drawWaveforms(void){
 
 	pIdx = tempIdx;
 	xPos = tempX;
-
+	}
 	glLoadIdentity();
 
 }
