@@ -36,26 +36,27 @@ static bool disableWaveOverlay = true;
 static char txtDispBuff[40];
 
 void *font = GLUT_BITMAP_8_BY_13;
-static int TIMEOUT = (1e6)/50;
+static int TIMEOUT = (1e6)/20;
 
 
 // ===================================
 // 		Scaling Variables
 // ===================================
 static int xRange = 10000;
-static int yRange = 2^14;
-static double yScale = 2.0/ (double)(yRange);
-static double xScale = 2.0/ xRange;
+static int yRange = pow(2,16);
+static double xScale = 2.0 / xRange;
+static double yScale = 2.0 / (double)(yRange);
 
 // Defines how much to shift the waveform within the viewport
 //static float dV = 1.0/((float)MAX_VOLT*2);
-static float dV = yRange/2;
+
+static float dV = yRange/8;
 static float userScale = 1;
 static float dUserScale = .1;
 
 static float voltShift = 0;
 static float userShift = 0;
-static float dUserShift = .01;
+static float dUserShift = .01 * pow(2,16);
 
 static int colWave[64];
 static float const colSelected[3] = {0.4, 0.4, 0.4};
@@ -90,13 +91,13 @@ static uint32_t curSeqNum = 0;
 static uint32_t prevSeqNum = -1;
 static int nSampsPerChan = 2;
 static double sampRate = 2000;
-static double winDt = 1;
+static double winDt = 2;
 static float plotRange = 2.0/nChans;
 static int nPlotSamps = winDt * sampRate;
 static int newSampIdx = 0;
 
 static const int MAX_N_CHAN = 32;
-static const int MAX_N_SAMP = 16000;
+static const int MAX_N_SAMP = 4000;
 static int waves[MAX_N_CHAN][MAX_N_SAMP];
 
 
@@ -164,7 +165,7 @@ void highlightSelectedWaveform();
 
 void resizeWindow(int w, int h);
 
-float scaleVoltage(int v, int chan);
+int scaleVoltage(int v, int chan);
 // ===================================
 // 		Keyboard & Command Function Headers
 // ===================================
@@ -290,6 +291,7 @@ void updateNSamps(int n){
 }
 
 void updateWaveArray(){
+	prevSeqNum = curSeqNum;
 	int idx = 0;
 	int i = 0;
 	int j = 0;
@@ -304,7 +306,7 @@ void updateWaveArray(){
 
 	// if we receive a packet from the future, set the future as now and set everything
 	// that was skipped to zero?
-	else if(lfp.seq_num > curSeqNum)
+	else if(lfp.seq_num > curSeqNum+1)
 	{
 		while (lfp.seq_num-1 > curSeqNum)
 		{
@@ -322,6 +324,9 @@ void updateWaveArray(){
 		}
 	}
 
+	else if(lfp.seq_num == curSeqNum) // if we have the same packet as last time
+		return;
+	
 	// update the array with the data from the current packet
 	for (i=0; i<lfp.n_samps_per_chan; i++)
 	{
@@ -353,7 +358,7 @@ void refreshDrawing(void)
 //   	gluLookAt (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	if (disableWaveOverlay)
 		eraseWaveforms();
-
+	
 	drawWaveforms();
 	drawInfoBox();
 	//drawBoundingBox(); //<--- where am I doing this right now??!?!?!
@@ -396,15 +401,16 @@ void drawWaveforms(void){
 
 void drawWaveformN(int n){
 	// Draw the actual waveform
-	float dx = 2.0/(nPlotSamps-1);
-	float x = -1;
+	int dx = xRange/(nPlotSamps-1);
+	int x = -1;
 	int	sampIdx = n; 
 	glColor3f(1.0, 1.0, 0.6);
 	setWaveformColor(colWave[n]);
 	glBegin( GL_LINE_STRIP );
 		for (int i=0; i<nPlotSamps; i++)
 		{
-			glVertex2f(x, scaleVoltage(waves[n][i], n));
+			glVertex2i(x, scaleVoltage(waves[n][i], n));
+//			glVertex2i(x, waves[n][i]);
 			sampIdx +=4;
 			x +=dx;
 		}
@@ -424,8 +430,8 @@ void setViewportForWaves(){
 
 	glViewport( xBox+xPadding, 0, winWidth-xBox-xPadding, winHeight-yPadding );	// View port uses whole window
 	glLoadIdentity ();
-	glTranslatef(1.0, 0.5, 0.0);
-	glScalef(2, yScale, 0);
+	glTranslatef(-1.0, -1.0, 0.0);
+	glScalef(xScale, yScale, 0);
 //	glFrustum(0.0, 2^16, 0.0, 2^16, 0, 2^16);
 
 	/*
@@ -677,10 +683,11 @@ void toggleOverlay(){
 	disableWaveOverlay = !disableWaveOverlay;
 }
 
-float scaleVoltage(int v, int chan){	
-// OFFSET = 1-chan*plotRange  
-		return ((float)(v*userScale) * dV * plotRange + (1-chan*plotRange) - plotRange/yRange) + userShift;		
-//		return (float)v;
+int scaleVoltage(int v, int chan){
+//	return (v*userScale) * pow(2,16) / nChans + pow(2,16) * (1-chan*plotRange) - (plotRange/yRange) + userShift;		
+	
+	return (v*userScale) / nChans + pow(2,16) - pow(2,15)/nChans - chan*pow(2,16)/nChans  + userShift;
+	
 }
 
 int incrementIdx(int i){
