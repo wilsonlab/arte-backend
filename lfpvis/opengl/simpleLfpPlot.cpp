@@ -19,6 +19,7 @@
 // making a more pleasing display
 
 const double MAX_VOLT = pow(2,15);
+const int MAX_INT = pow(2,16);
 // ===================================
 // 		GUI Specific Variables
 // ===================================
@@ -683,10 +684,10 @@ void toggleOverlay(){
 	disableWaveOverlay = !disableWaveOverlay;
 }
 
-int scaleVoltage(int v, int chan){
+inline int scaleVoltage(int v, int chan){
 //	return (v*userScale) * pow(2,16) / nChans + pow(2,16) * (1-chan*plotRange) - (plotRange/yRange) + userShift;		
 	
-	return (v*userScale) / nChans + pow(2,16) - pow(2,15)/nChans - chan*pow(2,16)/nChans  + userShift;
+	return v * userScale / nChans + MAX_INT - MAX_INT/2/nChans - chan*MAX_INT/nChans  + userShift;
 	
 }
 
