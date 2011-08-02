@@ -15,6 +15,10 @@
 #include <vector>
 #include <pthread.h>
 
+#define SCALE_VOLTAGE(v,chan) (v * userScale / nChans + MAX_INT - MAX_INT/2/nChans - chan*MAX_INT/nChans  + userShift)
+#define X_TO_PIX(x) ((x*winWidth)/MAX_INT)
+#define PIX_TO_X(p) ((p*MAX_INT)/winWidth)
+
 // these offsets create padding between the different plots
 // making a more pleasing display
 
@@ -23,7 +27,8 @@ const int MAX_INT = pow(2,16);
 // ===================================
 // 		GUI Specific Variables
 // ===================================
-static double winWidth = 624, winHeight = 312;
+
+static int winWidth = 1560, winHeight = 540;
 static double commandWinHeight = 20; // Shift the entire UI up by commandWinHeight and reserve this area for text and buttons
 
 static double xBox = 60;
@@ -37,13 +42,14 @@ static bool disableWaveOverlay = true;
 static char txtDispBuff[40];
 
 void *font = GLUT_BITMAP_8_BY_13;
-static int TIMEOUT = (1e6)/20;
+static int IDLE_SLEEP_USEC = (1e6)/100;
+static int NET_SLEEP_USEC = (1e6)/2000;
 
 
 // ===================================
 // 		Scaling Variables
 // ===================================
-static int xRange = 10000;
+static int xRange = pow(2,16);
 static int yRange = pow(2,16);
 static double xScale = 2.0 / xRange;
 static double yScale = 2.0 / (double)(yRange);
@@ -81,8 +87,11 @@ static int const lfpBuffSize = 500;
 static lfp_bank_net_t lfpBuff[lfpBuffSize];
 static lfp_bank_net_t lfp;
 static int nBuff = 0;
-static int readIdx = 0;
-static int writeIdx = 0;
+static uint64_t readInd = 0;
+static uint64_t writeInd = 0;
+
+int inline IND(uint64_t i)	{	return i%lfpBuffSize;	}
+
 
 
 // ===================================
@@ -94,8 +103,15 @@ static int nSampsPerChan = 2;
 static double sampRate = 2000;
 static double winDt = 2;
 static float plotRange = 2.0/nChans;
-static int nPlotSamps = winDt * sampRate;
-static int newSampIdx = 0;
+static int maxIdx = winDt * sampRate;
+
+static uint64_t dIdx = 0;
+static uint64_t pIdx = 0;
+
+int inline IDX(uint64_t i)	{	return i%maxIdx;	}
+
+static int xPos = 0;
+static int dXPos = xRange/(maxIdx);
 
 static const int MAX_N_CHAN = 32;
 static const int MAX_N_SAMP = 4000;
@@ -110,7 +126,7 @@ static timeval startTime, now;
 
 static int const cmdStrLen = 50;
 static unsigned char cmd[cmdStrLen];
-static int cIdx = 0;
+static int cmdStrIdx = 0;
 
 // ===================================
 // 		Command Variables
@@ -123,6 +139,9 @@ static int const CMD_SHIFT_UP = '+';
 static int const CMD_SHIFT_DOWN = '_';
 static int const CMD_PREV_COL = '[';
 static int const CMD_NEXT_COL = ']';
+
+static int const CMD_QUIT = 17;
+static int const CMD_RESET_SEQ = 18;
 
 static int const CMD_STR_MAX_LEN = 16;
 static int const CMD_GAIN_ALL = 'g';
@@ -149,7 +168,8 @@ void updateWaveArray();
 void idleFn();
 void refreshDrawing();
 void drawInfoBox();
-void eraseWaveforms();
+void eraseOldWaveform();
+void clearWaveforms();
 void eraseCommandString();
 
 void setViewportforWaveInfoN(int n);
@@ -160,7 +180,8 @@ void setWaveformColor(int col);
 void drawViewportEdge();
 
 void drawWaveforms();
-void drawWaveformN(int n);
+void drawWaveformN(int n, int *x, uint64_t *yIdx );
+
 void setWaveformColor(int c);
 void highlightSelectedWaveform();
 
@@ -196,8 +217,11 @@ int main( int argc, char** argv )
 		return 0;
 	}
 
+	std::cout<<"================================================"<<std::endl;
+	std::cout<<" Starting up Arte Lfp Viewer"<<std::endl;
+	std::cout<<"================================================"<<std::endl;
 
-	bzero(colWave, 64);
+	bzero(colWave, 32);
 	bzero(cmd, cmdStrLen);
 	bzero(waves,  sizeof(waves[0][0]) * MAX_N_CHAN * MAX_N_SAMP);
 
@@ -236,34 +260,35 @@ void *readNetworkLfpData(void *ptr){
 	{
 		lfp_bank_net_t l;
 		NetCom::rxWave(net, &l);
-		lfpBuff[writeIdx] = l;
-		writeIdx = incrementIdx(writeIdx);
+		lfpBuff[IND(writeInd)] = l;
+		writeInd++;
 		nBuff+=1;
 		totalBuffsRead++;
+		usleep(NET_SLEEP_USEC);
 	}
-
 }
 
 bool tryToGetLfp(lfp_bank_net_t *l){
 
-	if  (readIdx==writeIdx || nBuff==0)
+//	std::cout<<"Read Ind:"<<readInd<<" Write Ind:"<<writeInd<<std::endl;
+	if  ( readInd >= writeInd )
 		return false;
 
 	// Copy the lfp data
-	l->name 	= lfpBuff[readIdx].name;
-	l->n_chans 	= lfpBuff[readIdx].n_chans;
-	l->n_samps_per_chan = lfpBuff[readIdx].n_samps_per_chan;
-	l->samp_n_bytes 	= lfpBuff[readIdx].samp_n_bytes;
-	for (int i=0; i < lfpBuff[readIdx].n_chans *  lfpBuff[readIdx].n_samps_per_chan; i++)
-		l->data[i] = lfpBuff[readIdx].data[i];
+	l->name 	= lfpBuff[IND(readInd)].name;
+	l->n_chans 	= lfpBuff[IND(readInd)].n_chans;
+	l->n_samps_per_chan = lfpBuff[IND(readInd)].n_samps_per_chan;
+	l->samp_n_bytes 	= lfpBuff[IND(readInd)].samp_n_bytes;
+	for (int i=0; i < lfpBuff[IND(readInd)].n_chans *  lfpBuff[IND(readInd)].n_samps_per_chan; i++)
+		l->data[i] = lfpBuff[IND(readInd)].data[i];
 
-	for (int i=0; i < lfpBuff[readIdx].n_chans; i++){
-		l->gains[i] = lfpBuff[readIdx].gains[i];
+	for (int i=0; i < lfpBuff[IND(readInd)].n_chans; i++){
+		l->gains[i] = lfpBuff[IND(readInd)].gains[i];
 	}
 
-	l->seq_num = lfpBuff[readIdx].seq_num;
+	l->seq_num = lfpBuff[IND(readInd)].seq_num;
 
-	readIdx = incrementIdx(readIdx);
+	readInd++;
 	nBuff--;
 
 	if (l->n_chans != nChans){
@@ -274,6 +299,7 @@ bool tryToGetLfp(lfp_bank_net_t *l){
 		std::cout<<"nSampsPerChan != number of samps in latest buffer, updating to reflect this change"<<std::endl;
 		updateNSamps(l->n_samps_per_chan);
 	}
+
 	return true;
 }
 
@@ -287,8 +313,8 @@ void updateNChans(int n){
 void updateNSamps(int n){
 	nSampsPerChan = n;
 	sampRate = 1000 * nSampsPerChan;
-	nPlotSamps = winDt * sampRate;
-
+	maxIdx = winDt * sampRate;
+	dXPos = xRange/(maxIdx);
 }
 
 void updateWaveArray(){
@@ -300,13 +326,14 @@ void updateWaveArray(){
 	// if we receive an old packet ignore it
 	if (lfp.seq_num < curSeqNum) 
 	{
-		std::cout<<"Old packet received, ignoring it! lfp.seq_num:"<<lfp.seq_num<<" curSeqNum"<<curSeqNum<<std::endl;
-		curSeqNum=lfp.seq_num-1;
+		std::cout<<"Old packet received, ignoring it! ";//<<lfp.seq_num<<" curSeqNum"<<curSeqNum<<std::endl;
+		std::cout<<"Press CTRL+R to reset sequence number:"<<std::endl;
 		return;
 	}
 
 	// if we receive a packet from the future, set the future as now and set everything
 	// that was skipped to zero?
+	/*
 	else if(lfp.seq_num > curSeqNum+1)
 	{
 		while (lfp.seq_num-1 > curSeqNum)
@@ -314,62 +341,74 @@ void updateWaveArray(){
 		    for (i=0; i<lfp.n_samps_per_chan; i++)
 		    {
 	    	    for (j=0; j<lfp.n_chans; j++)
-	        	    waves[j][newSampIdx] = 0;
-
-				newSampIdx ++;
-
-		        if (newSampIdx>=nPlotSamps)
-	    	        newSampIdx = 0;
-		    }
+	        	    waves[j][IDX(dIdx)] = 0;
+				dIdx++;
+			}
 			curSeqNum++;
 		}
 	}
+	*/
 
 	else if(lfp.seq_num == curSeqNum) // if we have the same packet as last time
 		return;
 	
-	// update the array with the data from the current packet
+	int k = 0;
 	for (i=0; i<lfp.n_samps_per_chan; i++)
 	{
 		for (j=0; j<lfp.n_chans; j++)
-			waves[j][newSampIdx] = lfp.data[idx++];
-
-		newSampIdx++;
-
-		if (newSampIdx>=nPlotSamps)
-			newSampIdx = 0;
+			waves[j][IDX(dIdx)] = lfp.data[k++];
+		dIdx++;
 	}
+
 	curSeqNum = lfp.seq_num;
 }
 
 
 void idleFn(void){
 	do{
+		
 		updateWaveArray();
 		refreshDrawing();
+
 	}while(tryToGetLfp(&lfp));
-    usleep(TIMEOUT);
+
+    usleep(IDLE_SLEEP_USEC);
 }
 
 void refreshDrawing(void)
 {
 
-	glLoadIdentity ();             /* clear the matrix */
-           /* viewing transformation  */
-//   	gluLookAt (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-	if (disableWaveOverlay)
-		eraseWaveforms();
+	glLoadIdentity ();
 	
 	drawWaveforms();
 	drawInfoBox();
-	//drawBoundingBox(); //<--- where am I doing this right now??!?!?!
+
 	dispCommandString();
 	glutSwapBuffers();
 	glFlush();
 }
 
-void eraseWaveforms(){
+void eraseOldWaveform(){
 
+	int pixWidth = MAX_INT/winWidth;
+
+	int x = xPos;
+	int erasePixWidth = 75;
+	int dx = PIX_TO_X(erasePixWidth);
+
+	glColor3f(0.0, 0.0, 0.0);
+
+	glBegin(GL_POLYGON);
+		glVertex2i(x, 0);
+		glVertex2i(x, MAX_INT);
+		glVertex2i(x+dx, MAX_INT);
+		glVertex2i(x+dx, 0);
+	glEnd();
+
+}
+void clearWaveforms(){
+
+	std::cout<<"Clearing all waveforms"<<std::endl;
 	glViewport( xPadding, 0, winWidth-xPadding, winHeight );	// View port uses whole window
 
 	glColor3f(0,0,0);
@@ -391,30 +430,52 @@ void eraseCommandString(){
 
 void drawWaveforms(void){
 
+	uint64_t tempIdx;
+	int tempX;
+
+	if(dIdx<=pIdx)
+	{
+		return;	
+	}
+
+	// Draw the line cursor
+
 	setViewportForWaves();
+
+	if (disableWaveOverlay)
+		eraseOldWaveform();	
+
 	glLineWidth(waveformLineWidth);
 	for (int i=0; i<lfp.n_chans; i++) 
-			drawWaveformN(i);
+	{
+			tempIdx = pIdx;
+			tempX = xPos;
+			drawWaveformN(i, &tempX, &tempIdx);
+	}
+
+	pIdx = tempIdx;
+	xPos = tempX;
+
 	glLoadIdentity();
 
 }
 
 
-void drawWaveformN(int n){
-	// Draw the actual waveform
-	int dx = xRange/(nPlotSamps-1);
-	int x = -1;
-	int	sampIdx = n; 
-	glColor3f(1.0, 1.0, 0.6);
+void drawWaveformN(int n, int *x, uint64_t *idx ){
+
 	setWaveformColor(colWave[n]);
+	
 	glBegin( GL_LINE_STRIP );
-		for (int i=0; i<nPlotSamps; i++)
+		for (int i=0; i<lfp.n_samps_per_chan; i++)
 		{
-			glVertex2i(x, scaleVoltage(waves[n][i], n));
-//			glVertex2i(x, waves[n][i]);
-			sampIdx +=4;
-			x +=dx;
+			if(IDX(*idx)!=0)
+				glVertex2i((*x)-dXPos, SCALE_VOLTAGE(waves[n][(IDX(*idx))-1],n));
+			glVertex2i(*x, SCALE_VOLTAGE(waves[n][IDX(*idx)], n));
+			
+			(*x) = ((*x) + dXPos)%xRange;
+			(*idx)++;
 		}
+
 	glEnd();
 }
 
@@ -462,7 +523,7 @@ void setWaveformColor(int c){
 			glColor3f(1.0, 0.0, 0.0);
 			break;
 		case 1: // white
-			glColor3f(1.0, 1.0, 0.0);
+		glColor3f(1.0, 1.0, 0.0);
 			break;
 		case 2: // green
 			glColor3f(0.0, 1.0, 0.0);
@@ -486,7 +547,6 @@ void setWaveformColor(int c){
 
 void drawInfoBox(void){
 
-
 	char txt[20];
 	bzero(txt,20);
     glLineWidth(1.0);
@@ -501,6 +561,7 @@ void drawInfoBox(void){
 		glColor3f(1.0, 1.0, 1.0);
     	drawViewportEdge();
 
+		setWaveformColor(colWave[i]);
 		sprintf(txt, "T:18.%d", i);
 		drawString(-.9, -.2, txt);
     }
@@ -562,6 +623,14 @@ void keyPressedFn(unsigned char key, int x, int y){
 		return;
 	}
 	switch (key){
+		case CMD_QUIT:
+			exit(1);
+			break;
+		case CMD_RESET_SEQ:
+			curSeqNum = 0;
+			clearWindow();
+			std::cout<<"Reseting sequence number to 0!"<<std::endl;
+			break;
 		case CMD_CLEAR_WIN:
 			clearWindow();
 		break;
@@ -608,17 +677,17 @@ void enterCommandStr(char key){
 		// Erase command string
 		case KEY_BKSP: //  Backspace Key
 		case KEY_DEL: // MAC Delete key is pressed
-			if (cIdx<=0){ //if the command string is empty ignore the keypress
+			if (cmdStrIdx<=0){ //if the command string is empty ignore the keypress
 				enteringCommand = false;
 				return;
 			}
-			cmd[--cIdx] = 0; //backup the cursor and set the current char to 0
+			cmd[--cmdStrIdx] = 0; //backup the cursor and set the current char to 0
 			eraseCommandString();
 			break;
 		case KEY_ENTER: // RETURN KEY
 			executeCommand(cmd);
 			bzero(cmd,cmdStrLen);
-			cIdx = 0;
+			cmdStrIdx = 0;
 			eraseCommandString();
 			enteringCommand = false;
 			refreshDrawing(); // to erase the command window if no lfps are coming in
@@ -626,10 +695,10 @@ void enterCommandStr(char key){
 		default:
 			if(key<' ') // if not a valid Alpha Numeric Char ignore it
 				return;
-			cmd[cIdx] = key;
-			if (cIdx<CMD_STR_MAX_LEN)
-				cIdx+=1;
-				std::cout<<cIdx<<std::endl;
+			cmd[cmdStrIdx] = key;
+			if (cmdStrIdx<CMD_STR_MAX_LEN)
+				cmdStrIdx+=1;
+			std::cout<<cmdStrIdx<<std::endl;
 			std::cout<<"Command Entered:"<<cmd<<std::endl;
 	}
 	
@@ -650,7 +719,7 @@ void dispCommandString(){
 		// Prepend the command char and :  for display purposes
 		char dispCmd[CMD_STR_MAX_LEN+3];
 		bzero(dispCmd, CMD_STR_MAX_LEN+3);
-		for (int i=0; i<cIdx; i++)
+		for (int i=0; i<cmdStrIdx; i++)
 			dispCmd[i+2] = cmd[i];
 		dispCmd[0] = currentCommand;
 		dispCmd[1] = ':';
@@ -678,17 +747,20 @@ bool executeCommand(unsigned char *cmd){
 
 void clearWindow(){
 	glClear(GL_COLOR_BUFFER_BIT);
+	pIdx = 0;
+	dIdx = 0;
+	xPos = 0;
 }
 
 void toggleOverlay(){
 	disableWaveOverlay = !disableWaveOverlay;
+	if(disableWaveOverlay)
+		clearWindow();
 }
 
 inline int scaleVoltage(int v, int chan){
 //	return (v*userScale) * pow(2,16) / nChans + pow(2,16) * (1-chan*plotRange) - (plotRange/yRange) + userShift;		
-	
-	return v * userScale / nChans + MAX_INT - MAX_INT/2/nChans - chan*MAX_INT/nChans  + userShift;
-	
+	return v * userScale / nChans + MAX_INT - MAX_INT/2/nChans - chan*MAX_INT/nChans  + userShift;	
 }
 
 int incrementIdx(int i){
