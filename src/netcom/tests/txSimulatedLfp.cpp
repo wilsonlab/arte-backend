@@ -101,7 +101,7 @@ lfp_bank_net_t genFakeLfp(){
         {
                 for (int j=0; j<l.n_chans; j++){
 					gettimeofday(&t, NULL);
-					v = (int)(sin( freq * (t.tv_usec - start.tv_usec)/1e6 * 2 * pi) * range);
+					v = (int)(sin( freq * (j*1e6 / (pi*l.n_chans) + (t.tv_usec - start.tv_usec) )/1e6 * 2 * pi) * range);
 //	                    l.data[idx++] =  v + (rand() % noise);
 					l.data[idx++] = v;
 //					std::cout<<v<<"\t";
