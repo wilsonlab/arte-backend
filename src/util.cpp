@@ -18,8 +18,10 @@ void daq_err_check(int32 error){
   char errBuff[2048];
   if( DAQmxFailed(error) ){
     std::cout << "Caught a DAQmx error..." << std::endl;
+    fflush(stdout);
     DAQmxGetExtendedErrorInfo(errBuff,2048);
     std::cout << "util.cpp saw the daqmx error num: " << error << " with message: " << errBuff << std::endl;
+    fflush(stdout);
   }else{
     //    std::cout << "No daqmx error." << std::endl;
   }
@@ -29,8 +31,10 @@ void ECmx(int32 error){
   char errBuff[2048];
   if( DAQmxFailed(error) ){
     std::cout << "Caught a DAQmx error..." << std::endl;
+    fflush(stdout);
     DAQmxGetExtendedErrorInfo(errBuff,2048);
     std::cout << "util.cpp saw the daqmx error num: " << error << " with message: " << errBuff << std::endl;
+    fflush(stdout);
   }else{
     //    std::cout << "No daqmx error." << std::endl;
   }

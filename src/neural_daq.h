@@ -32,6 +32,9 @@ struct neural_daq{
   double buffer_time_interval;  // inter-buffer-interval (sec)
   uint32_t daq_buffer_count;
   uint32_t this_buffer;
+
+  TaskHandle counter_generation_task;
+  TaskHandle counter_count_task;
 };
 
 
@@ -43,18 +46,25 @@ void neural_daq_stop_all(void);
 
 void read_data_from_file(void);
 
-int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEventType, uInt32 nSamples, void *callbackData);
+int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, 
+				 int32 everyNSamplesEventType, 
+				 uInt32 nSamples, void *callbackData);
+
+void do_cycle(timestamp_t this_cycle_time);
 void *process_cycle(void *thread_data);
 void *process_daq(void *thread_data);
 void *process_trode(void *thread_data);
 void *process_lfp_bank(void *thread_data);
 
-int32 CVICALLBACK DoneCallback(TaskHandle taskHandle, int32 status, void *callbackData);
+int32 CVICALLBACK DoneCallback(TaskHandle taskHandle, int32 status, 
+			       void *callbackData);
 
 neural_daq find_neural_daq_by_taskhandle(TaskHandle taskHandle);
 
 void print_neural_daq(neural_daq nd);
-void print_buffer(neural_daq *ndp, int row_lim, int row_length, int col_lim);
+
+void print_buffer(neural_daq *ndp, int row_lim, 
+		  int row_length, int col_lim);
 
 void init_files(void);
 void finalize_files(void);

@@ -91,8 +91,12 @@ void arte_init(int argc, char *argv[], const std::string &setup_fn, const std::s
   //arte_init_timer();  // in timer.h
   //arte_start_clock(); // in timer.h 
   
+  //neural_daq_start_all();
+
   // Initialize the timer.  This will block until user hits return
   arte_timer.init2( setup_pt.get_child("options.setup.timer") );
+  
+  neural_daq_start_all();
   acquiring = true;
 }
 
@@ -232,8 +236,6 @@ void arte_session_init(int argc, char *argv[]){
 
   std::cout << "Done session init." << std::endl;
 
-  // Start the acquisition
-  neural_daq_start_all();
 
 }
 

@@ -46,7 +46,8 @@ pthread_t my_threads[MAX_THREADS];
 void neural_daq_init(boost::property_tree::ptree &setup_pt){
 
   acquiring = false;
-  master_id = 0; // arbitrarily pick a card to be master. maybe later user can choose this through conf file?
+  // arbitrarily pick a card to be master. maybe later user can choose this through conf file?
+  master_id = 0; 
   master_ind =0;
 
   tmp_timestamp = try_fopen("tmp.ts", "wb");
@@ -132,8 +133,10 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
       //this_nd = (*it).second;
       
       this_nd.task_handle = 0; // dunno why, but most examples do this 0 init
+      char taskname [50];
+      sprintf(taskname, "AITask on %s", this_nd.dev_name);
       buffer_size = buffer_samps_per_chan * this_nd.n_chans;
-      daq_err_check( (DAQmxCreateTask(this_nd.dev_name, &(this_nd.task_handle))) );
+      daq_err_check( (DAQmxCreateTask(taskname, &(this_nd.task_handle))) );
 
       
       for (int c = 0; c < this_nd.n_chans; c++){
@@ -154,6 +157,37 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
 	daq_err_check ( DAQmxRegisterEveryNSamplesEvent( master_daq.task_handle, DAQmx_Val_Acquired_Into_Buffer, 32,0,EveryNCallback,(void *)&neural_daq_array) );
 	daq_err_check ( DAQmxRegisterDoneEvent(master_daq.task_handle, 0, DoneCallback, (void *)&master_daq) );
 	std::cout << "Done processing master daq." << std::endl;
+	
+///// 	daq_err_check( DAQmxCreateTask(	"master_counter_generation_task",
+///// 					&(this_nd.counter_generation_task) ));
+///// 	daq_err_check( DAQmxCreateTask("master_counter_count_task",
+///// 				       &(this_nd.counter_count_task) ));
+
+	////// This is done in timer.cpp instead of here
+///// 	char co_chan_name[40];
+///// 	char ci_chan_name[40];
+///// 	char ci_trig_chan_name[40];
+///// 	sprintf( co_chan_name, "%s/ctr0", this_nd.dev_name);
+///// 	sprintf( ci_chan_name, "%s/ctr1", this_nd.dev_name);
+///// 	sprintf( ci_trig_chan_name, "/%s/PFI9", this_nd.dev_name);
+
+///// 	daq_err_check( DAQmxCreateCOPulseChanTicks( this_nd.counter_generation_task,
+///// 						   co_chan_name, "", "OnboardClock",
+///// 						   DAQmx_Val_Low, 0, 40000, 40000) );
+///// 	daq_err_check( DAQmxCfgImplicitTiming( this_nd.counter_generation_task,
+///// 					       DAQmx_Val_ContSamps, 1000) );
+
+///// 	daq_err_check( DAQmxCreateCICountEdgesChan( this_nd.counter_count_task,
+///// 						    ci_chan_name, "", 
+///// 						    DAQmx_Val_Rising, 0, DAQmx_Val_CountUp) );
+///// 	daq_err_check( DAQmxCfgSampClkTiming( this_nd.counter_count_task,
+///// 					      ci_trig_chan_name, 1000.0, DAQmx_Val_Rising,
+///// 					      DAQmx_Val_ContSamps, 1000) );
+
+///// 	daq_err_check( DAQmxSetRefClkSrc( this_nd.counter_generation_task, "OnboardClock") );
+///// 	daq_err_check( DAQmxSetRefClkSrc( this_nd.counter_count_task, "OnboardClock") );
+						    
+
 	master_completed = true;
 	n = 0;
       } else {
@@ -192,7 +226,12 @@ void neural_daq_start_all(void){
       }
     }
     // start the master task last ->      
-    printf("about to start the master daq task.\n");
+    
+    ////    printf("about to start master daq count generation and count count tasks.\n");
+    ////daq_err_check ( DAQmxStartTask( neural_daq_array[master_id].counter_generation_task ) );
+    ////daq_err_check ( DAQmxStartTask( neural_daq_array[master_id].counter_count_task ) );
+    
+    printf("about to start the master daq AI task.\n");
     daq_err_check ( DAQmxStartTask( neural_daq_array[master_id].task_handle) );
     printf("finished starting the master daq task.\n");
     neural_daq_array[master_id].status = 1;
@@ -218,8 +257,13 @@ void neural_daq_start_all(void){
 
 void neural_daq_stop(int i){
   neural_daq *nd = &(neural_daq_array[i]);
+  printf("about to stop AI task\n"); fflush(stdout);
   daq_err_check( DAQmxStopTask ( nd->task_handle) );
+  printf(" finished stopping AI task, about co clear it\n");fflush(stdout);
   daq_err_check( DAQmxClearTask( nd->task_handle) );
+  if (i == master_ind){
+    arte_timer.stop2();
+  }
 }
 
 void neural_daq_stop_all(void){
@@ -284,22 +328,22 @@ void read_data_from_file(void){ // the file-reading version of EveryNCallback
 int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEventType, uInt32 nSamples, void *callbackData){
 
  
-     neural_daq *nd;
-     int32 read;
-     int rc;
-     int n;
-     long unknown_use_var;
-     pthread_t process_cycle_thread;
-     pthread_t pc[EVERY_N_TS_BUFFSIZE];
-     int in_use_pool[EVERY_N_TS_BUFFSIZE];
-     int available_pool[EVERY_N_TS_BUFFSIZE];
-     int n_in_use;
-     int n_availabe;
-     bool thread_flagged_for_clear[EVERY_N_TS_BUFFSIZE];
-     pthread_attr_t attr;
-
-
-
+  neural_daq *nd;
+  int32 read;
+  int rc;
+  int n;
+  long unknown_use_var;
+  pthread_t process_cycle_thread;
+  pthread_t pc[EVERY_N_TS_BUFFSIZE];
+  int in_use_pool[EVERY_N_TS_BUFFSIZE];
+  int available_pool[EVERY_N_TS_BUFFSIZE];
+  int n_in_use;
+  int n_availabe;
+  bool thread_flagged_for_clear[EVERY_N_TS_BUFFSIZE];
+  pthread_attr_t attr;
+  uint32_t simple_ts;
+  
+  
   if(acquiring){
     gettimeofday(&tim,NULL);
     t = tim.tv_sec + (tim.tv_usec / 1000000.0);
@@ -307,23 +351,25 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
     //printf("t_0:%.6lf  t:%.6lf  t-t_0:%.6lf  sys_time:%d\n", t_0, t, t-t_0, sys_time);
     //printf("%d\n",sys_time);
     
-    ts_buffer[ts_buff_cursor] = arte_timer.getTimestamp();
     
     //try_fwrite<uint32_t>( &(ts_buffer[ts_buff_cursor]), 1, tmp_timestamp);
-    //try_fwrite<uint32_t>( &sys_time, 1, tmp_timestamp);
+    try_fwrite<uint32_t>( &sys_time, 1, tmp_timestamp);
     //ts_buffer[ts_buff_cursor] = 100000;
   }
-
-
-
+  
+  //printf("in everynsamples\n"); fflush(stdout);
+  
+  if(false){
+    
+    ts_buffer[ts_buff_cursor] = arte_timer.getTimestamp();
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-  
+    
     rc = pthread_create(&(pc[ts_buff_cursor]), 
-         		      &attr, 
-         		      process_cycle, 
-         		      (void *) &(ts_buffer[ts_buff_cursor]));
-
+			&attr, 
+			process_cycle, 
+			(void *) &(ts_buffer[ts_buff_cursor]));
+    
     n_process_threads_open++;
     if(rc){
       printf("ERROR: return code from pthread_create() in EveryNCallback in neural_daq.cpp is %d\n", rc);
@@ -334,20 +380,37 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
       printf("ERROR: %d PROCESS_CYCLE THREADS OPEN - WE RAN OUT OF PROCESSING TIME.\n",n_process_threads_open);
     }
     pthread_attr_destroy(&attr);
-
-
-
+  } 
+  
+  if(true){
+    simple_ts = arte_timer.getTimestamp();
+    ts_buffer[ts_buff_cursor] = simple_ts;
+    //printf("about to do_cycle\n"); fflush(stdout);
+    do_cycle(simple_ts);
+    //printf("finished do_cycle\n"); fflush(stdout);
+  }
+  //printf("ts_buff_cursor:%d\n",ts_buff_cursor); fflush(stdout);
+  //printf("Still in everynsamples\n"); fflush(stdout);
+  
   // process_cycle( (void*)(ts_buffer+ts_buff_cursor) );  
   ts_buff_cursor++;
   if(ts_buff_cursor == EVERY_N_TS_BUFFSIZE){
     ts_buff_cursor = 0;
   }
-  
+
+  //printf("GOT to the end of everyNCallback\n"); fflush(stdout);
+
 }
 
 void *process_cycle(void *thread_data){
+  //printf("in process_cycle\n"); fflush(stdout);
+  uint32_t this_cycle_time = * (uint32_t*)thread_data;
+  do_cycle(this_cycle_time);
+}
+
+void do_cycle(timestamp_t this_cycle_time){
  
-  uint32_t this_cycle_time = *(uint32_t*)thread_data;
+  //uint32_t this_cycle_time = *(uint32_t*)thread_data;
   neural_daq *nd;
   int32 read;
   int rc;
@@ -358,7 +421,7 @@ void *process_cycle(void *thread_data){
   int n;
   long this_p;
   void *status;
-
+  //printf("In process_cycle\n");
   //pthread_attr_init(&attr);
   //pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
   //printf("An Ok one\n");
@@ -371,38 +434,40 @@ void *process_cycle(void *thread_data){
     //fflush(stdout);
     
     nd = &(neural_daq_array[n]);
-      nd->buffer_timestamp = this_cycle_time - (nd->n_samps_per_buffer-1)*10/32;
-      //nd->buffer_timestamp = 100000L;
+    nd->buffer_timestamp = this_cycle_time - (nd->n_samps_per_buffer-1)*10/32;
+    //printf("Buffer timestamp:%d\n",nd->buffer_timestamp);
+    //nd->buffer_timestamp = 100000L;
     //daq_err_check ( DAQmxReadAnalogF64( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
     
-//     rc = pthread_create(&(daq_thread[n]), &attr, process_daq, (void *)nd);
-
-//     if(rc){
-//       printf("ERROR MAKING DAQ_THREAD.  Code: %d\n",rc);
-//     }
+    //     rc = pthread_create(&(daq_thread[n]), &attr, process_daq, (void *)nd);
     
-     if(acquiring){
-       //   uint32_t time_now;
-       //time_now = arte_timer.getTimestamp();
-       if( nd->out_file != NULL){
+    //     if(rc){
+    //       printf("ERROR MAKING DAQ_THREAD.  Code: %d\n",rc);
+    //     }
+    
+    if(acquiring){
+      //   uint32_t time_now;
+      //time_now = arte_timer.getTimestamp();
+      if( nd->out_file != NULL){
  	try_fwrite<rdata_t>( nd->data_ptr, buffer_size, nd->out_file);
-       }
-       //nd->buffer_timestamp = time_now - 
-       //	(nd->n_samps_per_buffer-1) * 10/32; // make time correspond to the buffer's first data point
-       nd->daq_buffer_count += 1;
-       nd->buffer_timestamp = nd->daq_buffer_count * 10;
-     }
-
-
+      }
+      //nd->buffer_timestamp = time_now - 
+      //	(nd->n_samps_per_buffer-1) * 10/32; // make time correspond to the buffer's first data point
+      nd->daq_buffer_count += 1;
+      //nd->buffer_timestamp = nd->daq_buffer_count * 10;
+    }
+    
+    //printf("About to read AD\n");fflush(stdout);
     daq_err_check ( DAQmxReadBinaryI16( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
+    //printf("Done read\n"); fflush(stdout);
   }
   //pthread_attr_destroy(&attr);
-
-//   for (n = 0; n < n_neural_daqs; n++){
-//     pthread_join(daq_thread[n], &status);
-//   }
-
   
+  //   for (n = 0; n < n_neural_daqs; n++){
+  //     pthread_join(daq_thread[n], &status);
+  //   }
+  
+  //printf("about to enter if(acquiring) block (acquiring=%d)\n",acquiring);fflush(stdout);
   if(acquiring){
     //pthread_attr_init(&attr);
     //pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED); // many threads, each is a leaf, so, detached
@@ -414,15 +479,17 @@ void *process_cycle(void *thread_data){
     //for(std::map<uint16_t, Trode>::iterator it = trode_map.begin(); it != trode_map.end(); it++){
     //  Trode *this_trode = &((*it).second);
     for(n = 0; n < n_trodes; n++){
-
+	
       Trode * trode_pt = &(trode_array[n]);
     
 //       rc = pthread_create(&(trode_thread[n]), &attr, process_trode, (void *)trode_pt);      
 //       if(rc){
 // 	printf("ERROR CREATING TRODE THREAD Code: %d\n", rc);
 //       }
-
+      //printf("about to trode_filter_data\n"); fflush(stdout);
       trode_filter_data((void*)trode_pt);
+      //printf("done trode_filter_data\n"); fflush(stdout);
+      
 
     }
     //for( std::map< uint16_t, Lfp_bank >::iterator it = lfp_bank_map.begin();
@@ -442,17 +509,19 @@ void *process_cycle(void *thread_data){
       //std::cout << "n_lfp_banks is: " << n_lfp_banks << std::endl;
       //std::cout << "n_trodes is : " << n_trodes << std::endl;
       //fflush(stdout);
-
+      //printf("about to lfp_bank_filter_data\n"); fflush(stdout);
       lfp_bank_filter_data( (void*)&lfp_bank_array[n] );
+      //  printf("finished lfp_bank_filter_data\n"); fflush(stdout);
 
       //std::cout << "finished one lfp bank." << std::endl;
       //fflush(stdout);
     }
     //pthread_attr_destroy(&attr);
   }
+  //printf("finished if(acquiring) block\n"); fflush(stdout);
   //printf("closing the thread\n");
-  n_process_threads_open--;
-  pthread_exit(NULL);
+  //n_process_threads_open--;
+  //pthread_exit(NULL);
 }
 
 void *process_daq(void *thread_data){
@@ -462,7 +531,7 @@ void *process_daq(void *thread_data){
 
   if(acquiring){
     uint32_t time_now;
-    time_now = arte_timer.getTimestamp();
+    //time_now = arte_timer.getTimestamp();
     if( nd->out_file != NULL){
       try_fwrite<rdata_t>( nd->data_ptr, buffer_size, nd->out_file);
     }

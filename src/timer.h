@@ -55,6 +55,9 @@ class Timer {
   TaskHandle counterTask;
   TaskHandle diPulseTask;
 
+  TaskHandle counter_generation_task;
+  TaskHandle counter_count_task;
+
   NetComDat txDat;
   NetComDat rxDat;
 
@@ -73,6 +76,7 @@ class Timer {
  
   int start();
   int stop();
+  void stop2();
 
   int setInitCount(uint32_t initCount);
   uint32_t getCount();
@@ -91,6 +95,7 @@ class Timer {
   
   //const bool isToy = ISTOY;
   uint32_t toy_timestamp; //public settable fake timestamp
+  uint32_t next_ok_ts_to_print;
 };
 
 #endif

@@ -74,6 +74,8 @@ class Lfp_bank{
   void print_options(void);
   void print_buffers(int chan_lim);  // print the input streams and decimated output
   void end_acquisition();
+  
+  uint32_t next_ts_ok_to_print;
 
 };
 

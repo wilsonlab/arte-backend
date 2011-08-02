@@ -68,6 +68,7 @@ void Lfp_bank::init2(boost::property_tree::ptree &lfp_bank_pt,
     printf("Successfully connected lfp_bank %d to host_ip %s at port %d . sockfd is %d\n",
 	   lfp_bank_name, host_str, port_num, my_netcomdat.sockfd);
   }
+  next_ts_ok_to_print = 0;
 }
 
 void Lfp_bank::print_options(void){
@@ -107,8 +108,9 @@ void lfp_bank_write_record(void *lfp_bank_in){
   Lfp_bank* this_bank = (Lfp_bank*) lfp_bank_in;
   uint16_t recordSizeBytes = 0;
   //std::cout << std::setw(6);
-  if(this_bank->my_buffer->my_daq->buffer_timestamp  % (10 * 100) == 0){
-
+  if((this_bank->my_buffer->my_daq->buffer_timestamp > this_bank->next_ts_ok_to_print) &
+     (this_bank->my_buffer->my_daq->buffer_timestamp < (UINT32_MAX-10000))){
+    this_bank->next_ts_ok_to_print += 2500;
     for(int s = 0; s < this_bank->d_buf_len; s++){
       std::cout << this_bank->my_buffer->my_daq->buffer_timestamp / 10000 << " ";
       for(int c = 0; c < this_bank->n_chans; c++){
