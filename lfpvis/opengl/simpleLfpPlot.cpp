@@ -15,11 +15,10 @@
 #include <vector>
 #include <pthread.h>
 
-#define SCALE_VOLTAGE(v,chan) (v * userScale / nChans + MAX_INT - MAX_INT/2/nChans - chan*MAX_INT/nChans  + userShift)
 #define X_TO_PIX(x) ((x*winWidth)/MAX_INT)
 #define PIX_TO_X(p) ((p*MAX_INT)/winWidth)
 
-// these offsets create padding between the different plots
+// these ofsampleRateets create padding between the different plots
 // making a more pleasing display
 
 const double MAX_VOLT = pow(2,15);
@@ -42,7 +41,7 @@ static bool disableWaveOverlay = true;
 static char txtDispBuff[40];
 
 void *font = GLUT_BITMAP_8_BY_13;
-static int IDLE_SLEEP_USEC = (1e6)/40;
+static int IDLE_SLEEP_USEC = (1e6)/50;
 static int NET_SLEEP_USEC = (1e6)/1000;
 
 
@@ -82,14 +81,14 @@ static NetComDat net; // = NetCom::initUdpRx(host,port);
 // ===================================
 static int nChans=8;
 
-static int const lfpBuffSize = 500;
-static lfp_bank_net_t lfpBuff[lfpBuffSize];
+static int const lfpBufsampleRateize = 500;
+static lfp_bank_net_t lfpBuff[lfpBufsampleRateize];
 static lfp_bank_net_t lfp;
 static int nBuff = 0;
 static uint64_t readInd = 0;
 static uint64_t writeInd = 0;
 
-int inline IND(uint64_t i)	{	return i%lfpBuffSize;	}
+int inline IND(uint64_t i)	{	return i%lfpBufsampleRateize;	}
 
 
 
@@ -99,30 +98,36 @@ int inline IND(uint64_t i)	{	return i%lfpBuffSize;	}
 static uint32_t curSeqNum = 0;
 static uint32_t prevSeqNum = -1;
 static int nSampsPerChan = 2;
-static double sampRate = 2000;
+static double sampleRate = 2000;
 static double winDt = 2;
-static float plotRange = 2.0/nChans;
-static int maxIdx = winDt * sampRate;
+static int maxIdx = winDt * sampleRate;
 
 static uint64_t dIdx = 0;
-static uint64_t pIdx = 0;
+//static uint64_t pIdx = 0;
 
 int inline IDX(uint64_t i)	{	return i%maxIdx;	}
 
 static int xPos = 0;
-static int dXPos = xRange/(maxIdx);
+//static int dXPos = xRange/(maxIdx);
 
 static const int MAX_N_CHAN = 32;
-static const int MAX_N_SAMP = 4000;
-static int waves[MAX_N_CHAN][MAX_N_SAMP];
+static const int MAX_N_SAMP = 16000;
+static GLint waves[MAX_N_CHAN][MAX_N_SAMP*2]; //we need an x and y point for each sample
 static int colWave[MAX_N_CHAN];
 
+// ===================================
+// 		Inline Functions
+// ===================================
+
+inline GLint SCALE_VOLTAGE(int v, int chan){	
+	return v * userScale / nChans + yRange - yRange/2/nChans - chan*yRange/nChans  + userShift;
+}
 
 
 // ===================================
 // 		Misc Variables
 // ===================================
-static int totalBuffsRead =0;
+static int totalBufsampleRateRead =0;
 static timeval startTime, now;
 
 static int const cmdStrLen = 50;
@@ -183,7 +188,7 @@ void setWaveformColor(int col);
 void drawViewportEdge();
 
 void drawWaveforms();
-void drawWaveformN(int n, int *x, uint64_t *yIdx );
+void drawWaveformN(int n);
 
 void setWaveformColor(int c);
 void highlightSelectedWaveform();
@@ -209,6 +214,8 @@ bool executeCommand(unsigned char * cmd);
 void drawString(float x, float y, char *string);
 void *readNetworkLfpData(void *ptr);
 
+void initializeWaveVariables();
+void loadWaveformColors();
 
 int main( int argc, char** argv )
 {
@@ -224,42 +231,67 @@ int main( int argc, char** argv )
 	std::cout<<" Starting up Arte Lfp Viewer"<<std::endl;
 	std::cout<<"================================================"<<std::endl;
 
-	for (int i=0; i<MAX_N_CHAN; i++)
-		colWave[i] = i;
-//	bzero(colWave, 32);
-	bzero(cmd, cmdStrLen);
-	bzero(waves,  sizeof(waves[0][0]) * MAX_N_CHAN * MAX_N_SAMP);
 
+	initializeWaveVariables();
+	loadWaveformColors();
+	
 	pthread_t netThread;
 	net = NetCom::initUdpRx(host,port);
 	pthread_create(&netThread, NULL, readNetworkLfpData, (void *)NULL);
 	
-	srand(time(NULL));
-	gettimeofday(&startTime,NULL);
-
-
 	glutInit(&argc,argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB );
-//	glDisable(GL_DEPTH_TEST);
-	glutInitWindowPosition( 20, 60 );
+	glutInitWindowPosition( 5, 20 );
 	glutInitWindowSize( winWidth, winHeight);
 
 	char windowTitle[100];
-
 	sprintf(windowTitle, "Arte lfp Viewer: (port)");
-
 	glutCreateWindow(windowTitle);
+	
 	glutReshapeFunc( resizeWindow );
 	glutIdleFunc( idleFn );
 	glutDisplayFunc( refreshDrawing );
+	
 	glutKeyboardFunc(keyPressedFn);
 	glutSpecialFunc(specialKeyFn);
 
-	std::cout<<"Starting the GLUT main Loop"<<std::endl;
+	//std::cout<<"Starting the GLUT main Loop"<<std::endl;
 	glutMainLoop(  );
 
 	return(0);
 }
+void initializeWaveVariables(){
+	
+	sampleRate = 1000 * nSampsPerChan;		
+	maxIdx = winDt * sampleRate;
+	
+	if (maxIdx>MAX_N_SAMP){
+		std::cout<<"specified time window is too long, closing -1"<<std::endl;
+		std::cout<<"Restrict the SampleRate * WinLen to less than: "<<maxIdx<<std::endl;
+		exit(-1);
+	}
+
+	std::cout<<"Clearing the existing waveform data"<<std::endl;
+	bzero(waves, MAX_N_CHAN*MAX_N_SAMP*2);
+	for (int i=0; i<MAX_N_CHAN; i++)
+	{
+		for (int j=0; j<maxIdx; j++)
+		{
+			waves[i][j*2] = j * xRange / maxIdx;
+			waves[i][j*2+1] = 0;
+		}
+	}	
+				
+	bzero(cmd, cmdStrLen);
+	readInd = 0;
+	writeInd = 0;
+}
+
+void loadWaveformColors(){
+	for (int i=0; i<MAX_N_CHAN; i++)
+		colWave[i] = i;
+}
+
 void *readNetworkLfpData(void *ptr){
 	
 	lfp_bank_net_t l;
@@ -274,11 +306,9 @@ void *readNetworkLfpData(void *ptr){
 
 bool tryToGetLfp(lfp_bank_net_t *l){
 
-//	std::cout<<"Read Ind:"<<readInd<<" Write Ind:"<<writeInd<<std::endl;
 	if  ( readInd >= writeInd )
 		return false;
 
-	// Copy the lfp data
 	l->name 	= lfpBuff[IND(readInd)].name;
 	l->n_chans 	= lfpBuff[IND(readInd)].n_chans;
 	l->n_samps_per_chan = lfpBuff[IND(readInd)].n_samps_per_chan;
@@ -293,43 +323,44 @@ bool tryToGetLfp(lfp_bank_net_t *l){
 	l->seq_num = lfpBuff[IND(readInd)].seq_num;
 
 	readInd++;
-	nBuff--;
 
-	if (l->n_chans != nChans){
-		std::cout<<"nChans != number of channels in latest buffer, updating to reflect this change"<<std::endl;
+	if (l->n_chans != nChans)
 		updateNChans(l->n_chans);
-	}
-	if (l->n_samps_per_chan != nSampsPerChan){
-		std::cout<<"nSampsPerChan != number of samps in latest buffer, updating to reflect this change"<<std::endl;
+
+	if (l->n_samps_per_chan != nSampsPerChan)
 		updateNSamps(l->n_samps_per_chan);
-	}
 
 	return true;
 }
 
 void updateNChans(int n){
+	std::cout<<"nChans changed to:"<<n<<std::endl;
 	nChans = n;
 	yBox = (double)winHeight/nChans;
-	if (nChans==15) // used for profiling, gprof requires a call to exit() 
-		exit(0);
-	clearWindow();
+	
 	curSeqNum = 0;
+
+	initializeWaveVariables();
+	clearWaveforms();
+	clearWindow();
 
 }
 void updateNSamps(int n){
+	std::cout<<"nSamps changed to:"<<n<<std::endl;
 	nSampsPerChan = n;
-	sampRate = 1000 * nSampsPerChan;
-	maxIdx = winDt * sampRate;
-	dXPos = xRange/(maxIdx);
-	clearWindow();
+//	sampleRate = 1000 * nSampsPerChan;
+//	maxIdx = winDt * sampleRate;
+
 	curSeqNum = 0;
+
+	initializeWaveVariables();
+	clearWaveforms();
+	clearWindow();
+
 }
 
 void updateWaveArray(){
 	prevSeqNum = curSeqNum;
-	int idx = 0;
-	int i = 0;
-	int j = 0;
 
 	// if we receive an old packet ignore it
 	if (lfp.seq_num < curSeqNum) 
@@ -338,66 +369,44 @@ void updateWaveArray(){
 		std::cout<<"Press CTRL+R to reset sequence number:"<<std::endl;
 		return;
 	}
-
-	// if we receive a packet from the future, set the future as now and set everything
-	// that was skipped to zero?
 	
-	else if(lfp.seq_num > curSeqNum+1)
-	{
-		while (lfp.seq_num-1 > curSeqNum)
-		{
-		    for (i=0; i<lfp.n_samps_per_chan; i++)
-		    {
-	    	    for (j=0; j<lfp.n_chans; j++)
-	        	    waves[j][IDX(dIdx)] = 0;
-				dIdx++;
-			}
-			curSeqNum++;
-		}
-	}
-	
-
 	else if(lfp.seq_num == curSeqNum) // if we have the same packet as last time
 		return;
+
+	int i=0, j=0, k = 0;
 	
-	int k = 0;
 	for (i=0; i<lfp.n_samps_per_chan; i++)
 	{
 		for (j=0; j<lfp.n_chans; j++)
-			waves[j][IDX(dIdx)] = lfp.data[k++];
+			waves[j][IDX(dIdx)*2+1] = SCALE_VOLTAGE(lfp.data[k++],j);
 		dIdx++;
 	}
-	
+	xPos = waves[0][IDX(dIdx)*2];
 	curSeqNum = lfp.seq_num;
 }
 
 
 void idleFn(void){
 	do{
-		
 		updateWaveArray();
-
 	}while(tryToGetLfp(&lfp));
 	
 	refreshDrawing();
     usleep(IDLE_SLEEP_USEC);
+//	std::cout<<"idleFn Sleeping"<<std::endl;
 }
 
 void refreshDrawing(void)
 {
-
 	glViewport(0, 0, winWidth, winHeight);
 	glLoadIdentity ();
-	glColor3f(1.0, 1.0, 1.0);
-//	glBegin(GL_LINE_LOOP);
-//		glVertex2f(-.999, -.999);
-//		glVertex2f(-.999,  .999);
-//		glVertex2f( .999,  .999);
-//		glVertex2f( .999, -.999);
-//	glEnd();
-	drawViewportEdge();
 
 	drawWaveforms();
+
+	glLoadIdentity();
+	glColor3f(1.0, 1.0, 1.0);
+	drawViewportEdge();
+
 	drawInfoBox();
 
 	dispCommandString();
@@ -408,19 +417,19 @@ void refreshDrawing(void)
 
 void eraseOldWaveform(){
 
-	int pixWidth = MAX_INT/winWidth;
+	int pixWidth = xRange/winWidth;
 
-	int x = xPos;
+	int x = xPos;//(waves[IDX(dIdx*2)][0]);
 	int erasePixWidth = 75;
 	int dx = PIX_TO_X(erasePixWidth);
 
 	glColor3f(0.0, 0.0, 0.0);
 
 	glBegin(GL_POLYGON);
-		glVertex2i(x, PIX_TO_X(0));
-		glVertex2i(x, MAX_INT);
-		glVertex2i(x+dx, MAX_INT);
-		glVertex2i(x+dx, PIX_TO_X(0));
+		glVertex2i(x-dx/2, PIX_TO_X(0));
+		glVertex2i(x-dx/2, yRange);
+		glVertex2i(x+dx/2, yRange);
+		glVertex2i(x+dx/2, PIX_TO_X(0));
 	glEnd();
 
 }
@@ -448,53 +457,36 @@ void eraseCommandString(){
 
 void drawWaveforms(void){
 
-	uint64_t tempIdx;
-	int tempX;
-
-	if(dIdx<=pIdx)
-	{
-		return;	
-	}
-	while(pIdx<dIdx){
-	// Draw the line cursor
-
 	setViewportForWaves();
 
-	if (disableWaveOverlay)
-		eraseOldWaveform();	
+
 
 	glLineWidth(waveformLineWidth);
-	for (int i=0; i<lfp.n_chans; i++) 
-	{
-			tempIdx = pIdx;
-			tempX = xPos;
-			drawWaveformN(i, &tempX, &tempIdx);
-	}
+	
+	glEnableClientState(GL_VERTEX_ARRAY);
 
-	pIdx = tempIdx;
-	xPos = tempX;
-	}
+	for (int i=0; i<lfp.n_chans; i++) 
+			drawWaveformN(i);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	
+	if (disableWaveOverlay)
+		eraseOldWaveform();
+		
 	glLoadIdentity();
 
 }
 
 
-void drawWaveformN(int n, int *x, uint64_t *idx ){
+void drawWaveformN(int n){
 
 	setWaveformColor(colWave[n]);
-	
-	glBegin( GL_LINE_STRIP );
-		for (int i=0; i<lfp.n_samps_per_chan; i++)
-		{
-			if(IDX(*idx)!=0)
-				glVertex2i((*x)-dXPos, SCALE_VOLTAGE(waves[n][(IDX(*idx))-1],n));
-			glVertex2i(*x, SCALE_VOLTAGE(waves[n][IDX(*idx)], n));
-			
-			(*x) = ((*x) + dXPos)%xRange;
-			(*idx)++;
-		}
 
-	glEnd();
+	glVertexPointer(2, GL_INT, 0, waves[n]);
+
+	glDrawArrays(GL_LINE_STRIP, 0, maxIdx);
+
+					
 }
 
 void setViewportForWaveInfoN(int n){
@@ -656,10 +648,11 @@ void keyPressedFn(unsigned char key, int x, int y){
 			std::cout<<"Reseting sequence number to 0!"<<std::endl;
 			break;
 		case CMD_CLEAR_WIN:
+			clearWaveforms();
 			clearWindow();
 		break;
 		case CMD_TOGGLE_OVERLAY: 
-			toggleOverlay();
+//			toggleOverlay();
 		break;
 		// Scale Waveforms and Projections
 		case CMD_SCALE_UP:
@@ -773,8 +766,9 @@ bool executeCommand(unsigned char *cmd){
 }
 
 void clearWindow(){
+	initializeWaveVariables();
 	glClear(GL_COLOR_BUFFER_BIT);
-	pIdx = 0;
+//	pIdx = 0;
 	dIdx = 0;
 	xPos = 0;
 }
@@ -787,11 +781,11 @@ void toggleOverlay(){
 
 inline int scaleVoltage(int v, int chan){
 //	return (v*userScale) * pow(2,16) / nChans + pow(2,16) * (1-chan*plotRange) - (plotRange/yRange) + userShift;		
-	return v * userScale / nChans + MAX_INT - MAX_INT/2/nChans - chan*MAX_INT/nChans  + userShift;	
+	return v * userScale / nChans + yRange - yRange/2/nChans - chan*yRange/nChans  + userShift;	
 }
 
 int incrementIdx(int i){
-	if(i==lfpBuffSize-1)
+	if(i==lfpBufsampleRateize-1)
 		return 0;
 	else
 		return i+1;
