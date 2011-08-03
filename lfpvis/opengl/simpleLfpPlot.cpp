@@ -89,13 +89,11 @@ static uint64_t readInd = 0;
 static uint64_t writeInd = 0;
 
 
-
-
 // ===================================
 // 		Plotting Variables
 // ===================================
 static uint32_t curSeqNum = 0;
-static uint32_t prevSeqNum = -1;
+static uint32_t prevSeqNum = 0;
 static int nSampsPerChan = 2;
 static double sampleRate = 2000;
 static double winDt = 2;
@@ -104,7 +102,7 @@ static int maxIdx = winDt * sampleRate;
 static uint64_t dIdx = 0;
 //static uint64_t pIdx = 0;
 
-
+static int nBuffLost = 0;
 static int xPos = 0;
 //static int dXPos = xRange/(maxIdx);
 
@@ -366,9 +364,15 @@ void updateNSamps(int n){
 
 void updateWaveArray(){
 	prevSeqNum = curSeqNum;
-
-	// if we receive an old packet ignore it
-	if (lfp.seq_num < curSeqNum) 
+	
+	int i=0, j=0, k = 0;
+	
+	// if this is the first time we've run updateWave then set the current seqNum-1 as now
+	if(curSeqNum==0 && lfp.seq_num>0)
+		curSeqNum = lfp.seq_num-1;
+	
+	
+	if (lfp.seq_num < curSeqNum)  // If this packet is old ignore it
 	{
 		std::cout<<"Old packet received, ignoring it! ";//<<lfp.seq_num<<" curSeqNum"<<curSeqNum<<std::endl;
 		std::cout<<"Press CTRL+R to reset sequence number:"<<std::endl;
@@ -377,17 +381,41 @@ void updateWaveArray(){
 	
 	else if(lfp.seq_num == curSeqNum) // if we have the same packet as last time
 		return;
-
-	int i=0, j=0, k = 0;
 	
-	for (i=0; i<lfp.n_samps_per_chan; i++)
-	{
-		for (j=0; j<lfp.n_chans; j++)
-			waves[j][IDX(dIdx)*2+1] = SCALE_VOLTAGE(lfp.data[k++],j);
-		dIdx++;
+	else if(lfp.seq_num == curSeqNum+1) // if we have the NEXT packet in the sequence
+	{	
+		for (i=0; i<lfp.n_samps_per_chan; i++)
+		{
+			for (j=0; j<lfp.n_chans; j++)
+				waves[j][IDX(dIdx)*2+1] = SCALE_VOLTAGE(lfp.data[k++],j);
+			dIdx++;
+		}
 	}
-	xPos = waves[0][IDX(dIdx)*2];
+	// If somehow the next packet is 
+	else if(lfp.seq_num > curSeqNum+1)
+	{
+		while(lfp.seq_num > curSeqNum+1) // if the packet is not the next packet (ie packets got dropped)
+		{
+		
+			int validIdx = dIdx;
+			//set the next data to 0 and advanced the seqNum
+			for (i=0; i<lfp.n_samps_per_chan; i++)
+			{
+				for (j=0; j<lfp.n_chans; j++)
+					//waves[j][IDX(dIdx)*2+1] = SCALE_VOLTAGE(0,j);
+					waves[j][IDX(dIdx)*2+1] = waves[j][IDX(dIdx-1)*2+1];
+				dIdx++;
+			}	
+			curSeqNum++;
+			nBuffLost++;
+//			std::cout<<"NBuff Lost:"<<nBuffLost<<std::endl;
+		}		
+		clearWaveforms();
+	}
+
+	
 	curSeqNum = lfp.seq_num;
+	xPos = waves[0][IDX(dIdx)*2];
 }
 
 
@@ -397,6 +425,7 @@ void idleFn(void){
 	}while(tryToGetLfp(&lfp));
 	
 	refreshDrawing();
+	nBuffLost = 0;
     usleep(IDLE_SLEEP_USEC);
 //	std::cout<<"idleFn Sleeping"<<std::endl;
 }
@@ -426,26 +455,26 @@ void eraseOldWaveform(){
 
 	int x = xPos;
 	
-	int dx = (waves[0][2] - waves[0][0])*sampleRate/20;
-
+	int dxBack = ((waves[0][2] - waves[0][0])*sampleRate/20)/2;
+	int dxFront= ((waves[0][2] - waves[0][0])*sampleRate/20)/2;
 
 	glColor3f(0.0, 0.0, 0.0);
 
-	glRecti(x-dx/2, PIX_TO_X(0), x+dx/2, yRange);
+	glRecti(x-dxFront/2 , PIX_TO_X(0), x+dxBack/2, yRange);
  
 	// EDGE CASES
 	// If erase box is clipped on the left, draw it again but shifted all the way to the right and visa versa
-	if( (x-dx/2) < 0 )
-		glRecti(x - dx/2 + xRange, PIX_TO_X(0), x + dx/2 + xRange, yRange);
-	else if( (x+dx/2) > xRange)
-		glRecti(x - dx/2 - xRange, PIX_TO_X(0), x + dx/2 - xRange, yRange);
+	if( (x-dxBack/2) < 0 )
+		glRecti(x - dxFront/2 + xRange, PIX_TO_X(0), x + dxBack/2 + xRange, yRange);
+	else if( (x+dxFront/2) > xRange)
+		glRecti(x - dxFront/2 - xRange, PIX_TO_X(0), x + dxBack/2 - xRange, yRange);
 
 
 
 }
 void clearWaveforms(){
 
-	std::cout<<"Clearing all waveforms"<<std::endl;
+//	std::cout<<"Clearing all waveforms"<<std::endl;
 	glViewport( xPadding, 0, winWidth-xPadding, winHeight );	// View port uses whole window
 
 	glColor3f(0,0,0);
@@ -780,19 +809,19 @@ bool executeCommand(char *cmd){
 	currentCommand  = CMD_NULL;
 }
 void updateWinLen(double l){
-			if (sampleRate * l > MAX_N_SAMP)
-				std::cout<<"Invalid window length specified! The requested window would require:"<<sampleRate * l<<" samples. However \
-							the number of samples cannot exceed:"<<MAX_N_SAMP<<std::endl;
-			else if (l<=0)
-				std::cout<<"Invalid window length specified. Please pick a positive number"<<std::endl;
-			else if ( l==winDt)
-			{}
-			else
-			{
-				winDt = l;
-				initializeWaveVariables();
-				clearWindow();
-			}
+	if (sampleRate * l > MAX_N_SAMP)
+		std::cout<<"Invalid window length specified! The requested window would require:"<<sampleRate * l<<" samples. However \
+					the number of samples cannot exceed:"<<MAX_N_SAMP<<std::endl;
+	else if (l<=0)
+		std::cout<<"Invalid window length specified. Please pick a positive number"<<std::endl;
+	else if ( l==winDt)
+	{}
+	else
+	{
+		winDt = l;
+		initializeWaveVariables();
+		clearWindow();
+	}
 }
 
 void clearWindow(){
