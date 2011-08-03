@@ -41,7 +41,7 @@ static bool disableWaveOverlay = true;
 static char txtDispBuff[40];
 
 void *font = GLUT_BITMAP_8_BY_13;
-static int IDLE_SLEEP_USEC = (1e6)/50;
+static int IDLE_SLEEP_USEC = (1e6)/60;
 static int NET_SLEEP_USEC = (1e6)/1000;
 
 
@@ -88,7 +88,6 @@ static int nBuff = 0;
 static uint64_t readInd = 0;
 static uint64_t writeInd = 0;
 
-int inline IND(uint64_t i)	{	return i%lfpBufsampleRateize;	}
 
 
 
@@ -105,19 +104,21 @@ static int maxIdx = winDt * sampleRate;
 static uint64_t dIdx = 0;
 //static uint64_t pIdx = 0;
 
-int inline IDX(uint64_t i)	{	return i%maxIdx;	}
 
 static int xPos = 0;
 //static int dXPos = xRange/(maxIdx);
 
 static const int MAX_N_CHAN = 32;
-static const int MAX_N_SAMP = 16000;
+static const int MAX_N_SAMP = 32000;
 static GLint waves[MAX_N_CHAN][MAX_N_SAMP*2]; //we need an x and y point for each sample
 static int colWave[MAX_N_CHAN];
 
 // ===================================
 // 		Inline Functions
 // ===================================
+
+int inline IND(uint64_t i)	{	return i%lfpBufsampleRateize;	}
+int inline IDX(uint64_t i)	{	return i%maxIdx;	}
 
 inline GLint SCALE_VOLTAGE(int v, int chan){	
 	return v * userScale / nChans + yRange - yRange/2/nChans - chan*yRange/nChans  + userShift;
@@ -131,12 +132,13 @@ static int totalBufsampleRateRead =0;
 static timeval startTime, now;
 
 static int const cmdStrLen = 50;
-static unsigned char cmd[cmdStrLen];
+static char cmd[cmdStrLen];
 static int cmdStrIdx = 0;
 
 // ===================================
 // 		Command Variables
 // ===================================
+// Simple commands that respond immediately
 static int const CMD_CLEAR_WIN = 'c';
 static int const CMD_TOGGLE_OVERLAY = 'o';
 static int const CMD_SCALE_UP = '=';
@@ -144,17 +146,19 @@ static int const CMD_SCALE_DOWN = '-';
 static int const CMD_SHIFT_UP = '+';
 static int const CMD_SHIFT_DOWN = '_';
 static int const CMD_RESET_SCALE = 'r';
-
 static int const CMD_PREV_COL = '[';
 static int const CMD_NEXT_COL = ']';
 
+// Commands that require CTRL + KEY
 static int const CMD_QUIT = 17;
 static int const CMD_RESET_SEQ = 18;
 
-static int const CMD_STR_MAX_LEN = 16;
+// Commands that require an input string
+static int const CMD_STR_MAX_LEN = 16; 
 static int const CMD_GAIN_ALL = 'g';
 static int const CMD_GAIN_SINGLE = 'G';
 static int const CMD_NULL = 0;
+static int const CMD_CHANGE_WIN_LEN = 'L';
 
 static int const KEY_DEL = 127;
 static int const KEY_BKSP = 8;
@@ -209,7 +213,8 @@ void specialKeyFn(int key, int x, int y);
 void enterCommandStr(char key);
 void dispCommandString();
 
-bool executeCommand(unsigned char * cmd);
+bool executeCommand(char * cmd);
+void updateWinLen(double l);
 
 void drawString(float x, float y, char *string);
 void *readNetworkLfpData(void *ptr);
@@ -419,18 +424,23 @@ void eraseOldWaveform(){
 
 	int pixWidth = xRange/winWidth;
 
-	int x = xPos;//(waves[IDX(dIdx*2)][0]);
-	int erasePixWidth = 75;
-	int dx = PIX_TO_X(erasePixWidth);
+	int x = xPos;
+	
+	int dx = (waves[0][2] - waves[0][0])*sampleRate/20;
+
 
 	glColor3f(0.0, 0.0, 0.0);
 
-	glBegin(GL_POLYGON);
-		glVertex2i(x-dx/2, PIX_TO_X(0));
-		glVertex2i(x-dx/2, yRange);
-		glVertex2i(x+dx/2, yRange);
-		glVertex2i(x+dx/2, PIX_TO_X(0));
-	glEnd();
+	glRecti(x-dx/2, PIX_TO_X(0), x+dx/2, yRange);
+ 
+	// EDGE CASES
+	// If erase box is clipped on the left, draw it again but shifted all the way to the right and visa versa
+	if( (x-dx/2) < 0 )
+		glRecti(x - dx/2 + xRange, PIX_TO_X(0), x + dx/2 + xRange, yRange);
+	else if( (x+dx/2) > xRange)
+		glRecti(x - dx/2 - xRange, PIX_TO_X(0), x + dx/2 - xRange, yRange);
+
+
 
 }
 void clearWaveforms(){
@@ -458,8 +468,6 @@ void eraseCommandString(){
 void drawWaveforms(void){
 
 	setViewportForWaves();
-
-
 
 	glLineWidth(waveformLineWidth);
 	
@@ -516,6 +524,7 @@ void setViewportForCommandString(){
 
 	glViewport(viewX, viewY, viewDX, viewDY);
 }
+
 void setWaveformColor(int c){
 
 	int nColor = 13;
@@ -557,7 +566,7 @@ void setWaveformColor(int c){
 			glColor3f(1.0, 0.0, 0.5);
 			break;
 		default:
-			glColor3f(1.0, 0.0, 1.0);
+			glColor3f(1.0, 1.0, 1.0);
 	}	
 }
 
@@ -579,7 +588,7 @@ void drawInfoBox(void){
 
 		setWaveformColor(colWave[i]);
 		sprintf(txt, "T:18.%d", i);
-		drawString(-.8, -.2, txt);
+		drawString(-.7, -.2, txt);
     }
 }
 
@@ -650,11 +659,7 @@ void keyPressedFn(unsigned char key, int x, int y){
 		case CMD_CLEAR_WIN:
 			clearWaveforms();
 			clearWindow();
-		break;
-		case CMD_TOGGLE_OVERLAY: 
-//			toggleOverlay();
-		break;
-		// Scale Waveforms and Projections
+			break;
 		case CMD_SCALE_UP:
 			userScale += dUserScale;
 			break;
@@ -663,7 +668,6 @@ void keyPressedFn(unsigned char key, int x, int y){
 			if (userScale<1)
 				userScale = 1;
 			break;
-		// Shift the waveforms only
 		case CMD_SHIFT_UP:
 			userShift += dUserShift;
 			break;
@@ -675,22 +679,26 @@ void keyPressedFn(unsigned char key, int x, int y){
 			userScale = 1;
 			clearWindow();
 			break;
-		// Commands that require additional user input
-		case CMD_GAIN_ALL:
-			enteringCommand = true;
-			currentCommand = key;
-			break;
 		case CMD_PREV_COL:
 			colWave[selectedWaveform]--;
 			std::cout<<"Wave:"<<selectedWaveform<<" set to color:"<<colWave[selectedWaveform]<<std::endl;
-		break;
+			break;
 		case CMD_NEXT_COL:
 			colWave[selectedWaveform]++;
 			std::cout<<"Wave:"<<selectedWaveform<<" set to color:"<<colWave[selectedWaveform]<<std::endl;
-		break;
+			break;
+		// -------------------------------------------
+		// Commands that require additional user input
+		// -------------------------------------------
+		case CMD_GAIN_ALL:
+		case CMD_CHANGE_WIN_LEN:
+			enteringCommand = true;
+			currentCommand = key;
+			break;
 		}
 
  }
+
 void enterCommandStr(char key){
 	std::cout<<"Entering command";
 	switch(key){
@@ -705,7 +713,7 @@ void enterCommandStr(char key){
 			eraseCommandString();
 			break;
 		case KEY_ENTER: // RETURN KEY
-			executeCommand(cmd);
+			executeCommand((char*)cmd);
 			bzero(cmd,cmdStrLen);
 			cmdStrIdx = 0;
 			eraseCommandString();
@@ -720,8 +728,7 @@ void enterCommandStr(char key){
 				cmdStrIdx+=1;
 			std::cout<<cmdStrIdx<<std::endl;
 			std::cout<<"Command Entered:"<<cmd<<std::endl;
-	}
-	
+	}	
 }
 
 
@@ -758,17 +765,39 @@ void drawString(float x, float y, char *string){
 	}
 }
 
-bool executeCommand(unsigned char *cmd){
+bool executeCommand(char *cmd){
 	int len = sizeof(cmd);
-
 	std::cout<<"Executing command:"<<cmd<<std::endl;
+
+	switch(currentCommand){
+		case CMD_CHANGE_WIN_LEN:
+			std::cout<<"Changing window len to:"<<cmd<<std::endl;
+			double l = atof(cmd);
+			updateWinLen(l);
+		break;
+
+	}
 	currentCommand  = CMD_NULL;
+}
+void updateWinLen(double l){
+			if (sampleRate * l > MAX_N_SAMP)
+				std::cout<<"Invalid window length specified! The requested window would require:"<<sampleRate * l<<" samples. However \
+							the number of samples cannot exceed:"<<MAX_N_SAMP<<std::endl;
+			else if (l<=0)
+				std::cout<<"Invalid window length specified. Please pick a positive number"<<std::endl;
+			else if ( l==winDt)
+			{}
+			else
+			{
+				winDt = l;
+				initializeWaveVariables();
+				clearWindow();
+			}
 }
 
 void clearWindow(){
 	initializeWaveVariables();
 	glClear(GL_COLOR_BUFFER_BIT);
-//	pIdx = 0;
 	dIdx = 0;
 	xPos = 0;
 }
@@ -777,11 +806,6 @@ void toggleOverlay(){
 	disableWaveOverlay = !disableWaveOverlay;
 	if(disableWaveOverlay)
 		clearWindow();
-}
-
-inline int scaleVoltage(int v, int chan){
-//	return (v*userScale) * pow(2,16) / nChans + pow(2,16) * (1-chan*plotRange) - (plotRange/yRange) + userShift;		
-	return v * userScale / nChans + yRange - yRange/2/nChans - chan*yRange/nChans  + userShift;	
 }
 
 int incrementIdx(int i){
