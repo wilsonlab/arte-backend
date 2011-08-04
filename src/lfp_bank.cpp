@@ -51,6 +51,8 @@ void Lfp_bank::init2(boost::property_tree::ptree &lfp_bank_pt,
   }
   
   d_buf_len = my_buffer->stream_n_samps_per_chan / keep_nth_sample;
+
+  total_buffers = 0;
   
   // initialize network
   my_netcom = new NetCom;
@@ -79,7 +81,7 @@ void *lfp_bank_filter_data(void *lfp_bank_in){
 
   Lfp_bank * this_bank = (Lfp_bank*)lfp_bank_in;
   int i,c,samp_ind;
-  
+
   filter_buffer( this_bank->my_buffer );
 
   // filtered_buffer::write_buffers() checks the flag for buffer dump to file
@@ -140,22 +142,25 @@ void lfp_bank_write_record(void *lfp_bank_in){
   // only save and transmit buffers with valid ts
   // (ts == 0 often
   if(lfp.ts > 0 & lfp.ts < (UINT32_MAX - 10000)){
-      // send the wave to the network
-      waveToBuff(&lfp, buff, &buff_size, true);
-      NetCom::txBuff(this_bank->my_netcomdat, buff, buff_size);
-      
-      // save the wave to the disk
-      waveToBuff(&lfp, buff, &buff_size, false);
-      
-      pthread_mutex_lock(&main_file_mutex);
-      try_fwrite <char> (buff, buff_size, main_file);
-      pthread_mutex_unlock(&main_file_mutex);
 
-      // printf("buff: ");
-      //  for(int s = 0; s < 50; s++)
-      //  printf("%c", buff[s]);
-      //printf("\n");
-    }
+    lfp.seq_num = this_bank->total_buffers;
+    (this_bank->total_buffers)++;
+    // send the wave to the network
+    waveToBuff(&lfp, buff, &buff_size, true);
+    NetCom::txBuff(this_bank->my_netcomdat, buff, buff_size);
+    
+    // save the wave to the disk
+    waveToBuff(&lfp, buff, &buff_size, false);
+    
+    pthread_mutex_lock(&main_file_mutex);
+    try_fwrite <char> (buff, buff_size, main_file);
+    pthread_mutex_unlock(&main_file_mutex);
+    
+    // printf("buff: ");
+    //  for(int s = 0; s < 50; s++)
+    //  printf("%c", buff[s]);
+    //printf("\n");
+  }
 }
 
 void Lfp_bank::end_acquisition(){

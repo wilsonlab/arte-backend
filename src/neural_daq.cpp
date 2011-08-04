@@ -218,6 +218,9 @@ void neural_daq_start_all(void){
     //daq_buffer_count = 0;
     for(int n = 0; n < n_neural_daqs; n++){
       neural_daq *nd = &( neural_daq_array[n] );
+
+      
+
       if(nd->id != master_id){
 	printf("about to start a slave daq task\n");
 	daq_err_check ( DAQmxStartTask( nd->task_handle ) );
@@ -342,7 +345,6 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNSamplesEvent
   bool thread_flagged_for_clear[EVERY_N_TS_BUFFSIZE];
   pthread_attr_t attr;
   uint32_t simple_ts;
-  
   
   if(acquiring){
     gettimeofday(&tim,NULL);

@@ -58,6 +58,8 @@ class Lfp_bank{
   NetComDat my_netcomdat;
   bool has_sockfd;
 
+  uint32_t total_buffers;
+
   int init(boost::property_tree::ptree &lfp_bank_ptree,
 	   std::map<int, neural_daq> &neural_daq_map,
 	   std::map<std::string, Filt> &filt_map);

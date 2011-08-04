@@ -163,8 +163,8 @@ uint32_t Timer::getTimestamp(){
   uInt32 timestamp = 0;
   ////daq_err_check( DAQmxReadCounterScalarU32( counterTask, 10.0, &timestamp, NULL) );
   if( counter_count_task ){
-    //printf("sanity check");
     daq_err_check( DAQmxReadCounterScalarU32( counter_count_task, 10.0, &timestamp, NULL) );
+    //printf("timestamp: %d\n",timestamp);
   } else {
     printf("No running counter_count task yet.\n");
     timestamp = 0;

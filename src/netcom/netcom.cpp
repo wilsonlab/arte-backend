@@ -151,7 +151,7 @@ void NetCom::rxSpike(NetComDat net, spike_net_t* spike){
 int NetCom::txWave(NetComDat net, lfp_bank_net_t *lfp){
   char buff[BUFFSIZE-1];
   int buff_size;
-  if(  (lfp->ts > 0 & lfp->ts <(UINT32_MAX - 10000) ) ){
+  if(  (lfp->ts >= 0 & lfp->ts <(UINT32_MAX - 10000) ) ){
     waveToBuff(lfp, buff, &buff_size, true);
     NetCom::txBuff(net, buff, buff_size);
   }
