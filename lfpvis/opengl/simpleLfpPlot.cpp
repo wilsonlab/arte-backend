@@ -1,241 +1,26 @@
-#if defined(__linux__)
-	#include <GL/glut.h>
-#else // assume OS X
-	#include <GLUT/glut.h>
-#endif
-
-#include <time.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <iostream>
-#include "netcom.h"
-#include "datapacket.h"
-#include <math.h>
-#include <vector>
-#include <pthread.h>
-
-#define X_TO_PIX(x) ((x*winWidth)/MAX_INT)
-#define PIX_TO_X(p) ((p*MAX_INT)/winWidth)
-
-// these ofsampleRateets create padding between the different plots
-// making a more pleasing display
-
-const double MAX_VOLT = pow(2,15);
-const int MAX_INT = pow(2,16);
-// ===================================
-// 		GUI Specific Variables
-// ===================================
-
-static int winWidth = 1560, winHeight = 540;
-static double commandWinHeight = 20;
-
-static double xBox = 75;
-static double yBox = winHeight/8;
-
-static double xPadding = 1;
-static double yPadding = 2;
-
-static double const waveformLineWidth = 1;
-static bool disableWaveOverlay = true;
-static char txtDispBuff[40];
-
-void *font = GLUT_BITMAP_8_BY_13;
-static int IDLE_SLEEP_USEC = (1e6)/4;
-static int NET_SLEEP_USEC = (1e6)/1000;
-
-
-// ===================================
-// 		Scaling Variables
-// ===================================
-static int xRange = pow(2,16);
-static int yRange = pow(2,16);
-static double xScale = 2.0 / xRange;
-static double yScale = 2.0 / (double)(yRange);
-
-// Defines how much to shift the waveform within the viewport
-//static float dV = 1.0/((float)MAX_VOLT*2);
-
-static float dV = yRange/8;
-static float userScale = 1;
-static float dUserScale = .1;
-
-static float voltShift = 0;
-static float userShift = 0;
-static float dUserShift = .01 * pow(2,16);
-
-static float const colSelected[3] = {0.4, 0.4, 0.4};
-static float const colFont[3] = {1.0, 1.0, 1.0};
-
-// ===================================
-// 		Network Variables
-// ===================================
-
-static char host[] = "127.0.0.1";
-static char * port;
-static NetComDat net; // = NetCom::initUdpRx(host,port);
-
-
-// ===================================
-// 		Data Variables
-// ===================================
-static int nChans=8;
-
-static int const lfpBufsampleRateize = 500;
-static lfp_bank_net_t lfpBuff[lfpBufsampleRateize];
-static lfp_bank_net_t lfp;
-static int nBuff = 0;
-static uint64_t readInd = 0;
-static uint64_t writeInd = 0;
-
-
-// ===================================
-// 		Plotting Variables
-// ===================================
-static uint32_t curSeqNum = 0;
-static uint32_t prevSeqNum = 0;
-static int nSampsPerChan = 2;
-static double sampleRate = 2000;
-static double winDt = 2;
-static int maxIdx = winDt * sampleRate;
-
-static uint64_t dIdx = 0;
-//static uint64_t pIdx = 0;
-
-static int nBuffLost = 0;
-static int xPos = 0;
-//static int dXPos = xRange/(maxIdx);
-
-static const int MAX_N_CHAN = 32;
-static const int MAX_N_SAMP = 32000;
-static GLint waves[MAX_N_CHAN][MAX_N_SAMP*2]; //we need an x and y point for each sample
-static int colWave[MAX_N_CHAN];
-
-// ===================================
-// 		Inline Functions
-// ===================================
-
-int inline IND(uint64_t i)	
-{	
-	return i%lfpBufsampleRateize;	
-}
-
-int inline IDX(uint64_t i)	
-{
-		return i%maxIdx;	
-}
-
-inline GLint SCALE_VOLTAGE(int v, int chan){	
-	return v * userScale / nChans + yRange - yRange/2/nChans - chan*yRange/nChans  + userShift;
-}
-
-
-// ===================================
-// 		Misc Variables
-// ===================================
-static int totalBufsampleRateRead =0;
-static timeval startTime, now;
-
-static int const cmdStrLen = 50;
-static char cmd[cmdStrLen];
-static int cmdStrIdx = 0;
-
-// ===================================
-// 		Command Variables
-// ===================================
-// Simple commands that respond immediately
-static int const CMD_CLEAR_WIN = 'c';
-static int const CMD_TOGGLE_OVERLAY = 'o';
-static int const CMD_SCALE_UP = '=';
-static int const CMD_SCALE_DOWN = '-';
-static int const CMD_SHIFT_UP = '+';
-static int const CMD_SHIFT_DOWN = '_';
-static int const CMD_RESET_SCALE = 'r';
-static int const CMD_PREV_COL = '[';
-static int const CMD_NEXT_COL = ']';
-
-// Commands that require CTRL + KEY
-static int const CMD_QUIT = 17;
-static int const CMD_RESET_SEQ = 18;
-
-// Commands that require an input string
-static int const CMD_STR_MAX_LEN = 16; 
-static int const CMD_GAIN_ALL = 'g';
-static int const CMD_GAIN_SINGLE = 'G';
-static int const CMD_NULL = 0;
-static int const CMD_CHANGE_WIN_LEN = 'L';
-
-static int const KEY_DEL = 127;
-static int const KEY_BKSP = 8;
-static int const KEY_ENTER = 13;
-
-static int currentCommand = 0;
-static bool enteringCommand = false;
-static int selectedWaveform = 0;
-
-// ===================================
-// 		General Functions
-// ===================================
-int incrementIdx(int i);
-bool tryToGetLfp(lfp_bank_net_t *s);
-void updateNChans(int n);
-void updateNSamps(int n);
-void updateWaveArray();
-
-void idleFn();
-void redrawWindow();
-void drawInfoBox();
-void eraseOldWaveform();
-void clearWaveforms();
-void eraseCommandString();
-
-void setViewportforWaveInfoN(int n);
-void setViewportForWaves();
-void setViewportForCommandString();
-void setWaveformColor(int col);
-
-void drawViewportEdge();
-
-void drawWaveforms();
-void drawWaveformN(int n);
-
-void setWaveformColor(int c);
-void highlightSelectedWaveform();
-
-void resizeWindow(int w, int h);
-
-int scaleVoltage(int v, int chan);
-// ===================================
-// 		Keyboard & Command Function Headers
-// ===================================
-
-void toggleOverlay();
-void clearWindow();
-
-void keyPressedFn(unsigned char key, int x, int y);
-void specialKeyFn(int key, int x, int y);
-
-void enterCommandStr(char key);
-void dispCommandString();
-
-bool executeCommand(char * cmd);
-bool updateWinLen(double l);
-
-void drawString(float x, float y, char *string);
-void *readNetworkLfpData(void *ptr);
-
-void initializeWaveVariables();
-void loadWaveformColors();
+#include "simpleLfpPlot.h"
 
 int main( int argc, char** argv )
 {
+	
+	for (int i=0; i<MAX_N_CHAN; i++)
+		setChannelLabel(i, defName, CHAN_NAME_LEN);	
+//	memcpy(chName[i], &"HPC N:M", CHAN_NAME_LEN);
+
+	parseCommandLineArgs(argc, argv);
+
+	if(strlen(windowTitle)==0)
+		memcpy(windowTitle, &"Arte Network LFP Viewer", 23);
+	
+
+/*
 	if (argc>1)
 		port = argv[1];
 	else
 	{
 		std::cout<<"Usage: artelfpViewer port"<<std::endl;
 		return 0;
-	}
+	}*/
 
 	std::cout<<"================================================"<<std::endl;
 	std::cout<<" Starting up Arte Lfp Viewer"<<std::endl;
@@ -251,11 +36,10 @@ int main( int argc, char** argv )
 	
 	glutInit(&argc,argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB );
-	glutInitWindowPosition( 5, 20 );
+	glutInitWindowPosition( winPosX, winPosY );
 	glutInitWindowSize( winWidth, winHeight);
 
-	char windowTitle[100];
-	sprintf(windowTitle, "Arte lfp Viewer: (port)");
+//	sprintf(windowTitle, "Arte lfp Viewer: (port)");
 	glutCreateWindow(windowTitle);
 	
 	glutReshapeFunc( resizeWindow );
@@ -386,8 +170,8 @@ void updateWaveArray(){
 	
 	if (lfp.seq_num < curSeqNum)  // If this packet is old ignore it
 	{
-		std::cout<<"Old packet received, ignoring it! ";//<<lfp.seq_num<<" curSeqNum"<<curSeqNum<<std::endl;
-		std::cout<<"Press CTRL+R to reset sequence number:"<<std::endl;
+//		std::cout<<"Old packet received, ignoring it! ";//<<lfp.seq_num<<" curSeqNum"<<curSeqNum<<std::endl;
+//		std::cout<<"Press CTRL+R to reset sequence number:"<<std::endl;
 		return;
 	}
 	
@@ -508,7 +292,6 @@ void eraseCommandString(){
 
 void drawWaveforms(void){
 
-	std::cout<<"dIdx:"<<dIdx<<std::endl;
 	setViewportForWaves();
 
 	glLineWidth(waveformLineWidth);
@@ -633,7 +416,7 @@ void drawInfoBox(void){
 
 		setWaveformColor(colWave[i]);
 		sprintf(txt, "T:18.%d", i);
-		drawString(-.7, -.2, txt);
+		drawString(-.75, -.2, chName[i]);
     }
 }
 
@@ -736,7 +519,8 @@ void keyPressedFn(unsigned char key, int x, int y){
 		// Commands that require additional user input
 		// -------------------------------------------
 		case CMD_GAIN_ALL:
-		case CMD_CHANGE_WIN_LEN:
+		case CMD_SET_FRAMERATE:
+		case CMD_SET_WIN_LEN:
 			enteringCommand = true;
 			currentCommand = key;
 			break;
@@ -764,6 +548,7 @@ void enterCommandStr(char key){
 			eraseCommandString();
 			enteringCommand = false;
 			redrawWindow(); // to erase the command window if no lfps are coming in
+			currentCommand  = CMD_NULL;
 		break;
 		default:
 			if(key<' ') // if not a valid Alpha Numeric Char ignore it
@@ -810,19 +595,68 @@ void drawString(float x, float y, char *string){
 	}
 }
 
-bool executeCommand(char *cmd){
-	int len = sizeof(cmd);
-	std::cout<<"Executing command:"<<cmd<<std::endl;
+bool executeCommand(char *cmdStr){
+	int len = sizeof(cmdStr);
+	int x;
+	std::cout<<"Executing command:"<<currentCommand<<":"<<cmdStr<<std::endl;
 
 	switch(currentCommand){
-		case CMD_CHANGE_WIN_LEN:
-			std::cout<<"Changing window len to:"<<cmd<<std::endl;
-			double l = atof(cmd);
-			updateWinLen(l);
+		case CMD_SET_WIN_LEN:
+			std::cout<<"Changing window len to:"<<cmdStr<<std::endl;
+//			atof(cmd);			
+			updateWinLen(atof(cmdStr));
 		break;
 
+		case CMD_SET_FRAMERATE:
+//			int r = atoi(cmd);
+			updateFrameRate(atoi(cmdStr));
+		break;
+		case ARG_PORT_NUM:
+			port = cmdStr;
+            std::cout<<"Setting port to:"<<port<<std::endl;
+        break;
+		case ARG_WIN_NAME:
+			std::cout<<"setting the window title:"<<optarg<<std::endl;
+			bzero(windowTitle, 200);
+			memcpy(windowTitle, optarg, strlen(optarg));				
+		break;
+		case ARG_WIN_POSX:
+			x = atoi(cmdStr);
+			if (x>=0)
+				winPosX = x;					
+		break;
+		case ARG_WIN_POSY:
+		 	x = atoi(cmdStr);
+			if (x>=0)
+				winPosY = x;					
+		break;
+		case ARG_WIN_W:
+			x = atoi(optarg);
+			if (x<=0){
+				std::cout<<"Invalid window width chosen, must be greater than 0"<<std::endl;
+				exit(-1);
+			}
+			winWidth = x;
+		break;
+		case ARG_WIN_H:
+			x = atoi(optarg);
+			if (x<=0){
+				std::cout<<"Invalid window height chosen, must be greater than 0"<<std::endl;
+				exit(-1);
+			}
+			winHeight = x;
+		break;
+		case CH00:
+		case CH01:
+		case CH02:
+		case CH03:
+		case CH04:
+		case CH05:
+		case CH06:
+		case CH07:
+			setChannelLabel(currentCommand, cmdStr, strlen(cmdStr));
+		break;
 	}
-	currentCommand  = CMD_NULL;
 }
 
 bool updateWinLen(double l){
@@ -854,6 +688,27 @@ bool updateWinLen(double l){
 	return true;
 }
 
+void updateFrameRate(int r){
+	int minRate = (1000 / MAX_LFP_NET_BUFF_SIZE)+1;
+	if(r<minRate)
+	{
+		std::cout<<"Minimum framerate is "<<minRate<<"Hz, using "<<minRate<<"Hz"<<std::endl;
+		r = minRate;
+	}
+	else if(r>150)
+	{
+		std::cout<<"Maximum framerate is 150Hz, using 150Hz"<<std::endl;
+		r = 150;
+	}
+	IDLE_SLEEP_USEC = (1e6)/r;
+		
+
+}
+void setChannelLabel(int n, char* s, int l)
+{
+	bzero(chName[n], CHAN_NAME_LEN);
+	(l >= CHAN_NAME_LEN) ?  memcpy(chName[n], s, CHAN_NAME_LEN) : memcpy(chName[n], s, l);
+}
 void clearWindow(){
 	initializeWaveVariables();
 	dIdx = 0;
@@ -867,9 +722,27 @@ void toggleOverlay(){
 }
 
 int incrementIdx(int i){
-	if(i==lfpBufsampleRateize-1)
+	if(i==MAX_LFP_NET_BUFF_SIZE-1)
 		return 0;
 	else
 		return i+1;
 }
 
+void parseCommandLineArgs(int argc, char**argv)
+{
+	std::cout<<"Parsing command line args"<<std::endl;
+	int c = 0;
+	int opt = 0;
+	int optionIndex;
+	int x;
+	while( (c = getopt_long(argc, argv, "n:x:y:w:h:p:r:", long_options, &optionIndex) )!=-1 )
+	{
+		currentCommand = c;
+		executeCommand(optarg);
+		/*
+		switch(c){
+		} */
+
+	}
+
+}
