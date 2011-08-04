@@ -41,7 +41,7 @@ static bool disableWaveOverlay = true;
 static char txtDispBuff[40];
 
 void *font = GLUT_BITMAP_8_BY_13;
-static int IDLE_SLEEP_USEC = (1e6)/60;
+static int IDLE_SLEEP_USEC = (1e6)/4;
 static int NET_SLEEP_USEC = (1e6)/1000;
 
 
@@ -115,8 +115,15 @@ static int colWave[MAX_N_CHAN];
 // 		Inline Functions
 // ===================================
 
-int inline IND(uint64_t i)	{	return i%lfpBufsampleRateize;	}
-int inline IDX(uint64_t i)	{	return i%maxIdx;	}
+int inline IND(uint64_t i)	
+{	
+	return i%lfpBufsampleRateize;	
+}
+
+int inline IDX(uint64_t i)	
+{
+		return i%maxIdx;	
+}
 
 inline GLint SCALE_VOLTAGE(int v, int chan){	
 	return v * userScale / nChans + yRange - yRange/2/nChans - chan*yRange/nChans  + userShift;
@@ -176,7 +183,7 @@ void updateNSamps(int n);
 void updateWaveArray();
 
 void idleFn();
-void refreshDrawing();
+void redrawWindow();
 void drawInfoBox();
 void eraseOldWaveform();
 void clearWaveforms();
@@ -212,7 +219,7 @@ void enterCommandStr(char key);
 void dispCommandString();
 
 bool executeCommand(char * cmd);
-void updateWinLen(double l);
+bool updateWinLen(double l);
 
 void drawString(float x, float y, char *string);
 void *readNetworkLfpData(void *ptr);
@@ -253,7 +260,7 @@ int main( int argc, char** argv )
 	
 	glutReshapeFunc( resizeWindow );
 	glutIdleFunc( idleFn );
-	glutDisplayFunc( refreshDrawing );
+	glutDisplayFunc( redrawWindow );
 	
 	glutKeyboardFunc(keyPressedFn);
 	glutSpecialFunc(specialKeyFn);
@@ -281,7 +288,7 @@ void initializeWaveVariables(){
 		for (int j=0; j<maxIdx; j++)
 		{
 			waves[i][j*2] = j * xRange / maxIdx;
-			waves[i][j*2+1] = 0;
+			waves[i][j*2+1] = SCALE_VOLTAGE(0,i);
 		}
 	}	
 				
@@ -367,9 +374,14 @@ void updateWaveArray(){
 	
 	int i=0, j=0, k = 0;
 	
-	// if this is the first time we've run updateWave then set the current seqNum-1 as now
+	// if this is the first time we've run updateWave then seqNum-1 as now
+//	std::cout<<"curSeqNum:"<<curSeqNum<<" lfp.seq_num:"<<lfp.seq_num<<std::endl;
+
 	if(curSeqNum==0 && lfp.seq_num>0)
 		curSeqNum = lfp.seq_num-1;
+
+//	std::cout<<"curSeqNum:"<<curSeqNum<<" lfp.seq_num:"<<lfp.seq_num<<std::endl;
+
 	
 	
 	if (lfp.seq_num < curSeqNum)  // If this packet is old ignore it
@@ -410,7 +422,7 @@ void updateWaveArray(){
 			nBuffLost++;
 //			std::cout<<"NBuff Lost:"<<nBuffLost<<std::endl;
 		}		
-		clearWaveforms();
+//		clearWaveforms();
 	}
 
 	
@@ -423,14 +435,14 @@ void idleFn(void){
 	do{
 		updateWaveArray();
 	}while(tryToGetLfp(&lfp));
-	
-	refreshDrawing();
+	clearWaveforms();
+	redrawWindow();
 	nBuffLost = 0;
     usleep(IDLE_SLEEP_USEC);
 //	std::cout<<"idleFn Sleeping"<<std::endl;
 }
 
-void refreshDrawing(void)
+void redrawWindow(void)
 {
 	glViewport(0, 0, winWidth, winHeight);
 	glLoadIdentity ();
@@ -496,34 +508,38 @@ void eraseCommandString(){
 
 void drawWaveforms(void){
 
+	std::cout<<"dIdx:"<<dIdx<<std::endl;
 	setViewportForWaves();
 
 	glLineWidth(waveformLineWidth);
 	
 	glEnableClientState(GL_VERTEX_ARRAY);
-
 	for (int i=0; i<lfp.n_chans; i++) 
 			drawWaveformN(i);
-
 	glDisableClientState(GL_VERTEX_ARRAY);
 	
-	if (disableWaveOverlay)
-		eraseOldWaveform();
+
+//	if (disableWaveOverlay)
+//		eraseOldWaveform();
 		
 	glLoadIdentity();
-
 }
 
 
 void drawWaveformN(int n){
 
+	if (dIdx==0) // if there isn't any data don't draw it!!!!
+		return;
+
 	setWaveformColor(colWave[n]);
 
 	glVertexPointer(2, GL_INT, 0, waves[n]);
+	glDrawArrays(GL_LINE_STRIP, 0, IDX(dIdx-2));
 
-	glDrawArrays(GL_LINE_STRIP, 0, maxIdx);
+ 	// only draw the old data if we have looped beyond the edge once
+	if (dIdx>maxIdx)
+		glDrawArrays(GL_LINE_STRIP, IDX(dIdx+2), maxIdx-IDX(dIdx+2));
 
-					
 }
 
 void setViewportForWaveInfoN(int n){
@@ -647,7 +663,7 @@ void resizeWindow(int w, int h)
 	glOrtho( 0, 0, winWidth, winHeight, 0, 0 );
 
 	glClear(GL_COLOR_BUFFER_BIT);
-	refreshDrawing();
+	redrawWindow();
 }
 
 
@@ -747,7 +763,7 @@ void enterCommandStr(char key){
 			cmdStrIdx = 0;
 			eraseCommandString();
 			enteringCommand = false;
-			refreshDrawing(); // to erase the command window if no lfps are coming in
+			redrawWindow(); // to erase the command window if no lfps are coming in
 		break;
 		default:
 			if(key<' ') // if not a valid Alpha Numeric Char ignore it
@@ -808,25 +824,38 @@ bool executeCommand(char *cmd){
 	}
 	currentCommand  = CMD_NULL;
 }
-void updateWinLen(double l){
-	if (sampleRate * l > MAX_N_SAMP)
-		std::cout<<"Invalid window length specified! The requested window would require:"<<sampleRate * l<<" samples. However \
-					the number of samples cannot exceed:"<<MAX_N_SAMP<<std::endl;
-	else if (l<=0)
-		std::cout<<"Invalid window length specified. Please pick a positive number"<<std::endl;
-	else if ( l==winDt)
-	{}
-	else
+
+bool updateWinLen(double l){
+
+	if (l<=0)
 	{
-		winDt = l;
-		initializeWaveVariables();
-		clearWindow();
+		std::cout<<"Invalid window length specified. Please pick a positive number"<<std::endl;
+		return false;
+
 	}
+	else if ( l==winDt)
+	{
+		std::cout<<"The specified window length is already in use"<<std::endl;
+		return true;
+	}
+
+	if (sampleRate * l > MAX_N_SAMP)
+	{
+		l = MAX_N_SAMP / sampleRate;
+
+		std::cout<<"Invalid window length specified! Given the sampling rate of:"<<sampleRate;
+		std::cout<<" the longest valid window is:"<<l<<". Setting window len to:"<<l;
+		std::cout<<". If you need a longer window length reduce the sampling rate!"<<std::endl;
+	}
+
+	winDt = l;
+	initializeWaveVariables();
+	clearWindow();
+	return true;
 }
 
 void clearWindow(){
 	initializeWaveVariables();
-	glClear(GL_COLOR_BUFFER_BIT);
 	dIdx = 0;
 	xPos = 0;
 }
