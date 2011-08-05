@@ -7,12 +7,12 @@ int main( int argc, char** argv )
 		setChannelLabel(i, defName, CHAN_NAME_LEN);	
 //	memcpy(chName[i], &"HPC N:M", CHAN_NAME_LEN);
 
+	initCommandListAndMap();
 	parseCommandLineArgs(argc, argv);
 
 	if(strlen(windowTitle)==0)
 		memcpy(windowTitle, &"Arte Network LFP Viewer", 23);
 	
-
 /*
 	if (argc>1)
 		port = argv[1];
@@ -135,7 +135,7 @@ void updateNChans(int n){
 	curSeqNum = 0;
 
 	initializeWaveVariables();
-	clearWaveforms();
+	//eraseWaveformViewport();
 	clearWindow();
 
 }
@@ -148,7 +148,7 @@ void updateNSamps(int n){
 	curSeqNum = 0;
 
 	initializeWaveVariables();
-	clearWaveforms();
+	//eraseWaveformViewport();
 	clearWindow();
 
 }
@@ -158,55 +158,33 @@ void updateWaveArray(){
 	
 	int i=0, j=0, k = 0;
 	
-	// if this is the first time we've run updateWave then seqNum-1 as now
-//	std::cout<<"curSeqNum:"<<curSeqNum<<" lfp.seq_num:"<<lfp.seq_num<<std::endl;
-
 	if(curSeqNum==0 && lfp.seq_num>0)
 		curSeqNum = lfp.seq_num-1;
-
-//	std::cout<<"curSeqNum:"<<curSeqNum<<" lfp.seq_num:"<<lfp.seq_num<<std::endl;
-
 	
-	
-	if (lfp.seq_num < curSeqNum)  // If this packet is old ignore it
-	{
-//		std::cout<<"Old packet received, ignoring it! ";//<<lfp.seq_num<<" curSeqNum"<<curSeqNum<<std::endl;
-//		std::cout<<"Press CTRL+R to reset sequence number:"<<std::endl;
-		return;
-	}
-	
-	else if(lfp.seq_num == curSeqNum) // if we have the same packet as last time
+	if (lfp.seq_num <= curSeqNum)  // If this packet is old ignore it
 		return;
 	
 	else if(lfp.seq_num == curSeqNum+1) // if we have the NEXT packet in the sequence
-	{	
 		for (i=0; i<lfp.n_samps_per_chan; i++)
 		{
 			for (j=0; j<lfp.n_chans; j++)
 				waves[j][IDX(dIdx)*2+1] = SCALE_VOLTAGE(lfp.data[k++],j);
 			dIdx++;
 		}
-	}
-	// If somehow the next packet is 
+
 	else if(lfp.seq_num > curSeqNum+1)
 	{
 		while(lfp.seq_num > curSeqNum+1) // if the packet is not the next packet (ie packets got dropped)
 		{
-		
-			int validIdx = dIdx;
-			//set the next data to 0 and advanced the seqNum
 			for (i=0; i<lfp.n_samps_per_chan; i++)
 			{
 				for (j=0; j<lfp.n_chans; j++)
-					//waves[j][IDX(dIdx)*2+1] = SCALE_VOLTAGE(0,j);
 					waves[j][IDX(dIdx)*2+1] = waves[j][IDX(dIdx-1)*2+1];
 				dIdx++;
 			}	
 			curSeqNum++;
-			nBuffLost++;
-//			std::cout<<"NBuff Lost:"<<nBuffLost<<std::endl;
+			//nBuffLost++;
 		}		
-//		clearWaveforms();
 	}
 
 	
@@ -219,11 +197,10 @@ void idleFn(void){
 	do{
 		updateWaveArray();
 	}while(tryToGetLfp(&lfp));
-	clearWaveforms();
+	eraseWaveformViewport();
 	redrawWindow();
-	nBuffLost = 0;
+//	nBuffLost = 0;
     usleep(IDLE_SLEEP_USEC);
-//	std::cout<<"idleFn Sleeping"<<std::endl;
 }
 
 void redrawWindow(void)
@@ -268,7 +245,7 @@ void eraseOldWaveform(){
 
 
 }
-void clearWaveforms(){
+void eraseWaveformViewport(){
 
 //	std::cout<<"Clearing all waveforms"<<std::endl;
 	glViewport( xPadding, 0, winWidth-xPadding, winHeight );	// View port uses whole window
@@ -328,7 +305,7 @@ void drawWaveformN(int n){
 void setViewportForWaveInfoN(int n){
   float viewDx = xBox;
   float viewDy = yBox+.5;
-  float viewX = xPadding;
+  float viewX = xPadding-1;
   float viewY = (nChans - (n+1)) * yBox;
 
   glViewport(viewX, viewY, viewDx, viewDy);
@@ -336,7 +313,7 @@ void setViewportForWaveInfoN(int n){
 }
 void setViewportForWaves(){
 
-	glViewport( xBox+xPadding, 0, winWidth-xBox-xPadding, winHeight-yPadding );	// View port uses whole window
+	glViewport( xBox+xPadding-1, 0, winWidth-xBox-xPadding, winHeight-yPadding+2 );	// View port uses whole window
 	glLoadIdentity ();
 	glTranslatef(-1.0, -1.0, 0.0);
 	glScalef(xScale, yScale, 0);
@@ -345,9 +322,9 @@ void setViewportForWaves(){
 
 void setViewportForCommandString(){
 
-    float viewX = 0 + xPadding;
-    float viewY = 0 + yPadding;
-    float viewDX = xBox*3;
+    float viewX = 0 + xPadding-1;
+    float viewY = 0 + yPadding-2;
+    float viewDX = xBox*4;
     float viewDY =  commandWinHeight;
 
 	glViewport(viewX, viewY, viewDX, viewDY);
@@ -355,7 +332,9 @@ void setViewportForCommandString(){
 
 void setWaveformColor(int c){
 
-	int nColor = 13;
+	int nColor = 14;
+	if (c<0)
+		c = c * -1;
 	switch(c%nColor){
 		case 0: // red
 			glColor3f(1.0, 0.0, 0.0);
@@ -392,6 +371,12 @@ void setWaveformColor(int c){
 			break;
 		case 11:
 			glColor3f(1.0, 0.0, 0.5);
+			break;
+		case 12:
+			glColor3f(1.0, 1.0, 1.0);
+			break;
+		case 13:
+			glColor3f(0.0, 0.0, 0.0);
 			break;
 		default:
 			glColor3f(1.0, 1.0, 1.0);
@@ -467,196 +452,130 @@ void specialKeyFn(int key, int x, int y){
 	std::cout<<"SelectedWaveform:"<<selectedWaveform<<std::endl;
 }
 
+void initCommandListAndMap(){
+	// List of commands and functions that do not require additional arguments
+	quickCmdMap[CMD_CLEAR_WIN] 	= clearWindow;
+	quickCmdMap[CMD_SCALE_UP] 	= scaleUp;
+	quickCmdMap[CMD_SCALE_DOWN]	= scaleDown;
+	quickCmdMap[CMD_SHIFT_UP]	= shiftUp;
+	quickCmdMap[CMD_SHIFT_DOWN] = shiftDown;
+	quickCmdMap[CMD_RESET_SCALE]= resetScale;
+	quickCmdMap[CMD_PREV_COL]	= prevColor;
+	quickCmdMap[CMD_NEXT_COL]	= nextColor;
+	quickCmdMap[CMD_HELP]		= showHelp;
+
+	quickCmdMap[CMD_RESET_SEQ] 	= resetSeqNum;
+	quickCmdMap[CMD_QUIT] 		= quit;
+
+	// List of commands and functions that _DO_ require additional arguments
+	slowCmdMap[CMD_GAIN_ALL]	= setGainAll;
+	slowCmdMap[CMD_GAIN_SINGLE] = setGainSingle;
+	slowCmdMap[CMD_SET_WIN_LEN]	= setWindowTimeLen;
+	slowCmdMap[CMD_SET_FRAMERATE]=setFrameRate;
+	slowCmdMap[CMD_SET_PORT]	= setPortNumber;
+	slowCmdMap[CMD_SET_WIN_POSX]= setWindowXPos;
+	slowCmdMap[CMD_SET_WIN_POSY]= setWindowYPos;
+	slowCmdMap[CMD_SET_WIN_W]	= setWindowWidth;
+	slowCmdMap[CMD_SET_WIN_H]	= setWindowHeight;
+
+	slowCmdMap[CMD_SET_LBL_CH00] =setChannelLabel;
+	slowCmdMap[CMD_SET_LBL_CH01] =setChannelLabel;
+	slowCmdMap[CMD_SET_LBL_CH02] =setChannelLabel;
+	slowCmdMap[CMD_SET_LBL_CH03] =setChannelLabel;
+	slowCmdMap[CMD_SET_LBL_CH04] =setChannelLabel;
+	slowCmdMap[CMD_SET_LBL_CH05] =setChannelLabel;
+	slowCmdMap[CMD_SET_LBL_CH06] =setChannelLabel;
+	slowCmdMap[CMD_SET_LBL_CH07] =setChannelLabel;
+
+
+	// List of the above commands that the user is allowed to invoke while the 
+	// program is running, the other commands are hidden from the user but 
+	// used on start up.
+	slowCmdSet.insert(CMD_GAIN_ALL);
+	slowCmdSet.insert(CMD_GAIN_SINGLE);
+	slowCmdSet.insert(CMD_SET_WIN_LEN);
+	slowCmdSet.insert(CMD_SET_FRAMERATE);
+
+
+	
+}
 void keyPressedFn(unsigned char key, int x, int y){
 
-	std::cout<<"Key Pressed:"<<key<<" value:"<<(int)key<<std::endl;
+//	std::cout<<"Key Pressed value:"<<(int)key<<" key:"<<key<<std::endl;
 
-	if (enteringCommand){
-		enterCommandStr(key);
-		return;
+	switch(CMD_CUR_STATE) 
+	{
+		case CMD_STATE_QUICK:
+			if (quickCmdMap.end() != quickCmdMap.find(key))
+			{
+//				std::cout<<"Executing Quick Command:"<<key<<std::endl;
+				quickCmdMap.find(key)->second();
+			}		
+
+			else if(key == KEY_ENTER)
+				CMD_CUR_STATE = CMD_STATE_SLOW;
+		break;
+		
+		case CMD_STATE_SLOW:
+			if(key==KEY_DEL || key==KEY_ENTER || key==KEY_BKSP)
+				CMD_CUR_STATE = CMD_STATE_QUICK;		
+
+			else if (slowCmdMap.end() !=  slowCmdMap.find(key))
+			{
+				currentCommand = key;
+				CMD_CUR_STATE = CMD_STATE_SLOW_ARG;
+			}
+		break;
+	
+		case CMD_STATE_SLOW_ARG:
+			enterCommandArg(key);
+		break;
 	}
-	switch (key){
-		case CMD_QUIT:
-			exit(1);
-			break;
-		case CMD_RESET_SEQ:
-			curSeqNum = 0;
-			clearWindow();
-			std::cout<<"Reseting sequence number to 0!"<<std::endl;
-			break;
-		case CMD_CLEAR_WIN:
-			clearWaveforms();
-			clearWindow();
-			break;
-		case CMD_SCALE_UP:
-			userScale += dUserScale;
-			break;
-		case CMD_SCALE_DOWN:
-			userScale -= dUserScale;
-			if (userScale<1)
-				userScale = 1;
-			break;
-		case CMD_SHIFT_UP:
-			userShift += dUserShift;
-			break;
-		case CMD_SHIFT_DOWN:
-			userShift -= dUserShift;
-			break;		
-		case CMD_RESET_SCALE:
-			userShift = 0;
-			userScale = 1;
-			clearWindow();
-			break;
-		case CMD_PREV_COL:
-			colWave[selectedWaveform]--;
-			std::cout<<"Wave:"<<selectedWaveform<<" set to color:"<<colWave[selectedWaveform]<<std::endl;
-			break;
-		case CMD_NEXT_COL:
-			colWave[selectedWaveform]++;
-			std::cout<<"Wave:"<<selectedWaveform<<" set to color:"<<colWave[selectedWaveform]<<std::endl;
-			break;
-		// -------------------------------------------
-		// Commands that require additional user input
-		// -------------------------------------------
-		case CMD_GAIN_ALL:
-		case CMD_SET_FRAMERATE:
-		case CMD_SET_WIN_LEN:
-			enteringCommand = true;
-			currentCommand = key;
-			break;
-		}
+}
 
- }
 
-void enterCommandStr(char key){
-	std::cout<<"Entering command";
+void enterCommandArg(char key){
 	switch(key){
-		// Erase command string
-		case KEY_BKSP: //  Backspace Key
-		case KEY_DEL: // MAC Delete key is pressed
-			if (cmdStrIdx<=0){ //if the command string is empty ignore the keypress
-				enteringCommand = false;
+		case KEY_BKSP: 
+		case KEY_DEL:
+			if (cmdStrIdx<=0) 
+			{
+				CMD_CUR_STATE = CMD_STATE_SLOW;
 				return;
 			}
-			cmd[--cmdStrIdx] = 0; //backup the cursor and set the current char to 0
+
+			cmd[--cmdStrIdx] = 0; 
 			eraseCommandString();
 			break;
-		case KEY_ENTER: // RETURN KEY
-			executeCommand((char*)cmd);
-			bzero(cmd,cmdStrLen);
-			cmdStrIdx = 0;
-			eraseCommandString();
-			enteringCommand = false;
-			redrawWindow(); // to erase the command window if no lfps are coming in
-			currentCommand  = CMD_NULL;
+		case KEY_ENTER: 
+			if (cmdStrIdx>0)
+			{
+				executeCommand((char*)cmd);
+				bzero(cmd,cmdStrLen);
+				cmdStrIdx = 0;
+//				redrawWindow(); 
+				currentCommand  = CMD_NULL;
+			}
+			CMD_CUR_STATE = CMD_STATE_QUICK;
 		break;
 		default:
-			if(key<' ') // if not a valid Alpha Numeric Char ignore it
+			if(key<' ') // ' ' is the first alpha numeric key, we only want those
 				return;
 			cmd[cmdStrIdx] = key;
 			if (cmdStrIdx<CMD_STR_MAX_LEN)
 				cmdStrIdx+=1;
-			std::cout<<cmdStrIdx<<std::endl;
-			std::cout<<"Command Entered:"<<cmd<<std::endl;
 	}	
 }
 
-
-void dispCommandString(){
-	if (enteringCommand)
-	{
-		setViewportForCommandString();
-		//Draw a black rectangle to cover up whatever was previously visible
-		glColor3f(0.0, 0.0, 0.0);
-		glRectf(-1, -1, 2, 2);
-		//Draw the white bounding box
-		glColor3f(1.0, 1.0, 1.0);
-		drawViewportEdge();
-
-		// Prepend the command char and :  for display purposes
-		char dispCmd[CMD_STR_MAX_LEN+3];
-		bzero(dispCmd, CMD_STR_MAX_LEN+3);
-		for (int i=0; i<cmdStrIdx; i++)
-			dispCmd[i+2] = cmd[i];
-		dispCmd[0] = currentCommand;
-		dispCmd[1] = ':';
-		//draw the actuall string
-		drawString(-.95,-.35, (char*)dispCmd);
-	}
-}
-
-void drawString(float x, float y, char *string){
-
-	glRasterPos2f(x, y);
-
-	int len = strlen(string);
-	for (int i = 0; i < len; i++) {
-    	glutBitmapCharacter(font, string[i]);
-	}
-}
-
 bool executeCommand(char *cmdStr){
-	int len = sizeof(cmdStr);
-	int x;
-	std::cout<<"Executing command:"<<currentCommand<<":"<<cmdStr<<std::endl;
 
-	switch(currentCommand){
-		case CMD_SET_WIN_LEN:
-			std::cout<<"Changing window len to:"<<cmdStr<<std::endl;
-//			atof(cmd);			
-			updateWinLen(atof(cmdStr));
-		break;
-
-		case CMD_SET_FRAMERATE:
-//			int r = atoi(cmd);
-			updateFrameRate(atoi(cmdStr));
-		break;
-		case ARG_PORT_NUM:
-			port = cmdStr;
-            std::cout<<"Setting port to:"<<port<<std::endl;
-        break;
-		case ARG_WIN_NAME:
-			std::cout<<"setting the window title:"<<optarg<<std::endl;
-			bzero(windowTitle, 200);
-			memcpy(windowTitle, optarg, strlen(optarg));				
-		break;
-		case ARG_WIN_POSX:
-			x = atoi(cmdStr);
-			if (x>=0)
-				winPosX = x;					
-		break;
-		case ARG_WIN_POSY:
-		 	x = atoi(cmdStr);
-			if (x>=0)
-				winPosY = x;					
-		break;
-		case ARG_WIN_W:
-			x = atoi(optarg);
-			if (x<=0){
-				std::cout<<"Invalid window width chosen, must be greater than 0"<<std::endl;
-				exit(-1);
-			}
-			winWidth = x;
-		break;
-		case ARG_WIN_H:
-			x = atoi(optarg);
-			if (x<=0){
-				std::cout<<"Invalid window height chosen, must be greater than 0"<<std::endl;
-				exit(-1);
-			}
-			winHeight = x;
-		break;
-		case CH00:
-		case CH01:
-		case CH02:
-		case CH03:
-		case CH04:
-		case CH05:
-		case CH06:
-		case CH07:
-			setChannelLabel(currentCommand, cmdStr, strlen(cmdStr));
-		break;
-	}
+ 	if (slowCmdMap.end() != slowCmdMap.find(currentCommand))
+   	{
+    	slowCmdMap.find(currentCommand)->second((void*)cmdStr);
+		return true;
+    }
+	return false;
+	
 }
 
 bool updateWinLen(double l){
@@ -683,7 +602,7 @@ bool updateWinLen(double l){
 	}
 
 	winDt = l;
-	initializeWaveVariables();
+//	initializeWaveVariables();
 	clearWindow();
 	return true;
 }
@@ -709,18 +628,127 @@ void setChannelLabel(int n, char* s, int l)
 	bzero(chName[n], CHAN_NAME_LEN);
 	(l >= CHAN_NAME_LEN) ?  memcpy(chName[n], s, CHAN_NAME_LEN) : memcpy(chName[n], s, l);
 }
+
 void clearWindow(){
 	initializeWaveVariables();
+	eraseWaveformViewport();
 	dIdx = 0;
 	xPos = 0;
 }
 
-void toggleOverlay(){
-	disableWaveOverlay = !disableWaveOverlay;
-	if(disableWaveOverlay)
-		clearWindow();
+void resetSeqNum()
+{
+	curSeqNum = 0;
+	clearWindow();
+	std::cout<<"Reseting sequence number to 0!"<<std::endl;
+}
+void quit()
+{
+	exit(1);
+}
+void scaleUp()
+{
+	userScale+=dUserScale;
+}
+void scaleDown(){
+	userScale-=dUserScale;
+	if(userScale<1)
+		userScale = 1;
+}
+void shiftUp(){
+	userShift+=dUserShift;
+}
+void shiftDown(){
+	userShift-=dUserShift;
+}
+void resetScale(){
+	userScale = 1;
+	userShift = 0;
+}
+void nextColor(){
+	colWave[selectedWaveform]++;
+	
+}
+void prevColor(){
+	colWave[selectedWaveform]--;
+
 }
 
+void setGainAll(void* v)
+{
+	std::cout<<"\tSet Gain All -- NOT IMPLEMENTED"<<std::endl;
+}
+void setGainSingle(void *v)
+{
+	std::cout<<"\tSet Gain Single -- NOT IMPLEMENTED"<<std::endl;
+}
+void setWindowTimeLen(void* v)
+{	
+	double d = atof((char*)v);
+	updateWinLen(d);
+	
+}
+void setFrameRate(void *v)
+{
+	int r = atoi((char*)v);
+	updateFrameRate(r);
+}
+void setPortNumber(void* v)
+{
+	port = (char*)v;
+}
+void setWindowXPos(void* v)
+{
+	int x = atoi((char*)v);
+	winPosX = x;
+}
+void setWindowYPos(void* v)
+{
+	int x = atoi((char*)v);
+	winPosY = x;
+}
+void setWindowHeight(void* v)
+{
+	int x = atoi((char*)v);
+	winHeight = x;
+}
+void setWindowWidth(void* v)
+{
+	int x = atoi((char*)v);
+	winWidth = x;
+}
+void setChannelLabel(void* v)
+{
+	int x = currentCommand - 48;
+	if(x<0 || x>MAX_N_CHAN)
+		return;
+	setChannelLabel(x, (char *) v, strlen((char *)v) );
+}
+void showHelp()
+{
+	std::cout<<"\n";
+	std::cout<<"Simple Commands:\n";
+	std::cout<<"\t"<<(char)CMD_CLEAR_WIN	<< " : Clear the window\n";
+	std::cout<<"\t"<<(char)CMD_SCALE_UP		<< " : Increase Display Gain\n";
+	std::cout<<"\t"<<(char)CMD_SCALE_DOWN	<< " : Decrease Display Gain\n";
+	std::cout<<"\t"<<(char)CMD_SHIFT_UP		<< " : Shift waveforms up\n";
+	std::cout<<"\t"<<(char)CMD_SHIFT_DOWN	<< " : Shift waveforms down\n";
+	std::cout<<"\t"<<(char)CMD_RESET_SCALE	<< " : Reset scaling and shift\n";
+	std::cout<<"\t"<<(char)CMD_PREV_COL		<< " : Previous waveform Color\n";
+	std::cout<<"\t"<<(char)CMD_NEXT_COL		<< " : Next the window\n";
+	std::cout<<" CTRL + Q : Quit\n";
+	std::cout<<" CTRL + R : Reset\n";
+
+	std::cout<<"\n";
+	std::cout<<"Advanced Commands:";
+	std::cout<<" (Press Enter to initiate advanced commands)\n";
+	std::cout<<"\t"<<(char)CMD_GAIN_ALL		<<" : (int)\tSet global gains\n";
+	std::cout<<"\t"<<(char)CMD_GAIN_SINGLE	<<" : (int)\tSet gains for selected channel\n";
+	std::cout<<"\t"<<(char)CMD_SET_WIN_LEN	<<" : (double)\tSet length (in seconds) of the window\n";
+	std::cout<<"\t"<<(char)CMD_SET_FRAMERATE<<" : (int)\tSet redraw framerate\n";
+	std::cout<<"\t"<<			"#"			<<" : (text)\tSet channel # label \n";
+	
+}
 int incrementIdx(int i){
 	if(i==MAX_LFP_NET_BUFF_SIZE-1)
 		return 0;
@@ -735,14 +763,48 @@ void parseCommandLineArgs(int argc, char**argv)
 	int opt = 0;
 	int optionIndex;
 	int x;
-	while( (c = getopt_long(argc, argv, "n:x:y:w:h:p:r:", long_options, &optionIndex) )!=-1 )
+	while( (c = getopt_long(argc, argv, "", long_options, &optionIndex) )!=-1 )
 	{
 		currentCommand = c;
 		executeCommand(optarg);
-		/*
-		switch(c){
-		} */
-
 	}
 
 }
+
+void dispCommandString()
+{
+	if (CMD_CUR_STATE == CMD_STATE_SLOW || CMD_CUR_STATE==CMD_STATE_SLOW_ARG)
+	{
+		setViewportForCommandString();
+		//Draw a black rectangle to cover up whatever was previously visible
+		glColor3f(0.0, 0.0, 0.0);
+		glRectf(-1, -1, 2, 2);
+		//Draw the white bounding box
+		glColor3f(1.0, 1.0, 1.0);
+		drawViewportEdge();
+
+		if(CMD_CUR_STATE == CMD_STATE_SLOW_ARG)	
+		{
+			// Prepend the command char and :  for display purposes
+			char dispCmd[CMD_STR_MAX_LEN+3];
+			bzero(dispCmd, CMD_STR_MAX_LEN+3);
+			for (int i=0; i<cmdStrIdx; i++)
+				dispCmd[i+2] = cmd[i];
+			dispCmd[0] = currentCommand;
+			dispCmd[1] = ':';
+			//draw the actuall string
+			drawString(-.95,-.35, (char*)dispCmd);
+		}
+	}
+}
+
+void drawString(float x, float y, char *string){
+
+	glRasterPos2f(x, y);
+
+	int len = strlen(string);
+	for (int i = 0; i < len; i++) {
+    	glutBitmapCharacter(font, string[i]);
+	}
+}
+
