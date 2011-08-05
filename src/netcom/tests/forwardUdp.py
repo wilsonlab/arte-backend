@@ -2,7 +2,7 @@ import socket
 import sys
 
 if len(sys.argv) != 4:
-	sys.exit("args much be PORT_IN IP_OUT PORT_OUT")
+	sys.exit("Usage: forwardUdp PORT_IN IP_OUT PORT_OUT")
 ip_in  = "127.0.0.1"
 
 
