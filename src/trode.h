@@ -1,3 +1,5 @@
+
+
 #ifndef TRODE_H_
 #define TRODE_H_
 
@@ -9,7 +11,7 @@
 #include <vector>
 #include <stdint.h>
 #include "filtered_buffer.h"
-#include "spike_detector.h"
+
 #include "netcom/netcom.h"
 
 extern neural_daq      * neural_daq_array;
@@ -41,7 +43,7 @@ class Trode{
 
   neural_daq *my_daq;
 
-  SpikeDetector my_spike_detector;
+  //SpikeDetector my_spike_detector;
 
   spike_net_t spike_array[MAX_N_SPIKES_PER_BUFFER];
 

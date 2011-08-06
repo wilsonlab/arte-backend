@@ -8,7 +8,7 @@
 #include <boost/property_tree/exceptions.hpp>
 #include <iostream>
 #include <stdint.h>
-#include "spike_detector.h"
+
 #include "filter_fun.h"
 
 int tmp;
@@ -67,7 +67,7 @@ void Trode::init2(boost::property_tree::ptree &trode_pt,
   // Cant do that because trode.h includes spike_detector.h  Spike-detector will init
   // as much as it can from the buffer settings.  Trode-specific stuff will have to be
   // passed in through additional arguments to spike_detector::init()
-  my_spike_detector.init(my_buffer);
+  //my_spike_detector.init(my_buffer);
 
   refractory_period_tics = refractory_period_samps / (uint16_t)SAMPLES_PER_TIC;
 
@@ -229,7 +229,7 @@ int find_spikes(Trode *t){
   bool found_spike;
   rdata_t *thresh, *spike_buffer, *f_buf;
   Filtered_buffer *fb;
-  SpikeDetector *sd;
+  //SpikeDetector *sd;
   int n_samps_checked;
 
   //  printf("in find_spikes\n");
