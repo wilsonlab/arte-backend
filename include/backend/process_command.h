@@ -1,5 +1,5 @@
 #include "arteopt.h"
-#include "netcom/datapacket.h"
+#include "datapacket.h"
 #include <stdio.h>
 #include <stdint.h>
 #include <string>

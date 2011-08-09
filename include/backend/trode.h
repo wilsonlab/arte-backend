@@ -1,5 +1,3 @@
-
-
 #ifndef TRODE_H_
 #define TRODE_H_
 
@@ -12,7 +10,7 @@
 #include <stdint.h>
 #include "filtered_buffer.h"
 
-#include "netcom/netcom.h"
+#include "netcom.h"
 
 extern neural_daq      * neural_daq_array;
 extern Filtered_buffer * filtered_buffer_array;

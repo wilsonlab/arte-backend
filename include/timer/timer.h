@@ -7,7 +7,7 @@
 #include <NIDAQmx.h>
 #include <stdint.h>
 #include <string>
-#include "netcom/netcom.h"
+#include "netcom.h"
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/property_tree/exceptions.hpp>
 

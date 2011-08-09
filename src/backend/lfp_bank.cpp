@@ -4,8 +4,8 @@
 #include <boost/property_tree/exceptions.hpp>
 #include <assert.h>
 #include "filter_fun.h"
-#include "netcom/netcom.h"
-#include "netcom/datapacket.h"
+#include "netcom.h"
+#include "datapacket.h"
 
 extern FILE *main_file;
 extern pthread_mutex_t main_file_mutex;

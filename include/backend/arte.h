@@ -2,12 +2,12 @@
 // global variables declared here
 #include <string>
 
-#include "global_defs.h"
-#include "neural_daq.h"
-#include "filtered_buffer.h"
-#include "timer.h"
-#include "trode.h"
-#include "lfp_bank.h"
+#include <global_defs.h>
+#include <neural_daq.h>
+#include <filtered_buffer.h>
+#include <timer.h>
+#include <trode.h>
+#include <lfp_bank.h>
 
 // Do we really need all these arrays and counters to be declared here?
 

@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include "util.h"
 #include "filtered_buffer.h"
-#include "netcom/netcom.h"
+#include "netcom.h"
 
 class Lfp_bank{
 

@@ -27,7 +27,7 @@
 
 #include <stdint.h>
 #include <netinet/in.h>
-#include "../global_defs.h"
+#include "global_defs.h"
 
 // these seem to assume that host byteorder is little endian
 // should they be replaced with ntohs(x), ntohl(x), etc?

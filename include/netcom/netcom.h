@@ -15,7 +15,7 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include "datapacket.h"
-#include "../unp.h"
+#include "unp.h"
 
 struct NetComDat{
 	int sockfd;

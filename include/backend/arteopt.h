@@ -12,7 +12,7 @@
 #include "neural_daq.h"
 #include "filtered_buffer.h"
 #include "lfp_bank.h"
-#include "netcom/netcom.h"
+#include "netcom.h"
 #include <time.h>
 
 extern FILE *main_file;
