@@ -15,12 +15,12 @@
 #include <math.h>
 #include <vector>
 #include <pthread.h>
-#include <getopt.h>
 #include <map>
 #include <set>
 
 #include "netcom.h"
 #include "datapacket.h"
+#include "viewerCommandDefs.h"
 
 #define X_TO_PIX(x) ((x*winWidth)/MAX_INT)
 #define PIX_TO_X(p) ((p*MAX_INT)/winWidth)
@@ -69,7 +69,7 @@ static float voltShift = 0;
 static float userShift = 0;
 static float dUserShift = .01 * pow(2,16);
 
-static float const colSelected[3] = {0.4, 0.4, 0.4};
+static float const colSelected[3] = {0.25, 0.25, 0.25};
 static float const colFont[3] = {1.0, 1.0, 1.0};
 
 // ===================================
@@ -138,10 +138,6 @@ inline GLint SCALE_VOLTAGE(int v, int chan){
 static int totalBufsampleRateRead =0;
 static timeval startTime, now;
 
-static int const cmdStrLen = 50;
-static char cmd[cmdStrLen];
-static int cmdStrIdx = 0;
-
 // ===================================
 // 		General Functions
 // ===================================
@@ -175,10 +171,15 @@ void resizeWindow(int w, int h);
 
 int scaleVoltage(int v, int chan);
 
+void initializeWaveVariables();
+void *readNetworkLfpData(void *ptr);
+void loadWaveformColors();
+
+
 // ===================================
 // Keyboard & Command Function Headers
 // ===================================
-
+/*
 void initCommandListAndMap();
 void keyPressedFn(unsigned char key, int x, int y);
 void specialKeyFn(int key, int x, int y);
@@ -220,10 +221,7 @@ void setChannelLabel(int n, char* s, int l);
 
 
 void drawString(float x, float y, char *string);
-void *readNetworkLfpData(void *ptr);
 
-void initializeWaveVariables();
-void loadWaveformColors();
 
 // ===================================
 // 		Command Variables
@@ -316,5 +314,5 @@ static struct option long_options[] =
 };
 
 void parseCommandLineArgs(int argc, char**argv);
-
+*/
 #endif
