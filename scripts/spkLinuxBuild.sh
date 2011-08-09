@@ -1,1 +1,1 @@
- g++ -lglut -lGL -lGLU -lGLEW  -I ../../src/netcom/  -D__STDC_LIMIT_MACROS simpleSpikePlot.cpp ../../src/netcom/*.cpp -o arteSpikeViewer
+ g++ -lglut -lGL -lGLU -lGLEW -I ../src/ -I ../include/netcom/ -I ../include/visualizers/ -I ../include/common/  -D__STDC_LIMIT_MACROS ../src/netcom/*.cpp ../src/visualizers/simpleSpikePlot.cpp -o arteSpikeViewer -g 

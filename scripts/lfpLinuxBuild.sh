@@ -1,1 +1,1 @@
- g++ -lglut -lGL -lGLU -lGLEW -I ./ -I ../../src/netcom/  -D__STDC_LIMIT_MACROS simpleLfpPlot.cpp ../../src/netcom/*.cpp -o arteLfpViewer -g
+ g++ -lglut -lGL -lGLU -lGLEW -I ../src/ -I ../include/netcom/ -I ../include/visualizers/ -I ../include/common/  -D__STDC_LIMIT_MACROS ../src/netcom/*.cpp ../src/visualizers/simpleLfpPlot.cpp -o arteLfpViewer -g 
