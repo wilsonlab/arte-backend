@@ -206,7 +206,9 @@ void NetCom::rxBuff(NetComDat net, char *buff, int *buff_len){
   sockaddr_in sa = *(sockaddr_in*)&their_addr;
 
   if ( (numbytes = recvfrom(net.sockfd, buff, BUFFSIZE-1, 0, (SA*)&their_addr, &addr_len)) == -1){
+	
     printf("recvfrom error from rxBuff.\n");
+	exit(-1);
   }
 
   *buff_len = numbytes;
