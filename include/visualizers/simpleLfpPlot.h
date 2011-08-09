@@ -1,4 +1,5 @@
 #ifndef SIMPLE_LFP_PLOT_H_
+#define SIMPLE_LFP_PLOT_H_
 
 #if defined(__linux__)
 	#include <GL/glut.h>
@@ -53,8 +54,9 @@ static int IDLE_SLEEP_USEC = (1e6)/40;
 // ===================================
 static int xRange = pow(2,16);
 static int yRange = pow(2,16);
-static double xScale = 2.0 / xRange;
-static double yScale = 2.0 / (double)(yRange);
+
+static double xScale = 2.0 / (double) xRange;
+static double yScale = 2.0 / (double) yRange;
 
 // Defines how much to shift the waveform within the viewport
 //static float dV = 1.0/((float)MAX_VOLT*2);
@@ -83,7 +85,7 @@ static NetComDat net; // = NetCom::initUdpRx(host,port);
 // 		Data Variables
 // ===================================
 static int nChans=8;
-static int const MAX_LFP_NET_BUFF_SIZE = 260;
+static int const MAX_LFP_NET_BUFF_SIZE = 350;
 static lfp_bank_net_t lfpBuff[MAX_LFP_NET_BUFF_SIZE];
 static lfp_bank_net_t lfp;
 static int nBuff = 0;
@@ -92,7 +94,7 @@ static uint64_t writeInd = 0;
 
 
 // ===================================
-// 		Plotting Variables
+// 		Lfp Specific Plotting Variables
 // ===================================
 static uint32_t curSeqNum = 0;
 static uint32_t prevSeqNum = 0;
@@ -100,19 +102,13 @@ static int nSampsPerChan = 2;
 static double sampleRate = 2000;
 static double winDt = 2;
 static int maxIdx = winDt * sampleRate;
-
 static uint64_t dIdx = 0;
-//static uint64_t pIdx = 0;
-
 static int nBuffLost = 0;
 static int xPos = 0;
-//static int dXPos = xRange/(maxIdx);
-
 static const int MAX_N_CHAN = 8;
 static const int MAX_N_SAMP = 32000;
 static GLint waves[MAX_N_CHAN][MAX_N_SAMP*2]; //we need an x and y point for each sample
 static int colWave[MAX_N_CHAN];
-
 static const int CHAN_NAME_LEN = 7;
 static char chName[MAX_N_CHAN][CHAN_NAME_LEN+1] = {0};
 static char defName[] = "Tet N:M\0";
