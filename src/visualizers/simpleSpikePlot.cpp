@@ -729,7 +729,6 @@ int incrementIdx(int i){
 }
 
 void signalUser1(int param){
-	std::cout<<"Received Signal:"<<param<<std::endl;
 	clearWindow();
 }
 
