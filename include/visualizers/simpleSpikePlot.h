@@ -7,15 +7,16 @@
 	#include <GLUT/glut.h>
 #endif
 
-#include <time.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <iostream>
+#include <map>
 #include <math.h>
-#include <vector>
 #include <pthread.h>
 #include <set>
-#include <map>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <vector>
 
 #include "netcom.h"
 #include "datapacket.h"
@@ -109,11 +110,17 @@ static timeval startTime, now;
 
 static int cIdx = 0;
 // ===================================
-// 		
+// 		Network Function Headers
 // ===================================
 
 void initNetworkRxThread();
 void checkForNewSpikes();
+
+// ===================================
+// 		Signal Functions
+// ===================================
+void signalUser1(int param);
+void signalUser2(int param);
 
 // ===================================
 // 		General Functions

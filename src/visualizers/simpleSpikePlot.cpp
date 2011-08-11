@@ -3,6 +3,7 @@
 
 void *getNetSpike(void *ptr);
 
+#define GLUT_ICON "icon.72.png"
 int main( int argc, char** argv )
 {
 	initCommandListAndMap();
@@ -11,9 +12,10 @@ int main( int argc, char** argv )
 	if(strlen(windowTitle)==0)
 		memcpy(windowTitle, &"Arte Network Spike Viewer", 25);
 
-
 	bzero(cmd, cmdStrLen);
 
+	void (*prev_fn)(int);
+	prev_fn = signal(SIGUSR1, signalUser1);
 
 	pthread_t netThread;
 	net = NetCom::initUdpRx(host,port);
@@ -35,6 +37,7 @@ int main( int argc, char** argv )
 
 	glutKeyboardFunc(keyPressedFn);
 	glutSpecialFunc(specialKeyFn);
+
 
 	glutMainLoop(  );
 
@@ -587,6 +590,7 @@ void setWindowXPos(void* v)
 {
     int x = atoi((char*)v);
     winPosX = x;
+	
 }
 void setWindowYPos(void* v)
 {
@@ -723,3 +727,9 @@ int incrementIdx(int i){
 	else
 		return i+1;
 }
+
+void signalUser1(int param){
+	std::cout<<"Received Signal:"<<param<<std::endl;
+	clearWindow();
+}
+
