@@ -37,7 +37,7 @@ namespace zlibNamespace
   #undef fdopen
   #define ZLIB_INTERNAL
   #define NO_DUMMY_DECL
-  #include "zlib/zlib.h"
+#include "zlib/zlib.h"
   #include "zlib/adler32.c"
   #include "zlib/compress.c"
   #undef DO1

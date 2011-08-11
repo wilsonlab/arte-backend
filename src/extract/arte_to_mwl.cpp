@@ -6,13 +6,16 @@
 FILE *in_f, *out_f;
 int spike_count;
 
+bool interactive;
+bool verbose;
+
 spike_net_t g_spike;    // global spike struct
 lfp_bank_net_t g_lfp;   // global lfp struct
 
 int main(int argc, char *argv[]){
 
-  //void spike, first_spike;
   void *this_arte_packet;
+  this_arte_packet = malloc(MAX_PACKET_BYTES);
 
   int sourcename;
   packetType_t sourcetype;
@@ -31,7 +34,6 @@ int main(int argc, char *argv[]){
   printf("sourcename:%d sourcetype:%c spike_sourcetype:%c\n", 
 	 sourcename, sourcetype, NETCOM_UDP_SPIKE);
 
-  this_arte_packet = malloc(MAX_PACKET_BYTES);
 
     if(this_arte_packet == NULL){
     printf("Memory error, sorry :[\n");
@@ -53,30 +55,12 @@ int main(int argc, char *argv[]){
   while(!ok_packet & (feof(in_f) == 0) ){
     ok_packet = get_next_packet(this_arte_packet, sourcename, sourcetype);
   }
-
   printf("finished looking...\n");  fflush(stdout);
-
-  if(true){
-    spike_net_t *test_spike = (spike_net_t*)this_arte_packet;
-    printf("name:%d  ts:%d n_chans:%d\n",test_spike->name, test_spike->ts, test_spike->n_chans);
-    fflush(stdout);
-  }
-
-  printf("TEST\n"); fflush(stdout);
-  printf("addy of this_arte_packet:%p\n",this_arte_packet); fflush(stdout); 
-
-  if( sourcetype == NETCOM_UDP_SPIKE){
-    spike_net_t* test_spike = (spike_net_t*)this_arte_packet;
-    printf("test before write_file_header: name:%d n_chans:%d\n", 
-	   test_spike->name, test_spike->n_chans);
-  }
-
-  
 
   write_file_header(this_arte_packet, argc, argv, sourcetype);
   
   printf("Finished writing file header.\n"); fflush(stdout);
-
+  
   if( sourcetype == NETCOM_UDP_SPIKE){
     spike_net_t* test_spike = (spike_net_t*)this_arte_packet;
     printf("test before first write_mwl: name:%d n_chans:%d\n", 
@@ -87,7 +71,6 @@ int main(int argc, char *argv[]){
   
   printf("Finished writing first packet with write_mwl.\n"); fflush(stdout);
 
-
   if( sourcetype == NETCOM_UDP_SPIKE){
     spike_net_t* test_spike = (spike_net_t*)this_arte_packet;
     printf("test before loop: name:%d n_chans:%d\n", 
@@ -95,31 +78,40 @@ int main(int argc, char *argv[]){
   }
   
   if(true){
-
+    
     while( feof(in_f) == 0){
       ok_packet = get_next_packet(this_arte_packet, sourcename, sourcetype);
+      if(verbose){
+	if (ok_packet){
+	  printf("This packet was ok:\n");}
+	else {
+	  printf("This packet was not ok:\n");}
+	
+	print_packet(this_arte_packet, sourcetype);
+      }
+      
       if(ok_packet){
-
+	
 	fflush(out_f);
 	//printf("in loop...\n");
 	if( sourcetype == NETCOM_UDP_SPIKE){
 	  spike_net_t* test_spike = (spike_net_t*)this_arte_packet;
-	  printf("test before write_mwl in loop: name:%d n_chans:%d\n", 
-	 	 test_spike->name, test_spike->n_chans);
+	  //printf("test before write_mwl in loop: name:%d n_chans:%d\n", 
+	  //	 test_spike->name, test_spike->n_chans);
 	}
-  
+	
    	write_mwl(this_arte_packet, sourcetype);
 	packet_count++;
       }
+      interactive_wait("message1\n");
     }
-
-  }
-  
-  free(this_arte_packet);
+    
+  } // end if(true)
+    //free(this_arte_packet);
 
   printf("finished. Wrote %d packet(s)\n", packet_count);
   exit(0);
-
+  
 }
 
 void write_mwl(void *arte_packet, packetType_t sourcetype){
@@ -129,7 +121,7 @@ void write_mwl(void *arte_packet, packetType_t sourcetype){
   
   if( sourcetype == NETCOM_UDP_SPIKE ){
     write_spike = (spike_net_t *)arte_packet;
-    printf("In write_mwl: spike name:%d n_chans:%d\n", write_spike->name, write_spike->n_chans);
+    //printf("In write_mwl: spike name:%d n_chans:%d\n", write_spike->name, write_spike->n_chans);
     fwrite(&(write_spike->ts), 1, sizeof(write_spike->ts), out_f);
     fwrite(write_spike->data, (write_spike->n_chans * write_spike->n_samps_per_chan), sizeof(rdata_t),  out_f);
     return;
@@ -138,7 +130,7 @@ void write_mwl(void *arte_packet, packetType_t sourcetype){
   if( sourcetype == NETCOM_UDP_LFP ){
     write_lfp = (lfp_bank_net_t *)arte_packet;
     fwrite( &(write_lfp->ts), 1, sizeof(timestamp_t), out_f );
-    fwrite( write_lfp->data, write_lfp->n_chans * write_lfp->n_samps_per_chan,  write_lfp->samp_n_bytes, out_f);
+    fwrite( write_lfp->data, write_lfp->n_chans * write_lfp->n_samps_per_chan,  sizeof(rdata_t), out_f);
     return;
   }
 
@@ -325,19 +317,38 @@ void write_file_header(void *arte_packet, int argc, char *argv[], packetType_t s
   
 }
 
+void interactive_wait(char *wait_str){
+  if(interactive){ 
+    fflush(stdout);
+    char c = 'a';
+    printf("In interactive mode. hit f [enter] to exit interactive mode.\n");
+    printf("%s\n",wait_str);
+    while(c != '\n'){
+      c = getchar();
+      if(c == 'f')
+	interactive = false;
+    }
+  }
+  fflush(stdout);
+}
+
 void init_filenames(int argc, char *argv[], 
 		    char input_filename[], char output_filename[], 
 		    int *sourcename, packetType_t *sourcetype_p){
   
-  if(argc != 7){
+
+  interactive = false;
+  verbose = false;
+
+  if(argc < 7){
     printf("Argc was %d\n",argc);
     for(int i = 0; i < argc; i++){
       printf("Argv[%d] was: %s\n", i, argv[i]);
     }
     printf("Normal usage: \n");
-    printf("arte_to_mwl -trodename 06 -i input_file.data -o output_file.tt\n");
+    printf("arte_to_mwl -trodename 06 -i input_file.data -o output_file.tt [-interactive] [-verbose]\n");
     printf("or\n");
-    printf("arte_to_mwl -lfpbankname 4 -i input_file.data -o output_file.eeg\n");
+    printf("arte_to_mwl -lfpbankname 4 -i input_file.data -o output_file.eeg [-interactive] [-verbose]\n");
     exit(1);
   }
 
@@ -366,11 +377,54 @@ void init_filenames(int argc, char *argv[],
       i++;
       continue;
     }
+    if (strcmp( argv[i], "-interactive") == 0){
+      interactive = true;
+      continue;
+    }
+    if (strcmp( argv[i], "-verbose") == 0){
+      verbose = true;
+      continue;
+    }
     printf("Unrecognized argument:%s\n",argv[i]);
     exit(1);
   }
  
 }
+
+void print_packet(void *arte_packet, packetType_t sourcetype){
+  
+  if(verbose){
+
+    // char packet_type;
+    // uint32_t packet_size;
+    // char header_blank;
+    // memcpy( arte_packet,      &packet_type, 1 );
+    // memcpy( arte_packet + 1,  &packet_size, 2 );
+    // memcpy( arte_packet + 3,  &header_blank,1 );
+    // printf("Printing a packet type:%c  size:%d  (int)blank:%d\n",
+    // 	   packet_type, packet_size, header_blank);
+
+    if (sourcetype == NETCOM_UDP_SPIKE){
+      spike_net_t *spike = (spike_net_t*) arte_packet;
+      printf("**Spike packet**\n");
+      printf("Trode name:%d \nts: %d \nn_chans:%d \nn_samps_per_chan:%d \n",
+	     spike->name, spike->ts, spike->n_chans, spike->n_samps_per_chan);
+    } // end if spike
+    
+    else if (sourcetype == NETCOM_UDP_LFP){
+      lfp_bank_net_t *lfp = (lfp_bank_net_t*) arte_packet;
+      printf("**Lfp bank packet**\n");
+      printf("Lfp_bank name:%d \nts: %d \nn_chans: %d \nn_samps_per_chan:%d \n",
+	     lfp->name, lfp->ts, lfp->n_chans, lfp->n_samps_per_chan);
+    }  // end if lfp_bank
+    
+    else{
+      printf("Packet was neither spike nor lfp.\n");
+    }  // end if other
+
+  } // end if verbose
+}
+
 
 bool get_next_packet(void *arte_packet, int sourcename, packetType_t sourcetype){
 
@@ -410,6 +464,10 @@ bool get_next_packet(void *arte_packet, int sourcename, packetType_t sourcetype)
 
   //printf("still ok after fread.\n");fflush(stdout);
 
+  if ( charToType(the_type) != sourcetype){
+    return false;
+  }
+
   if ( charToType(the_type) == NETCOM_UDP_SPIKE ){
     
     spike = (spike_net_t*)arte_packet;
@@ -422,7 +480,7 @@ bool get_next_packet(void *arte_packet, int sourcename, packetType_t sourcetype)
     for(int i = 0; i < spike->n_chans * spike->n_samps_per_chan; i++){
       spike->data[i] = spike->data[i] / 16;
     }
-    if(spike->ts > (UINT32_MAX - 10000) ){   // is it later than 10 seconds before the end of the valid time range
+    if(spike->ts > (UINT32_MAX - 30000) ){   // is it later than 10 seconds before the end of the valid time range
       ok_packet = false;
       //printf("Found spike with bad_ts:%d  Current spike_count is:%d   Dropping it.\n", spike->ts, spike_count);
     }
@@ -436,6 +494,11 @@ bool get_next_packet(void *arte_packet, int sourcename, packetType_t sourcetype)
 	     spike->ts, spike->name, spike->n_chans);
     }
 
+    if(ok_packet & (sourcetype == NETCOM_UDP_SPIKE) & verbose){
+      printf("OK_PACKET!  spikename:%d  sourcename:%d\n", spike->name, sourcename);
+      fflush(stdout);
+    }
+    //printf("ABOUT TO RETURN\n");
     return (ok_packet & (sourcetype == NETCOM_UDP_SPIKE)); 
   }
    
@@ -451,8 +514,11 @@ bool get_next_packet(void *arte_packet, int sourcename, packetType_t sourcetype)
 	ok_packet = false;
 	//printf("dropped a bad wave packet.  timestamp was:%d\n", lfp->ts);
     }
+
+    if(false){
     printf("lfp_packet: sought-after sourcename:%d sourcetype:%c  found name:%d type:%c\n",
 	   sourcename, sourcetype, lfp->name, the_type);
+    }
 
     return (ok_packet & (sourcetype == NETCOM_UDP_LFP));
 
