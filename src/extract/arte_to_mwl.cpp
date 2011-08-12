@@ -317,7 +317,7 @@ void write_file_header(void *arte_packet, int argc, char *argv[], packetType_t s
   
 }
 
-void interactive_wait(char *wait_str){
+void interactive_wait(const char *wait_str){
   if(interactive){ 
     fflush(stdout);
     char c = 'a';
