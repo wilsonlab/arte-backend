@@ -1,6 +1,6 @@
 #include "unp.h"
-#include "../netcom/netcom.h"
-#include "../netcom/datapacket.h"
+#include "netcom.h"
+#include "datapacket.h"
 #include "plot_waveforms.h"
 
 uint32_t n_spikes_caught;

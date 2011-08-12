@@ -1,5 +1,5 @@
 #include "plot_waveforms.h"
-#include "../netcom/datapacket.h"
+#include "datapacket.h"
 
 #define MAX_N_ROWS 200
 
