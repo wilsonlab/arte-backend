@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <iterator>
 #include <map>
+#include "timer.h"
 
 #define MAX_N_TOKENS 80
 #define MAX_TOKEN_SIZE 80
@@ -17,6 +18,7 @@ extern Trode    *trode_array;
 extern Lfp_bank *lfp_bank_array;
 extern int n_trodes;
 extern int n_lfp_banks;
+extern Timer arte_timer;
 
 void process_command(command_t *cmd);
 void parse_command(char *cmd_str, int *c_argc, char c_argv[MAX_N_TOKENS][MAX_TOKEN_SIZE]);
