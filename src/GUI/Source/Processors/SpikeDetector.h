@@ -13,9 +13,9 @@
 
 #include "../../JuceLibraryCode/JuceHeader.h"
 #include "GenericProcessor.h"
-//#include "Editors/SpikeDetectorEditor.h"
+#include "Editors/SpikeDetectorEditor.h"
 
-//class SpikeDetectorEditor;
+class SpikeDetectorEditor;
 class FilterViewport;
 
 class SpikeDetector : public GenericProcessor
@@ -33,7 +33,7 @@ public:
 
 	MidiBuffer* getEventBuffer() {return spikeBuffer;}
 
-	//AudioProcessorEditor* createEditor();
+	AudioProcessorEditor* createEditor();
 
 	bool hasEditor() const {return true;}
 	

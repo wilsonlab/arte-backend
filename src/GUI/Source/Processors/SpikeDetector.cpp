@@ -31,11 +31,15 @@ SpikeDetector::~SpikeDetector()
 }
 
 
-//AudioProcessorEditor* SpikeDetector::createEditor(AudioProcessorEditor* const editor)
-//{
+AudioProcessorEditor* SpikeDetector::createEditor()
+{
+
+	SpikeDetectorEditor* editor = new SpikeDetectorEditor(this, viewport);
 	
-//	return editor;
-//}
+	std::cout << "Creating editor." << std::endl;
+
+	return editor;
+}
 
 void SpikeDetector::setParameter (int parameterIndex, float newValue)
 {
