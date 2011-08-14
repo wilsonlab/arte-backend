@@ -43,6 +43,7 @@ class CPUMeter : public Label //Component
 	
 	private:
 		float cpu;
+		float lastCpu;
 
 };
 

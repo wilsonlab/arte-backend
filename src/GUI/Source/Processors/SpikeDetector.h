@@ -40,6 +40,7 @@ public:
 private:
 	double sampleRate, threshold;
 	double prePeakMs, postPeakMs;
+	int prePeakSamples, postPeakSamples;
 	int accumulator;
 
 	MidiBuffer* spikeBuffer;

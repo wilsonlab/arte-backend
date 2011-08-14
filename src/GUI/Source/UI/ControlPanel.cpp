@@ -72,7 +72,7 @@ RecordButton::~RecordButton()
 }
 
 
-CPUMeter::CPUMeter() : Label(T("CPU Meter"),"0.0"), cpu(0.0f)
+CPUMeter::CPUMeter() : Label(T("CPU Meter"),"0.0"), cpu(0.0f), lastCpu(0.0f)
 {
 }
 
@@ -81,6 +81,7 @@ CPUMeter::~CPUMeter()
 }
 
 void CPUMeter::updateCPU(float usage) {
+	lastCpu = cpu;
 	cpu = usage;
 }
 

@@ -22,7 +22,6 @@ DisplayNode::DisplayNode(const String name_, int* nSamps, int nChans, const Crit
 
 DisplayNode::~DisplayNode()
 {
-	//filter = 0;
 }
 
 AudioProcessorEditor* DisplayNode::createEditor()

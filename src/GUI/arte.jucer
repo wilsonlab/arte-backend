@@ -106,6 +106,10 @@
         <FILE id="hGnGAjh" name="EventNode.cpp" compile="1" resource="0" file="Source/Processors/EventNode.cpp"/>
         <FILE id="dUtRN6" name="EventNode.h" compile="0" resource="0" file="Source/Processors/EventNode.h"/>
         <GROUP id="AqvwO6w" name="Editors">
+          <FILE id="UCf00eh" name="SpikeDetectorEditor.cpp" compile="1" resource="0"
+                file="Source/Processors/Editors/SpikeDetectorEditor.cpp"/>
+          <FILE id="Q8ftPSA" name="SpikeDetectorEditor.h" compile="0" resource="0"
+                file="Source/Processors/Editors/SpikeDetectorEditor.h"/>
           <FILE id="Nw6Lpmq" name="AudioEditor.cpp" compile="1" resource="0"
                 file="Source/Processors/Editors/AudioEditor.cpp"/>
           <FILE id="atkKPmM" name="AudioEditor.h" compile="0" resource="0" file="Source/Processors/Editors/AudioEditor.h"/>

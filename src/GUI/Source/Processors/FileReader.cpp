@@ -96,7 +96,7 @@ void FileReader::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessag
     		if (input->isExhausted())
     			input->setPosition(0);   			
     	
-    		const float sample = float(input->readShort())/100000.0f;
+    		const float sample = float(input->readShort());
 
     		*buffer.getSampleData (j, i) = sample;
     	}

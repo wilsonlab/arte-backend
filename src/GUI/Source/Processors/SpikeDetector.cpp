@@ -13,19 +13,21 @@
 
 SpikeDetector::SpikeDetector(const String name_, int* nSamps, int nChans, const CriticalSection& lock_, int id)
 	: GenericProcessor(name_, nSamps, nChans, lock_, id), 
-	  sampleRate (40000.0), threshold(100), prePeakMs(0.2), postPeakMs(0.8),
-	  accumulator(0), spikeBuffer(0)
+	  sampleRate (40000.0), threshold(8000.0), prePeakMs(0.2), postPeakMs(0.8),
+	  accumulator(0)
 	
 {
 
 	setNumInputs(nChans);
 	setNumOutputs(nChans);
 
+	spikeBuffer = new MidiBuffer();
+
 }
 
 SpikeDetector::~SpikeDetector()
 {
-
+	deleteAndZero(spikeBuffer);
 }
 
 
@@ -38,13 +40,18 @@ SpikeDetector::~SpikeDetector()
 void SpikeDetector::setParameter (int parameterIndex, float newValue)
 {
 	//std::cout << "Message received." << std::endl;
+	if (parameterIndex == 0) {
+		threshold = newValue;
+	}
 
 }
 
 
 void SpikeDetector::prepareToPlay (double sampleRate_, int estimatedSamplesPerBlock)
 {
-	//std::cout << "Filter node preparing." << std::endl;
+	//std::cout << "SpikeDetector node preparing." << std::endl;
+	prePeakSamples = int((prePeakMs / 1000.0f) / (1/sampleRate));
+	postPeakSamples = int((postPeakMs / 1000.0f) / (1/sampleRate));
 }
 
 void SpikeDetector::releaseResources() 
@@ -53,50 +60,66 @@ void SpikeDetector::releaseResources()
 
 void SpikeDetector::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages)
 {
-	//std::cout << "Filter node processing." << std::endl;
 
-    //std::cout << "Filter node:" << *buffer.getSampleData(0,0);
+	int maxSamples = getNumSamples();
+	int spikeSize = 2 + prePeakSamples*2 + postPeakSamples*2; 
+    
+    for (int chan = 0; chan < 1; chan++) 
+    {
 
-    accumulator++;
+    	int n = prePeakSamples + 1; // 1-sample buffer, just to be safe
 
-    if (accumulator > 20) {
+    	while (n < maxSamples - postPeakSamples - 1) {
+    		
+    		// search through to find spikes
+    		if (*buffer.getSampleData(chan,n) > threshold) {
+    			
+    			uint8 data[spikeSize];
 
-    		std::cout << "  >> New event." << std::endl;
+    			data[0] = chan & 070; // channel most-significant byte
+    			data[1] = chan & 007; // channel least-significant byte
 
-			uint8 data[95];
+    			// not currently looking for peak, just centering on thresh cross
+    			AudioDataConverters::convertFloatToInt16BE ( buffer.getSampleData(chan, n - prePeakSamples), // source
+    													 data+2, // dest
+    													 prePeakSamples + postPeakSamples, // numSamples
+    													 2 ); // destBytesPerSample = 2
 
-			for (int n = 0; n < sizeof(data); n++) {
-				data[n] = 1;
-			}
+				spikeBuffer->addEvent(data, 		// spike data
+								  sizeof(data), // total bytes
+								  n); 			// sample index
 
-			//MidiMessage event = MidiMessage::noteOn(2,1,10.0f);
-			MidiMessage event = MidiMessage(data, 	// spike data (float)
-											sizeof(data), 	// number of bytes to use
-											1000.0 	// timestamp (64-bit)
-											);
-			
-			//event.setChannel(1);
+    			n += postPeakSamples;
 
-			midiMessages.addEvent(data, sizeof(data), 5);
-			//midiMessages.addEvent(event, 1);
+    		} else {
+    			n += 1;
+    		}
 
-			for (int n = 0; n < sizeof(data); n++) {
-				data[n] = 2;
-			}
+    	}
+    }
 
-			midiMessages.addEvent(data, sizeof(data), 10);
+ //    accumulator++;
 
-			for (int n = 0; n < sizeof(data); n++) {
-				data[n] = 3;
-			}
 
-			midiMessages.addEvent(data, sizeof(data), 15);
+ //    if (accumulator > 20) {
 
-			//midiMessages.addEvent(event, 5);
+ //    		std::cout << "  >> New event." << std::endl;
 
-			//std::cout << "Midi buffer contains " << midiMessages.getNumEvents() << " events." << std::endl;
+ //    		uint8 data[32];
 
-			accumulator = 0;
-	}
+ //    		data[0] = 0; // channel most-significant byte
+ //    		data[1] = 1; // channel least-significant byte
+ 
+ //    		AudioDataConverters::convertFloatToInt16BE ( buffer.getSampleData(1), // source
+ //    													 data+2, // dest
+ //    													 15 , // numSamples
+ //    													 2 ); // destBytesPerSample = 2
+
+	// 		spikeBuffer->addEvent(data, 		// spike data
+	// 							  sizeof(data), // total bytes
+	// 							  5); 			// sample index
+
+	// 		accumulator = 0;
+	// }
 
 }

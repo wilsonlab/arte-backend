@@ -75,6 +75,10 @@ void Visualizer::setBuffers(AudioSampleBuffer* asb, MidiBuffer* mb)
 	std::cout << "Buffers are set!" << std::endl;
 	streamBuffer = asb;
 	eventBuffer = mb;
+
+
+	std::cout << streamBuffer << std::endl;
+	std::cout << eventBuffer << std::endl;
 }
 
 void Visualizer::buttonClicked(Button* button)
@@ -208,8 +212,8 @@ void LfpViewer::renderOpenGL()
 	
 		for (int n = 0; n < nSamples-skip; n+= skip )
 		{
-			glVertex2f(float(n)/nSamples,*streamBuffer->getSampleData(chan,n)+0.03+chan*0.06);
-			glVertex2f(float(n+skip)/nSamples,*streamBuffer->getSampleData(chan,n+skip)+0.03+chan*0.06);
+			glVertex2f(float(n)/nSamples,*streamBuffer->getSampleData(chan,n)/100000.0+0.03+chan*0.06);
+			glVertex2f(float(n+skip)/nSamples,*streamBuffer->getSampleData(chan,n+skip)/100000.0+0.03+chan*0.06);
 		}
 		
 		//std::cout << *streamBuffer->getSampleData(0,0) << std::endl;
@@ -228,6 +232,7 @@ void LfpViewer::renderOpenGL()
 SpikeViewer::SpikeViewer(AudioSampleBuffer* sBuffer, MidiBuffer* eBuffer, UIComponent* ui)
 	: Renderer(sBuffer, eBuffer, ui)
 {
+
 }
 
 SpikeViewer::~SpikeViewer() {}
@@ -265,6 +270,48 @@ void SpikeViewer::renderOpenGL()
 {
 		
 	glClear(GL_COLOR_BUFFER_BIT);
+
+	 if (eventBuffer->getNumEvents() > 0) {
+
+		std::cout << "Events received by Spike Viewer." << std::endl;
+
+		MidiBuffer::Iterator i (*eventBuffer);
+		MidiMessage message(0xf4);
+
+		int samplePosition;
+		i.setNextSamplePosition(samplePosition);
+
+		while (i.getNextEvent (message, samplePosition)) {
+
+			int numbytes = message.getRawDataSize();
+			uint8* dataptr = message.getRawData();
+
+			int chan = (*dataptr<<8) + *(dataptr+1);
+
+			std::cout << " Bytes received: " << numbytes << std::endl;
+			std::cout << " Message timestamp = " << message.getTimeStamp() << std::endl;
+			std::cout << " Message channel: " << chan << std::endl;
+
+ 			std::cout << "   ";
+
+ 			dataptr += 2;
+
+			for (int n = 0; n < numbytes-2; n++) {
+				std::cout << String(*dataptr++) << " ";
+			}
+					
+			std::cout << std::endl << std::endl;
+		}
+
+		//glColor3f(0,0.0,0);
+		//glBegin(GL_LINE_STRIP);
+		//glVertex2f(0,0);
+		//glVertex2f(1,1);
+		//glEnd();
+
+		eventBuffer->clear();
+
+	}
 
 }
 
