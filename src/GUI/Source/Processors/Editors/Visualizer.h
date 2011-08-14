@@ -131,6 +131,4 @@ public:
 	void newOpenGLContextCreated();
 };
 
-
-
 #endif  // __VISUALIZER_H_5573CACE__

@@ -40,7 +40,7 @@ public:
 	void processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages);
 	void setParameter (int parameterIndex, float newValue);
 
-	AudioSampleBuffer* getDestBuffer() {return destBuffer;}
+	AudioSampleBuffer* getContinuousBuffer() {return destBuffer;}
 
 
 private:

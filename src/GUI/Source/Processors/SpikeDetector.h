@@ -31,6 +31,8 @@ public:
 	void processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages);
 	void setParameter (int parameterIndex, float newValue);
 
+	MidiBuffer* getEventBuffer() {return spikeBuffer;}
+
 	//AudioProcessorEditor* createEditor();
 
 	bool hasEditor() const {return true;}
@@ -39,6 +41,8 @@ private:
 	double sampleRate, threshold;
 	double prePeakMs, postPeakMs;
 	int accumulator;
+
+	MidiBuffer* spikeBuffer;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SpikeDetector);
 

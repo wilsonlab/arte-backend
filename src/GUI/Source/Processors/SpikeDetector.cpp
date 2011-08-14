@@ -14,7 +14,7 @@
 SpikeDetector::SpikeDetector(const String name_, int* nSamps, int nChans, const CriticalSection& lock_, int id)
 	: GenericProcessor(name_, nSamps, nChans, lock_, id), 
 	  sampleRate (40000.0), threshold(100), prePeakMs(0.2), postPeakMs(0.8),
-	  accumulator(0)
+	  accumulator(0), spikeBuffer(0)
 	
 {
 

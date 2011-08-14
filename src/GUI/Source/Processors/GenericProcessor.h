@@ -94,6 +94,9 @@ public:
 	virtual void enable() {}
 	virtual void disable() {}
 
+	virtual AudioSampleBuffer* getContinuousBuffer() {return 0;}
+	virtual MidiBuffer* getEventBuffer() {return 0;}
+
 	AudioProcessorEditor* getEditor() {return editor;}
 
 	void setUIComponent(UIComponent* ui) {UI = ui;}
