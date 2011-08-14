@@ -83,7 +83,12 @@ void Visualizer::buttonClicked(Button* button)
 	{
 		if (dataWindow == 0) {
 			dataWindow = new DataWindow(windowSelector);
-			dataWindow->setContentComponent(new Renderer(streamBuffer,eventBuffer,UI));
+
+			if (getName().equalsIgnoreCase("Visualizers/LFP Viewer"))
+				dataWindow->setContentComponent(new LfpViewer(streamBuffer,eventBuffer,UI));
+			else if (getName().equalsIgnoreCase("Visualizers/Spike Viewer"))
+				dataWindow->setContentComponent(new SpikeViewer(streamBuffer,eventBuffer,UI));
+
 			dataWindow->setVisible(true);
 			
 		} else {
@@ -94,7 +99,11 @@ void Visualizer::buttonClicked(Button* button)
 	{
 		if (tabSelector->getToggleState() && tabIndex < 0)
 		{
-			tabIndex = viewport->addTab("Visualizer",new Renderer(streamBuffer,eventBuffer,UI));
+			if (getName().equalsIgnoreCase("Visualizers/LFP Viewer"))
+				tabIndex = viewport->addTab("LFP",new LfpViewer(streamBuffer,eventBuffer,UI));
+			else if (getName().equalsIgnoreCase("Visualizers/Spike Viewer"))
+				tabIndex = viewport->addTab("Spikes",new SpikeViewer(streamBuffer,eventBuffer,UI));
+		
 		} else if (!tabSelector->getToggleState() && tabIndex > -1)
 		{
 			viewport->removeTab(tabIndex);
@@ -112,15 +121,24 @@ Renderer::Renderer(AudioSampleBuffer* sBuffer, MidiBuffer* eBuffer, UIComponent*
 	ui->addActionListener(this);
 }
 
-Renderer::~Renderer()
+Renderer::~Renderer() { }
+
+void Renderer::actionListenerCallback(const String & msg)
 {
-	
+	repaint();
 }
 
 
-void Renderer::newOpenGLContextCreated()
+LfpViewer::LfpViewer(AudioSampleBuffer* sBuffer, MidiBuffer* eBuffer, UIComponent* ui)
+	: Renderer(sBuffer, eBuffer, ui)
 {
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+LfpViewer::~LfpViewer() {}
+
+void LfpViewer::newOpenGLContextCreated()
+{
+	glClearColor(0.6f, 0.6f, 0.4f, 1.0f);
 	glClearDepth (1.0);
 
 	glMatrixMode (GL_PROJECTION);
@@ -147,7 +165,7 @@ void Renderer::newOpenGLContextCreated()
 }
 
 
-void Renderer::renderOpenGL()
+void LfpViewer::renderOpenGL()
 {
 
 	//std::cout << "Painting..." << std::endl;
@@ -179,13 +197,13 @@ void Renderer::renderOpenGL()
 
 		//std::cout << "Message Received." << std::endl;
 		if (chan % 4 == 0)
-			glColor3f(1.0,1.0,0);//1.0*chan/16,1.0*chan/16,1.0*chan/16);
+			glColor3f(0.0,0.0,0);//1.0*chan/16,1.0*chan/16,1.0*chan/16);
 		else if (chan % 4 == 1)
-			glColor3f(0,1.0,0);
+			glColor3f(0,0.0,0);
 		else if (chan % 4 == 2)
-			glColor3f(1.0,0.5,0);
+			glColor3f(0.0,0.0,0);
 		else
-			glColor3f(1.0,0.0,0.75);
+			glColor3f(0.0,0.0,0.0);
 
 	
 		for (int n = 0; n < nSamples-skip; n+= skip )
@@ -207,10 +225,47 @@ void Renderer::renderOpenGL()
 }
 
 
-void Renderer::actionListenerCallback(const String & msg)
+SpikeViewer::SpikeViewer(AudioSampleBuffer* sBuffer, MidiBuffer* eBuffer, UIComponent* ui)
+	: Renderer(sBuffer, eBuffer, ui)
 {
-	//std::cout << "Painting..." << std::endl;
-	repaint();
+}
+
+SpikeViewer::~SpikeViewer() {}
+
+
+void SpikeViewer::newOpenGLContextCreated()
+{
+	glClearColor(0.9f, 0.7f, 0.2f, 1.0f);
+	glClearDepth (1.0);
+
+	glMatrixMode (GL_PROJECTION);
+	glLoadIdentity ();
+	glOrtho(0, 1, 1, 0, 0, 1);
+	glMatrixMode (GL_MODELVIEW);
+
+		
+	//glDepthFunc (GL_LESS);
+	//glEnable (GL_DEPTH_TEST);
+	//glEnable (GL_TEXTURE_2D);
+	glEnable (GL_BLEND);
+	glShadeModel(GL_FLAT);
+	
+	glHint (GL_LINE_SMOOTH_HINT, GL_NICEST);
+	glHint (GL_POINT_SMOOTH_HINT, GL_NICEST);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glColor3f(1,1,1);
+
+	glFlush();
+
+}
+
+
+void SpikeViewer::renderOpenGL()
+{
+		
+	glClear(GL_COLOR_BUFFER_BIT);
+
 }
 
 

@@ -8,18 +8,22 @@
   ==============================================================================
 */
 
+#include <stdio.h>
+
 #include "ProcessorGraph.h"
-#include "SourceNode.h"
+
+#include "AudioNode.h"
+#include "DisplayNode.h"
+#include "EventNode.h"
+#include "FileReader.h"
 #include "FilterNode.h"
 #include "GenericProcessor.h"
-#include "AudioNode.h"
+#include "RecordNode.h"
 #include "ResamplingNode.h"
 #include "SignalGenerator.h"
-#include "RecordNode.h"
-#include "EventNode.h"
-#include "DisplayNode.h"
+#include "SourceNode.h"
+#include "SpikeDetector.h"
 
-#include <stdio.h>
 
 ProcessorGraph::ProcessorGraph(int numChannels) : currentNodeId(100), lastNodeId(1), 
 	SOURCE_NODE_ID(0), 
@@ -225,6 +229,13 @@ GenericProcessor* ProcessorGraph::createProcessorFromDescription(String& descrip
 			std::cout << "Creating a new signal generator." << std::endl;
 			processor = new SignalGenerator(description, &numSamplesInThisBuffer, 16, lock, currentNodeId);
 
+		} else if (subProcessorType.equalsIgnoreCase("File Reader")) {
+			
+			sendActionMessage("New file reader created.");
+
+			std::cout << "Creating a file reader." << std::endl;
+			processor = new FileReader(description, &numSamplesInThisBuffer, 16, lock, currentNodeId);
+
 		}
 
 	} else if (processorType.equalsIgnoreCase("Filters")) {
@@ -238,7 +249,11 @@ GenericProcessor* ProcessorGraph::createProcessorFromDescription(String& descrip
 		} else if (subProcessorType.equalsIgnoreCase("Resampler")) {
 			std::cout << "Creating a new resampler." << std::endl;
 			processor = new ResamplingNode(description, &numSamplesInThisBuffer, 16, lock, currentNodeId, false);
-		} 
+		
+		} else if (subProcessorType.equalsIgnoreCase("Spike Detector")) {
+			std::cout << "Creating a new spike detector." << std::endl;
+			processor = new SpikeDetector(description, &numSamplesInThisBuffer, 16, lock, currentNodeId);
+		}
 
 	// } else if (processorType.equalsIgnoreCase("Utilities")) {
 		
@@ -262,13 +277,13 @@ GenericProcessor* ProcessorGraph::createProcessorFromDescription(String& descrip
 
 		sendActionMessage("New visualizer created.");
 		
-		if (subProcessorType.equalsIgnoreCase("Stream Viewer")) {
+		//if (subProcessorType.equalsIgnoreCase("Stream Viewer")) {
 			
 			std::cout << "Creating a display node." << std::endl;
 			processor = new DisplayNode(description, &numSamplesInThisBuffer, 16, lock, currentNodeId);
 
 			processor->setUIComponent(UI);
-		}
+		//}
 	
 	}
 

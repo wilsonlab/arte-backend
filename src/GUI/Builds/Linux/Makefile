@@ -63,6 +63,8 @@ OBJECTS := \
   $(OBJDIR)/RootFinder_239a995f.o \
   $(OBJDIR)/State_22979684.o \
   $(OBJDIR)/AudioComponent_521bd9c9.o \
+  $(OBJDIR)/SpikeDetector_300d85e7.o \
+  $(OBJDIR)/FileReader_18023b0e.o \
   $(OBJDIR)/AudioNode_94606ff3.o \
   $(OBJDIR)/EventNode_95c842b7.o \
   $(OBJDIR)/AudioEditor_fb2c6555.o \
@@ -208,6 +210,16 @@ $(OBJDIR)/State_22979684.o: ../../Source/Dsp/State.cpp
 $(OBJDIR)/AudioComponent_521bd9c9.o: ../../Source/Audio/AudioComponent.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling AudioComponent.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/SpikeDetector_300d85e7.o: ../../Source/Processors/SpikeDetector.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling SpikeDetector.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/FileReader_18023b0e.o: ../../Source/Processors/FileReader.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling FileReader.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/AudioNode_94606ff3.o: ../../Source/Processors/AudioNode.cpp

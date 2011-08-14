@@ -101,16 +101,36 @@ class Renderer : public OpenGLComponent,
 public:
 	Renderer(AudioSampleBuffer* streamBuffer, MidiBuffer* eventBuffer, UIComponent* ui);
 	~Renderer();
-	void newOpenGLContextCreated();
-	void renderOpenGL();
+	virtual void newOpenGLContextCreated() = 0;
+	virtual void renderOpenGL() = 0;
 
-private:
 	AudioSampleBuffer* streamBuffer;
 	MidiBuffer* eventBuffer;
+
+private:
 
 	void actionListenerCallback(const String& msg);
 
 };
+
+class LfpViewer : public Renderer
+{
+public:
+	LfpViewer(AudioSampleBuffer* streamBuffer, MidiBuffer* eventBuffer, UIComponent* ui);
+	~LfpViewer();
+	void renderOpenGL();	
+	void newOpenGLContextCreated();
+};
+
+class SpikeViewer : public Renderer
+{
+public:
+	SpikeViewer(AudioSampleBuffer* streamBuffer, MidiBuffer* eventBuffer, UIComponent* ui);
+	~SpikeViewer();
+	void renderOpenGL();	
+	void newOpenGLContextCreated();
+};
+
 
 
 #endif  // __VISUALIZER_H_5573CACE__

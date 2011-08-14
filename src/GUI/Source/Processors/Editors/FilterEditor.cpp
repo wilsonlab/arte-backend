@@ -14,16 +14,22 @@
 
 
 FilterEditor::FilterEditor (GenericProcessor* parentNode, FilterViewport* vp) 
-	: GenericEditor(parentNode, vp), slider(0)
+	: GenericEditor(parentNode, vp), lowSlider(0), highSlider(0)
 
 {
 	desiredWidth = 250;
 
-	slider = new Slider (T("Slider"));
-	slider->setBounds(25,45,200,40);
-	slider->setRange(10,200,10);
-	slider->addListener(this);
-	addAndMakeVisible(slider);
+	lowSlider = new Slider (T("Low-Cut Slider"));
+	lowSlider->setBounds(25,20,200,40);
+	lowSlider->setRange(10,600,10);
+	lowSlider->addListener(this);
+	addAndMakeVisible(lowSlider);
+
+	highSlider = new Slider (T("High-Cut Slider"));
+	highSlider->setBounds(25,65,200,40);
+	highSlider->setRange(1000,10000,500);
+	highSlider->addListener(this);
+	addAndMakeVisible(highSlider);
 
 
 	//docWindow = new DocumentWindow(T("Spike Window"), Colours::black, DocumentWindow::allButtons);
@@ -63,7 +69,12 @@ FilterEditor::~FilterEditor()
 void FilterEditor::sliderValueChanged (Slider* slider)
 {
 
-	getAudioProcessor()->setParameter(0,slider->getValue());
+	if (slider == lowSlider)
+		getAudioProcessor()->setParameter(0,slider->getValue());
+	else 
+		getAudioProcessor()->setParameter(1,slider->getValue());
+
+
 
 	//if (slider->getValue() > 1000) {
 	//	tabComponent->addTab(T("Blank"), Colours::lightgrey, 0, true);

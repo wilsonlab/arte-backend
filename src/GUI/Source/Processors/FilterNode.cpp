@@ -14,37 +14,57 @@
 
 FilterNode::FilterNode(const String name_, int* nSamps, int nChans, const CriticalSection& lock_, int id)
 	: GenericProcessor(name_, nSamps, nChans, lock_, id), 
-	  sampleRate (44100.0), centerFrequency(2000.0), bandWidth (200)
+	  sampleRate (40000.0), highCut(9000.0), lowCut(1.0)
 	
 {
 
 	setNumInputs(nChans);
 	setNumOutputs(nChans);
-	//setPlayConfigDetails(nChans,nChans,44100.0,128);
 
+		// each family of filters is given its own namespace
+		// RBJ: filters from the RBJ cookbook
+		// Butterworth
+		// ChebyshevI: ripple in the passband
+		// ChebyshevII: ripple in the stop band
+		// Elliptic: ripple in both the passband and stopband
+		// Bessel: theoretically with linear phase
+		// Legendre: "Optimum-L" filters with steepest transition and monotonic passband
+		// Custom: Simple filters that allow poles and zeros to be specified directly
 
-	//if (getName().equalsIgnoreCase("Bandpass Filter")) {
+		// within each namespace exists a set of "raw filters"
+		// Butterworth::LowPass
+		//				HighPass
+		// 				BandPass
+		//				BandStop
+		//				LowShelf
+		// 				HighShelf
+		//				BandShelf
+		//
+		//	class templates (such as SimpleFilter) which require FilterClasses
+		//    expect an identifier of a raw filter
+		//  raw filters do not support introspection, or the Params style of changing
+		//    filter settings; they only offer a setup() function for updating the IIR
+		//    coefficients to a given set of parameters
+		//
+
+		// each filter family namespace also has the nested namespace "Design"
+		// here we have all of the raw filter names repeated, except these classes
+		//  also provide the Design interface, which adds introspection, polymorphism,
+		//  the Params style of changing filter settings, and in general all fo the features
+		//  necessary to interoperate with the Filter virtual base class and its derived classes
 
 		filter = new Dsp::SmoothedFilterDesign 
-			<Dsp::RBJ::Design::LowPass, 16> (1024);
+			<Dsp::Butterworth::Design::BandPass 	// design type
+			<4>,								 	// order
+			16,										// number of channels
+			Dsp::DirectFormII>						// realization
+			(1024);									// number of samples over which to fade 
+													//   parameter changes
 	
 		std::cout << "Filter created." << std::endl;
 
-	//filter.setup(3, // order
-	 //            sampleRate,
-	  //           centerFrequency,
-	   //          bandWidth,
-	    //         1); // ripple dB
+		setFilterParameters();
 
-		Dsp::Params params;
-		params[0] = sampleRate; // sample rate
-		params[1] = centerFrequency; // cutoff frequency
-		params[2] = 1.25; //Q //
-		//params[3] = bandWidth; // bandWidth
-
-		filter->setParams (params);
-
-	//}
 }
 
 FilterNode::~FilterNode()
@@ -68,18 +88,31 @@ AudioProcessorEditor* FilterNode::createEditor()
 	
 //	return editor;
 //}
+
+void FilterNode::setFilterParameters()
+{
+
+	Dsp::Params params;
+	params[0] = sampleRate; // sample rate
+	params[1] = 4; // order
+	params[2] = (highCut + lowCut)/2; // center frequency
+	params[3] = highCut - lowCut; // bandwidth
+
+	filter->setParams (params);
+
+}
+
 void FilterNode::setParameter (int parameterIndex, float newValue)
 {
 	//std::cout << "Message received." << std::endl;
-	centerFrequency = newValue;
-	
-	Dsp::Params params;
-	params[0] = sampleRate; // sample rate
-	params[1] = centerFrequency; // cutoff frequency
-	params[2] = 1.25; //Q //
-	//params[3] = bandWidth; // bandWidth
-	
-	filter->setParams (params);
+
+	if (parameterIndex == 0) {
+		lowCut = newValue;
+	} else {
+		highCut = newValue;
+	}
+
+	setFilterParameters();
 
 }
 

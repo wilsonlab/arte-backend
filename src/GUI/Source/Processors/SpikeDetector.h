@@ -1,53 +1,49 @@
 /*
   ==============================================================================
 
-    FilterNode.h
-    Created: 7 May 2011 5:07:28pm
+    SpikeDetector.h
+    Created: 14 Aug 2011 3:36:00pm
     Author:  jsiegle
 
   ==============================================================================
 */
 
-#ifndef __FILTERNODE_H_CED428E__
-#define __FILTERNODE_H_CED428E__
+#ifndef __SPIKEDETECTOR_H_3F920F95__
+#define __SPIKEDETECTOR_H_3F920F95__
 
 #include "../../JuceLibraryCode/JuceHeader.h"
-#include "../Dsp/Dsp.h"
 #include "GenericProcessor.h"
-#include "Editors/FilterEditor.h"
+//#include "Editors/SpikeDetectorEditor.h"
 
-class FilterEditor;
+//class SpikeDetectorEditor;
 class FilterViewport;
 
-class FilterNode : public GenericProcessor
+class SpikeDetector : public GenericProcessor
 
 {
 public:
 	
-	FilterNode(const String name, int* nSamples, int nChans, const CriticalSection& lock, int nodeId);
-	~FilterNode();
+	SpikeDetector(const String name, int* nSamples, int nChans, const CriticalSection& lock, int nodeId);
+	~SpikeDetector();
 	
 	void prepareToPlay (double sampleRate, int estimatedSamplesPerBlock);
 	void releaseResources();
 	void processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages);
 	void setParameter (int parameterIndex, float newValue);
 
-	AudioProcessorEditor* createEditor();
+	//AudioProcessorEditor* createEditor();
 
 	bool hasEditor() const {return true;}
 	
 private:
-	double sampleRate, lowCut, highCut;
-	Dsp::Filter* filter;
+	double sampleRate, threshold;
+	double prePeakMs, postPeakMs;
+	int accumulator;
 
-	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilterNode);
-
-	void setFilterParameters();
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SpikeDetector);
 
 };
 
 
 
-
-
-#endif  // __FILTERNODE_H_CED428E__
+#endif  // __SPIKEDETECTOR_H_3F920F95__

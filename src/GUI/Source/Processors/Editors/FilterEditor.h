@@ -26,7 +26,8 @@ public:
 	void sliderValueChanged (Slider* slider);
 
 private:	
-	Slider* slider;
+	Slider* lowSlider;
+	Slider* highSlider;
 	DocumentWindow* docWindow;
 
 	//int tabIndex;

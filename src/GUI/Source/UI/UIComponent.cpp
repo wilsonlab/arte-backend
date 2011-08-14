@@ -24,7 +24,7 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 	
 	//BorderSize bs = BorderSize(20,20,10,10);
 
-	setBounds(0,0,920,600);
+	setBounds(0,0,920,700);
 
 	int w = getWidth();
 	int h = getHeight();

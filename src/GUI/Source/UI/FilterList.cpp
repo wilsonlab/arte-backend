@@ -61,14 +61,14 @@ ListItem::ListItem(const String name_, const String parentName_, bool containsSu
        addSubItem (new ListItem ("Custom FPGA",name,false));
        addSubItem (new ListItem ("Network Stream",name,false));
        addSubItem (new ListItem ("Signal Generator",name,false));
+       addSubItem (new ListItem ("File Reader",name,false));
     } else if (name.equalsIgnoreCase("Filters")) {
        addSubItem (new ListItem ("Bandpass Filter",name,false));
        addSubItem (new ListItem ("Resampler",name,false));
-       addSubItem (new ListItem ("Thresholder",name,false));
+       addSubItem (new ListItem ("Spike Detector",name,false));
     }  else if (name.equalsIgnoreCase("Visualizers")) {
-       addSubItem (new ListItem ("Stream Viewer",name,false));
-       addSubItem (new ListItem ("Spike Viewer",name,false));
-       addSubItem (new ListItem ("FFT Viewer",name,false));
+       addSubItem (new ListItem ("LFP Viewer",name,false));
+       addSubItem (new ListItem ("Spike Viewer",name,false));       
     }  else if (name.equalsIgnoreCase("Utilities")) {
        addSubItem (new ListItem ("Splitter",name,false));
        addSubItem (new ListItem ("Event Node",name,false));
