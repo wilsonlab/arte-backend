@@ -1,6 +1,8 @@
 #include "process_command.h"
 #include "util.h"
 
+extern bool arte_disk_on;
+
 void process_command(command_t *cmd){
 
   int c_argc;
@@ -40,6 +42,49 @@ void process_command(command_t *cmd){
     sscanf(c_argv[1], "%d", &samps);
     set_postsamps( trode_names, n_trode_names, samps );
   }
+
+  if( strcmp( "resetclock", c_argv[0] ) == 0){
+    reset_clock();
+  }
+
+  if( strcmp( "diskclock", c_argv[0] ) == 0 ){
+    bool d = arte_disk_on;
+    printf("CAUGHT IT!\n");
+    if(d){
+      arte_disk_on = 0;
+      printf("Stopping disk writing.\n");
+      //reset_clock();
+    } else {
+      reset_clock();
+      arte_disk_on = 1;
+      printf("Starting disk writing.\n");
+    }
+    fflush(stdout);
+  }
+
+  if( strcmp( "disk", c_argv[0] ) == 0){
+    bool d = arte_disk_on;
+    if(d){
+      arte_disk_on = 0;
+      printf("Stopping disk writing.\n");
+    } else {
+      arte_disk_on = 1;
+      printf("Starting disk writing.\n");
+    }
+  }
+
+  if( strcmp( "stopacquisition", c_argv[0] ) == 0){
+    neural_daq_stop_all();
+  }
+
+}
+
+void reset_clock(){
+  printf("Resetting the clock. (Note, you'll want to do this about\n");
+  printf("a half-second before the clock signal comes back online.\n");
+  printf("If AD-slave, reset here just a moment after resetting master clock.\n");
+  fflush(stdout);
+  arte_timer.reset();
 
 }
 
@@ -173,6 +218,7 @@ void parse_command(char *cmd_str, int *c_argc, char c_argv[MAX_N_TOKENS][MAX_TOK
   int t = 0;
   int tc = 0;
   char this_char;
+  memset( c_argv, 0, MAX_N_TOKENS * MAX_TOKEN_SIZE );
   printf("the command:%s\n",cmd_str);
   for(int i = 0; i < MAX_N_TOKENS * MAX_TOKEN_SIZE; i++){
     this_char = cmd_str[i];

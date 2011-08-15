@@ -14,6 +14,7 @@
 int tmp;
 extern FILE *main_file;
 extern pthread_mutex_t main_file_mutex;
+extern bool arte_disk_on;
 
 Trode::Trode(){
   has_sockfd = false;
@@ -189,8 +190,13 @@ void *trode_filter_data(void *t){
   if(n_spikes > 0){
     for(int n = 0; n < n_spikes; n++){
       //printf("FOUND SPIKE!\n");
-      if( ((Trode*)t)->spike_array[n].ts >= ((Trode*)t)->next_ok_spike_ts){
-	
+      if( (((Trode*)t)->spike_array[n].ts >= ((Trode*)t)->next_ok_spike_ts) |
+	  (  ((Trode*)t)->spike_array[n].ts < ((Trode*)t)->next_ok_spike_ts - 5000 )){
+
+	// The first case admits spikes that happened after next_ok_spike_ts (last spike time + refractory)
+	// The second case admits spikes that are more than half a millisecond OLDER than next_ok
+	// This allows through spikes that came after a clock_restart
+
 	//if( ((Trode*)t)->name == 0 & true){
 	  //printf("next_ok_ts: %d  this_ts called ok: %d\n", ((Trode*)t)->next_ok_spike_ts, ((Trode*)t)->spike_array[n].ts);
 	  //printf("*************SENDING A SPIKE***************\n");
@@ -349,10 +355,11 @@ void spike_to_disk(spike_net_t *spike){
   
   spikeToBuff(spike, buff, &buff_size, false);
   
-  pthread_mutex_lock(&main_file_mutex);
-  try_fwrite <char> (buff, buff_size, main_file);
-  pthread_mutex_unlock(&main_file_mutex);
- 
+  if(arte_disk_on){
+    pthread_mutex_lock(&main_file_mutex);
+    try_fwrite <char> (buff, buff_size, main_file);
+    pthread_mutex_unlock(&main_file_mutex);
+  }
 }
 
 void spike_to_net(spike_net_t *spike, Trode *t){

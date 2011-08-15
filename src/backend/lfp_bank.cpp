@@ -8,6 +8,7 @@
 #include "datapacket.h"
 
 extern FILE *main_file;
+extern bool arte_disk_on;
 extern pthread_mutex_t main_file_mutex;
 
 Lfp_bank::Lfp_bank(){
@@ -110,9 +111,14 @@ void lfp_bank_write_record(void *lfp_bank_in){
   Lfp_bank* this_bank = (Lfp_bank*) lfp_bank_in;
   uint16_t recordSizeBytes = 0;
   //std::cout << std::setw(6);
-  if((this_bank->my_buffer->my_daq->buffer_timestamp > this_bank->next_ts_ok_to_print) &
+
+  if( this_bank->my_buffer->my_daq->buffer_timestamp < (this_bank->next_ts_ok_to_print - 5000))
+    this_bank->next_ts_ok_to_print = this_bank->my_buffer->my_daq->buffer_timestamp;
+
+  if(((this_bank->my_buffer->my_daq->buffer_timestamp > this_bank->next_ts_ok_to_print) ) &
      (this_bank->my_buffer->my_daq->buffer_timestamp < (UINT32_MAX-10000))){
-    this_bank->next_ts_ok_to_print += 2500;
+    
+    this_bank->next_ts_ok_to_print = this_bank->my_buffer->my_daq->buffer_timestamp + 5000;
     for(int s = 0; s < this_bank->d_buf_len; s++){
       std::cout << this_bank->my_buffer->my_daq->buffer_timestamp / 10000 << " ";
       for(int c = 0; c < this_bank->n_chans; c++){
@@ -152,10 +158,12 @@ void lfp_bank_write_record(void *lfp_bank_in){
     // save the wave to the disk
     waveToBuff(&lfp, buff, &buff_size, false);
     
-    pthread_mutex_lock(&main_file_mutex);
-    try_fwrite <char> (buff, buff_size, main_file);
-    pthread_mutex_unlock(&main_file_mutex);
-    
+    if(arte_disk_on){
+      pthread_mutex_lock(&main_file_mutex);
+      try_fwrite <char> (buff, buff_size, main_file);
+      pthread_mutex_unlock(&main_file_mutex);
+    }
+
     // printf("buff: ");
     //  for(int s = 0; s < 50; s++)
     //  printf("%c", buff[s]);

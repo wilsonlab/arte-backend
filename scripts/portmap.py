@@ -52,6 +52,7 @@ class packet_forwarder(threading.Thread):
         while running:
             try:
                 data, addr = self.sock_in.recvfrom(1024)
+                print "GOT ONE! Port: " + self.in_port
                 self.have_data = 1
             except:
                 self.have_data = 0

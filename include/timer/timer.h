@@ -77,6 +77,7 @@ class Timer {
   int start();
   int stop();
   void stop2();
+  void reset();
 
   int setInitCount(uint32_t initCount);
   uint32_t getCount();

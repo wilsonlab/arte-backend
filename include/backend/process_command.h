@@ -30,6 +30,7 @@ void build_num_lists(int c_argc, char c_argv[MAX_N_TOKENS][MAX_TOKEN_SIZE],
 		     int chan_inds[MAX_N_TOKENS], int *n_chan_inds);
 void set_threshold(int *trodenames, int n_trodes, int *channames, int n_chans, rdata_t new_threshold);
 void set_postsamps(int *trodenames, int n_trodes, int new_postsamps);
+void reset_clock();
 
 int ind_from_trode_name(uint16_t name);
 int ind_from_lfp_bank_name(uint16_t name);

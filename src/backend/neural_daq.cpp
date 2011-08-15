@@ -260,46 +260,65 @@ void neural_daq_start_all(void){
 
 void neural_daq_stop(int i){
   neural_daq *nd = &(neural_daq_array[i]);
-  printf("about to stop AI task\n"); fflush(stdout);
-  daq_err_check( DAQmxStopTask ( nd->task_handle) );
-  printf(" finished stopping AI task, about co clear it\n");fflush(stdout);
-  daq_err_check( DAQmxClearTask( nd->task_handle) );
-  if (i == master_ind){
-    arte_timer.stop2();
+  bool32 task_done;
+  if( nd->task_handle > 0 ) {
+    printf("Ok after if th is:%d\n", nd->task_handle); fflush(stdout);
+    daq_err_check( DAQmxIsTaskDone( nd->task_handle, &task_done ) );
+    printf("Ok ofter IsTaskDone check\n"); fflush(stdout);
+    if( !task_done ){
+      printf("about to stop AI task\n"); fflush(stdout);
+      daq_err_check( DAQmxStopTask ( nd->task_handle) );
+      printf(" finished stopping AI task, about co clear it\n");fflush(stdout);
+    } else {
+      printf("neural daq %d told to stop its AI task, but task is already done.\n", nd->id ); fflush(stdout);
+    }
+    printf("Ok before cleartask\n"); fflush(stdout);
+    daq_err_check( DAQmxClearTask( nd->task_handle) );
+    if (i == master_ind){
+      arte_timer.stop2();
+    }
   }
 }
 
 void neural_daq_stop_all(void){
-  acquiring = false;
-  //  std::cout << "neural_daq.cpp line 160 test." << std::endl;
-  sleep(1);  // why sleep?  b/c for some reason hitting immediately after running program hangs the computer (threads' fault?)
-  neural_daq *nd;
-
-  bool32 isDone;
-  if( !daqs_reading ){
-    for(int n = 0; n < n_neural_daqs; n++){
-      neural_daq_stop(n);  
+  if(acquiring){
+    acquiring = false;
+    printf(" NEURAL DAQ STOP ALL \n"); fflush(stdout);
+    sleep(1);  // why sleep?  b/c for some reason hitting immediately after running program hangs the computer (threads' fault?)
+    neural_daq *nd;
+    
+    bool32 isDone;
+    if( !daqs_reading ){
+      for(int n = 0; n < n_neural_daqs; n++){
+	printf("About to neural_daq_stop(%d)\n",n); fflush(stdout);
+	neural_daq_stop(n);  
+	printf("Finished neural_daq_stop(%d)\n",n); fflush(stdout);
+      }
     }
+    bool master_done = false;  // <-- WHY?
+    
+    finalize_files();
+    
+    printf("got ast finalize_files()\n"); fflush(stdout);
+    
+    for(int n = 0; n < n_filtered_buffers; n++){
+      //std::cout << "About to call fb[n].finalize_files() from neural_daq.cpp" << std::endl;
+      filtered_buffer_array[n].finalize_files();
+    }
+    
+    for(int n = 0; n < n_trodes; n++){
+      trode_array[n].end_acquisition();
+    }
+    
+    for(int n = 0; n < n_lfp_banks; n++){
+      lfp_bank_array[n].end_acquisition();
+    }
+    
+    printf(" DONE WITH NEURAL DAQ STOP ALL \n"); fflush(stdout);
+    fclose(tmp_timestamp);
+  } else {
+    printf("neural_daq_stop_all issued, but acquiring = false.\n"); fflush(stdout);
   }
-  bool master_done = false;  // <-- WHY?
-  
-  finalize_files();
-  
-  for(int n = 0; n < n_filtered_buffers; n++){
-    std::cout << "About to call fb[n].finalize_files() from neural_daq.cpp" << std::endl;
-    filtered_buffer_array[n].finalize_files();
-  }
-
-  for(int n = 0; n < n_trodes; n++){
-    trode_array[n].end_acquisition();
-  }
-
-  for(int n = 0; n < n_lfp_banks; n++){
-    lfp_bank_array[n].end_acquisition();
-  }
-
-  fclose(tmp_timestamp);
-
 }
 
 void read_data_from_file(void){ // the file-reading version of EveryNCallback
@@ -460,7 +479,10 @@ void do_cycle(timestamp_t this_cycle_time){
     }
     
     //printf("About to read AD\n");fflush(stdout);
-    daq_err_check ( DAQmxReadBinaryI16( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
+    bool32 tmp_isdone;
+    daq_err_check( DAQmxIsTaskDone( nd->task_handle, &tmp_isdone ));
+    if(!tmp_isdone)
+      daq_err_check ( DAQmxReadBinaryI16( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
     //printf("Done read\n"); fflush(stdout);
   }
   //pthread_attr_destroy(&attr);

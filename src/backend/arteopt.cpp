@@ -11,6 +11,7 @@
 #include "process_command.h"
 
 FILE *main_file;
+bool arte_disk_on;
 pthread_mutex_t main_file_mutex;
 
 bool acquiring = false;
@@ -164,6 +165,7 @@ void arte_session_init(int argc, char *argv[]){
   } else{
     main_file = NULL;
   }
+  arte_disk_on = false;
 
   // count how many trodes
   BOOST_FOREACH(boost::property_tree::ptree::value_type &v,

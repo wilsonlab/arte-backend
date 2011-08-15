@@ -147,36 +147,39 @@ uint32_t Timer::getCount(){
 	
 }
 
-#ifndef ISTOY
-timestamp_t Timer::getTimestamp(){
-  std::cout<<"Timer::getTimestamp() called!"<<std::endl;
-    uInt32 timestamp;
-    ////daq_err_check( DAQmxReadCounterScalarU32(counterTask, 10.0, &timestamp, NULL) );
-    daq_err_check ( DAQmxReadCounterScalarU32( counter_count_task, 10.0 &timestamp, NULL ) );
-  //get the count from the counter card, convert to TS and return it
-    return (timestamp_t)timestamp;
-}
-#endif
+// #ifndef ISTOY
+// timestamp_t Timer::getTimestamp(){
+//   std::cout<<"Timer::getTimestamp() called!"<<std::endl;
+//     uInt32 timestamp;
+//     ////daq_err_check( DAQmxReadCounterScalarU32(counterTask, 10.0, &timestamp, NULL) );
+//     daq_err_check ( DAQmxReadCounterScalarU32( counter_count_task, 10.0 &timestamp, NULL ) );
+//   //get the count from the counter card, convert to TS and return it
+//     return (timestamp_t)timestamp;
+// }
+// #endif
 
-#ifdef ISTOY
+
 uint32_t Timer::getTimestamp(){
   uInt32 timestamp = 0;
   ////daq_err_check( DAQmxReadCounterScalarU32( counterTask, 10.0, &timestamp, NULL) );
-  if( counter_count_task ){
+  if( (counter_count_task != 0) & running ){
     daq_err_check( DAQmxReadCounterScalarU32( counter_count_task, 10.0, &timestamp, NULL) );
     //printf("timestamp: %d\n",timestamp);
   } else {
-    printf("No running counter_count task yet.\n");
+    printf("No running counter_count task yet. running=%d\n", running);
     timestamp = 0;
   }
-  if(timestamp > next_ok_ts_to_print){
-    next_ok_ts_to_print += 2500;
+  if(timestamp < (next_ok_ts_to_print - 20000))
+    next_ok_ts_to_print = next_ok_ts_to_print;
+  if(timestamp >= next_ok_ts_to_print){
+    next_ok_ts_to_print += 5000;
     printf("TS is %d\n",timestamp);
   }
-  return timestamp;
-  //return toy_timestamp;
+  if(running)
+    return timestamp;
+  if(!running)
+    return toy_timestamp;
 }
-#endif
 
 int Timer::initDAQCounterTask(){
 	std::cout<<"Timer::initDAQCounterTask() called!"<<std::endl;
@@ -314,32 +317,6 @@ void Timer::init2(boost::property_tree::ptree &timer_pt){
     //initDAQCounterTask();
     //armCounterTask();
     counterTask = 0;
-    ///// printf("About to create counter task.\n");
-/////     fflush(stdout);
-/////     daq_err_check( DAQmxCreateTask("Counter Task",&counterTask) );
-/////     fflush(stdout);
-/////     printf("About to create edge counter chan.\n");
-/////     fflush(stdout);
-/////     daq_err_check( DAQmxCreateCICountEdgesChan(counterTask, "Dev2/ctr1","",DAQmx_Val_Rising, 0, DAQmx_Val_CountUp) );
-/////     fflush(stdout);
-
-/////     //    printf("about to try to set sample clock timing for counter channel\n");
-/////     //daq_err_check( DAQmxCfgSampClkTiming( counterTask, "/Dev1/10MHzRefClock", 10000000.0, DAQmx_Val_Rising, DAQmx_Val_ContSamps, 100) );
-/////     //printf("finished setting sample clock timing for counter channel\n");
-    
-/////     printf("about to try setRefSource/n");
-/////     daq_err_check( DAQmxSetRefClkSrc( counterTask, "OnboardClock") );
-/////     printf("finished trying to setRefClkSrc\n");
-
-/////     //printf("About to disable start trig.\n");
-/////     //fflush(stdout);
-/////     //daq_err_check( DAQmxDisableStartTrig(counterTask) );
-/////     fflush(stdout);
-
-/////     // wait for user to start arte counting
-    fflush(stdout);
-    
-
 
     daq_err_check( DAQmxCreateTask( "counter_generation_task",
 				    &(counter_generation_task) ));
@@ -383,6 +360,10 @@ void Timer::init2(boost::property_tree::ptree &timer_pt){
     while(c != '\n'){
       c = getchar();
     }
+
+    // set our timer.running flag
+    running = 1;
+ 
     //acquiring = true;
     // end of thread block
 
@@ -393,6 +374,38 @@ void Timer::init2(boost::property_tree::ptree &timer_pt){
     ////fflush(stdout);
   }
   
+}
+
+void Timer::reset(){
+
+  char ci_chan_name[40];
+  sprintf( ci_chan_name, "%s/ctr1", niDev );
+  // Before clearing tasks, set flag to get_timestamp so that
+  // it returns 0 rather than trying to reference a daqmx task
+  // that doesn't exist
+  
+  running = 0;
+  
+  printf("about to stop the counter_gen_task\n");
+  daq_err_check( DAQmxStopTask ( counter_generation_task ) );
+  printf("about to stop the counter_count task\n");
+  daq_err_check( DAQmxStopTask ( counter_count_task ) );
+  printf("about to clear the counter_count task\n");
+  daq_err_check( DAQmxClearTask ( counter_count_task ) );
+  
+  daq_err_check( DAQmxCreateTask ( "counter_count_task", &counter_count_task) );
+
+  daq_err_check( DAQmxCreateCICountEdgesChan( counter_count_task,
+					      ci_chan_name, "", 
+					      DAQmx_Val_Rising, 0, DAQmx_Val_CountUp) );
+  daq_err_check( DAQmxCfgSampClkTiming( counter_count_task,
+					"Ctr0InternalOutput", 1000.0, DAQmx_Val_Rising,
+					DAQmx_Val_ContSamps, 1000) );
+  daq_err_check( DAQmxSetRefClkSrc( counter_count_task, "OnboardClock") );
+  daq_err_check( DAQmxStartTask( counter_count_task ) );
+  daq_err_check( DAQmxStartTask( counter_generation_task) );
+
+  running = 1;
 }
 
 void Timer::stop2(){
