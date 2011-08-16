@@ -45,6 +45,8 @@ private:
 
 	MidiBuffer* spikeBuffer;
 
+	//AudioData::ConverterInstance<AudioData::Float32, AudioData::Int16> converter;
+
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SpikeDetector);
 
 };

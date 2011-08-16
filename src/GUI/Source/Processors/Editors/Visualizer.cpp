@@ -263,15 +263,17 @@ void SpikeViewer::newOpenGLContextCreated()
 
 	glFlush();
 
+	glClear(GL_COLOR_BUFFER_BIT);
+
 }
 
 
 void SpikeViewer::renderOpenGL()
 {
 		
-	glClear(GL_COLOR_BUFFER_BIT);
-
 	 if (eventBuffer->getNumEvents() > 0) {
+
+	 	glClear(GL_COLOR_BUFFER_BIT);
 
 		std::cout << "Events received by Spike Viewer." << std::endl;
 
@@ -284,6 +286,7 @@ void SpikeViewer::renderOpenGL()
 		while (i.getNextEvent (message, samplePosition)) {
 
 			int numbytes = message.getRawDataSize();
+			int numSamples = (numbytes-2)/2;
 			uint8* dataptr = message.getRawData();
 
 			int chan = (*dataptr<<8) + *(dataptr+1);
@@ -296,9 +299,33 @@ void SpikeViewer::renderOpenGL()
 
  			dataptr += 2;
 
-			for (int n = 0; n < numbytes-2; n++) {
-				std::cout << String(*dataptr++) << " ";
-			}
+ 			float spikeData[numSamples];
+
+ 			glColor3f(0,0.0,0);
+			glBegin(GL_LINE_STRIP);
+
+ 			for (int n = 0; n < numSamples; n++)
+ 			{
+ 				uint16 sampleValue = (*dataptr << 8) + *(dataptr+1);
+
+ 				//spikeData[n] = float(sampleValue - 32768);
+ 				glVertex2f(float(n)/numSamples, 
+ 						   -float(sampleValue - 32768)/32768 + 0.5);
+
+ 				dataptr += 2;
+
+ 			}
+
+			glEnd();
+
+ 			//AudioDataConverters::convertInt16BEToFloat ( dataptr, // source
+    		//			spikeData, // dest
+    		//			numSamples, // numSamples
+    		//			2 ); // destBytesPerSample = 2
+
+			//for (int n = 0; n < numSamples; n++) {
+			//	std::cout << String(spikeData[n]) << " ";
+			//}
 					
 			std::cout << std::endl << std::endl;
 		}

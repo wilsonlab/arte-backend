@@ -68,10 +68,12 @@ void SpikeDetector::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMes
 	int maxSamples = getNumSamples();
 	int spikeSize = 2 + prePeakSamples*2 + postPeakSamples*2; 
     
-    for (int chan = 0; chan < 1; chan++) 
+    for (int chan = 1; chan < 2; chan++) 
     {
 
     	int n = prePeakSamples + 1; // 1-sample buffer, just to be safe
+
+    	// TODO: save end of previous buffer to check for spikes at border
 
     	while (n < maxSamples - postPeakSamples - 1) {
     		
@@ -84,10 +86,27 @@ void SpikeDetector::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMes
     			data[1] = chan & 007; // channel least-significant byte
 
     			// not currently looking for peak, just centering on thresh cross
-    			AudioDataConverters::convertFloatToInt16BE ( buffer.getSampleData(chan, n - prePeakSamples), // source
-    													 data+2, // dest
-    													 prePeakSamples + postPeakSamples, // numSamples
-    													 2 ); // destBytesPerSample = 2
+    			//converter.convertSamples(data+2, //dest
+    			//					     buffer.getSampleData(chan, n - prePeakSamples), // source
+    			//					     prePeakSamples + postPeakSamples); // numSamples
+
+    			//std::cout << *buffer.getSampleData(chan, n) << std::endl;
+
+    			uint8* dataptr = data+2;
+
+    			for (int sample = -prePeakSamples; sample < postPeakSamples; sample++) {
+    				
+    				uint16 sampleValue = uint16(*buffer.getSampleData(chan, n+sample) + 32768);
+
+    				*dataptr++ = uint8(sampleValue >> 8);
+    				*dataptr++ = uint8(sampleValue & 255);
+
+    			}
+    			
+    			//AudioDataConverters::convertFloatToInt16BE ( buffer.getSampleData(chan, n - prePeakSamples), // source
+    			//										 data+2, // dest
+    			//										 prePeakSamples + postPeakSamples, // numSamples
+    			//										 2 ); // destBytesPerSample = 2
 
 				spikeBuffer->addEvent(data, 		// spike data
 								  sizeof(data), // total bytes
