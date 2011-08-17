@@ -56,15 +56,12 @@ private:
 
 };
 
-
 class SelectorButton : public DrawableButton
 {
 	public:
 		SelectorButton();
 		~SelectorButton();	
 };
-
-
 
 class Visualizer : public GenericEditor,
 				   public Button::Listener
@@ -113,14 +110,6 @@ private:
 
 };
 
-class LfpViewer : public Renderer
-{
-public:
-	LfpViewer(AudioSampleBuffer* streamBuffer, MidiBuffer* eventBuffer, UIComponent* ui);
-	~LfpViewer();
-	void renderOpenGL();	
-	void newOpenGLContextCreated();
-};
 
 
 

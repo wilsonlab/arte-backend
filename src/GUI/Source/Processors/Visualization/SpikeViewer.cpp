@@ -30,15 +30,6 @@ void SpikeViewer::newOpenGLContextCreated()
 	glOrtho(0, 1, 1, 0, 0, 1);
 	glMatrixMode (GL_MODELVIEW);
 
-	// glEnable (GL_BLEND);
-	// glShadeModel(GL_FLAT);
-	
-	// glHint (GL_LINE_SMOOTH_HINT, GL_NICEST);
-	// glHint (GL_POINT_SMOOTH_HINT, GL_NICEST);
-	// glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	// glColor3f(1,1,1);
-
 	glFlush();
 
 	glClear(GL_COLOR_BUFFER_BIT);
