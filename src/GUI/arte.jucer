@@ -26,7 +26,7 @@
             rtasFolder="c:\SDKs\PT_80_SDK" libraryType="1" juceFolder="JuceLibraryCode"
             extraLinkerFlags="-lftdi"/>
     <LINUX_MAKE targetFolder="Builds/Linux" vstFolder="~/SDKs/vstsdk2.4" juceFolder="JuceLibraryCode"
-                extraLinkerFlags="-lftdi" extraCompilerFlags="-D__STDC_LIMIT_MACROS"/>
+                extraLinkerFlags="-lftdi -lGLU -lglut -lGL" extraCompilerFlags="-D__STDC_LIMIT_MACROS"/>
   </EXPORTFORMATS>
   <CONFIGURATIONS>
     <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="arte"/>
