@@ -59,7 +59,6 @@ Visualizer::Visualizer (GenericProcessor* parentNode, FilterViewport* vp)
 	tabSelector->setToggleState(false,false);
 	addAndMakeVisible(tabSelector);
 
-
 }
 
 Visualizer::~Visualizer()
