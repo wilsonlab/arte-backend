@@ -122,13 +122,6 @@ public:
 	void newOpenGLContextCreated();
 };
 
-class SpikeViewer : public Renderer
-{
-public:
-	SpikeViewer(AudioSampleBuffer* streamBuffer, MidiBuffer* eventBuffer, UIComponent* ui);
-	~SpikeViewer();
-	void renderOpenGL();	
-	void newOpenGLContextCreated();
-};
+
 
 #endif  // __VISUALIZER_H_5573CACE__

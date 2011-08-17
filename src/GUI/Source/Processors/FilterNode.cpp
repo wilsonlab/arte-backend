@@ -14,7 +14,7 @@
 
 FilterNode::FilterNode(const String name_, int* nSamps, int nChans, const CriticalSection& lock_, int id)
 	: GenericProcessor(name_, nSamps, nChans, lock_, id), 
-	  sampleRate (40000.0), highCut(9000.0), lowCut(1.0)
+	  sampleRate (40000.0), highCut(6000.0), lowCut(600.0)
 	
 {
 
