@@ -1,7 +1,6 @@
 #if defined(__linux__)
 	#include <byteswap.h>
 #else
-
 	#ifndef _BYTESWAP_H
 	#define _BYTESWAP_H
 		static inline unsigned short bswap_16(unsigned short x) {
@@ -20,7 +19,6 @@
 #endif
 
 #include <vector>
-
 
 #ifndef NETCOM_DATAPACKET_H
 #define NETCOM_DATAPACKET_H
@@ -86,6 +84,11 @@ struct lfp_bank_net_t{
 struct command_t{
   uint16_t n_char;
   char command_str[MAX_COMMAND_STR_LEN];
+  uint32_t nonce;
+};
+
+struct command_ack_t{
+  uint32_t nonce;
 };
 
 void tsToBuff(timestamp_t* s,char* buff, int blen, bool c);
@@ -100,10 +103,14 @@ void buffToWave(lfp_bank_net_t *lfp, char *buff, bool c);
 void commandToBuff(command_t *command, char* buff, int *blen, bool c);
 void buffToCommand(command_t *command, char* buff, bool c);
 
+void commandAckToBuff(command_t *command, char* buff, int *blen, bool c);
+void buffAckToCommand(command_t *command, char* buff, bool c);
+
 enum packetType_t {NETCOM_UDP_SPIKE = 65,
                    NETCOM_UDP_LFP = 66,
                    NETCOM_UDP_TIME = 67,
-		   NETCOM_UDP_COMMAND = 68,
+				   NETCOM_UDP_COMMAND = 68,
+				   NETCOM_UDP_COMMAND_ACK = 69,
                    NETCOM_UNDEFINED=-1};
 
 inline char typeToChar(packetType_t x){
@@ -112,6 +119,7 @@ inline char typeToChar(packetType_t x){
   case NETCOM_UDP_LFP:     return 66;
   case NETCOM_UDP_TIME:    return 67;
   case NETCOM_UDP_COMMAND: return 68;
+  case NETCOM_UDP_COMMAND_ACK: return 69;
   default:                 return -1;
   }
 }
@@ -122,6 +130,7 @@ inline packetType_t charToType(char x){
   case 66: return NETCOM_UDP_LFP;
   case 67: return NETCOM_UDP_TIME;
   case 68: return NETCOM_UDP_COMMAND;
+  case 69: return NETCOM_UDP_COMMAND_ACK;
   default: return NETCOM_UNDEFINED;
   }
 }

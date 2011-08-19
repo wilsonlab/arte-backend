@@ -224,3 +224,10 @@ void *get_in_addr(struct sockaddr *sa){
 }
 
 
+string intToString(int port){
+	stringstream ss;
+	s << port;
+	string portStr = s.str();
+	return portStr;
+
+}

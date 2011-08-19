@@ -42,11 +42,14 @@ class NetCom{
 
   static void txBuff(NetComDat net, char * buff, int buff_len);
   static void rxBuff(NetComDat net, char * buff, int *buff_len);
-
 };
 
 void *get_in_addr(struct sockaddr *sa);
 
+static void char const base_cmd_ack_port[] = "15227";
+static void int  const n_cmd_ack_ports = 100;
+
+#define portIntToString(x) boost::lexical_cast<string>(x)
 
 #endif
 
