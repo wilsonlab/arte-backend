@@ -33,10 +33,12 @@ class packet_forwarder(threading.Thread):
         self.sock_in = socket.socket( socket.AF_INET, socket.SOCK_DGRAM )
         print self.in_port
         self.sock_in.settimeout(2)
-        self.sock_in.bind ( (in_ip, int(self.in_port)) )
+        print "in_ip: " + in_ip + "int(self.in_port)::" 
+        print int(self.in_port)
+        self.sock_in.bind ( ("", int(self.in_port)) )
         self.sock_out = range(0, len(self.out_ports) )
         for i in range(0, len(self.out_ports)):
-            self.sock_out[i] = socket.socket( socket.AF_INET, socket.SOCK_DGRAM )
+                self.sock_out[i] = socket.socket( socket.AF_INET, socket.SOCK_DGRAM )
 
     def hello1(self):
         print "Hello from thread!"
@@ -51,15 +53,17 @@ class packet_forwarder(threading.Thread):
         self.hello1()
         while running:
             try:
+                #print "Trying."
                 data, addr = self.sock_in.recvfrom(1024)
-                print "GOT ONE! Port: " + self.in_port
+                #print "GOT ONE! Port: " + self.in_port
                 self.have_data = 1
             except:
                 self.have_data = 0
                 print "Caught and ignored a timeout exception"
             if self.have_data:
                 for i in range(0, len(self.sock_out)):
-                    self.sock_out[i].sendto( data, (out_ip, int(out_ports[i])) )
+                    for m in range(0, len(out_ip)):
+                        self.sock_out[i].sendto( data, (out_ip[m], int(self.out_ports[i])) )
         print "Finished while running loop."
 
     
@@ -69,10 +73,11 @@ out_ip = []
 if (n_out_ip == 0):
     out_ip.append( "127.0.0.1" )
 else:
-    out_ip.append( sys.argv[1:] )
+    for m in range(1, len(sys.argv)):
+        out_ip.append( sys.argv[m])
 
 running = 1
-in_ip = "127.0.0.1"
+in_ip = ""
 
 f = open('./portmap.txt','r')
 

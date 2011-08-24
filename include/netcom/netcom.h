@@ -46,8 +46,8 @@ class NetCom{
 
 void *get_in_addr(struct sockaddr *sa);
 /*
-static void char const base_cmd_ack_port[] = "15227";
-static void int  const n_cmd_ack_ports = 100;
+//static void char const base_cmd_ack_port[] = "15227";
+//static void int  const n_cmd_ack_ports = 100;
 
 #define portIntToString(x) boost::lexical_cast<string>(x)
 */

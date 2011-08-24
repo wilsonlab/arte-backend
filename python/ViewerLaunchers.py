@@ -54,7 +54,7 @@ class ViewerLauncher(object):
 		
 		for n in self.dataChan.iterkeys():
 			cmd = self.bin
-			cmd = cmd + " --port" + self.dataPort[n]
+			cmd = cmd + " --port " + self.dataPort[n]
 			cmd = cmd + " --windowname \"" + "Tetrode:" + self.dataLabel[n] + "\""
 			cmd = cmd + " --xposition " + str(xpos)
 			cmd = cmd + " --yposition " + str(ypos)
@@ -88,7 +88,8 @@ class ArteSpikeViewerLauncher(ViewerLauncher):
 		for tet in tets:
 			n = string.strip(tet.text)
 			self.dataChan[n] = tet.find('channels').text
-			self.dataPort[n] = tet.find('port').text
+			self.dataPort[n] = str(int(tet.find('port').text) + 1000)
+			#self.dataPort[n] = tet.find('port').text
 			#self.ttLabel[n]= tet.find('label').text
 			self.dataLabel[n] = str(n) + " Channels:" + self.dataChan[n]
 
@@ -103,7 +104,8 @@ class ArteWaveViewerLauncher(ViewerLauncher):
 		for lfp in lfps:
 			n = string.strip(lfp.text)
 			self.dataChan[n] = lfp.find('channels').text
-			self.dataPort[n] = lfp.find('port').text
+			self.dataPort[n] = str(int(lfp.find('port').text) + 1000)
+			#self.dataPort[n] = lfp.find('port').text
 			#self.ttLabel[n]= tet.find('label').text
 			self.dataLabel[n] = str(n) + " Channels:" + self.dataChan[n]
 

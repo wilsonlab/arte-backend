@@ -213,6 +213,7 @@ class ArteViewerLauncher:
 	def _killViewers(self):
 		print "Killing any open viewers"
 		for i in xrange(1, len(self.tetPid)+1):
+			print "Killing ", i
 			self.tetPid[i].send_signal(signal.SIGTERM)
 
 		for i in xrange(1, len(self.lfpPid)+1):
