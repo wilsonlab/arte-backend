@@ -12,6 +12,8 @@
 #define _ARTE_COMMAND_PORT_H
 
 #include <pthread.h>
+#include <zmq.h>
+#include <queue>
 #include "arte_command.pb.h"
 
 class Arte_command_port{
@@ -24,6 +26,8 @@ class Arte_command_port{
   Arte_command_port(char* in_addy_char,
 		    char* out_addy_char,             // Construct w/ ip:port
 		    void CallbackFn(void *arg));     //   and notifier fn
+ 
+  ~Arte_command_port();
 
   void set_addy_str( char *in_addy_char, char *out_addy_char );
   void set_callback_fn( void CallbackFn(void *arg) );
@@ -45,14 +49,19 @@ class Arte_command_port{
  private:
   void basic_init();         //
   bool ok_to_start();        //
+  int  init_send();
 
+  int initialize_publisher();
   int listen_in_thread();
   static int listen_in_thread_wrapper(void *arg);
 
   bool running;
-  std::string addy_str;    
+  std::string in_addy_str;    
+  std::string out_addy_str;
   void *callback_fn;
   void *callback_arg;
+
+  std::queue <ArteCommand> command_queue;
 
   zmq::context_t *my_zmq_context;
   zmq::socket_t  *my_subscriber;
