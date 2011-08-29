@@ -1,0 +1,90 @@
+// main command.  Since protobufs aren't introspective, we wrap
+// executable commands into the main ArteCommand.  Checking the
+// match between the command destination_id and the receiver that
+// receivs it will be the reveiver's job (this is more broadcasty)
+// Receivers also must check that the main command contains a 
+// command that the receiver is cable of processing (eg, backend
+// must know to check for the commands that backend can process,
+// ignoring commands that only contain ClearProjectionsCommand,
+// for example).
+//
+// Compile using:  protoc arte_command.proto --cpp_out=./
+
+message ArteCommand{
+	
+	optional uint64 timestamp = 1;
+	optional int32  source_id = 2;
+	optional int32  destination_id = 3;
+	optional string message_string = 4;
+	
+	optional SetThresholdCommand     set_thresh_command        = 10;
+	optional SetPostsampsCommand     set_postsamps_command     = 11;
+	optional ResetClockCommand       reset_clock_command       = 12;
+	optional DiskCommand             disk_command              = 13;
+	optional ClockAndDiskCommand     clock_and_disk_command    = 14;
+	optional ClearProjectionsCommand clear_projections_command = 15;
+	optional ClearLfpbankCommand     clear_lfpbank_command     = 16;
+	optional MaximizeViewCommand     maximize_view_command     = 17;
+}
+
+
+// Intended for backend.  Set thresholds (units) of trodes:chans
+message SetThresholdCommand{
+
+	enum ThresholdUnits{
+		BRAIN_VOLTAGE     = 0;
+		AMPLIFIED_VOLTAGE = 1;
+		AD_UNITS          = 2;
+	}
+	repeated float          threshold = 1;
+	repeated int32          trodename = 2;  // left blank: do all trodes
+	repeated int32          chanind   = 3;    // left black: do all chans
+	optional ThresholdUnits units     = 4 [default = BRAIN_VOLTAGE];
+}
+
+
+// Intended for backend.  
+message SetPostsampsCommand{
+	optional int32 postsamps = 1 [default = 26];
+	repeated int32 trodename = 2;  // left blank means: do all trodes
+}
+
+// Intended for broadcast (both backend and display);
+message ResetClockCommand{
+}
+
+// Primarily for backend, but perhaps also for other processes 
+// that write to disk
+message DiskCommand{
+
+	enum NewState{
+		ON     = 0;
+		OFF    = 1;
+		TOGGLE = 2;
+	}
+	optional NewState new_state = 1 [default = ON];
+}
+
+// Intended for backend and possibly other disk-writing
+// Processes.  Implementation note:  When backend handles
+// This, it should do so by issuing two new commands (ClockCommand
+// and DiskCommand).  This way processes that don't know to check
+// for two different types of clock or disk command will still
+// get a known message when ClockAndDiskCommand is called.
+message ClockAndDiskCommand{
+}
+
+// Intended for display processes
+message ClearProjectionsCommand{
+	repeated int32 trodename = 1;  // left blank means: do all trodes
+}
+
+// Intended for display processes
+message ClearLfpbankCommand{
+	repeated int32 lfpbankname = 1; // left black means: do all lfpbanks
+}
+
+// Intended for display processes
+message MaximizeViewCommand{
+	optional int32 viewname = 1 [default = 0];
+}
