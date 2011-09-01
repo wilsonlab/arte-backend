@@ -12,38 +12,43 @@
 #define _ARTE_COMMAND_PORT_H
 
 #include <pthread.h>
-#include <zmq.h>
+#include <zmq.hpp>
 #include <queue>
 #include "arte_command.pb.h"
+
+typedef void (*CALLBACK_FN)(void *);
 
 class Arte_command_port{
 
  public:
   Arte_command_port();                               // Construct no init                   
-  Arte_command_port(char* in_addy_char,
-		    char* out_addy_char);            // Construct w/ ip:port
+  Arte_command_port(std::string& in_addy_char,
+		    std::string& out_addy_char);            // Construct w/ ip:port
 
-  Arte_command_port(char* in_addy_char,
-		    char* out_addy_char,             // Construct w/ ip:port
-		    void CallbackFn(void *arg));     //   and notifier fn
+  Arte_command_port(std::string& in_addy_char,
+		    std::string& out_addy_char,             // Construct w/ ip:port
+		    CALLBACK_FN, 
+		    void *arg);  //   and notifier fn
  
   ~Arte_command_port();
 
-  void set_addy_str( char *in_addy_char, char *out_addy_char );
-  void set_callback_fn( void CallbackFn(void *arg) );
- 
-  void start();                                      // Start listener thread
-  void stop();                                       // Stop listener thread
+  void set_addy_str( std::string&, std::string& );
+  //void set_callback_fn( int (*CallbackFn)(int), (void *arg) );
+  void set_callback_fn( CALLBACK_FN, void* );
+
+  int start();                                      // Start listener thread
+  int stop();                                       // Stop listener thread
 
   int send_command(ArteCommand& the_command);        // Publish a command to network
 
   int command_queue_size();                          // How many commands waiting
-  ArteCommand& command_queue_pop();                  // Retrieve oldest command
+  ArteCommand command_queue_pop();                  // Retrieve oldest command
                                                      // and delete it from queue
 
   void Testfire_callback();                          // Call the callback fn, if you want
                                                      // to make sure it's properly wired
                                                      // up.
+
 
   
  private:
@@ -53,12 +58,13 @@ class Arte_command_port{
 
   int initialize_publisher();
   int listen_in_thread();
-  static int listen_in_thread_wrapper(void *arg);
+
+  static void* listen_in_thread_wrapper(void *arg);
 
   bool running;
   std::string in_addy_str;    
   std::string out_addy_str;
-  void *callback_fn;
+  void (*callback_fn)(void *);
   void *callback_arg;
 
   std::queue <ArteCommand> command_queue;
