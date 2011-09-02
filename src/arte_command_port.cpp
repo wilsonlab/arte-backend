@@ -39,6 +39,8 @@ void Arte_command_port::basic_init()
   out_addy_str.erase();
   callback_fn = NULL;
   callback_arg = NULL;
+  pause_dur.tv_sec = 0;
+  pause_dur.tv_nsec = 100000000;
 }
 
 
@@ -104,13 +106,28 @@ int Arte_command_port::stop()
 int Arte_command_port::send_command(ArteCommand& the_command)
 {
   std::string command_str;
+  char * temp_string = new char[200];
+  nanosleep( &pause_dur, NULL );
   if( !(the_command.SerializeToString( &command_str ))){
+    printf("****************\n");
     printf("Arte_command::send_command failed to serialize the ArteCommand.\n");
-    return 1;
+    printf("the_command.has_message_string: %d\n", (int) the_command.has_message_string());
+    printf("the_command.message_string: _%s_\n", the_command.message_string().c_str());
+    strcpy( temp_string, command_str.c_str() );
+    printf("command_str: _");
+    for(int a = 0; a < command_str.size(); a++)
+      printf("%c", temp_string[a]);
+    printf("_\n"); fflush(stdout);
+    //return 1;
   }
+  printf("Incoming command.message_string(): _%s_\n", the_command.message_string().c_str());
+  printf("Serialized string: _"); fflush(stdout);
+  //for(int n = 0; n < my_
   try{
+    nanosleep( &pause_dur, NULL );
     zmq::message_t z_msg ( (void*) (command_str.c_str()), 
-			   strlen(command_str.c_str()), NULL);
+			   command_str.size(), NULL);
+    nanosleep( &pause_dur, NULL );
     my_publisher->send(z_msg);
   }
   catch( zmq::error_t& e ){
@@ -207,14 +224,14 @@ int Arte_command_port::listen_in_thread()
 {
   // Establish zmq subscriber connection. Listen to port and
   // parse messages to ArteCommands.
-  zmq::socket_t subscriber ( *my_zmq_context, ZMQ_SUB );
-  my_subscriber = &subscriber;
-  if(subscriber == NULL){
+  //zmq::socket_t subscriber ( *my_zmq_context, ZMQ_SUB );
+  my_subscriber = new zmq::socket_t ( *my_zmq_context, ZMQ_SUB );
+  if(my_subscriber == NULL){
     printf("zmq error creating subscriber socket\n");
     return 1;
   }
   try{
-  subscriber.connect( in_addy_str.c_str() );
+    my_subscriber->connect( in_addy_str.c_str() );
   }
   catch(std::exception& e){
     printf("zmq error connecting subscriber socket with in_addy_str: %s\n",
@@ -224,7 +241,7 @@ int Arte_command_port::listen_in_thread()
   }
   const char *filter = "";
   try{
-subscriber.setsockopt( ZMQ_SUBSCRIBE, filter, 0 ); // TODO:: check this
+    my_subscriber->setsockopt( ZMQ_SUBSCRIBE, filter, 0 ); // TODO:: check this
   }
   catch(std::exception& e){
     printf("zmq error setting subscriber socket options.\n");
@@ -235,25 +252,32 @@ subscriber.setsockopt( ZMQ_SUBSCRIBE, filter, 0 ); // TODO:: check this
   while (running){
     zmq::message_t z_msg;
     ArteCommand this_command_pb;
+    nanosleep( &pause_dur, NULL );
     this_command_pb.Clear();
     try{
       printf("Waiting for message.\n");
-      subscriber.recv( &z_msg );
+      nanosleep( &pause_dur, NULL );
+      my_subscriber->recv( &z_msg );
       printf("Passed recv\n");
     }
     catch(std::exception& e){
       printf("Exception in Arte_command_port::listen_in_thread.\n");
       printf("what(): _%s_ \n", e.what());
     }
+    nanosleep( &pause_dur, NULL );
+    printf("about to try to parse string: _%s_\n", (char*) (z_msg.data()) );//TODO: remove
+    this_command_pb.Clear();
     if( !this_command_pb.ParseFromString( (char*) ( z_msg.data() )) ){
-      printf("subscriber failed to parse to received string:%s",
-	     (char*) (z_msg.data()) );
-      printf("size is: %d\n", z_msg.size() );
+      nanosleep( &pause_dur, NULL );
+      printf("subscriber failed to parse to received string: _%s_\n",
+	     (char*) (z_msg.data()) );  
+      printf("size is: %d\n", z_msg.size() ); fflush(stdout);
       continue;
     }
     
-    printf("received string: _%s_ \n", (char*) (z_msg.data()) ); // TODO: remove this line
-    printf("size: %d\n", z_msg.size() );
+    nanosleep( &pause_dur, NULL );
+    printf("received string: _%s_ \n", (char*) (z_msg.data()) ); fflush(stdout); // TODO: remove this line
+    printf("size: %d\n", z_msg.size() ); fflush(stdout);
 
     // If we've reached this point we have a well-formed protocol buffers message
     // Push it onto the queue and call the callback specified by the client

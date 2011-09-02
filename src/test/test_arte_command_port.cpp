@@ -6,6 +6,13 @@
 #include "../arte_command_port.h"
 #include "test_arte_command_port.h"
 
+
+// global variables
+ArteCommand my_message_out;
+ArteCommand my_message_in;
+Arte_command_port* my_port;  
+
+
 MsgSenderGetter::MsgSenderGetter( std::string &addy_str, CALLBACK_FN cb_f ){
   my_command_port.set_addy_str( addy_str, addy_str );
   //my_command_port.set_callback_fn( cb_f,  (void*) this );
@@ -28,18 +35,27 @@ ArteCommand MsgSenderGetter::get_msg(){
 
 void test_fn(void *arg){
   printf("Test.\n");
+  ( (MsgSenderGetter*)arg )->read_and_print();
+  for(int n = 0; n < my_port->command_queue_size(); n++){
+    my_message_in.Clear();
+    my_message_in = my_port->command_queue_pop();
+    printf("Message #%d command string: _%s_\n",
+	   n, my_message_in.message_string().c_str());
+  }
+}
+
+void MsgSenderGetter::read_and_print(){
+  printf("test from MessageSenderGetter::read_and_print()\n"); fflush(stdout);
 }
 
 void MsgSenderGetter::print_msg(int *a)
 {
   printf("in print_msg\n");
 }
-  
+
 int main(int argc, char *argv[])
 {
 
-  ArteCommand my_message_out;
-  ArteCommand my_message_in;
   
   if(argc != 3){
     printf("Usage: test_arte_command_port tcp://serverhostname:port_a");
@@ -48,15 +64,15 @@ int main(int argc, char *argv[])
   }
   
   std::string addy_str(argv[1]);
-  Arte_command_port my_port( addy_str, addy_str, &test_fn, (void *)(&my_message_out));
+  my_port = new Arte_command_port( addy_str, addy_str, &test_fn, (void *)(&my_message_out));
   
   if(argc > 1){
-    my_message_out.set_message_string( argv[2] );
+    //    my_message_out.set_message_string( argv[2] );
   }
 
-  my_port.start();
+  my_port->start();
 
-  my_port.send_command( my_message_out );
+  //my_port->send_command( my_message_out );
   std::string user_in;
   //std::istringstream iss;
 
@@ -66,17 +82,17 @@ int main(int argc, char *argv[])
     user_in.erase();
     my_message_out.Clear();
     getline( std::cin, user_in );
-    printf("finished getting string.\n");
+    printf("finished getting string.\n"); fflush(stdout);
     if( user_in.compare("exit") == 0 ){
       running = false;
       continue;
     }
     my_message_out.set_message_string( user_in );
-    std::cout << "user_in: _" << user_in << "_\n";
-    my_port.send_command( my_message_out );
+    std::cout << "user_in: _" << user_in << "_\n"; fflush(stdout);
+    my_port->send_command( my_message_out );
   }
   printf("Going to stop the port.\n");
-  my_port.stop();
+  my_port->stop();
   printf("Reached end of main.\n"); fflush(stdout);
 
   return 0;

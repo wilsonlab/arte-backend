@@ -14,6 +14,8 @@
 #include <pthread.h>
 #include <zmq.hpp>
 #include <queue>
+#include <time.h>
+#include <sys/time.h>
 #include "arte_command.pb.h"
 
 typedef void (*CALLBACK_FN)(void *);
@@ -73,6 +75,8 @@ class Arte_command_port{
   zmq::socket_t  *my_subscriber;
   zmq::socket_t  *my_publisher;
   pthread_t listener_thread;
+
+  timespec pause_dur;
 
 };
 #endif
