@@ -34,13 +34,17 @@ ArteCommand MsgSenderGetter::get_msg(){
 }
 
 void test_fn(void *arg){
-  printf("Test.\n");
-  ( (MsgSenderGetter*)arg )->read_and_print();
+  printf("Callback: Test.\n");
+  //( (MsgSenderGetter*)arg )->read_and_print();
+  //  sleep(1);
   for(int n = 0; n < my_port->command_queue_size(); n++){
     my_message_in.Clear();
-    my_message_in = my_port->command_queue_pop();
-    printf("Message #%d command string: _%s_\n",
-	   n, my_message_in.message_string().c_str());
+        my_message_in = my_port->command_queue_pop();
+    printf("Callback: Message #%d command string: _%s_\n",
+    	   n, my_message_in.message_string().c_str());
+    printf("Callback: ");
+    my_message_in.PrintDebugString(); fflush(stdout);
+    printf("\n");
   }
 }
 
@@ -82,13 +86,13 @@ int main(int argc, char *argv[])
     user_in.erase();
     my_message_out.Clear();
     getline( std::cin, user_in );
-    printf("finished getting string.\n"); fflush(stdout);
+    //    printf("finished getting string.\n"); fflush(stdout);
     if( user_in.compare("exit") == 0 ){
       running = false;
       continue;
     }
     my_message_out.set_message_string( user_in );
-    std::cout << "user_in: _" << user_in << "_\n"; fflush(stdout);
+    //std::cout << "user_in: _" << user_in << "_\n"; fflush(stdout);
     my_port->send_command( my_message_out );
   }
   printf("Going to stop the port.\n");

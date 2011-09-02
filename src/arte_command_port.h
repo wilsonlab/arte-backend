@@ -41,10 +41,10 @@ class Arte_command_port{
   int start();                                      // Start listener thread
   int stop();                                       // Stop listener thread
 
-  int send_command(ArteCommand& the_command);        // Publish a command to network
+  int send_command(ArteCommand the_command);        // Publish a command to network
 
   int command_queue_size();                          // How many commands waiting
-  ArteCommand command_queue_pop();                  // Retrieve oldest command
+  ArteCommand command_queue_pop();                   // Retrieve oldest command
                                                      // and delete it from queue
 
   void Testfire_callback();                          // Call the callback fn, if you want
