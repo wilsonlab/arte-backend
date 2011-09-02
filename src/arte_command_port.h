@@ -6,6 +6,8 @@
 // client every time a new ArteCommand comes in through zmq.
 // Clients can then check the size of the stack and consume ArteCommands.
 //
+// For example usage, see src/test/test_arte_command_port.cpp main function
+//
 // greghale@mit.edu
 
 #ifndef _ARTE_COMMAND_PORT_H
@@ -23,60 +25,91 @@ typedef void (*CALLBACK_FN)(void *);
 class Arte_command_port{
 
  public:
-  Arte_command_port();                               // Construct no init                   
+  Arte_command_port();                            // Construct no init
   Arte_command_port(std::string& in_addy_char,
-		    std::string& out_addy_char);            // Construct w/ ip:port
+		    std::string& out_addy_char);  // Construct w/ ip:port
 
   Arte_command_port(std::string& in_addy_char,
-		    std::string& out_addy_char,             // Construct w/ ip:port
+		    std::string& out_addy_char,   // Construct w/ ip:port
 		    CALLBACK_FN, 
-		    void *arg);  //   and notifier fn
+		    void *arg);                   //   and notifier fn
  
   ~Arte_command_port();
 
   void set_addy_str( std::string&, std::string& );
-  //void set_callback_fn( int (*CallbackFn)(int), (void *arg) );
+
   void set_callback_fn( CALLBACK_FN, void* );
 
-  int start();                                      // Start listener thread
-  int stop();                                       // Stop listener thread
+  int start();                          // Start listener thread & sending
+  int stop();                           // Stop listener thread & sending
 
-  int send_command(ArteCommand the_command);        // Publish a command to network
+  int send_command(ArteCommand);        // Publish a command to network
 
-  int command_queue_size();                          // How many commands waiting
-  ArteCommand command_queue_pop();                   // Retrieve oldest command
-                                                     // and delete it from queue
+  int command_queue_size();             // How many commands waiting
+  ArteCommand command_queue_pop();      // Retrieve oldest command
+                                        // and delete it from queue
 
-  void Testfire_callback();                          // Call the callback fn, if you want
-                                                     // to make sure it's properly wired
-                                                     // up.
+  void Testfire_callback();             // Call the callback fn, if you want
+                                        // to make sure it's properly wired
+                                        // up.
 
 
   
  private:
-  void basic_init();         //
-  bool ok_to_start();        //
+  // zero and null most members
+  void basic_init();         
+
+  // check that needed data for starting are non-null
+  bool ok_to_start();
+
+  // bring up zmq sending socket
   int  init_send();
 
-  int initialize_publisher();
+  // in a thread, bring up receiving socket and wait
+  // for commands in a loop; put incoming commands
+  // in command_queue
   int listen_in_thread();
 
+  // static wrapper for thread - call signature conforms
+  // to the one needed by pthread_create.  The wrapper
+  // simply calls the class method listen_in_thread
+  // (arg is 'this' from object calling pthread_create
   static void* listen_in_thread_wrapper(void *arg);
 
+  // Flag used in listener thread to break out of
+  // listening loop
   bool running;
+
+  // For zmq::socket_t my_subscriber, ip:port
+  // (usually matches out_addy_str - zmq does
+  // both sending and receiving from a single
+  // port)
   std::string in_addy_str;    
+  
+  // For zmq::socket_t my_publisher, ip:port 
+  // (usually matches in_addy_str)
   std::string out_addy_str;
+
+  // Function pointer for callback.  Callback
+  // function must take void pointer and return
+  // nothing
   void (*callback_fn)(void *);
+
+  // Argument to pass to callback function.
+  // Normally 'this' for object owning this 
+  // arte_command_port, or any other object
+  // that will handle ArteCommand s
   void *callback_arg;
 
+  // first-in first-out list of command
   std::queue <ArteCommand> command_queue;
 
+  // pointers to zmq objects
   zmq::context_t *my_zmq_context;
   zmq::socket_t  *my_subscriber;
   zmq::socket_t  *my_publisher;
-  pthread_t listener_thread;
 
-  timespec pause_dur;
+  pthread_t listener_thread;
 
 };
 #endif
