@@ -235,7 +235,7 @@ int Arte_command_port::listen_in_thread()
   }
   catch(std::exception& e){
     printf("zmq error setting subscriber socket options.\n");
-    printf("Exception message: _%_\n", e.what() );
+    printf("Exception message: _%s_\n", e.what() );
     return 1;
   }
 
@@ -256,6 +256,7 @@ int Arte_command_port::listen_in_thread()
     command_str.resize( (int) z_msg.size(), 'a' );
 
 
+    
     this_command_pb.Clear();
     if( !this_command_pb.ParseFromString( command_str )){
       printf("Arte_command_port parse error on string: _%s_\n",
