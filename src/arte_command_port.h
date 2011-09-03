@@ -18,6 +18,8 @@
 #include <queue>
 #include <time.h>
 #include <sys/time.h>
+#include <vector>
+#include <boost/property_tree/ptree.hpp>
 #include "arte_command.pb.h"
 
 typedef void (*CALLBACK_FN)(void *);
@@ -26,6 +28,9 @@ class Arte_command_port{
 
  public:
   Arte_command_port();                            // Construct no init
+
+  Arte_command_port(boost::property_tree::ptree); // Construct from setup conf
+
   Arte_command_port(std::string& in_addy_char,
 		    std::string& out_addy_char);  // Construct w/ ip:port
 
@@ -84,8 +89,11 @@ class Arte_command_port{
   // (usually matches out_addy_str - zmq does
   // both sending and receiving from a single
   // port)
-  std::string in_addy_str;    
-  
+  // There is one of these for each host on
+  // the network (commands are shared fan-in
+  // style.
+  std::vector <std::string> in_addy_str;    
+
   // For zmq::socket_t my_publisher, ip:port 
   // (usually matches in_addy_str)
   std::string out_addy_str;

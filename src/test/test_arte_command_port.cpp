@@ -2,6 +2,8 @@
 #include <iostream>
 #include <time.h>
 #include <sys/time.h>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/xml_parser.hpp>
 #include "../arte_command.pb.h"
 #include "../arte_command_port.h"
 #include "test_arte_command_port.h"
@@ -60,19 +62,22 @@ void MsgSenderGetter::print_msg(int *a)
 int main(int argc, char *argv[])
 {
 
+  boost::property_tree::ptree pt;
   
-  if(argc != 3){
+  if(argc != 2){
     printf("Usage: test_arte_command_port tcp://serverhostname:port_a");
-    printf(" command_message\n");
+    printf(" command_message   OR: \n");
+    printf(" test_arte_command_port path_to/arte_setup_delfault.conf\n");
     return 1;
   }
+
+  read_xml( std::string(argv[1]) , pt, boost::property_tree::xml_parser::trim_whitespace);
   
-  std::string addy_str(argv[1]);
-  my_port = new Arte_command_port( addy_str, addy_str, &test_fn, (void *)(&my_message_out));
-  
-  if(argc > 1){
-    //    my_message_out.set_message_string( argv[2] );
-  }
+  my_port = new Arte_command_port( pt );
+  my_port->set_callback_fn( &test_fn, (void *)(&my_message_out) );
+
+  // std::string addy_str(argv[1]);
+  //my_port = new Arte_command_port( addy_str, addy_str, &test_fn, (void *)(&my_message_out));
 
   my_port->start();
 

@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <boost/property_tree/xml_parser.hpp>
+#include <boost/property_tree/exceptions.hpp>
+#include <boost/foreach.hpp>
 #include "arte_command_port.h"
 
 //************* Simple constructor ****************/
@@ -29,6 +32,25 @@ Arte_command_port::Arte_command_port(std::string& in_addy_char,
   set_callback_fn( CallbackFn, arg );
 }
 
+//** Constructor initializes from propetry tree of setup conf **/
+Arte_command_port::Arte_command_port( boost::property_tree::ptree pt )
+{
+  using boost::property_tree::ptree;
+  basic_init();
+  std::string port_num = 
+    pt.get<std::string>("options.setup.command_port");
+  
+  BOOST_FOREACH(ptree::value_type &v, pt.get_child("options.setup.hosts")){
+    std::string this_host (v.second.data());
+    std::string this_in("tcp://");
+    std::string this_out("tcp://*:");
+    this_in += this_host;
+    this_in += ":";
+    this_in += port_num;
+    this_out += port_num;
+    set_addy_str( this_in, this_out );
+  }
+}
 
 //***** Zero out fields that need to be set *********/
 void Arte_command_port::basic_init()
@@ -38,8 +60,8 @@ void Arte_command_port::basic_init()
   my_publisher = NULL;
   my_subscriber = NULL;
   running = false;
-  in_addy_str.erase();
-  out_addy_str.erase();
+  in_addy_str.clear();
+  out_addy_str.clear();
   callback_fn = NULL;
   callback_arg = NULL;
 }
@@ -49,8 +71,9 @@ void Arte_command_port::basic_init()
 void Arte_command_port::set_addy_str( std::string& in_str,
 				      std::string& out_str)
 {
-  in_addy_str.assign(  in_str.c_str() );
-  out_addy_str.assign( out_str.c_str());
+  in_addy_str.push_back( in_str );
+  if(!out_str.empty())
+    out_addy_str.assign( out_str.c_str());
 }
 
 
@@ -81,7 +104,8 @@ int Arte_command_port::start()
   running = true;
   int rc = init_send();
   if(rc){
-    printf("Arte_command_port failed to initialize publisher.\n");
+    printf("Arte_command_port failed to initialize publisher. rc: %d\n",rc);
+    printf("out_addy_str was: _%s_\n", out_addy_str.c_str() );
     return 1;
   }
 
@@ -115,7 +139,7 @@ int Arte_command_port::send_command(ArteCommand the_command)
 
   std::string command_str; 
   command_str.erase();
-  command_str.assign(100, '\0'); // this is needed to 'black initialize'
+  command_str.assign(100, '\0'); // this is needed to 'blank initialize'
                                  // without it, malformed data to zmq
   if( !(the_command.SerializeToString( &command_str ))){
     printf("Arte_command_port Serialize error on command:\n");
@@ -195,16 +219,19 @@ int Arte_command_port::init_send()
   my_publisher = new zmq::socket_t( *my_zmq_context, ZMQ_PUB );
   if( my_publisher == NULL ){
     printf("Arte_command_port failed to create publisher socket.\n");
-    return 1;
+    return 2;
   }
   try{
     my_publisher->bind( out_addy_str.c_str() );
   }
   catch(std::exception& e){
     printf("Caught an exception in Arte_command_port::init_send.\n");
-    printf("what(): _%s_\n", e.what() );
+    printf("what(): _%s_\n", e.what() ); fflush(stdout);
+    printf("out_addy_str was: _%s_\n", out_addy_str.c_str() );
     throw(e);
+    return 3;
   }
+  return 0;
 }
 
 
@@ -225,14 +252,16 @@ int Arte_command_port::listen_in_thread()
     printf("zmq error creating subscriber socket\n");
     return 1;
   }
-  try{
-    my_subscriber->connect( in_addy_str.c_str() );
-  }
-  catch(std::exception& e){
-    printf("zmq error connecting subscriber socket with in_addy_str: %s\n",
-	   in_addy_str.c_str() );
-    printf("Exception message: _%s_\n", e.what() );
-    return 1;
+  for( int n = 0; n < in_addy_str.size(); n++ ){
+    try{
+      my_subscriber->connect( in_addy_str[n].c_str() );
+    }
+    catch(std::exception& e){
+      printf("zmq error connecting subscriber socket with in_addy_str: %s\n",
+	     in_addy_str[n].c_str() );
+      printf("Exception message: _%s_\n", e.what() );
+      return 1;
+    }
   }
   const char *filter = "";
   try{
