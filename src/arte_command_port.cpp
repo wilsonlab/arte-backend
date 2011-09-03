@@ -115,7 +115,8 @@ int Arte_command_port::send_command(ArteCommand the_command)
 
   std::string command_str; 
   command_str.erase();
-  command_str.assign(100, '\0');
+  command_str.assign(100, '\0'); // this is needed to 'black initialize'
+                                 // without it, malformed data to zmq
   if( !(the_command.SerializeToString( &command_str ))){
     printf("Arte_command_port Serialize error on command:\n");
     the_command.PrintDebugString();
@@ -123,8 +124,12 @@ int Arte_command_port::send_command(ArteCommand the_command)
   }
 
   try{
-    zmq::message_t z_msg ( (void*) (command_str.c_str()), 
-			   command_str.size(), NULL);
+    // zmq::message_t z_msg ( (void*) (command_str.c_str()), 
+// 			   command_str.size(), NULL);
+
+    zmq::message_t z_msg ( command_str.size() ); // The right way according to zmq docsshe
+    memcpy( z_msg.data(), command_str.c_str(), command_str.size() );
+    
     my_publisher->send(z_msg);
   }
   catch( zmq::error_t& e ){
