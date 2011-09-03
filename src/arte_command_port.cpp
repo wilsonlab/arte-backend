@@ -115,7 +115,7 @@ int Arte_command_port::send_command(ArteCommand the_command)
 
   std::string command_str; 
   command_str.erase();
-
+  command_str.assign(100, '\0');
   if( !(the_command.SerializeToString( &command_str ))){
     printf("Arte_command_port Serialize error on command:\n");
     the_command.PrintDebugString();
@@ -245,38 +245,19 @@ int Arte_command_port::listen_in_thread()
 
     this_command_pb.Clear();
     try{
-      bool rc = my_subscriber->recv( &z_msg,0 );
-      if(rc == true)
-	printf("true");
-      if(rc == false)
-	printf("false");
+      my_subscriber->recv( &z_msg,0 );
     }
     catch(std::exception& e){
       printf("listen: Exception in Arte_command_port::listen_in_thread.\n");
       printf("listen: what(): _%s_ \n", e.what());
     }
 
-    std::string command_str( (char*) z_msg.data(), (int)z_msg.size() );
-    //    command_str.resize( (int) z_msg.size() );
-    try{
-      command_str.at( (int) z_msg.size() ) = '\0';
-    }
-    catch(std::exception& e){
-      printf("Caught.\n");
-    }
-    char tmp_string[200];
-    char tmp_string2[200];
-    strcpy( tmp_string, (char*) z_msg.data() );
-    strcpy( tmp_string2, command_str.c_str() );
-
-     printf("z_msg.size: %d\n", (int) z_msg.size() );
-     for(int a = 0; a <= z_msg.size()+2; a++){
-       printf("#%d : %d -> %d \n", a, tmp_string[a], tmp_string2[a]);
-     }
+    std::string command_str( (char*) z_msg.data() );
+    command_str.resize( (int) z_msg.size(), 'a' );
 
 
     this_command_pb.Clear();
-    if( !this_command_pb.ParseFromArray( z_msg.data(), (int) z_msg.size() )){
+    if( !this_command_pb.ParseFromString( command_str )){
       printf("Arte_command_port parse error on string: _%s_\n",
 	     command_str.c_str());
       continue;
@@ -286,6 +267,7 @@ int Arte_command_port::listen_in_thread()
     // Push it onto the queue and call the callback specified by the client
     command_queue.push(this_command_pb);
     callback_fn (callback_arg);
+    z_msg.rebuild();
   }
   return 0; // clean exit from the listening loop
 }
