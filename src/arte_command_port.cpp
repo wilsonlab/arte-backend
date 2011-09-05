@@ -145,7 +145,8 @@ int Arte_command_port::start()
     printf("Likely ok - just means we are in slave mode.\n");
   } 
 
-  // What to do 
+  debug_print_strings(); //TODO: remove
+
   rc = pthread_create( &listener_thread,           /* thread_t          */
 		       NULL,                       /* thread attributes */
 		       &listen_in_thread_wrapper,  /* thread fn         */
@@ -185,18 +186,24 @@ int Arte_command_port::send_command(ArteCommand the_command)
   }
 
   try{
-    // zmq::message_t z_msg ( (void*) (command_str.c_str()), 
-// 			   command_str.size(), NULL);
-
     zmq::message_t z_msg ( command_str.size() ); // The right way according to zmq docsshe
     memcpy( z_msg.data(), command_str.c_str(), command_str.size() );
     
     my_publisher->send(z_msg);
+    printf("Passed send.  is_master: %d\n", (int) is_master); //TODO: remove
   }
   catch( zmq::error_t& e ){
     printf("Arte_command::send_command couldn't create a message from the buffer.\n");
     printf("zmq_error messsage is: _%s_\n", e.what() );
     return 1;
+  }
+
+  if(is_master == false){
+    zmq::message_t response;
+    my_publisher->recv( &response );
+
+    printf("Got response.  Size: %d Message: _%s_\n",   // TODO: remove
+	   response.size(), (char*) response.data() );
   }
 
   return 0;
@@ -273,9 +280,11 @@ int Arte_command_port::init_send()
     printf("Caught an exception in Arte_command_port::init_send.\n");
     printf("what(): _%s_\n", e.what() ); fflush(stdout);
     printf("out_addy_str_m was: _%s_\n", out_addy_str_m.c_str() );
+    printf("Setting this process Arte_command_port to slave mode.\n");
     is_master = false;
   }
   if(is_master == true){
+    printf("Successful master mode init.\n"); // TODO: remove
     // if we are master, then sending is initialized
     return 0;
   }
@@ -297,6 +306,7 @@ int Arte_command_port::init_send()
     printf("out_addy_str_s was: _%s_\n", out_addy_str_s.c_str() );
     return 5;
   }
+  printf("Successful slave mode init.\n"); // TODO: remove
   // if no exception, then we successful initialized slave sending
   return 0;
 }
@@ -356,7 +366,7 @@ int Arte_command_port::listen_in_thread()
       printf("with string _%s_\n", secondary_in_addy_str.c_str() );
       printf("exception.what(): _%s_ \n", e.what() );
     }
-
+    printf("SUCCESSFULLY SET UP REP SOCKET AND BOUND IT.\n"); //TODO: remove
     zmq::pollitem_t items [] = {
       { *my_master_secondary_listener, 0, ZMQ_POLLIN, 0 },
       { *my_subscriber,                0, ZMQ_POLLIN, 0 }
@@ -366,22 +376,25 @@ int Arte_command_port::listen_in_thread()
       zmq::message_t z_msg;
       zmq::poll (&items[0], 2, -1);
       if( items[0].revents & ZMQ_POLLIN){
-	try{
+	try{   // TODO: put try blocks back in poll loop
 	  my_master_secondary_listener->recv( &z_msg, 0 );
 	}
 	catch(std::exception& e){
 	  printf("Arte_command_port master from-slave ");
 	  printf("poll recv error.  What(): _%s_\n", e.what());
-	  handle_message_from_slave( z_msg );
 	}
+	handle_message_from_slave( z_msg );
       }
+      
       if(items[1].revents & ZMQ_POLLIN ){
 	try{
 	  my_subscriber->recv( &z_msg, 0 );
 	}
 	catch(std::exception& e){
 	  printf("Arte_command_port primary recv error. what(): _%s_\n", e.what());
+	  continue;
 	}
+	handle_primary_message( z_msg );
       }
     }
   } // end if for master case
@@ -451,6 +464,16 @@ int Arte_command_port::handle_message_from_slave(zmq::message_t& z_msg)
 {
 
   zmq::message_t outgoing( z_msg.size() );
+  zmq::message_t outgoing_response( z_msg.size() );
+  memcpy( outgoing.data(), z_msg.data(), z_msg.size() );
+  memcpy( outgoing_response.data(), z_msg.data(), z_msg.size() );
+  try{
+    my_master_secondary_listener->send( outgoing_response );
+  }
+  catch(std::exception &e){
+    printf("Arte_command_port::handle_message_from_slave ");
+    printf("Error replying to REQ. what(): _%s_\n", e.what() );
+  }
   try{
     my_publisher->send( outgoing );
   }
@@ -461,4 +484,16 @@ int Arte_command_port::handle_message_from_slave(zmq::message_t& z_msg)
   }
   z_msg.rebuild();
   return 0;
+}
+
+void Arte_command_port::debug_print_strings()
+{
+  printf("Arte_command_port::debug_print_strings ***************\n");
+    for(int n = 0; n < in_addy_str.size(); n++){
+      printf("in_addy_str[%d] = _%s_\n", n, in_addy_str[n].c_str() );
+    }
+  printf("out_addy_str_m = _%s_\n", out_addy_str_m.c_str() );
+  printf("out_addy_str_s = _%s_\n", out_addy_str_s.c_str() );
+  printf("secondary_in_addy_str = _%s_\n", secondary_in_addy_str.c_str() );
+  printf("******************************************************\n");
 }

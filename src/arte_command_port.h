@@ -165,5 +165,7 @@ class Arte_command_port{
 
   bool _auto_start;
 
+  void debug_print_strings();
+
 };
 #endif
