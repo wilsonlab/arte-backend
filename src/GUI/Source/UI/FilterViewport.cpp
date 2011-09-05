@@ -140,6 +140,7 @@
     void FilterViewport::itemDragExit (const String& /*sourceDescription*/, Component* /*sourceComponent*/)
     {
         somethingIsBeingDraggedOver = false;
+
         repaint();
 
         refreshEditors();
@@ -150,13 +151,15 @@
     {
         message = "last filter dropped: " + sourceDescription;
 
-        std::cout << "Item dropped." << std::endl;
+        std::cout << "Item dropped at insertion point " << insertionPoint << std::endl;
 
         /// needed to remove const cast --> should be a better way to do this
         String description = sourceDescription.substring(0);
 
         GenericProcessor* source = 0;
         GenericProcessor* dest = 0;
+
+        //GenericEditor* editor = (GenericEditor*) graph->createNewProcessor(description, this, source, dest);
 
         if (insertionPoint < editorArray.size()) {
             dest = (GenericProcessor*) editorArray[insertionPoint]->getProcessor();
@@ -166,16 +169,18 @@
             source = (GenericProcessor*) editorArray[insertionPoint-1]->getProcessor();
         }
 
-        GenericEditor* editor = (GenericEditor*) graph->createNewProcessor(description, this, source, dest);
+        activeEditor = (GenericEditor*) graph->createNewProcessor(description, this, source, dest);
 
-        if (editor != 0) {
-            editorArray.insert(insertionPoint,editor);
-            addAndMakeVisible(editorArray[insertionPoint]);
+        std::cout << "Active editor: " << activeEditor << std::endl;
+
+        if (activeEditor != 0) {
+            editorArray.insert(insertionPoint,activeEditor);
+            addChildComponent(editorArray[insertionPoint]);
         }
 
         somethingIsBeingDraggedOver = false;
                     
-        refreshEditors();
+        updateVisibleEditors();
         repaint();
     }
 
@@ -186,13 +191,13 @@
         //somethingIsBeingDraggedOver = true;
 
         editorArray.add(editor);
-        addAndMakeVisible(editorArray.getLast());
+        addChildComponent(editorArray.getLast());
 
         //editor->setVisible(true);
-        childrenChanged();
+        //childrenChanged();
 
 
-        refreshEditors();
+        updateVisibleEditors();
 
        // somethingIsBeingDraggedOver = false;
         repaint();
@@ -219,7 +224,7 @@
 
         editorArray.remove(indexToDelete);
 
-        refreshEditors();
+        updateVisibleEditors();
 
         if (editorArray.size() > 0) {
 
@@ -232,6 +237,59 @@
 
         //removeTab(0);
 
+    }
+
+    void FilterViewport::updateVisibleEditors() 
+    {
+
+        //std::cout << "Updating " << editorArray.size() << " editors." << std::endl;
+
+        for (int n = 0; n < editorArray.size(); n++)
+        {
+            editorArray[n]->setVisible(false);
+        }
+
+        editorArray.clear();
+        
+        GenericEditor* editorToAdd = activeEditor;
+
+        while (editorToAdd != 0) 
+        {
+
+            editorArray.insert(0,editorToAdd);
+            editorToAdd->setVisible(true);
+
+            GenericProcessor* currentProcessor = (GenericProcessor*) editorToAdd->getProcessor();
+            GenericProcessor* source = currentProcessor->getSourceNode();
+
+            if (source != 0)
+            {
+                editorToAdd = (GenericEditor*) source->getEditor();
+            } else {
+                editorToAdd = 0;
+            }
+        }
+
+        editorToAdd = activeEditor;
+
+        while (editorToAdd != 0)
+        {
+            GenericProcessor* currentProcessor = (GenericProcessor*) editorToAdd->getProcessor();
+            GenericProcessor* dest = currentProcessor->getDestNode();
+
+            if (dest != 0)
+            {
+                editorToAdd = (GenericEditor*) dest->getEditor();
+                editorArray.add(editorToAdd);
+                editorToAdd->setVisible(true);
+
+            } else {
+                editorToAdd = 0;
+            }
+        }
+
+        refreshEditors();
+        
     }
 
     void FilterViewport::refreshEditors () {

@@ -68,7 +68,8 @@ public:
     int addTab(String tabName, Component* componentToAdd);
     void removeTab(int);
 
-
+    void updateVisibleEditors();
+    void setActiveEditor(GenericEditor* e) {activeEditor = e;}
 
 
     //void tableColumnsChanged(TableHeaderComponent* tableHeader);
@@ -96,6 +97,7 @@ private:
     Array<int> tabArray;
 
     void refreshEditors();
+
 
     int insertionPoint;
     bool componentWantsToMove;

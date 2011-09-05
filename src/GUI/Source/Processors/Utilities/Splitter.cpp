@@ -39,9 +39,12 @@ void Splitter::setDestNode(GenericProcessor* dn)
 	destNode = dn;
 
 	if (activePath == 0) {
+		std::cout << "Setting destination node A." << std::endl;
 		destNodeA = dn;
 	} else {
 		destNodeB = dn;
+		std::cout << "Setting destination node B." << std::endl;
+
 	}
 }
 
@@ -56,4 +59,7 @@ void Splitter::switchDest(int destNum) {
 	{
 		setDestNode(destNodeB);
 	}
+
+	viewport->setActiveEditor((GenericEditor*) getEditor());
+	viewport->updateVisibleEditors();
 }
