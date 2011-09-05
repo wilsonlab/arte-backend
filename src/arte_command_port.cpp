@@ -142,7 +142,6 @@ int Arte_command_port::start()
     printf("Arte_command_port failed to initialize publisher. rc: %d\n",rc);
     printf("out_addy_str_m was: _%s_\n", out_addy_str_m.c_str() );
     printf("Attempted to be master (1 = true): %d", (int) is_master);
-    printf("Likely ok - just means we are in slave mode.\n");
   } 
 
   debug_print_strings(); //TODO: remove
@@ -188,7 +187,8 @@ int Arte_command_port::send_command(ArteCommand the_command)
   try{
     zmq::message_t z_msg ( command_str.size() ); // The right way according to zmq docsshe
     memcpy( z_msg.data(), command_str.c_str(), command_str.size() );
-    
+
+    printf("About to send. is_master: %d\n", (int) is_master); //TODO: remove
     my_publisher->send(z_msg);
     printf("Passed send.  is_master: %d\n", (int) is_master); //TODO: remove
   }
@@ -200,7 +200,10 @@ int Arte_command_port::send_command(ArteCommand the_command)
 
   if(is_master == false){
     zmq::message_t response;
+    
+    printf("Slave About to recv after a send. is_master: %d\n", (int)is_master); //TODO: remove 
     my_publisher->recv( &response );
+    printf("Just passed recv after a send.  is_master: %d\n", (int)is_master); //TODO: remove
 
     printf("Got response.  Size: %d Message: _%s_\n",   // TODO: remove
 	   response.size(), (char*) response.data() );
@@ -388,7 +391,9 @@ int Arte_command_port::listen_in_thread()
       
       if(items[1].revents & ZMQ_POLLIN ){
 	try{
+	  printf("About to recv subscriber msg\n"); //TODO: remove 
 	  my_subscriber->recv( &z_msg, 0 );
+	  printf("Finished recv subscriber msg\n"); //TODO: remove
 	}
 	catch(std::exception& e){
 	  printf("Arte_command_port primary recv error. what(): _%s_\n", e.what());
@@ -407,7 +412,9 @@ int Arte_command_port::listen_in_thread()
 
     //this_command_pb.Clear();
     try{
+      printf("About to recv in slave mode slave\n"); // TODO: remove
       my_subscriber->recv( &z_msg,0 );
+      printf("Done recv from in slave mode\n"); // TODO: remove
     }
     catch(std::exception& e){
       printf("listen: Exception in Arte_command_port::listen_in_thread.\n");
