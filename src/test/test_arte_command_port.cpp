@@ -15,26 +15,6 @@ ArteCommand my_message_in;
 Arte_command_port* my_port;  
 
 
-MsgSenderGetter::MsgSenderGetter( std::string &addy_str, CALLBACK_FN cb_f ){
-  my_command_port.set_addy_str( addy_str, addy_str );
-  //my_command_port.set_callback_fn( cb_f,  (void*) this );
-  my_command_port.set_callback_fn( cb_f, (void*)this );
-  my_command_port.start();
-}
-
-void MsgSenderGetter::send_msg( char *msg_str ){
-    my_message.Clear();
-    my_message.set_message_string( msg_str );
-    my_command_port.send_command( my_message );
-}
-
-ArteCommand MsgSenderGetter::get_msg(){ 
-  //ArteCommand my_message = my_command_port.command_queue_pop();
-      ArteCommand my_message;
-      my_message.CopyFrom( my_command_port.command_queue_pop() );
-  return my_message;
-}
-
 void test_fn(void *arg){
   printf("Callback: Test.\n");
   //( (MsgSenderGetter*)arg )->read_and_print();
@@ -48,15 +28,6 @@ void test_fn(void *arg){
     my_message_in.PrintDebugString(); fflush(stdout);
     printf("\n");
   }
-}
-
-void MsgSenderGetter::read_and_print(){
-  printf("test from MessageSenderGetter::read_and_print()\n"); fflush(stdout);
-}
-
-void MsgSenderGetter::print_msg(int *a)
-{
-  printf("in print_msg\n");
 }
 
 int main(int argc, char *argv[])
@@ -73,8 +44,8 @@ int main(int argc, char *argv[])
 
   read_xml( std::string(argv[1]) , pt, boost::property_tree::xml_parser::trim_whitespace);
   
-  my_port = new Arte_command_port( pt );
-  my_port->set_callback_fn( &test_fn, (void *)(&my_message_out) );
+  my_port = new Arte_command_port( pt, &test_fn, (void *)(&my_message_out), false );
+  //my_port->set_callback_fn( &test_fn, (void *)(&my_message_out) );
 
   // std::string addy_str(argv[1]);
   //my_port = new Arte_command_port( addy_str, addy_str, &test_fn, (void *)(&my_message_out));

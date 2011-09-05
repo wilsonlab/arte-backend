@@ -12,70 +12,105 @@ Arte_command_port::Arte_command_port()
 }
 
 
-//**** Constructor with zmq-style addresses *******/
-Arte_command_port::Arte_command_port(std::string& in_addy_char,
-				     std::string& out_addy_char)
+Arte_command_port::Arte_command_port(boost::property_tree::ptree pt,
+				     CALLBACK_FN cb_func, void *cb_arg,
+				     bool auto_start)
 {
   basic_init();
-  set_addy_str( in_addy_char, out_addy_char );
+  _auto_start = auto_start;
+  my_pt = new boost::property_tree::ptree( pt );
+  do_pt_settings();
+  set_callback_fn( cb_func, cb_arg );
+  if(_auto_start)
+    start();
 }
 
-
-//*** Constructor with addresses and callback fn ****/
-Arte_command_port::Arte_command_port(std::string& in_addy_char,
-				     std::string& out_addy_char,
-				     CALLBACK_FN CallbackFn, 
-				     void *arg)
+Arte_command_port::Arte_command_port(std::string pt_pathname,
+				     CALLBACK_FN cb_func, void *cb_arg,
+				     bool auto_start)
 {
   basic_init();
-  set_addy_str( in_addy_char, out_addy_char );
-  set_callback_fn( CallbackFn, arg );
+  _auto_start = auto_start;
+  my_pt = new boost::property_tree::ptree;
+  read_xml( pt_pathname, *my_pt );
+  do_pt_settings();
+  set_callback_fn ( cb_func, cb_arg );
+  if(_auto_start)
+    start();
 }
 
-//** Constructor initializes from propetry tree of setup conf **/
-Arte_command_port::Arte_command_port( boost::property_tree::ptree pt )
+//** Read hostname and port number from config file into our zmq addy strings **/
+void Arte_command_port::do_pt_settings()
 {
   using boost::property_tree::ptree;
-  basic_init();
-  std::string port_num = 
-    pt.get<std::string>("options.setup.command_port");
+
+  primary_port = 
+    my_pt->get<std::string>("options.setup.command_port");
+  secondary_port =
+    my_pt->get<std::string>("options.setup.secondary_command_port");
+
+  // Initialize all zmq strings
+  std::string out_m("tcp://*:");
+  out_m += primary_port;
+  std::string out_s("tcp://localhost:");
+  out_s += secondary_port;
+  std::string in_secondary("tcp://*:");
+  in_secondary += secondary_port;
   
-  BOOST_FOREACH(ptree::value_type &v, pt.get_child("options.setup.hosts")){
+  std::vector<std::string> in_list;
+
+  BOOST_FOREACH(ptree::value_type &v, my_pt->get_child("options.setup.hosts")){
     std::string this_host (v.second.data());
     std::string this_in("tcp://");
-    std::string this_out("tcp://*:");
     this_in += this_host;
     this_in += ":";
-    this_in += port_num;
-    this_out += port_num;
-    set_addy_str( this_in, this_out );
+    this_in += primary_port;
+    in_list.push_back(this_in);
   }
+
+  set_addy_str( in_list, out_m, out_s, in_secondary );
 }
 
 //***** Zero out fields that need to be set *********/
 void Arte_command_port::basic_init()
 {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
+  my_pt = NULL;
+  pt_fn.clear();
   my_zmq_context = NULL;
   my_publisher = NULL;
   my_subscriber = NULL;
   running = false;
-  in_addy_str.clear();
-  out_addy_str.clear();
+  reset_addy_str();
   callback_fn = NULL;
   callback_arg = NULL;
+  _auto_start = false;
 }
 
 
 //****** Simple addr string setter *****************/
-void Arte_command_port::set_addy_str( std::string& in_str,
-				      std::string& out_str)
+void Arte_command_port::set_addy_str( std::vector<std::string> in_str,
+				      std::string& out_str_m,
+				      std::string& out_str_s,
+				      std::string& secondary_in)
 {
-  in_addy_str.push_back( in_str );
-  if(!out_str.empty())
-    out_addy_str.assign( out_str.c_str());
+  if(!in_str.empty())
+    in_addy_str.insert( in_addy_str.end(), in_str.begin(), in_str.end());
+  if(!out_str_m.empty())
+    out_addy_str_m.assign( out_str_m.c_str());
+  if(!out_str_s.empty())
+     out_addy_str_s.assign( out_str_s.c_str() );
+  if(!secondary_in.empty())
+    secondary_in_addy_str.assign( secondary_in.c_str() );
 }
 
+void Arte_command_port::reset_addy_str()
+{
+  in_addy_str.clear();
+  out_addy_str_m.clear();
+  out_addy_str_s.clear();
+  secondary_in_addy_str.clear();
+}
 
 //********* Simple callback setter *****************/
 void Arte_command_port::set_callback_fn( CALLBACK_FN cb_fn, void *arg )
@@ -105,10 +140,12 @@ int Arte_command_port::start()
   int rc = init_send();
   if(rc){
     printf("Arte_command_port failed to initialize publisher. rc: %d\n",rc);
-    printf("out_addy_str was: _%s_\n", out_addy_str.c_str() );
-    return 1;
-  }
+    printf("out_addy_str_m was: _%s_\n", out_addy_str_m.c_str() );
+    printf("Attempted to be master (1 = true): %d", (int) is_master);
+    printf("Likely ok - just means we are in slave mode.\n");
+  } 
 
+  // What to do 
   rc = pthread_create( &listener_thread,           /* thread_t          */
 		       NULL,                       /* thread attributes */
 		       &listen_in_thread_wrapper,  /* thread fn         */
@@ -199,15 +236,21 @@ bool Arte_command_port::ok_to_start()
 {
   if( in_addy_str.empty())
     printf("in_addy_str is empty.\n");
-  if( out_addy_str.empty())
-    printf("out_addy_str is empty.\n");
+  if( out_addy_str_m.empty())
+    printf("out_addy_str_m is empty.\n");
+  if( out_addy_str_s.empty())
+    printf("out_addy_str_s is empty.\n");
+  if( secondary_in_addy_str.empty())
+    printf("secondary_in_addy_str is empty.\n");
   if( callback_fn == NULL )
     printf("NULL for callback_fn.\n");
   if( callback_arg == NULL )
     printf("NULL for callback arg.\n");
 
   return ( !(in_addy_str.empty() |
-	     out_addy_str.empty() |
+	     out_addy_str_m.empty() |
+	     out_addy_str_s.empty() |
+	     secondary_in_addy_str.empty() |
 	     (callback_fn == NULL) | 
 	     (callback_arg == NULL)) );
 }
@@ -216,21 +259,45 @@ bool Arte_command_port::ok_to_start()
 //************ Initialize the publisher socket ***************/
 int Arte_command_port::init_send()
 {
+
+  // Initiate as though we are master
   my_publisher = new zmq::socket_t( *my_zmq_context, ZMQ_PUB );
   if( my_publisher == NULL ){
     printf("Arte_command_port failed to create publisher socket.\n");
     return 2;
   }
   try{
-    my_publisher->bind( out_addy_str.c_str() );
+    my_publisher->bind( out_addy_str_m.c_str() );
   }
   catch(std::exception& e){
     printf("Caught an exception in Arte_command_port::init_send.\n");
     printf("what(): _%s_\n", e.what() ); fflush(stdout);
-    printf("out_addy_str was: _%s_\n", out_addy_str.c_str() );
-    throw(e);
-    return 3;
+    printf("out_addy_str_m was: _%s_\n", out_addy_str_m.c_str() );
+    is_master = false;
   }
+  if(is_master == true){
+    // if we are master, then sending is initialized
+    return 0;
+  }
+  
+  // but if bind on primary port failed, we must send as slave
+  delete my_publisher;
+  my_publisher = new zmq::socket_t( *my_zmq_context, ZMQ_REQ );
+  if(my_publisher == NULL){
+    printf("Arte_command_port failed to create slave REQ client.\n");
+    return 2;
+  }
+  try{
+    my_publisher->connect( out_addy_str_s.c_str() );
+  }
+  catch(std::exception& e){
+    printf("Caught an exception in Arte_command_port::init_send\n");
+    printf("while trying to connect slave REQ socket.\nwhat(): _%s_\n",
+	   e.what());
+    printf("out_addy_str_s was: _%s_\n", out_addy_str_s.c_str() );
+    return 5;
+  }
+  // if no exception, then we successful initialized slave sending
   return 0;
 }
 
@@ -246,7 +313,8 @@ void* Arte_command_port::listen_in_thread_wrapper(void *arg)
 //******** Start thread and do listening loop in that thread ********/
 int Arte_command_port::listen_in_thread()
 {
-
+  // Both masters and slaves initialize a subscriber 
+  // for primary messages
   my_subscriber = new zmq::socket_t ( *my_zmq_context, ZMQ_SUB );
   if(my_subscriber == NULL){
     printf("zmq error creating subscriber socket\n");
@@ -273,11 +341,58 @@ int Arte_command_port::listen_in_thread()
     return 1;
   }
 
-  while (running){
-    zmq::message_t z_msg;
-    ArteCommand this_command_pb;
+  if( is_master == true ){
+    my_master_secondary_listener = new zmq::socket_t( *my_zmq_context, ZMQ_REP );
+    if( my_master_secondary_listener == NULL ){
+      printf("zmq error in listen_in_thread creating REP socket\n");
+      printf("secondary_in_addy_str is: _%s_\n", secondary_in_addy_str.c_str() );
+      return 5;
+    }
+    try{
+      my_master_secondary_listener->bind( secondary_in_addy_str.c_str() );
+    }
+    catch(std::exception& e){
+      printf("Arte_command_port::listen_in_thread error binding port \n");
+      printf("with string _%s_\n", secondary_in_addy_str.c_str() );
+      printf("exception.what(): _%s_ \n", e.what() );
+    }
 
-    this_command_pb.Clear();
+    zmq::pollitem_t items [] = {
+      { *my_master_secondary_listener, 0, ZMQ_POLLIN, 0 },
+      { *my_subscriber,                0, ZMQ_POLLIN, 0 }
+    };
+
+    while (running){
+      zmq::message_t z_msg;
+      zmq::poll (&items[0], 2, -1);
+      if( items[0].revents & ZMQ_POLLIN){
+	try{
+	  my_master_secondary_listener->recv( &z_msg, 0 );
+	}
+	catch(std::exception& e){
+	  printf("Arte_command_port master from-slave ");
+	  printf("poll recv error.  What(): _%s_\n", e.what());
+	  handle_message_from_slave( z_msg );
+	}
+      }
+      if(items[1].revents & ZMQ_POLLIN ){
+	try{
+	  my_subscriber->recv( &z_msg, 0 );
+	}
+	catch(std::exception& e){
+	  printf("Arte_command_port primary recv error. what(): _%s_\n", e.what());
+	}
+      }
+    }
+  } // end if for master case
+
+  if(is_master == false){
+
+    while (running){
+    zmq::message_t z_msg;
+    //    ArteCommand this_command_pb;
+
+    //this_command_pb.Clear();
     try{
       my_subscriber->recv( &z_msg,0 );
     }
@@ -286,24 +401,64 @@ int Arte_command_port::listen_in_thread()
       printf("listen: what(): _%s_ \n", e.what());
     }
 
-    std::string command_str( (char*) z_msg.data() );
-    command_str.resize( (int) z_msg.size(), 'a' );
-
-
+    //std::string command_str( (char*) z_msg.data() );
+    //command_str.resize( (int) z_msg.size(), 'a' );
     
-    this_command_pb.Clear();
-    if( !this_command_pb.ParseFromString( command_str )){
-      printf("Arte_command_port parse error on string: _%s_\n",
-	     command_str.c_str());
-      continue;
-    }
+    //this_command_pb.Clear();
+    //if( !this_command_pb.ParseFromString( command_str )){
+    //  printf("Arte_command_port parse error on string: _%s_\n",
+    //	     command_str.c_str());
+    //  continue;
+    //}
 
     // If we've reached this point we have a well-formed protocol buffers message
     // Push it onto the queue and call the callback specified by the client
-    command_queue.push(this_command_pb);
-    callback_fn (callback_arg);
-    z_msg.rebuild();
+    //command_queue.push(this_command_pb);
+    //callback_fn (callback_arg);
+    //z_msg.rebuild();
+    handle_primary_message(z_msg);
+
+    }
   }
+
   return 0; // clean exit from the listening loop
 }
 
+int Arte_command_port::handle_primary_message(zmq::message_t& z_msg)
+{
+  ArteCommand this_command_pb;
+  this_command_pb.Clear();
+  std::string command_str( (char*) z_msg.data() );
+  command_str.resize( (int) z_msg.size(), 'a' );
+
+  this_command_pb.Clear();
+  if( !this_command_pb.ParseFromString( command_str )){
+    printf("Arte_command_port::handle_primary_message parse error ");
+    printf("on string: _%s_\n", command_str.c_str() );
+    return 1;  // exit error from primary message handler
+  }
+
+  // If we've reached this point, we have a well-formed protocol buffers message
+  // Push it onto the queue and call the callback specified by the client
+  command_queue.push(this_command_pb);
+  callback_fn( callback_arg );
+  z_msg.rebuild();
+
+  return 0; // clean exit from primary message handler
+}
+
+int Arte_command_port::handle_message_from_slave(zmq::message_t& z_msg)
+{
+
+  zmq::message_t outgoing( z_msg.size() );
+  try{
+    my_publisher->send( outgoing );
+  }
+  catch(std::exception& e){
+    printf("Exception from Arte_command_port::handle_message_from_slave ");
+    printf("\n what(): _%s_\n", e.what());
+    return 2;
+  }
+  z_msg.rebuild();
+  return 0;
+}
