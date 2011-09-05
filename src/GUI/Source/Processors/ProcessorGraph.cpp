@@ -23,6 +23,7 @@
 #include "SignalGenerator.h"
 #include "SourceNode.h"
 #include "SpikeDetector.h"
+#include "Utilities/Splitter.h"
 
 
 ProcessorGraph::ProcessorGraph(int numChannels) : currentNodeId(100), lastNodeId(1), 
@@ -255,7 +256,14 @@ GenericProcessor* ProcessorGraph::createProcessorFromDescription(String& descrip
 			processor = new SpikeDetector(description, &numSamplesInThisBuffer, 16, lock, currentNodeId);
 		}
 
-	// } else if (processorType.equalsIgnoreCase("Utilities")) {
+	} else if (processorType.equalsIgnoreCase("Utilities")) {
+
+	 	if (subProcessorType.equalsIgnoreCase("Splitter")) {
+			
+			std::cout << "Creating a new splitter." << std::endl;
+			processor = new Splitter(description, &numSamplesInThisBuffer, 16, lock, currentNodeId);
+
+	 	}
 		
 	// 	if (subProcessorType.equalsIgnoreCase("Event Node")) {
 			
@@ -270,8 +278,6 @@ GenericProcessor* ProcessorGraph::createProcessorFromDescription(String& descrip
 	// 			std::cout << midiChannelIndex << " is MIDI index." << std::endl;
 
 	// 		}
-
-	// 	}
 
 	} else if (processorType.equalsIgnoreCase("Visualizers")) {
 

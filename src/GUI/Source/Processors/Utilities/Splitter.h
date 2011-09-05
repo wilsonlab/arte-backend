@@ -20,7 +20,12 @@ class Splitter : public GenericProcessor
 {
 public:
 
-private:
+	Splitter(const String name, int* nSamples, int nChans, const CriticalSection& lock, int nodeId);
+	~Splitter();
+
+	AudioProcessorEditor* createEditor();
+
+	bool isSplitter() {return true;}
 	
 };
 

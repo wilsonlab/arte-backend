@@ -90,6 +90,8 @@ public:
 
 	virtual bool isSource() {return false;}
 	virtual bool isSink() {return false;}
+	virtual bool isSplitter() {return false;}
+	virtual bool isMerger() {return false;}
 
 	virtual void enable() {}
 	virtual void disable() {}
