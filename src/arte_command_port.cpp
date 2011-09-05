@@ -144,8 +144,6 @@ int Arte_command_port::start()
     printf("Attempted to be master (1 = true): %d", (int) is_master);
   } 
 
-  debug_print_strings(); //TODO: remove
-
   rc = pthread_create( &listener_thread,           /* thread_t          */
 		       NULL,                       /* thread attributes */
 		       &listen_in_thread_wrapper,  /* thread fn         */
@@ -187,10 +185,7 @@ int Arte_command_port::send_command(ArteCommand the_command)
   try{
     zmq::message_t z_msg ( command_str.size() ); // The right way according to zmq docsshe
     memcpy( z_msg.data(), command_str.c_str(), command_str.size() );
-
-    printf("About to send. is_master: %d\n", (int) is_master); //TODO: remove
     my_publisher->send(z_msg);
-    printf("Passed send.  is_master: %d\n", (int) is_master); //TODO: remove
   }
   catch( zmq::error_t& e ){
     printf("Arte_command::send_command couldn't create a message from the buffer.\n");
@@ -198,21 +193,9 @@ int Arte_command_port::send_command(ArteCommand the_command)
     return 1;
   }
 
-  printf("IS_MASTER: %d\n", (int) is_master ); //TODO: remove
-  if(is_master == true)
-    printf("is_master == true\n");
-  if(is_master == false)
-    printf("is_master == false\n");
-
   if(is_master == false){
     zmq::message_t response;
-    
-    printf("Slave About to recv after a send. is_master: %d\n", (int)is_master); //TODO: remove 
     my_publisher->recv( &response );
-    printf("Just passed recv after a send.  is_master: %d\n", (int)is_master); //TODO: remove
-
-    printf("Got response.  Size: %d Message: _%s_\n",   // TODO: remove
-	   response.size(), (char*) response.data() );
   }
 
   return 0;
@@ -290,16 +273,15 @@ int Arte_command_port::init_send()
     my_publisher->bind( out_addy_str_m.c_str() );
   }
   catch(std::exception& e){
-    printf("Caught an exception in Arte_command_port::init_send.\n");
-    printf("what(): _%s_\n", e.what() ); fflush(stdout);
-    printf("out_addy_str_m was: _%s_\n", out_addy_str_m.c_str() );
+    //printf("Caught an exception in Arte_command_port::init_send.\n");
+    //printf("what(): _%s_\n", e.what() ); fflush(stdout);
+    //printf("out_addy_str_m was: _%s_\n", out_addy_str_m.c_str() );
     printf("Setting this process Arte_command_port to slave mode.\n");
     // if we failed to bind, we well init like slave
     is_master = false;
   }
   
   if(is_master == true){
-    printf("Successful master mode init.\n"); // TODO: remove
     // if we are master, then sending is initialized
     return 0;
   }
@@ -321,7 +303,7 @@ int Arte_command_port::init_send()
     printf("out_addy_str_s was: _%s_\n", out_addy_str_s.c_str() );
     return 5;
   }
-  printf("Successful slave mode init.\n"); // TODO: remove
+
   // if no exception, then we successful initialized slave sending
   return 0;
 }
@@ -381,7 +363,7 @@ int Arte_command_port::listen_in_thread()
       printf("with string _%s_\n", secondary_in_addy_str.c_str() );
       printf("exception.what(): _%s_ \n", e.what() );
     }
-    printf("SUCCESSFULLY SET UP REP SOCKET AND BOUND IT.\n"); //TODO: remove
+
     zmq::pollitem_t items [] = {
       { *my_master_secondary_listener, 0, ZMQ_POLLIN, 0 },
       { *my_subscriber,                0, ZMQ_POLLIN, 0 }
@@ -391,7 +373,7 @@ int Arte_command_port::listen_in_thread()
       zmq::message_t z_msg;
       zmq::poll (&items[0], 2, -1);
       if( items[0].revents & ZMQ_POLLIN){
-	try{   // TODO: put try blocks back in poll loop
+	try{
 	  my_master_secondary_listener->recv( &z_msg, 0 );
 	}
 	catch(std::exception& e){
@@ -403,9 +385,7 @@ int Arte_command_port::listen_in_thread()
       
       if(items[1].revents & ZMQ_POLLIN ){
 	try{
-	  printf("About to recv subscriber msg\n"); //TODO: remove 
 	  my_subscriber->recv( &z_msg, 0 );
-	  printf("Finished recv subscriber msg\n"); //TODO: remove
 	}
 	catch(std::exception& e){
 	  printf("Arte_command_port primary recv error. what(): _%s_\n", e.what());
@@ -420,34 +400,15 @@ int Arte_command_port::listen_in_thread()
 
     while (running){
     zmq::message_t z_msg;
-    //    ArteCommand this_command_pb;
 
-    //this_command_pb.Clear();
     try{
-      printf("Listen in thread: About to recv in slave mode slave\n"); // TODO: remove
       my_subscriber->recv( &z_msg,0 );
-      printf("Listen in thread: Done recv from in slave mode\n"); // TODO: remove
     }
     catch(std::exception& e){
       printf("listen: Exception in Arte_command_port::listen_in_thread.\n");
       printf("listen: what(): _%s_ \n", e.what());
     }
 
-    //std::string command_str( (char*) z_msg.data() );
-    //command_str.resize( (int) z_msg.size(), 'a' );
-    
-    //this_command_pb.Clear();
-    //if( !this_command_pb.ParseFromString( command_str )){
-    //  printf("Arte_command_port parse error on string: _%s_\n",
-    //	     command_str.c_str());
-    //  continue;
-    //}
-
-    // If we've reached this point we have a well-formed protocol buffers message
-    // Push it onto the queue and call the callback specified by the client
-    //command_queue.push(this_command_pb);
-    //callback_fn (callback_arg);
-    //z_msg.rebuild();
     handle_primary_message(z_msg);
 
     }
@@ -486,20 +447,16 @@ int Arte_command_port::handle_message_from_slave(zmq::message_t& z_msg)
   zmq::message_t outgoing_response( z_msg.size() );
   memcpy( outgoing.data(), z_msg.data(), z_msg.size() );
   memcpy( outgoing_response.data(), z_msg.data(), z_msg.size() );
-  printf("Handling message from slave.\n");
+
   try{
-    printf("Handle slave msg: About to send outgoing_response to secondary listener.\n"); //TODO: remove
     my_master_secondary_listener->send( outgoing_response );
-    printf("Handle slave msg: Passed send outgoing_response to secondary listener.\n"); //TODO: remove
   }
   catch(std::exception &e){
     printf("Arte_command_port::handle_message_from_slave ");
     printf("Error replying to REQ. what(): _%s_\n", e.what() );
   }
   try{
-    printf("Handle slave: about to send to my_publisher.\n"); //TODO: remove
     my_publisher->send( outgoing );
-    printf("Handle slave: finished sending to my_publisher.\n"); //TODO: remove
   }
   catch(std::exception& e){
     printf("Exception from Arte_command_port::handle_message_from_slave ");
