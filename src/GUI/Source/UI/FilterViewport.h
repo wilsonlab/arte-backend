@@ -91,7 +91,8 @@ private:
     bool shiftDown;
     ProcessorGraph* graph;
     TabbedComponent* tabComponent;
-    OwnedArray<GenericEditor, CriticalSection> editorArray;
+    Array<GenericEditor*, CriticalSection> editorArray;
+    GenericEditor* activeEditor;
     Array<int> tabArray;
 
     void refreshEditors();

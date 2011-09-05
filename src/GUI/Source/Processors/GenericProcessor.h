@@ -85,8 +85,8 @@ public:
 	// get/set source node functions
 	GenericProcessor* getSourceNode() {return sourceNode;}
 	GenericProcessor* getDestNode() {return destNode;}
-	void setSourceNode(GenericProcessor* sn);
-	void setDestNode(GenericProcessor* dn);
+	virtual void setSourceNode(GenericProcessor* sn) {sourceNode = sn;}
+	virtual void setDestNode(GenericProcessor* dn) {destNode = dn;}
 
 	virtual bool isSource() {return false;}
 	virtual bool isSink() {return false;}
@@ -100,9 +100,13 @@ public:
 	virtual MidiBuffer* getEventBuffer() {return 0;}
 
 	AudioProcessorEditor* getEditor() {return editor;}
+	void setEditor(AudioProcessorEditor* e) {editor = e;}
 
 	void setUIComponent(UIComponent* ui) {UI = ui;}
 	UIComponent* getUIComponent() {return UI;}
+
+	GenericProcessor* sourceNode;
+	GenericProcessor* destNode;
 
 private:
 
@@ -113,9 +117,6 @@ private:
 
 	int numInputs;
 	int numOutputs;
-
-	GenericProcessor* sourceNode;
-	GenericProcessor* destNode;
 
 	UIComponent* UI;
 

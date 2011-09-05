@@ -9,6 +9,7 @@
 */
 
 #include "SplitterEditor.h"
+#include "../Utilities/Splitter.h"
 
 PipelineSelectorButton::PipelineSelectorButton()
 	: DrawableButton (T("Selector"), DrawableButton::ImageFitted)
@@ -36,7 +37,6 @@ PipelineSelectorButton::PipelineSelectorButton()
 PipelineSelectorButton::~PipelineSelectorButton()
 {
 }
-
 
 SplitterEditor::SplitterEditor (GenericProcessor* parentNode, FilterViewport* vp) 
 	: GenericEditor(parentNode, vp)
@@ -69,11 +69,15 @@ void SplitterEditor::buttonClicked(Button* button)
 	{
 		pipelineSelectorA->setToggleState(true,false);
 		pipelineSelectorB->setToggleState(false,false);
+		Splitter* processor = (Splitter*) getProcessor();
+		processor->switchDest(0);
 
 	} else if (button == pipelineSelectorB) 
 	{
 		pipelineSelectorB->setToggleState(true,false);
 		pipelineSelectorA->setToggleState(false,false);
+		Splitter* processor = (Splitter*) getProcessor();
+		processor->switchDest(1);
 		
 	}
 }

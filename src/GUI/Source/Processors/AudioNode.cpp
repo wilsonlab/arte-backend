@@ -34,6 +34,8 @@ AudioProcessorEditor* AudioNode::createEditor()
 {
 	
 	AudioEditor* editor = new AudioEditor(this);
+
+	setEditor(editor);
 	
 	return editor; 
 
@@ -58,7 +60,6 @@ void AudioNode::releaseResources()
 {	
 
 }
-
 
 
 void AudioNode::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages)

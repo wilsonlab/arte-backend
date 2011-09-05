@@ -26,6 +26,15 @@ public:
 	AudioProcessorEditor* createEditor();
 
 	bool isSplitter() {return true;}
+
+	void switchDest(int);
+	void setDestNode(GenericProcessor* dn);
+
+private:
+
+	GenericProcessor* destNodeA;
+	GenericProcessor* destNodeB;
+	int activePath;
 	
 };
 

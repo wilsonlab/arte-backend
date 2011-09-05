@@ -93,7 +93,6 @@ void GenericEditor::deselect()
 
 void GenericEditor::paint (Graphics& g)
 {
-
 	//g.addTransform(AffineTransform::rotation( double_Pi/20));
 
 	g.setColour(Colours::black);
@@ -109,8 +108,6 @@ void GenericEditor::paint (Graphics& g)
 	g.setColour(Colours::grey);
 	g.fillRoundedRectangle(4,15,getWidth()-8, getHeight()-19,8.0);
 	g.fillRect(4,15,getWidth()-8, 20);
-
-	
 
 	g.setColour(Colours::black);
 

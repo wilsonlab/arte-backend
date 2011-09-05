@@ -13,7 +13,7 @@
 GenericProcessor::GenericProcessor(const String name_, int* nSamps, int nChans, const CriticalSection& lock_, int id)
 	: numSamplesInThisBuffer(nSamps),
 	  name (name_), lock(lock_), nodeId(id), numInputs(nChans), numOutputs(nChans),
-	  sourceNode(0), destNode(0)
+	  sourceNode(0), destNode(0), editor(0)
 {
 
 	setPlayConfigDetails(numInputs,numOutputs,44100.0,*nSamps);
@@ -23,12 +23,19 @@ GenericProcessor::GenericProcessor(const String name_, int* nSamps, int nChans, 
 GenericProcessor::~GenericProcessor()
 {
 	//deleteAllChildren();
+	std::cout << name << " deleting editor." << std::endl;
+
+	if (editor != 0)
+	{
+		delete(editor);
+		editor = 0;
+	}
 }
 
 AudioProcessorEditor* GenericProcessor::createEditor()
 {
-	
-	return new GenericEditor (this, viewport);
+	editor = new GenericEditor (this, viewport); 
+	return editor;
 }
 
 
@@ -69,21 +76,21 @@ int GenericProcessor::getNumSamples() {
 	return numRead;
 }
 
-void GenericProcessor::setSourceNode(GenericProcessor* sn)
-{
-	if (!isSource())
-		sourceNode = sn;
-	else
-		sourceNode = 0;
-}
+// void GenericProcessor::setSourceNode(GenericProcessor* sn)
+// {
+// 	if (!isSource())
+// 		sourceNode = sn;
+// 	else
+// 		sourceNode = 0;
+// }
 
-void GenericProcessor::setDestNode(GenericProcessor* dn)
-{
-	if (!isSink())
-		destNode = dn;
-	else
-		destNode = 0;
-}
+// void GenericProcessor::setDestNode(GenericProcessor* dn)
+// {
+// 	if (!isSink())
+// 		destNode = dn
+// 	else
+// 		destNode = 0;
+// }
 
 int GenericProcessor::getNumInputs() {
 	return numInputs;

@@ -161,7 +161,14 @@ ControlPanel::ControlPanel(ProcessorGraph* graph_, AudioComponent* audio_) :
 
 ControlPanel::~ControlPanel()
 {
-	deleteAllChildren();
+	//deleteAllChildren() -> if this is used, audioEditor will be deleted
+	deleteAndZero(playButton);
+	deleteAndZero(recordButton);
+	deleteAndZero(masterClock);
+	deleteAndZero(cpuMeter);
+	deleteAndZero(diskMeter);
+	//audioEditor will delete itself
+
 	graph = 0;
 }
 

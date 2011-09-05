@@ -34,6 +34,8 @@ public:
 
 	void setParameter (int parameterIndex, float newValue);
 
+	void setSourceNode(GenericProcessor* sn) {sourceNode = 0;}
+
 	//AudioProcessorEditor* createEditor();
 	bool hasEditor() const {return true;}
 

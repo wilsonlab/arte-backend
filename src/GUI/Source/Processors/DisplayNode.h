@@ -29,6 +29,8 @@ public:
 	AudioProcessorEditor* createEditor();
 
 	bool isSink() {return true;}
+
+	void setDestNode(GenericProcessor* sn) {destNode = 0;}
 	
 private:
 

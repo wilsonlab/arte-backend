@@ -19,6 +19,8 @@
            insertionPoint(0), componentWantsToMove(false), indexOfMovingComponent(-1)
     {
 
+      activeEditor = 0;
+
       addMouseListener(this, true);
 
       int numTabs = tabComponent->getTabbedButtonBar().getNumTabs();
@@ -215,7 +217,7 @@
 
         //std::cout << "Node ID: " << editorArray[indexToDelete]->nodeId << std::endl;
 
-        editorArray.remove(indexToDelete,true);
+        editorArray.remove(indexToDelete);
 
         refreshEditors();
 
