@@ -38,6 +38,8 @@ AudioProcessorEditor* SpikeDetector::createEditor()
 	
 	std::cout << "Creating editor." << std::endl;
 
+    setEditor(editor);
+
 	return editor;
 }
 

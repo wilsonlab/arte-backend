@@ -69,7 +69,7 @@ public:
     void removeTab(int);
 
     void updateVisibleEditors();
-    void setActiveEditor(GenericEditor* e) {activeEditor = e;}
+    void setActiveEditor(GenericEditor* e) {activeEditor = e; updateVisibleEditors();}
 
 
     //void tableColumnsChanged(TableHeaderComponent* tableHeader);

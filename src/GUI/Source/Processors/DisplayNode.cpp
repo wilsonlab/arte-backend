@@ -29,12 +29,12 @@ AudioProcessorEditor* DisplayNode::createEditor()
 
 	Visualizer* visualizer = new Visualizer(this, viewport);
 
-	setEditor(visualizer);
-
 	GenericProcessor* source = (GenericProcessor*) getSourceNode();
 
 	visualizer->setBuffers(source->getContinuousBuffer(),source->getEventBuffer());
 	visualizer->setUIComponent(getUIComponent());
+
+	setEditor(visualizer);
 	
 	std::cout << "Creating visualizer." << std::endl;
 	return visualizer;
