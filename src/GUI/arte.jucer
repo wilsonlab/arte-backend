@@ -138,6 +138,10 @@
                 file="Source/Processors/Editors/GenericEditor.h"/>
         </GROUP>
         <GROUP id="ZgsuWxi" name="DataThreads">
+          <FILE id="xWMgZ8D" name="FileReaderThread.cpp" compile="1" resource="0"
+                file="Source/Processors/DataThreads/FileReaderThread.cpp"/>
+          <FILE id="muolub6" name="FileReaderThread.h" compile="0" resource="0"
+                file="Source/Processors/DataThreads/FileReaderThread.h"/>
           <FILE id="jMwtRI1" name="okFrontPanelDLL.cpp" compile="1" resource="0"
                 file="Source/Processors/DataThreads/okFrontPanelDLL.cpp"/>
           <FILE id="LlZ0Bjn" name="okFrontPanelDLL.h" compile="0" resource="0"

@@ -24,6 +24,9 @@ SourceNode::SourceNode(const String name_, int* nSamps, int nChans, const Critic
 	} else if (getName().equalsIgnoreCase("Custom FPGA")) {
 		setNumOutputs(32);
 		setNumInputs(0);
+	} else if (getName().equalsIgnoreCase("File Reader")) {
+		setNumOutputs(16);
+		setNumInputs(0);
 	}
 
 }
@@ -60,6 +63,9 @@ void SourceNode::enable() {
 		inputBuffer = dataThread->getBufferAddress();
 	} else if (getName().equalsIgnoreCase("Data Sources/Custom FPGA")) {
 		dataThread = new FPGAThread();
+		inputBuffer = dataThread->getBufferAddress();
+	} else if (getName().equalsIgnoreCase("Data Sources/File Reader")) {
+		dataThread = new FileReaderThread();
 		inputBuffer = dataThread->getBufferAddress();
 	}
 

@@ -242,7 +242,7 @@ GenericProcessor* ProcessorGraph::createProcessorFromDescription(String& descrip
 			sendActionMessage("New file reader created.");
 
 			std::cout << "Creating a file reader." << std::endl;
-			processor = new FileReader(description, &numSamplesInThisBuffer, 16, lock, currentNodeId);
+			processor = new SourceNode(description, &numSamplesInThisBuffer, 16, lock, currentNodeId);
 
 		}
 

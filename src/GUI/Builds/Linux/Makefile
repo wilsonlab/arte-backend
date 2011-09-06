@@ -76,6 +76,7 @@ OBJECTS := \
   $(OBJDIR)/Visualizer_d5ab35b6.o \
   $(OBJDIR)/FilterEditor_dfe1f39d.o \
   $(OBJDIR)/GenericEditor_becb2ad6.o \
+  $(OBJDIR)/FileReaderThread_933ea08.o \
   $(OBJDIR)/okFrontPanelDLL_158af498.o \
   $(OBJDIR)/NetworkThread_276b0d43.o \
   $(OBJDIR)/FPGAThread_a8dc34ed.o \
@@ -280,6 +281,11 @@ $(OBJDIR)/FilterEditor_dfe1f39d.o: ../../Source/Processors/Editors/FilterEditor.
 $(OBJDIR)/GenericEditor_becb2ad6.o: ../../Source/Processors/Editors/GenericEditor.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling GenericEditor.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/FileReaderThread_933ea08.o: ../../Source/Processors/DataThreads/FileReaderThread.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling FileReaderThread.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/okFrontPanelDLL_158af498.o: ../../Source/Processors/DataThreads/okFrontPanelDLL.cpp
