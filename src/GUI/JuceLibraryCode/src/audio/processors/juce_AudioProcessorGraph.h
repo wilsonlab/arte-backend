@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library - "Jules' Utility Class Extensions"
-   Copyright 2004-10 by Raw Material Software Ltd.
+   Copyright 2004-11 by Raw Material Software Ltd.
 
   ------------------------------------------------------------------------------
 
@@ -57,7 +57,6 @@ public:
     AudioProcessorGraph();
 
     /** Destructor.
-
         Any processor objects that have been added to the graph will also be deleted.
     */
     ~AudioProcessorGraph();
@@ -70,19 +69,14 @@ public:
     class JUCE_API  Node   : public ReferenceCountedObject
     {
     public:
-        /** Destructor.
-        */
-        ~Node();
-
         //==============================================================================
         /** The ID number assigned to this node.
-
             This is assigned by the graph that owns it, and can't be changed.
         */
-        const uint32 id;
+        const uint32 nodeId;
 
         /** The actual processor object that this node represents. */
-        AudioProcessor* getProcessor() const throw()            { return processor; }
+        AudioProcessor* getProcessor() const throw()           { return processor; }
 
         /** A set of user-definable properties that are associated with this node.
 
@@ -104,7 +98,7 @@ public:
         const ScopedPointer<AudioProcessor> processor;
         bool isPrepared;
 
-        Node (uint32 id, AudioProcessor* processor);
+        Node (uint32 nodeId, AudioProcessor* processor) throw();
 
         void prepare (double sampleRate, int blockSize, AudioProcessorGraph* graph);
         void unprepare();
@@ -120,6 +114,10 @@ public:
     struct JUCE_API  Connection
     {
     public:
+        //==============================================================================
+        Connection (uint32 sourceNodeId, int sourceChannelIndex,
+                    uint32 destNodeId, int destChannelIndex) throw();
+
         //==============================================================================
         /** The ID number of the node which is the input source for this connection.
             @see AudioProcessorGraph::getNodeForId
@@ -401,7 +399,7 @@ private:
     //==============================================================================
     ReferenceCountedArray <Node> nodes;
     OwnedArray <Connection> connections;
-    int lastNodeId;
+    uint32 lastNodeId;
     AudioSampleBuffer renderingBuffers;
     OwnedArray <MidiBuffer> midiBuffers;
 

@@ -107,11 +107,16 @@ void* ProcessorGraph::createNewProcessor(String& description,
 		processor->setSourceNode(source);
 		processor->setDestNode(dest);
 		
-		if (!processor->isSink()) {
+		if (!processor->isSink() && 
+		    !processor->isSource() &&
+		    !processor->isSplitter() && 
+		    !processor->isMerger())
+		{
 			connectToAudioAndRecordNodes = true;
 		}
 
-		if (processor->isSource()) {
+		if (processor->isSource()) { // needs to be updated to
+									 // be compatible with multiple sources
 			SOURCE_NODE_ID = id;
 		}
 
@@ -138,7 +143,7 @@ void* ProcessorGraph::createNewProcessor(String& description,
 				  	chan); // destNodeChannelIndex
 			}
 
-			std::cout << std::endl;
+			
 
 			//processor->setNumOutputs
 
@@ -190,6 +195,8 @@ void* ProcessorGraph::createNewProcessor(String& description,
 			}
 
 		}
+
+		std::cout << std::endl;
 
 		processor->setViewport(vp);
 		return processor->createEditor();
