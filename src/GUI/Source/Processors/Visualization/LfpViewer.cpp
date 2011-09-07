@@ -14,6 +14,7 @@
 LfpViewer::LfpViewer(AudioSampleBuffer* sBuffer, MidiBuffer* eBuffer, UIComponent* ui)
 	: Renderer(sBuffer, eBuffer, ui)
 {
+	addMouseListener (this, true);
 }
 
 LfpViewer::~LfpViewer() {}
@@ -95,4 +96,14 @@ void LfpViewer::renderOpenGL()
 	glFlush();
 		
 	
+}
+
+void LfpViewer::mouseDown (const MouseEvent& e)
+{
+	
+	// std::cout << "Mouse click at " << 
+	// 			 e.getMouseDownX() <<
+	// 			 ", " << 
+	// 			 e.getMouseDownY() << std::endl;
+
 }

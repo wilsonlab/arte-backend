@@ -45,6 +45,7 @@ public:
 	~LfpViewer();
 	void renderOpenGL();	
 	void newOpenGLContextCreated();
+	void mouseDown(const MouseEvent &e);
 };
 
 

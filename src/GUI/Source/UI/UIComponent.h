@@ -49,8 +49,6 @@ private:
 	Label* infoLabel;
 	//Font* Miso;
 
-	const String msg;
-
 	void resized();
 
 	void timerCallback();

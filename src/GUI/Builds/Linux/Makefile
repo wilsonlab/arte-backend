@@ -91,6 +91,7 @@ OBJECTS := \
   $(OBJDIR)/SourceNode_c2d6336c.o \
   $(OBJDIR)/GenericProcessor_733760aa.o \
   $(OBJDIR)/ProcessorGraph_68b34a0b.o \
+  $(OBJDIR)/Configuration_6915cd84.o \
   $(OBJDIR)/MessageCenter_748a1cca.o \
   $(OBJDIR)/FilterViewport_47880e3a.o \
   $(OBJDIR)/FilterList_10c1d1b2.o \
@@ -98,6 +99,7 @@ OBJECTS := \
   $(OBJDIR)/UIComponent_d667ba37.o \
   $(OBJDIR)/MainWindow_499ac812.o \
   $(OBJDIR)/Main_90ebc5c2.o \
+  $(OBJDIR)/BinaryData_ce4232d4.o \
   $(OBJDIR)/JuceLibraryCode1_682c927f.o \
   $(OBJDIR)/JuceLibraryCode2_683aaa00.o \
   $(OBJDIR)/JuceLibraryCode3_6848c181.o \
@@ -358,6 +360,11 @@ $(OBJDIR)/ProcessorGraph_68b34a0b.o: ../../Source/Processors/ProcessorGraph.cpp
 	@echo "Compiling ProcessorGraph.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
+$(OBJDIR)/Configuration_6915cd84.o: ../../Source/UI/Configuration.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling Configuration.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
 $(OBJDIR)/MessageCenter_748a1cca.o: ../../Source/UI/MessageCenter.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling MessageCenter.cpp"
@@ -391,6 +398,11 @@ $(OBJDIR)/MainWindow_499ac812.o: ../../Source/MainWindow.cpp
 $(OBJDIR)/Main_90ebc5c2.o: ../../Source/Main.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling Main.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/BinaryData_ce4232d4.o: ../../JuceLibraryCode/BinaryData.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling BinaryData.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/JuceLibraryCode1_682c927f.o: ../../JuceLibraryCode/JuceLibraryCode1.cpp

@@ -17,12 +17,12 @@
 
 class FilterViewport;
 
-class PipelineSelectorButton : public DrawableButton
-{
-	public:
-		PipelineSelectorButton();
-		~PipelineSelectorButton();	
-};
+// class PipelineSelectorButton : public DrawableButton
+// {
+// 	public:
+// 		PipelineSelectorButton();
+// 		~PipelineSelectorButton();	
+// };
 
 class SplitterEditor : public GenericEditor,
 					   public Button::Listener
@@ -35,8 +35,8 @@ public:
 
 private:	
 	
-	PipelineSelectorButton* pipelineSelectorA;
-	PipelineSelectorButton* pipelineSelectorB;
+	ImageButton* pipelineSelectorA;
+	ImageButton* pipelineSelectorB;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SplitterEditor);
 

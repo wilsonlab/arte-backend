@@ -12,7 +12,7 @@
 #include <stdio.h>
 
 UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_) 
-	: processorGraph(pgraph), audio(audio_), msg(T("Message string"))
+	: processorGraph(pgraph), audio(audio_)
 
 {
 	infoLabel = 0;
@@ -33,13 +33,21 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 	std::cout << "Component height = " << h << std::endl;
 
 	// initialize fonts
+	// MemoryInputStream fontStream (BinaryData::misoregular_ttf,
+	//                               BinaryData::misoregular_ttfSize, false);
+	// Typeface* typeface = new Typeface (fontStream);
+
+	// Font* miso = new Font (*typeface);
+	// miso->setHeight(14.0f);
+
 	//Miso = new Font(14.0, Font::plain);
 	//Miso->setTypefaceName(T("Miso"));
 
 	// initialize labels
 	infoLabel = new Label (T("Info Label"), "arte alpha v0.0");
+	//infoLabel->setFont(*miso);
+
 	addAndMakeVisible(infoLabel);
-	//infoLabel->setFont(*Miso);
 	infoLabel->setColour(Label::textColourId,Colours::lightgrey);
 	
 	//addAndMakeVisible (tabbedComponent = new TabbedComponent (TabbedButtonBar::TabsAtRight));
@@ -152,6 +160,6 @@ void UIComponent::resized()
 
 void UIComponent::timerCallback() {
 	//std::cout << "Message sent." << std::endl;
-	sendActionMessage(msg);
+	sendActionMessage("Refresh");
 	//std::cout << "message sent." << std::endl;
 }

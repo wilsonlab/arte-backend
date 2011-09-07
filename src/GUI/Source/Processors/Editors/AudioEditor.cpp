@@ -148,6 +148,6 @@ void AudioEditor::paint (Graphics& g)
 	// //titleFont.setTypefaceName(T("Miso"));
 
 	 g.setFont(titleFont);
-	 g.drawText("Audio Editor", 8, 10, 100, 7, Justification::left, false);
+	 g.drawText("Mute ON/OFF", 15, 10, 100, 7, Justification::left, false);
 
 }
