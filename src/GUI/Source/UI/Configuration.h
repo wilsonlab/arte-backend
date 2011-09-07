@@ -16,13 +16,13 @@
 class Trode
 {
 public:
-	Trode(int nchans, String name_)
+	Trode(int nchans, int startChan, String name_)
 	{
 		name = name_;
 
 		for (int n = 0; n < nchans; n++)
 		{
-			channelMapping.add(-1);
+			channelMapping.add(startChan++);
 			inputRange.add(500.0);
 			threshold.add(100.0);
 			isActive.add(true);
@@ -89,7 +89,7 @@ public:
 			return false;
 	}
 
-	String getName();
+	String getName() {return name;}
 
 private:
 	Array<int, CriticalSection> channelMapping;
@@ -112,17 +112,19 @@ private:
 class DataSource
 {
 public:
-	DataSource(String name_, int nChans, int firstChanIndex)
+	DataSource(String name_, int nChans, int firstChanIndex, int ID)
 	{
 
 		name = name_;
+		id = ID;
 
 		numChans = nChans;
 		firstChan = firstChanIndex;
+		nextAvailableChan = firstChan;
 
 	}
 
-	~DataSource();
+	~DataSource() {};
 
 	int numTetrodes() {return tetrodes.size();}
 	int numStereotrodes() {return stereotrodes.size();}
@@ -134,20 +136,24 @@ public:
 
 	void addTrode(int numChannels, String name_)
 	{
-		Trode t = Trode(numChannels, name_);
+		Trode* t = new Trode(numChannels, nextAvailableChan, name_);
 
-		if (t.numChannels() == 1)
-			singleWires.add(&t);
-		else if (t.numChannels() == 2)
-			stereotrodes.add(&t);
-		else if (t.numChannels() == 4)
-			tetrodes.add(&t); 
+		nextAvailableChan += numChannels;
+
+		if (t->numChannels() == 1)
+			singleWires.add(t);
+		else if (t->numChannels() == 2)
+			stereotrodes.add(t);
+		else if (t->numChannels() == 4)
+			tetrodes.add(t); 
 	}
 
 	String getName() {return name;}
 
 	int getNumChans() {return numChans;}
 	int getFirstChan() {return firstChan;}
+
+	int id;
 
 private:
 
@@ -159,6 +165,7 @@ private:
 
 	int firstChan;
 	int numChans;
+	int nextAvailableChan;
 
 };
 

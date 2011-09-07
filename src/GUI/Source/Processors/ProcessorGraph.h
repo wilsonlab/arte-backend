@@ -13,12 +13,15 @@
 
 #include "../../JuceLibraryCode/JuceHeader.h"
 
+//#include "../UI/UIComponent.h"
+
 class GenericProcessor;
 class RecordNode;
 class SourceNode;
 class FilterViewport;
-class UIComponent;
 class AudioNode;
+class UIComponent;
+class Configuration;
 
 class ProcessorGraph : public AudioProcessorGraph,
 					   public ActionBroadcaster
@@ -47,10 +50,11 @@ public:
 	const CriticalSection lock;
 
 	RecordNode* getRecordNode();
-	GenericProcessor* getSourceNode();
+	GenericProcessor* getSourceNode(int snID);
 	AudioNode* getAudioNode();
 
-	void setUIComponent(UIComponent* ui) {UI = ui;}
+	void setUIComponent(UIComponent* ui);
+	
 
 	const String saveState(const File& file);
 	const String loadState(const File& file);
@@ -70,6 +74,7 @@ private:
 	void createDefaultNodes();
 
 	UIComponent* UI;
+	Configuration* config;
 
 
 

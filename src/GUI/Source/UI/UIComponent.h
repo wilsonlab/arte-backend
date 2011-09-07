@@ -16,6 +16,7 @@
 #include "FilterList.h"
 #include "FilterViewport.h"
 #include "MessageCenter.h"
+#include "Configuration.h"
 #include "../Processors/DisplayNode.h"
 #include "../Processors/ProcessorGraph.h"
 #include "../Audio/AudioComponent.h"
@@ -33,6 +34,7 @@ public:
 	~UIComponent();
 
 	FilterViewport* getViewport() {return filterViewport;}
+	Configuration* getConfiguration() {return config;}
 
 private:
 	//ControlPanel* controlPanel;
@@ -42,6 +44,7 @@ private:
 	FilterList* filterList;
 	ControlPanel* controlPanel;
 	MessageCenter* messageCenter;
+	Configuration* config;
 
 	ProcessorGraph* processorGraph;
 	AudioComponent* audio;

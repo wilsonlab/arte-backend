@@ -24,7 +24,8 @@
 #include "SourceNode.h"
 #include "SpikeDetector.h"
 #include "Utilities/Splitter.h"
-
+#include "../UI/UIComponent.h"
+#include "../UI/Configuration.h"
 
 ProcessorGraph::ProcessorGraph(int numChannels) : currentNodeId(100), lastNodeId(1), 
 	SOURCE_NODE_ID(0), 
@@ -115,9 +116,34 @@ void* ProcessorGraph::createNewProcessor(String& description,
 			connectToAudioAndRecordNodes = true;
 		}
 
-		if (processor->isSource()) { // needs to be updated to
-									 // be compatible with multiple sources
-			SOURCE_NODE_ID = id;
+		if (processor->isSource()) {
+			
+			int nextChan = 0;
+
+			for (int n = 0; n < config->numDataSources(); n++)
+			{
+				nextChan += config->getSource(n)->getNumChans();
+			}
+
+			DataSource* d = new DataSource(processor->getName(),
+			                          processor->getNumOutputs(),
+			                          nextChan,
+			                          id);
+
+			// add tetrodes -- should really be doing this dynamically
+			d->addTrode(4, "TT1");
+			d->addTrode(4, "TT2");
+			d->addTrode(4, "TT3");
+			d->addTrode(4, "TT4");
+
+			// for (int n = 0; n < d->numTetrodes(); n++)
+			// {
+			// 	std::cout << d->getTetrode(n)->getName();
+			// }
+			// std::cout << std::endl;
+
+			config->addDataSource(d);
+			//SOURCE_NODE_ID = id;
 		}
 
 		// need to update source and dest, in case the processor is a source or a visualizer
@@ -341,29 +367,38 @@ void ProcessorGraph::removeProcessor(GenericProcessor* processor) {
 
 }
 
+void ProcessorGraph::setUIComponent(UIComponent* ui)
+{
+	UI = ui;
+	config = ui->getConfiguration();
+}
+
+
 bool ProcessorGraph::enableSourceNode() {
 	std::cout << "Enabling source node..." << std::endl;
-	GenericProcessor* sn = getSourceNode();
 
-	if (sn != 0) {
-		sn->enable();
-		return true;
-	} else {
-		return false;
+	for (int n = 0; n < config->numDataSources(); n++) 
+	{
+		GenericProcessor* sn = getSourceNode(config->getSource(n)->id);
+		if (sn != 0)
+			sn->enable();
 	}
+
+	return true;
 }
 
 bool ProcessorGraph::disableSourceNode() {
 
 	std::cout << "Disabling source node..." << std::endl;
-	GenericProcessor* sn = getSourceNode();
 
-	if (sn != 0) {
-		sn->disable();
-		return true;
-	} else {
-		return false;
+	for (int n = 0; n < config->numDataSources(); n++) 
+	{
+		GenericProcessor* sn = getSourceNode(config->getSource(n)->id);
+		if (sn != 0)
+			sn->disable();
 	}
+
+	return true;
 }
 
 
@@ -381,10 +416,10 @@ RecordNode* ProcessorGraph::getRecordNode() {
 
 }
 
-GenericProcessor* ProcessorGraph::getSourceNode() {
+GenericProcessor* ProcessorGraph::getSourceNode(int snID) {
 
-	if (SOURCE_NODE_ID != 0) {
-		Node* node = getNodeForId(SOURCE_NODE_ID);
+	if (snID != 0) {
+		Node* node = getNodeForId(snID);
 		return (GenericProcessor*) node->getProcessor();
 	} else {
 		return 0;

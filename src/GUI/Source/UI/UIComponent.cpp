@@ -110,6 +110,8 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 	//addActionListener(processorGraph);
 	//sendActionMessage(msg);
 
+	config = new Configuration();
+
 	startTimer(15);
 
 	std::cout << "Finished UI stuff." << std::endl;
@@ -121,6 +123,8 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 UIComponent::~UIComponent()
 {
 	deleteAllChildren();
+
+	deleteAndZero(config);
 	//delete(Miso);
 	processorGraph = 0;
 	audio = 0;
