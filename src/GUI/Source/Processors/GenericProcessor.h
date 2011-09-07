@@ -14,6 +14,7 @@
 
 #include "../../JuceLibraryCode/JuceHeader.h"
 #include "Editors/GenericEditor.h"
+#include "../UI/Configuration.h"
 #include <time.h>
 #include <stdio.h>
 
@@ -105,6 +106,9 @@ public:
 	void setUIComponent(UIComponent* ui) {UI = ui;}
 	UIComponent* getUIComponent() {return UI;}
 
+	void setConfiguration(Configuration* cf) {config = cf;}
+	Configuration* getConfiguration() {return config;}
+
 	GenericProcessor* sourceNode;
 	GenericProcessor* destNode;
 
@@ -119,6 +123,7 @@ private:
 	int numOutputs;
 
 	UIComponent* UI;
+	Configuration* config;
 
 	AudioProcessorEditor* editor;
 

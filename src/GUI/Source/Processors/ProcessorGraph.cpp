@@ -225,6 +225,8 @@ void* ProcessorGraph::createNewProcessor(String& description,
 		std::cout << std::endl;
 
 		processor->setViewport(vp);
+		processor->setConfiguration(config);
+		
 		return processor->createEditor();
 
 	} else {
