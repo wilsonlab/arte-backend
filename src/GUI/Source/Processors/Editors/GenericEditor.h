@@ -15,6 +15,7 @@
 #include "../../../JuceLibraryCode/JuceHeader.h"
 #include "../GenericProcessor.h"
 #include "../../UI/FilterViewport.h"
+#include "../../UI/Configuration.h"
 #include <stdio.h>
 
 class GenericProcessor;
@@ -44,6 +45,10 @@ public:
 	int nodeId;
 
 	FilterViewport* viewport;
+	Configuration* config;
+
+	void setConfiguration(Configuration* cf) {config = cf;}
+	Configuration* getConfiguration() {return config;}
 
 	AudioProcessor* getProcessor() const {return getAudioProcessor();}	
 	

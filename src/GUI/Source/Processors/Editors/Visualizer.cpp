@@ -125,6 +125,7 @@ Renderer::Renderer(AudioSampleBuffer* sBuffer, MidiBuffer* eBuffer, UIComponent*
 	: streamBuffer(sBuffer), eventBuffer(eBuffer)
 {
 	ui->addActionListener(this);
+	config = ui->getConfiguration();
 }
 
 Renderer::~Renderer() { }

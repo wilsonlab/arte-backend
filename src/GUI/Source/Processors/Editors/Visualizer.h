@@ -108,6 +108,8 @@ private:
 
 	void actionListenerCallback(const String& msg);
 
+	Configuration* config;
+
 };
 
 

@@ -33,6 +33,7 @@ AudioProcessorEditor* DisplayNode::createEditor()
 
 	visualizer->setBuffers(source->getContinuousBuffer(),source->getEventBuffer());
 	visualizer->setUIComponent(getUIComponent());
+	visualizer->setConfiguration(config);
 
 	setEditor(visualizer);
 	

@@ -98,8 +98,6 @@ void SpikeViewer::renderOpenGL()
 
 			int chan = (*dataptr<<8) + *(dataptr+1);
 
-			//std::cout << chan << std::endl;
-
  			dataptr += 2;
 
 			glViewport(0,0,getWidth()/2,getHeight());
