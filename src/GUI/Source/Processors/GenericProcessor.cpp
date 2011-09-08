@@ -23,7 +23,7 @@ GenericProcessor::GenericProcessor(const String name_, int* nSamps, int nChans, 
 GenericProcessor::~GenericProcessor()
 {
 	//deleteAllChildren();
-	std::cout << name << " deleting editor." << std::endl;
+	//std::cout << name << " deleting editor." << std::endl;
 
 	if (editor != 0)
 	{

@@ -24,12 +24,15 @@ SpikeViewer::~SpikeViewer() {}
 void SpikeViewer::resized() 
 {
 	
-	xBox = getWidth()/3;
+	xBox = getWidth()/4;
 	yBox = getHeight()/2;
-	yPadding = 0.05;
-	xPadding = 0.05;
+	yPadding = 5;
+	xPadding = 5;
 
-	repaint();
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	clearWaveforms();
+	clearProjections();
 
 }
 
@@ -42,37 +45,40 @@ void SpikeViewer::newOpenGLContextCreated()
 	glLoadIdentity ();
 	glOrtho(0, 1, 1, 0, 0, 1);
 	glMatrixMode (GL_MODELVIEW);
-
-
-	//glClear(GL_COLOR_BUFFER_BIT);
-
-	//glViewport(0,0,getWidth()/2,getHeight());
-
-	//glColor3f(1,1,1);
-
 	
-	glClearColor(0.9f, 0.7f, 0.2f, 1.0f);
-	glColor3f(0,0.0,0);
+	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	glBegin(GL_LINE_STRIP);
- 	glVertex2f(0.01f, 0.01f);
- 	glVertex2f(0.99f, 0.99f);
- 	glEnd();
-
+	resized();
 
 	glFlush();
 
 }
 
+void SpikeViewer::clearWaveforms()
+{
+	
+	for (int n = 0; n < 4; n++)
+	{
+		setViewportForWaveN(n);
+		drawBorder();
+	}
+
+}
+
+void SpikeViewer::clearProjections()
+{
+	for (int n = 0; n < 6; n++)
+	{
+		setViewportForProjectionN(n);
+		drawBorder();
+	}
+
+}
 
 void SpikeViewer::renderOpenGL()
 {
 		
 	 if (eventBuffer->getNumEvents() > 0) {
-
-	   	glClear(GL_COLOR_BUFFER_BIT);
 
 	   	glRasterPos2f(0.1,0.1);
 
@@ -90,6 +96,12 @@ void SpikeViewer::renderOpenGL()
 		int samplePosition;
 		i.setNextSamplePosition(samplePosition);
 
+		//Array<int> peaks;
+
+
+		clearWaveforms();
+
+
 		while (i.getNextEvent (message, samplePosition)) {
 
 			int numbytes = message.getRawDataSize();
@@ -97,17 +109,21 @@ void SpikeViewer::renderOpenGL()
 			uint8* dataptr = message.getRawData();
 
 			int chan = (*dataptr<<8) + *(dataptr+1);
+			int electrode = config->getSource(0)->getElectrodeNumberForChannel(chan);
+
+			//std::cout << chan << "::" << electrode << std::endl;
 
  			dataptr += 2;
 
-			glViewport(0,0,getWidth()/2,getHeight());
+			//glViewport(0,0,getWidth()/2,getHeight());
 
-			if (chan < 4)
+			if (electrode == 0)
 			{
 			//for (int n = 0; n < 4; n++) {
 				setViewportForWaveN(chan);
-				drawWaveform(dataptr, numSamples);
-				drawBorder();
+				float peak = drawWaveform(dataptr, numSamples);
+				//peaks.set(chan,peak);
+				
 			}
 
 			//std::cout << " Bytes received: " << numbytes << std::endl;
@@ -128,6 +144,11 @@ void SpikeViewer::renderOpenGL()
 			//std::cout << std::endl << std::endl;
 		}
 
+		// for (int ch = 0; ch < 4; ch++)
+		// {
+			
+		// }
+
 		eventBuffer->clear();
 
 	}
@@ -137,33 +158,49 @@ void SpikeViewer::renderOpenGL()
 
 }
 
-void SpikeViewer::drawWaveform(uint8* dataptr, int numSamples)
+float SpikeViewer::drawWaveform(uint8* dataptr, int numSamples)
 {
+
+	glColor3f(0,0.0,0);
 	
 	glBegin(GL_LINE_STRIP);
+
+	float maxVal = 0;
 
  	for (int n = 0; n < numSamples; n++)
  	{
  		uint16 sampleValue = (*dataptr << 8) + *(dataptr+1);
+
+ 		float sampleVal = -float(sampleValue - 32768)/32768 + 0.6;
+
+ 		(sampleVal > maxVal) ? maxVal = sampleVal : maxVal = maxVal;
+
  		glVertex2f(float(n)/numSamples + 0.01, 
- 					-float(sampleValue - 32768)/32768 + 0.6);
+ 					sampleVal);
  		dataptr += 2;
 
  	}
 
 	glEnd();
 
+	return maxVal;
+
 }
 
 void SpikeViewer::drawBorder()
 {
-	 glBegin(GL_LINE_STRIP);
- 	 glVertex2f(0.01f, 0.01f);
- 	 glVertex2f(0.99f, 0.01f);
- 	 glVertex2f(0.99f, 0.99f);
- 	 glVertex2f(0.01f, 0.99f);
- 	 glVertex2f(0.01f, 0.01f);
- 	 glEnd();
+
+	 glColor3f(0.9,0.7,0.2);
+
+	 glRectf(0.01f,0.01f,0.99f,0.99f);
+
+    // glBegin(GL_LINE_STRIP);
+ 	//  glVertex2f(0.01f, 0.01f);
+ 	//  glVertex2f(0.99f, 0.01f);
+ 	//  glVertex2f(0.99f, 0.99f);
+ 	//  glVertex2f(0.01f, 0.99f);
+ 	//  glVertex2f(0.01f, 0.01f);
+ 	//  glEnd();
 }
 
 void SpikeViewer::setViewportForProjectionN(int n)

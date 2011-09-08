@@ -53,7 +53,11 @@ private:
 	float xBox, yBox, xPadding, yPadding;
 
 	void drawBorder();
-	void drawWaveform(uint8* dataptr, int numSamples);
+
+	void clearWaveforms();
+	void clearProjections();
+
+	float drawWaveform(uint8* dataptr, int numSamples);
 
 	void setViewportForWaveN(int n);
 	void setViewportForProjectionN(int n);

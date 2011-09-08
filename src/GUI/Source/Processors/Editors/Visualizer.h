@@ -104,11 +104,12 @@ public:
 	AudioSampleBuffer* streamBuffer;
 	MidiBuffer* eventBuffer;
 
+	Configuration* config;
+
 private:
 
 	void actionListenerCallback(const String& msg);
 
-	Configuration* config;
 
 };
 

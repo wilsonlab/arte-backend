@@ -127,6 +127,10 @@ public:
 		firstChan = firstChanIndex;
 		nextAvailableChan = firstChan;
 
+		channelMapping.ensureStorageAllocated(nChans);
+
+		totalElectrodes = 0;
+
 	}
 
 	~DataSource() {};
@@ -134,6 +138,10 @@ public:
 	int numTetrodes() {return tetrodes.size();}
 	int numStereotrodes() {return stereotrodes.size();}
 	int numSingleWires() {return singleWires.size();}
+	int getElectrodeNumberForChannel(int chan)
+	{
+		return channelMapping[chan];
+	}
 
 	Trode* getTetrode(int n) {return tetrodes[n];}
 	Trode* getStereotrode(int n) {return stereotrodes[n];}
@@ -143,7 +151,12 @@ public:
 	{
 		Trode* t = new Trode(numChannels, nextAvailableChan, name_);
 
-		nextAvailableChan += numChannels;
+		for (int n = 0; n < numChannels; n++)
+		{
+			channelMapping.set(nextAvailableChan++, totalElectrodes);
+		}
+
+		totalElectrodes++;
 
 		if (t->numChannels() == 1)
 			singleWires.add(t);
@@ -167,7 +180,9 @@ private:
 	OwnedArray<Trode, CriticalSection> tetrodes;
 	OwnedArray<Trode, CriticalSection> stereotrodes;
 	OwnedArray<Trode, CriticalSection> singleWires;
+	Array<int, CriticalSection> channelMapping;
 
+	int totalElectrodes;
 	int firstChan;
 	int numChans;
 	int nextAvailableChan;
