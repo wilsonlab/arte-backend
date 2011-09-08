@@ -57,9 +57,11 @@ void ProcessorGraph::createDefaultNodes()
 
 	// add record node -- sends output to disk
 	RecordNode* recn = new RecordNode(T("Record Node"), &numSamplesInThisBuffer, 1024, lock, RECORD_NODE_ID);
+	//recn->setConfiguration(config);
 
 	// add audio node -- takes all inputs and selects those to be used for audio monitoring
 	AudioNode* an = new AudioNode(T("Audio Node"), &numSamplesInThisBuffer, 1024, lock, AUDIO_NODE_ID);
+	//an->setConfiguration(config);
 
 	// add resampling node -- resamples continuous signals to 44.1kHz
 	ResamplingNode* rn = new ResamplingNode(T("Resampling Node"), &numSamplesInThisBuffer, 2, lock, RESAMPLING_NODE_ID, true);
@@ -226,7 +228,7 @@ void* ProcessorGraph::createNewProcessor(String& description,
 
 		processor->setViewport(vp);
 		processor->setConfiguration(config);
-		
+
 		return processor->createEditor();
 
 	} else {

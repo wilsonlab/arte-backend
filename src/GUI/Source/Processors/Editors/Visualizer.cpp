@@ -65,7 +65,9 @@ Visualizer::~Visualizer()
 {
 
 	if (tabIndex > -1)
+	{
 		viewport->removeTab(tabIndex);
+	}
 
 	deleteAllChildren();
 

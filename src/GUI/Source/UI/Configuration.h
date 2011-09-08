@@ -23,8 +23,8 @@ public:
 		for (int n = 0; n < nchans; n++)
 		{
 			channelMapping.add(startChan++);
-			inputRange.add(500.0);
-			threshold.add(100.0);
+			inputRange.add(10000.0);
+			threshold.add(5000.0);
 			isActive.add(true);
 		}
 	}
@@ -87,6 +87,11 @@ public:
 			return isActive[wire];
 		else 
 			return false;
+	}
+
+	int* getRawDataPointer()
+	{
+		return channelMapping.getRawDataPointer();
 	}
 
 	String getName() {return name;}

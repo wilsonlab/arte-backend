@@ -31,39 +31,11 @@ FilterEditor::FilterEditor (GenericProcessor* parentNode, FilterViewport* vp)
 	highSlider->addListener(this);
 	addAndMakeVisible(highSlider);
 
-
-	//docWindow = new DocumentWindow(T("Spike Window"), Colours::black, DocumentWindow::allButtons);
-	//docWindow->centreWithSize(300,200);
-	//docWindow->setUsingNativeTitleBar(true);
-	//docWindow->setResizable(true,true);
-	//docWindow->setVisible(true);
-
-	//viewport->addTab("Name",0);
-
-	//tabIndex = 
-
 }
 
 FilterEditor::~FilterEditor()
 {
-	//std::cout << "    Filter editor for " << getName() << " being deleted with " << getNumChildComponents() << " children. " << std::endl;
-	
-	//slider = 0;
-	//Slider* s = slider.release();
-	//delete s;
-	//slider = 0;
-	//delete slider;
-	
-	//slider = 0;
-
-	//delete(docWindow);
-
-	//viewport->removeTab(0);
-
 	deleteAllChildren();
-
-	//slider = 0;	
-
 }
 
 void FilterEditor::sliderValueChanged (Slider* slider)
@@ -73,11 +45,5 @@ void FilterEditor::sliderValueChanged (Slider* slider)
 		getAudioProcessor()->setParameter(0,slider->getValue());
 	else 
 		getAudioProcessor()->setParameter(1,slider->getValue());
-
-
-
-	//if (slider->getValue() > 1000) {
-	//	tabComponent->addTab(T("Blank"), Colours::lightgrey, 0, true);
-	//}
 
 }

@@ -97,12 +97,17 @@ void SpikeViewer::renderOpenGL()
 			uint8* dataptr = message.getRawData();
 
 			int chan = (*dataptr<<8) + *(dataptr+1);
+
+			//std::cout << chan << std::endl;
+
  			dataptr += 2;
 
 			glViewport(0,0,getWidth()/2,getHeight());
 
-			for (int n = 0; n < 4; n++) {
-				setViewportForWaveN(n);
+			if (chan < 4)
+			{
+			//for (int n = 0; n < 4; n++) {
+				setViewportForWaveN(chan);
 				drawWaveform(dataptr, numSamples);
 				drawBorder();
 			}

@@ -14,6 +14,7 @@
 #include "../../JuceLibraryCode/JuceHeader.h"
 #include "GenericProcessor.h"
 #include "Editors/SpikeDetectorEditor.h"
+#include "../UI/Configuration.h"
 
 class SpikeDetectorEditor;
 class FilterViewport;
@@ -42,6 +43,12 @@ private:
 	double prePeakMs, postPeakMs;
 	int prePeakSamples, postPeakSamples;
 	int accumulator;
+
+	Array<float> thresh;
+	Array<int*> channels;
+	Array<int> nChans;
+	Array<bool> isActive;
+	Array<int> lastSpike;
 
 	MidiBuffer* spikeBuffer;
 

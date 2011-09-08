@@ -10,6 +10,7 @@
 
 
 #include "SourceNode.h"
+#include "Editors/SourceNodeEditor.h"
 #include <stdio.h>
 
 SourceNode::SourceNode(const String name_, int* nSamps, int nChans, const CriticalSection& lock_, int id)
@@ -49,6 +50,19 @@ void SourceNode::prepareToPlay (double sampleRate_, int estimatedSamplesPerBlock
 }
 
 void SourceNode::releaseResources() {}
+
+
+AudioProcessorEditor* SourceNode::createEditor()
+{
+	SourceNodeEditor* ed = new SourceNodeEditor(this, viewport);
+	setEditor(ed);
+	
+	std::cout << "Creating editor." << std::endl;
+	//filterEditor = new FilterEditor(this);
+	return ed;
+
+	//return 0;
+}
 
 //void SourceNode::createEditor() {
 	

@@ -112,6 +112,8 @@ public:
 	GenericProcessor* sourceNode;
 	GenericProcessor* destNode;
 
+	Configuration* config;
+
 private:
 
 	const String name;
@@ -123,7 +125,6 @@ private:
 	int numOutputs;
 
 	UIComponent* UI;
-	Configuration* config;
 
 	AudioProcessorEditor* editor;
 

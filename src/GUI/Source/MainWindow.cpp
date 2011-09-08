@@ -50,12 +50,13 @@ MainWindow::MainWindow()
 
 MainWindow::~MainWindow()
 {
-  setContentComponent (0);
 
   audioComponent->disconnectProcessorGraph();
 
    deleteAndZero(processorGraph);
    deleteAndZero(audioComponent);
+
+   setContentComponent (0);
 
 }
 

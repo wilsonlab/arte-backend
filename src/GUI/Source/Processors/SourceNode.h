@@ -37,7 +37,7 @@ public:
 
 	void setSourceNode(GenericProcessor* sn) {sourceNode = 0;}
 
-	//AudioProcessorEditor* createEditor();
+	AudioProcessorEditor* createEditor();
 	bool hasEditor() const {return true;}
 
 	void enable();

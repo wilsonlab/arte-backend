@@ -47,7 +47,10 @@ void SpikeDetector::setParameter (int parameterIndex, float newValue)
 {
 	//std::cout << "Message received." << std::endl;
 	if (parameterIndex == 0) {
-		threshold = newValue;
+		for (int n = 0; n < getNumOutputs(); n++)
+        {
+            thresh.set(n,newValue);
+        }
 	}
 
 }
@@ -58,10 +61,46 @@ void SpikeDetector::prepareToPlay (double sampleRate_, int estimatedSamplesPerBl
 	//std::cout << "SpikeDetector node preparing." << std::endl;
 	prePeakSamples = int((prePeakMs / 1000.0f) / (1/sampleRate));
 	postPeakSamples = int((postPeakMs / 1000.0f) / (1/sampleRate));
+
+    thresh.ensureStorageAllocated(getNumOutputs());
+    channels.ensureStorageAllocated(getNumOutputs());
+    nChans.ensureStorageAllocated(getNumOutputs());
+    isActive.ensureStorageAllocated(getNumOutputs());
+    lastSpike.ensureStorageAllocated(getNumOutputs());
+
+    for (int n = 0; n < getNumOutputs(); n++)
+    {
+        isActive.set(n,false);
+        lastSpike.set(n,-40);
+    }
+
+    // check configuration
+    for (int ds = 0; ds < config->numDataSources(); ds++)
+    {
+        for (int tt = 0; tt < config->getSource(ds)->numTetrodes(); tt++)
+        {
+
+            Trode* t = config->getSource(ds)->getTetrode(tt);
+
+            for (int ch = 0; ch < t->numChannels(); ch++)
+            {
+                thresh.set(t->getChannel(ch),t->getThreshold(ch));
+                channels.set(t->getChannel(ch),t->getRawDataPointer());
+                nChans.set(t->getChannel(ch),t->numChannels());
+                isActive.set(t->getChannel(ch),t->getState(ch));
+            }
+        }
+    }
+
 }
 
 void SpikeDetector::releaseResources() 
 {	
+    thresh.clear();
+    channels.clear();
+    nChans.clear();
+    isActive.clear();
+    lastSpike.clear();
 }
 
 void SpikeDetector::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages)
@@ -69,82 +108,62 @@ void SpikeDetector::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMes
 
 	int maxSamples = getNumSamples();
 	int spikeSize = 2 + prePeakSamples*2 + postPeakSamples*2; 
-    
-    for (int chan = 1; chan < 2; chan++) 
+
+    for (int sample = prePeakSamples + 1; sample < maxSamples - postPeakSamples - 1; sample++)
     {
+        for (int chan = 0; chan < getNumOutputs(); chan++) 
+        {
+            if (isActive[chan] && lastSpike[chan]+spikeSize < sample) // channel is active
+            {
+                if (*buffer.getSampleData(chan,sample) > thresh[chan])
+                {
+                    // if thresh cross is detected on one channel
+                    // save a waveform on all of them
+                   // std::cout << "Thresh cross on channel " << chan << ": " << thresh[chan] << std::endl;
+                   // std::cout << "  Capturing spikes on " << nChans[chan] << " channels." << std::endl;
 
-    	int n = prePeakSamples + 1; // 1-sample buffer, just to be safe
+                    for (int wire = 0; wire < nChans[chan]; wire++)
+                    {
+                        int* firstChan = channels[chan];
+                        int channelNum = *(firstChan+wire);
 
-    	// TODO: save end of previous buffer to check for spikes at border
+                        //std::cout << "     Found spike on channel " << channelNum << std::endl;
 
-    	while (n < maxSamples - postPeakSamples - 1) {
-    		
-    		// search through to find spikes
-    		if (*buffer.getSampleData(chan,n) > threshold) {
-    			
-    			uint8 data[spikeSize];
+                        uint8 data[spikeSize];
+                        data[0] = channelNum >> 8; // channel most-significant byte
+                        data[1] = channelNum & 0xFF; // channel least-significant byte
 
-    			data[0] = chan & 070; // channel most-significant byte
-    			data[1] = chan & 007; // channel least-significant byte
+                        // not currently looking for peak, just centering on thresh cross
+                        uint8* dataptr = data+2;
 
-    			// not currently looking for peak, just centering on thresh cross
-    			//converter.convertSamples(data+2, //dest
-    			//					     buffer.getSampleData(chan, n - prePeakSamples), // source
-    			//					     prePeakSamples + postPeakSamples); // numSamples
+                        for (int s = -prePeakSamples; s < postPeakSamples; s++) {
+                
+                            uint16 sampleValue = uint16(*buffer.getSampleData(channelNum, sample+s) + 32768);
 
-    			//std::cout << *buffer.getSampleData(chan, n) << std::endl;
+                            *dataptr++ = uint8(sampleValue >> 8);
+                            *dataptr++ = uint8(sampleValue & 255);
 
-    			uint8* dataptr = data+2;
+                        }
 
-    			for (int sample = -prePeakSamples; sample < postPeakSamples; sample++) {
-    				
-    				uint16 sampleValue = uint16(*buffer.getSampleData(chan, n+sample) + 32768);
+                        // broadcast spike
+                        spikeBuffer->addEvent(data, // spike data
+                              sizeof(data), // total bytes
+                              sample);           // sample index
+                        
+                        // keep track of last spike
+                        lastSpike.set(channelNum, sample-prePeakSamples);
 
-    				*dataptr++ = uint8(sampleValue >> 8);
-    				*dataptr++ = uint8(sampleValue & 255);
-
-    			}
-    			
-    			//AudioDataConverters::convertFloatToInt16BE ( buffer.getSampleData(chan, n - prePeakSamples), // source
-    			//										 data+2, // dest
-    			//										 prePeakSamples + postPeakSamples, // numSamples
-    			//										 2 ); // destBytesPerSample = 2
-
-				spikeBuffer->addEvent(data, 		// spike data
-								  sizeof(data), // total bytes
-								  n); 			// sample index
-
-    			n += postPeakSamples;
-
-    		} else {
-    			n += 1;
-    		}
-
-    	}
+                    }
+                }                
+            }
+        }
     }
 
- //    accumulator++;
+    // reset lastSpike at the end of each buffer
+    for (int n = 0; n < getNumOutputs(); n++)
+    {
+        lastSpike.set(n,-40);
+    }
 
-
- //    if (accumulator > 20) {
-
- //    		std::cout << "  >> New event." << std::endl;
-
- //    		uint8 data[32];
-
- //    		data[0] = 0; // channel most-significant byte
- //    		data[1] = 1; // channel least-significant byte
- 
- //    		AudioDataConverters::convertFloatToInt16BE ( buffer.getSampleData(1), // source
- //    													 data+2, // dest
- //    													 15 , // numSamples
- //    													 2 ); // destBytesPerSample = 2
-
-	// 		spikeBuffer->addEvent(data, 		// spike data
-	// 							  sizeof(data), // total bytes
-	// 							  5); 			// sample index
-
-	// 		accumulator = 0;
-	// }
 
 }

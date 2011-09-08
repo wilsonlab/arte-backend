@@ -16,6 +16,15 @@ namespace BinaryData
     extern const char*   misoregular_ttf;
     const int            misoregular_ttfSize = 59328;
 
+    extern const char*   DefaultDataSource_png;
+    const int            DefaultDataSource_pngSize = 14143;
+
+    extern const char*   FileReaderIcon_png;
+    const int            FileReaderIcon_pngSize = 3650;
+
+    extern const char*   IntanIcon_png;
+    const int            IntanIcon_pngSize = 16352;
+
     extern const char*   PipelineA01_png;
     const int            PipelineA01_pngSize = 5396;
 

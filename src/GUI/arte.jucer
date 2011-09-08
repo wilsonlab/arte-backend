@@ -41,6 +41,13 @@
               file="Resources/Fonts/miso-regular.ttf"/>
       </GROUP>
       <GROUP id="W2L6BdA" name="Images">
+        <GROUP id="Gu1BsKu" name="Icons">
+          <FILE id="nWbYpu" name="DefaultDataSource.png" compile="0" resource="1"
+                file="Resources/Images/Icons/DefaultDataSource.png"/>
+          <FILE id="2U5H7OQ" name="FileReaderIcon.png" compile="0" resource="1"
+                file="Resources/Images/Icons/FileReaderIcon.png"/>
+          <FILE id="hlohT6y" name="IntanIcon.png" compile="0" resource="1" file="Resources/Images/Icons/IntanIcon.png"/>
+        </GROUP>
         <GROUP id="9berx08" name="Buttons">
           <FILE id="xtDJTj" name="PipelineA-01.png" compile="0" resource="1"
                 file="Resources/Images/Buttons/PipelineA-01.png"/>
@@ -136,6 +143,10 @@
         <FILE id="hGnGAjh" name="EventNode.cpp" compile="1" resource="0" file="Source/Processors/EventNode.cpp"/>
         <FILE id="dUtRN6" name="EventNode.h" compile="0" resource="0" file="Source/Processors/EventNode.h"/>
         <GROUP id="AqvwO6w" name="Editors">
+          <FILE id="ErsHzHU" name="SourceNodeEditor.cpp" compile="1" resource="0"
+                file="Source/Processors/Editors/SourceNodeEditor.cpp"/>
+          <FILE id="wMP6rcZ" name="SourceNodeEditor.h" compile="0" resource="0"
+                file="Source/Processors/Editors/SourceNodeEditor.h"/>
           <FILE id="HZXZN8Z" name="SplitterEditor.cpp" compile="1" resource="0"
                 file="Source/Processors/Editors/SplitterEditor.cpp"/>
           <FILE id="LWp4vf" name="SplitterEditor.h" compile="0" resource="0"

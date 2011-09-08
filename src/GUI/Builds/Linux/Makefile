@@ -70,6 +70,7 @@ OBJECTS := \
   $(OBJDIR)/FileReader_18023b0e.o \
   $(OBJDIR)/AudioNode_94606ff3.o \
   $(OBJDIR)/EventNode_95c842b7.o \
+  $(OBJDIR)/SourceNodeEditor_8d813122.o \
   $(OBJDIR)/SplitterEditor_c2199b6c.o \
   $(OBJDIR)/SpikeDetectorEditor_2fb63eeb.o \
   $(OBJDIR)/AudioEditor_fb2c6555.o \
@@ -253,6 +254,11 @@ $(OBJDIR)/AudioNode_94606ff3.o: ../../Source/Processors/AudioNode.cpp
 $(OBJDIR)/EventNode_95c842b7.o: ../../Source/Processors/EventNode.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling EventNode.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/SourceNodeEditor_8d813122.o: ../../Source/Processors/Editors/SourceNodeEditor.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling SourceNodeEditor.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/SplitterEditor_c2199b6c.o: ../../Source/Processors/Editors/SplitterEditor.cpp
