@@ -2,7 +2,6 @@
 #include "TetrodePlot.h"
 
 TetrodePlot::TetrodePlot(){
-	
 }
 TetrodePlot::TetrodePlot(int x, int y, int w, int h, char *p){
 	std::cout<<"Initializing a new TetrodePlot\n"<<std::flush;
@@ -18,6 +17,8 @@ TetrodePlot::TetrodePlot(int x, int y, int w, int h, char *p){
 	memcpy(host, "127.0.0.1", 10);
 	host[10] = 0;
 	port = p;
+	
+	bzero(txtDispBuff,40);
 
 	// ===================================
 	// 		Scaling Variables
@@ -29,25 +30,45 @@ TetrodePlot::TetrodePlot(int x, int y, int w, int h, char *p){
 	yScale = 2.0/(double)yRange;
 
 	dV = 1.0/((float)MAX_VOLT*2);
-	userScale = 1;
+	userScale = 2.5;
 	dUserScale = .3;
 
 	voltShift = -.85;
-	userShift = 0;
+	userShift = .1;
 	dUserShift = .05;
 
 	nChan=4;
 	nProj=6;
+	spike = spike_net_t();
 	
 //	bzero(&spikeBuff, sizeof(spikeBuff));
-	spikeBuff = new spike_net_t[MAX_SPIKE_BUFF_SIZE];
+//	spikeBuff = new spike_net_t[MAX_SPIKE_BUFF_SIZE];
 	nSpikes = 0;
 	readIdx = 0;
 	writeIdx = 0;
 	curSeqNum = 0;
+	totalSpikesRead = 0;
 	
-	initNetworkRxThread();
+	
+	initColors();
+}
 
+void TetrodePlot::initColors(){
+	colSelected[0] = 0.2;
+	colSelected[1] = 0.2;
+	colSelected[2] = 0.2;
+	
+	colWave[0] = 1.0;
+	colWave[1] = 1.0;
+	colWave[2] = 0.6;
+	
+	colThres[0] = 1.0;
+	colThres[1] = 0.1;
+	colThres[2] = 0.1;
+	
+	colFont[0] = 1.0;
+	colFont[1] = 1.0;
+	colFont[2] = 1.0;
 }
 void TetrodePlot::resizePlot(int w, int h)
 {
@@ -91,18 +112,18 @@ void TetrodePlot::drawWaveforms(){
 void TetrodePlot::drawWaveformN(int n)
 {
 	setViewportForWaveN(n);
-
 	// Disp the threshold value
 	int thresh = spike.thresh[n];
 //	sprintf(txtDispBuff, "T:%d", thresh);
 //	glColor3f(colFont[0],colFont[1],colFont[2]);
-//	drawString(-.9, .8, txtDispBuff);
+	//drawString(-.9, .8, txtDispBuff);
 
 	// Draw the actual waveform
 	float dx = 2.0/(spike.n_samps_per_chan-1);
 	float x = -1;
 	int	sampIdx = n; 
 	glColor3f(colWave[0], colWave[1], colWave[2]);
+	
 	glBegin( GL_LINE_STRIP );
 	for (int i=0; i<spike.n_samps_per_chan; i++)
 	{
@@ -172,13 +193,15 @@ void TetrodePlot::drawProjectionN(int n, int idx){
 
 	glColor3f( 1.0, 1.0, 1.0 );
 	glBegin(GL_POINTS);
-//		glVertex2f(scaleVoltage(spike.data[idx+d1], false), scaleVoltage(spike.data[idx+d2], false));
-		glVertex2f(0,0);
+		glVertex2f(scaleVoltage(spike.data[idx+d1], false), scaleVoltage(spike.data[idx+d2], false));
+		//glVertex2f(0,0);
 	glEnd();
 }
 void TetrodePlot::drawTitle(){
 	setViewportForTitleBox();
-//	drawString(0,0,"Title Box");
+	glColor3f(0.15, 0.15, 0.5);
+	glRectf(-1,-1,2,2);
+//	drawString(0,0, title);
 }
 
 
@@ -280,21 +303,15 @@ void TetrodePlot::setViewportForProjectionN(int n){
 	glViewport(viewX+xPos, viewY+yPos, viewDX, viewDY);
 }
 
-/*
-void drawProjections(){
-
-	int maxIdx = calcWaveMaxInd();
-
-	maxIdx = maxIdx  - maxIdx%4;  
-
-	for (int i=0; i<nProj; i++) // <----------------------------------------
-		drawProjectionN(i, maxIdx);
-
+int TetrodePlot::incrementIdx(int i){
+	i++;
+	if (i>=MAX_SPIKE_BUFF_SIZE)
+		i = 0;
+	return i;
 }
-void drawProjectionN(int n, int idx){
-*/
+
 int  TetrodePlot::calcWaveMaxInd(){
-/*
+
 	int idx = -1;
 	int val = -1*2^15;
 	for (int i=0; i<spike.n_samps_per_chan * spike.n_chans; i++)
@@ -303,8 +320,7 @@ int  TetrodePlot::calcWaveMaxInd(){
 			idx = i;
 			val = spike.data[i];
 		}
-	return idx;*/
-	return 0;
+	return idx;
 }
 
 
@@ -345,21 +361,14 @@ void TetrodePlot::resetSeqNum()
     std::cout<<"Reseting sequence number to 0!"<<std::endl;
 }
 
-
-int TetrodePlot::incrementIdx(int i){
-/*	if(i==MAX_SPIKE_BUFF_SIZE-1)
-		return 0;
-	else
-		return i+1;*/
-		return (i+1)%MAX_SPIKE_BUFF_SIZE;
-
-}
 bool TetrodePlot::tryToGetSpikeForPlotting(spike_net_t *s){
-	std::cout<<"ReadIDX:"<<readIdx<< " nSpikes:"<<nSpikes<<std::endl<<std::flush;
 	
 	if  (readIdx==writeIdx || nSpikes==0)
+	{
+//		printf("No spikes for plotting!\n");
 		return false;
-
+	}
+	
 	// Copy the spike data
 	s->name 	= spikeBuff[readIdx].name;
 	s->n_chans 	= spikeBuff[readIdx].n_chans;
@@ -387,43 +396,43 @@ float TetrodePlot::scaleVoltage(int v, bool shift){
 }
 
 void TetrodePlot::drawString(float x, float y, char *string){
-/*
+
 	glRasterPos2f(x, y);
 
 	int len = strlen(string);
 	for (int i = 0; i < len; i++) {
     	glutBitmapCharacter(font, string[i]);
-	}*/
+	}
 }
 
 void TetrodePlot::initNetworkRxThread(){
 	pthread_t netThread;
 	net = NetCom::initUdpRx(host,port);
+//	std::cout<< this << " Address of pointer going into networkThreadFunc\n";
 	pthread_create(&netThread, NULL, networkThreadFunc, this);
 }
 
 void TetrodePlot::getNetworkSpikePacket(){
-	
+	while(true){
+		
+		spike_net_t s;
+		NetCom::rxSpike(net, &s);
+		spikeBuff[writeIdx] = s;
+		
+		writeIdx = incrementIdx(writeIdx);
+		nSpikes++;
 
-	spike_net_t s;
-	NetCom::rxSpike(net, &s);
-	printf("got network spike!\n");
-	spikeBuff[writeIdx] = s;
-	printf("spike written to buffer\n");
-	writeIdx = incrementIdx(writeIdx);
-	nSpikes+=1;
-	totalSpikesRead++; 
-	printf("writeIdx:%d nspikes:%d totSpike:%d", writeIdx, nSpikes, totalSpikesRead);
+//		printf("\tWriting to buffer! writeIdx:%d nspikes:%d \n", writeIdx, nSpikes);	
+	}
 }
 
 void *networkThreadFunc(void *ptr){
-	std::cout<<"NetworkThreadFunc called!"<<std::endl;
-	TetrodePlot *tp = reinterpret_cast<TetrodePlot *>(ptr);
+//	std::cout<<"NetworkThreadFunc called!"<<std::endl;
+//	std::cout<< ptr << " Address of pointer coming into networkThreadFunc\n";
+	// TetrodePlot *tp = reinterpret_cast<TetrodePlot *>(ptr);
+	TetrodePlot *tp = (TetrodePlot*) ptr;
+	tp->getNetworkSpikePacket();
 
-	while(true)
-	{
-		tp->getNetworkSpikePacket();
-	}
 }
 
 

@@ -14,9 +14,12 @@
 #include <set>
 #include <signal.h>
 #include <stdio.h>
+#include <iostream>
 #include <stdlib.h>
 #include <time.h>
 #include <vector>
+
+#include <assert.h>
 
 #include "netcom.h"
 #include "datapacket.h"
@@ -65,6 +68,8 @@ class TetrodePlot{
 	float colSelected[3];// = {0.2, 0.2, 0.2};
 	float colWave[3];// = {1.0, 1.0, 0.6};
 	float colThres[3];// = {1.0, 0.1, 0.1};
+	float colFont[3];
+	char txtDispBuff[40];
 
 	// ===================================
 	// 		Network Variables
@@ -81,7 +86,9 @@ class TetrodePlot{
 	int nChan, nProj;
 
 	static int const MAX_SPIKE_BUFF_SIZE = 50;
+
 	spike_net_t spikeBuff[MAX_SPIKE_BUFF_SIZE];
+
 	spike_net_t spike;
 	int nSpikes;
 	int readIdx;
@@ -109,13 +116,12 @@ class TetrodePlot{
 	// 		Network Function Headers
 	// ===================================
 
-	void initNetworkRxThread();
 	void checkForNewSpikes();
 
 	// ===================================
 	// 		General Functions
 	// ===================================
-	int incrementIdx(int i);
+//	int incrementIdx(int i);
 	bool tryToGetSpikeForPlotting(spike_net_t *s);
 
 	// ===================================
@@ -126,6 +132,7 @@ class TetrodePlot{
 	// ===================================
 	// 		Plotting and Drawing Functions
 	// ===================================
+	void initColors();
 	void eraseWaveforms();
 	void highlightSelectedWaveform();
 	void drawWaveforms();
@@ -148,6 +155,8 @@ class TetrodePlot{
 
 	void drawString(float x, float y, char *string);
 	
+	int incrementIdx(int i);
+	
 public:
 	TetrodePlot();
 	TetrodePlot(int x, int y, int w, int h, char* port);
@@ -155,12 +164,10 @@ public:
 	void resizePlot(int w, int h);
 	void movePlot(int x, int y);
 	
+	void initNetworkRxThread();
 	void getNetworkSpikePacket();
 };
 
-static float const colSelected[3] = {0.2, 0.2, 0.2};
-static float const colWave[3] = {1.0, 1.0, 0.6};
-static float const colThres[3] = {1.0, 0.1, 0.1};
 
 void* networkThreadFunc(void* arg);
 
