@@ -50,6 +50,8 @@ class TetrodePlot{
 	
 	void *font;
 	
+	bool isSelected;
+	
 	// ===================================
 	// 		Scaling Variables
 	// ===================================
@@ -69,6 +71,8 @@ class TetrodePlot{
 	float colWave[3];// = {1.0, 1.0, 0.6};
 	float colThres[3];// = {1.0, 0.1, 0.1};
 	float colFont[3];
+	float colTitle[3];
+	float colTitleSelected[3];
 	char txtDispBuff[40];
 
 	// ===================================
@@ -166,6 +170,31 @@ public:
 	
 	void initNetworkRxThread();
 	void getNetworkSpikePacket();
+	
+	void setSelected(bool s);
+	bool isPlotSelected();
+	
+	void scaleUp();
+	void scaleDown();
+	void setScale(float s);
+	float getScale();
+	
+	void shiftUp();
+	void shiftDown();
+	void setShift(float s);
+	float getShift();
+	
+	void setWaveformOverlay(bool o);
+	bool toggleWaveformOverlay();
+	bool getWaveformOverlay();
+	
+	void clearPlot();
+	
+	
+	// implement scaleUp(), scaleDown(), setScale(), getScale()
+	// shiftUp(), shiftDown(), setShift(), getShift()
+	// clearProjections()
+	// toggleOverlay()
 };
 
 

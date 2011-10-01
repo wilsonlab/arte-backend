@@ -49,6 +49,7 @@ TetrodePlot::TetrodePlot(int x, int y, int w, int h, char *p){
 	curSeqNum = 0;
 	totalSpikesRead = 0;
 	
+	isSelected = false;
 	
 	initColors();
 }
@@ -69,6 +70,14 @@ void TetrodePlot::initColors(){
 	colFont[0] = 1.0;
 	colFont[1] = 1.0;
 	colFont[2] = 1.0;
+		
+	colTitle[0] = 0.15;
+	colTitle[1] = 0.15; 
+	colTitle[2] = 0.5;
+	
+	colTitleSelected[0] = 0.15;
+	colTitleSelected[1] = 0.5; 
+	colTitleSelected[2] = 0.15;
 }
 void TetrodePlot::resizePlot(int w, int h)
 {
@@ -83,7 +92,9 @@ void TetrodePlot::movePlot(int x, int y){
 }
 void TetrodePlot::draw()
 {
-	eraseWaveforms();
+	if(disableWaveOverlay)
+		eraseWaveforms();
+		
 	highlightSelectedWaveform();
 
 	// Get the new spikes in the queue and plot them
@@ -199,7 +210,10 @@ void TetrodePlot::drawProjectionN(int n, int idx){
 }
 void TetrodePlot::drawTitle(){
 	setViewportForTitleBox();
-	glColor3f(0.15, 0.15, 0.5);
+	if (!isSelected)
+		glColor3f(colTitle[0], colTitle[1], colTitle[2]);
+	else
+		glColor3f(colTitleSelected[0], colTitleSelected[1], colTitleSelected[2]);
 	glRectf(-1,-1,2,2);
 //	drawString(0,0, title);
 }
@@ -365,7 +379,6 @@ bool TetrodePlot::tryToGetSpikeForPlotting(spike_net_t *s){
 	
 	if  (readIdx==writeIdx || nSpikes==0)
 	{
-//		printf("No spikes for plotting!\n");
 		return false;
 	}
 	
@@ -432,8 +445,51 @@ void *networkThreadFunc(void *ptr){
 	// TetrodePlot *tp = reinterpret_cast<TetrodePlot *>(ptr);
 	TetrodePlot *tp = (TetrodePlot*) ptr;
 	tp->getNetworkSpikePacket();
-
 }
 
 
 
+void TetrodePlot::setSelected(bool s){
+	isSelected = s;
+}
+bool TetrodePlot::isPlotSelected(){
+	return isSelected;
+}
+
+void TetrodePlot::scaleUp(){
+	userScale += dUserScale;
+}
+void TetrodePlot::scaleDown(){
+	userScale -= dUserScale;	
+}
+void TetrodePlot::setScale(float s){
+	userScale = s;
+}
+float TetrodePlot::getScale(){
+	return userScale;
+}
+void TetrodePlot::shiftUp(){
+	userShift += dUserShift;
+}
+void TetrodePlot::shiftDown(){
+	userShift -= dUserShift;
+}
+void TetrodePlot::setShift(float s){
+	userShift = s;
+}
+float TetrodePlot::getShift(){
+	return userShift;
+}
+void TetrodePlot::setWaveformOverlay(bool o){
+	disableWaveOverlay = o;
+}
+bool TetrodePlot::toggleWaveformOverlay(){
+	disableWaveOverlay = !disableWaveOverlay;
+}
+bool TetrodePlot::getWaveformOverlay(){
+	return disableWaveOverlay;
+}
+
+void TetrodePlot::clearPlot(){
+	
+}
