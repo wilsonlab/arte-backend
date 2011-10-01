@@ -41,14 +41,11 @@ int main( int argc, char** argv )
 
 	glutKeyboardFunc(keyPressedFn);
 	glutSpecialFunc(specialKeyFn);
-	/*
-	plots[nPlots++] = TetrodePlot(0,300,400,300,"7000");
-	plots[nPlots++] = TetrodePlot(400,300,400,300, "7001");
-	plots[nPlots++] = TetrodePlot(0,0,400,300, "7002");
-	plots[nPlots++] = TetrodePlot(400,0,400,300, "7003");	*/
-		initPlots(nCol,nRow);
-	for (int i=0; i<nPlots; i++)
-		plots[i]->initNetworkRxThread();
+	glutMouseFunc(mouseClickFn);
+	
+	initPlots(nCol,nRow);
+	//for (int i=0; i<nPlots; i++)
+	//	plots[i]->initNetworkRxThread();
 		
 	plots[selectedPlot]->setSelected(true);
 	
@@ -65,20 +62,15 @@ void initPlots(int nCol, int nRow){
 	int dWinX = winWidth/nCol;
 	int dWinY = winHeight/nRow;
 	
+	char* ports[] = {"7000", "7001", "7002", "7003", "7004", "7005", "7006", "7007", "7008", "7009", "7010", "7011", "7012", "7013", "7014", "7015", "7016"};
 	for (int i=0; i<nCol; i++)
 		for (int j=0; j<nRow; j++)
 		{
-			plots[nPlots] = new TetrodePlot(dWinX*i, dWinY*(nRow-j-1), dWinX, dWinY, "7000");
+			plots[nPlots] = new TetrodePlot(dWinX*i, dWinY*(nRow-j-1), dWinX, dWinY, ports[nPlots]);
+			plots[nPlots]->setTetrodeNumber(nPlots);
+			plots[nPlots]->initNetworkRxThread();
 			nPlots++;
 		}
-	
-
-//plot = TetrodePlot(0,300,400,300, "7000");
-//	plot = MyObject(0,0,0,0,NULL);
-//	plots[nPlots++] = TetrodePlot(400,300,400,300, "7001");
-//	plots[nPlots++] = TetrodePlot(0,0,400,300, "7002");
-//	plots[nPlots++] = TetrodePlot(400,0,400,300, "7004");
-
 }
 
 void drawTetrodePlots(){
@@ -122,20 +114,49 @@ void keyPressedFn(unsigned char key, int x, int y){
 		exit(1);
 		break;
 		
-		case CMD_SCALE_UP:
+		case CMD_SCALE_UP_SEL:
 		plots[selectedPlot]->scaleUp();
 		break;
-		
-		case CMD_SCALE_DOWN:
+
+		case CMD_SCALE_UP_ALL:
+		for (int i=0; i<nPlots; i++)
+			plots[i]->scaleUp();
+		break;
+
+		case CMD_SCALE_DOWN_ALL:
+		for (int i=0; i<nPlots; i++)
+			plots[i]->scaleDown();
+		break;
+
+		case CMD_SCALE_DOWN_SEL:
 		plots[selectedPlot]->scaleDown();
 		break;
-		
-		case CMD_SHIFT_UP:
+	
+		case CMD_SHIFT_UP_SEL:
 		plots[selectedPlot]->shiftUp();
 		break;
+	
+		case CMD_SHIFT_UP_ALL:
+		for (int i=0; i<nPlots; i++)
+			plots[i]->shiftUp();
+		break;
 		
-		case CMD_SHIFT_DOWN:
+		case CMD_SHIFT_DOWN_SEL:
 		plots[selectedPlot]->shiftDown();
+		break;
+		
+		case CMD_SHIFT_DOWN_ALL:
+		for (int i=0; i<nPlots; i++)
+			plots[i]->shiftDown();
+		break;
+		
+		case CMD_CLEAR_ALL:
+		for (int i=0; i<nPlots; i++)
+			plots[i]->clearPlot();
+		break;
+		
+		case CMD_CLEAR_SEL:
+		plots[selectedPlot]->clearPlot();
 		break;
 	}
 	std::cout<<"Normal  Key Pressed:"<<(int)key<<", "<<key<<std::endl;
@@ -167,5 +188,15 @@ void specialKeyFn(int key, int x, int y){
 	}
 
 	plots[selectedPlot]->setSelected(true);
-	
+}
+void mouseClickFn(int button, int state, int x, int y){
+	printf("Mouse clicked at:%d,%d\n",x,y);
+	for (int i=0; i<nPlots; i++){
+		if(plots[i]->containsPoint(x,winHeight-y))
+		{
+			plots[selectedPlot]->setSelected(false);
+			selectedPlot = i;
+			plots[selectedPlot]->setSelected(true);
+		}
+	}
 }

@@ -41,6 +41,8 @@ TetrodePlot::TetrodePlot(int x, int y, int w, int h, char *p){
 	nProj=6;
 	spike = spike_net_t();
 	
+	font = GLUT_BITMAP_8_BY_13;
+	titleFont = GLUT_BITMAP_9_BY_15;
 //	bzero(&spikeBuff, sizeof(spikeBuff));
 //	spikeBuff = new spike_net_t[MAX_SPIKE_BUFF_SIZE];
 	nSpikes = 0;
@@ -51,7 +53,10 @@ TetrodePlot::TetrodePlot(int x, int y, int w, int h, char *p){
 	
 	isSelected = false;
 	
+	tetrodeNumber=-1;
+	
 	initColors();
+	
 }
 
 void TetrodePlot::initColors(){
@@ -102,10 +107,9 @@ void TetrodePlot::draw()
 		drawWaveforms();
 		drawProjections();
 	}while(tryToGetSpikeForPlotting(&spike));
-
+	
 	drawTitle();
 	drawBoundingBoxes();
-	
 }
 void TetrodePlot::highlightSelectedWaveform(){
 //	setViewportForWaveN(selectedWaveform);
@@ -127,7 +131,7 @@ void TetrodePlot::drawWaveformN(int n)
 	int thresh = spike.thresh[n];
 //	sprintf(txtDispBuff, "T:%d", thresh);
 //	glColor3f(colFont[0],colFont[1],colFont[2]);
-	//drawString(-.9, .8, txtDispBuff);
+//	drawString(-.9, .8, font, txtDispBuff);
 
 	// Draw the actual waveform
 	float dx = 2.0/(spike.n_samps_per_chan-1);
@@ -146,7 +150,7 @@ void TetrodePlot::drawWaveformN(int n)
 
 	// Draw the threshold line
 	glColor3f(colThres[0], colThres[1], colThres[2]); // set threshold line to red
-	glLineStipple(4, 0xAAAA); // make line a dashed line
+	glLineStipple(4, 0xAAAA); // make a dashed line
 	glEnable(GL_LINE_STIPPLE);
 	glBegin( GL_LINE_STRIP );
 		glVertex2f(-1.0, scaleVoltage(thresh, true));
@@ -163,7 +167,7 @@ void TetrodePlot::drawProjections(){
 
 	for (int i=0; i<nProj; i++) // <----------------------------------------
 		drawProjectionN(i, maxIdx);
-
+	clearProjectionNextPlot = false;
 }
 
 
@@ -215,7 +219,33 @@ void TetrodePlot::drawTitle(){
 	else
 		glColor3f(colTitleSelected[0], colTitleSelected[1], colTitleSelected[2]);
 	glRectf(-1,-1,2,2);
-//	drawString(0,0, title);
+	glColor3f(1.0, 1.0, 1.0);
+	
+	char num[]="00";
+	if (tetrodeNumber<10)
+		sprintf(num,"%d%d",0,tetrodeNumber);
+	else
+		sprintf(num,"%d",tetrodeNumber);
+		
+	char titleString[] = "TT:00 on Port:____";
+	memcpy(titleString+3, num, 2);
+	memcpy(titleString+14, port, 4);
+	
+//	int len = strlen(titleString);
+//	memcpy(titleString+len-5, port, 4);
+	
+	double yScale = 2.0/titleHeight;
+	double yOffset = -1*15.0/2*yScale;
+	
+	double xScale = 2.0/(4*xBox);
+	double xOffset = -1*(9.0 * strlen(titleString))/2*xScale;
+
+	if(xOffset<-1)
+		xOffset = -1;
+	if(yOffset<-1)
+		yOffset = -1;
+//	std::cout<<"Title xOffset:"<<xOffset<<std::endl;
+	drawString(xOffset,yOffset, titleFont, titleString);
 }
 
 
@@ -408,13 +438,14 @@ float TetrodePlot::scaleVoltage(int v, bool shift){
 		return ((float)v * dV * userScale) + voltShift;
 }
 
-void TetrodePlot::drawString(float x, float y, char *string){
+void TetrodePlot::drawString(float x, float y, void *f, char *string){
 
 	glRasterPos2f(x, y);
 
+//	string = "123";
 	int len = strlen(string);
 	for (int i = 0; i < len; i++) {
-    	glutBitmapCharacter(font, string[i]);
+   	glutBitmapCharacter(f, string[i]);
 	}
 }
 
@@ -491,5 +522,25 @@ bool TetrodePlot::getWaveformOverlay(){
 }
 
 void TetrodePlot::clearPlot(){
-	
+	printf("Clearing tetrode plot%d\n", tetrodeNumber);
+	for (int i=0; i<nProj; i++)
+	{
+		setViewportForProjectionN(i);
+		glColor3f(0,0,0);
+		glRecti(-1,-1,2,2);
+	}
+		
+//	clearProjectionNextPlot = true;
 }
+int TetrodePlot::getTetrodeNumber(){
+	return tetrodeNumber;
+}
+void TetrodePlot::setTetrodeNumber(int n){
+	tetrodeNumber = n;
+}
+
+bool TetrodePlot::containsPoint(int x, int y){
+	return ((xPos < x && xPos + plotWidth > x) && (yPos<y && yPos+plotHeight > y));
+}
+	
+

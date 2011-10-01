@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <vector>
+#include <stdlib.h>
 
 #include <assert.h>
 
@@ -36,6 +37,7 @@ class TetrodePlot{
 	// ===================================
 
 	char plotTitle[200];
+	int tetrodeNumber;
 	static const int titleHeight = 25;
 	int xPos , yPos;
 	int plotWidth, plotHeight;
@@ -49,8 +51,11 @@ class TetrodePlot{
 	bool disableWaveOverlay;
 	
 	void *font;
+	void *titleFont;
 	
 	bool isSelected;
+	
+	bool clearProjectionNextPlot;
 	
 	// ===================================
 	// 		Scaling Variables
@@ -157,7 +162,7 @@ class TetrodePlot{
 
 	float scaleVoltage(int v, bool);
 
-	void drawString(float x, float y, char *string);
+	void drawString(float x, float y, void *f, char *string);
 	
 	int incrementIdx(int i);
 	
@@ -188,9 +193,12 @@ public:
 	bool toggleWaveformOverlay();
 	bool getWaveformOverlay();
 	
-	void clearPlot();
+	void clearPlot();	
 	
+	int getTetrodeNumber();
+	void setTetrodeNumber(int);
 	
+	bool containsPoint(int x, int y);
 	// implement scaleUp(), scaleDown(), setScale(), getScale()
 	// shiftUp(), shiftDown(), setShift(), getShift()
 	// clearProjections()

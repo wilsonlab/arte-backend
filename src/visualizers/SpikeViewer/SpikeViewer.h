@@ -25,6 +25,7 @@ void initPlots(int c, int r);
 
 void keyPressedFn(unsigned char key, int x, int y);
 void specialKeyFn(int key, int x, int y);
+void mouseClickFn(int button, int state, int x, int y);
 
 // ===================================
 // 		Command Variables
@@ -51,14 +52,18 @@ static int const CMD_STATE_SLOW_ARG = 2;// state where user enters in the comman
 static int CMD_CUR_STATE = CMD_STATE_QUICK;
 
 // Simple commands that respond immediately
-static int const CMD_CLEAR_WIN 	= 'c';
-static int const CMD_SCALE_UP 	= '=';
-static int const CMD_SCALE_DOWN = '-';
-static int const CMD_SHIFT_UP 	= '+';
-static int const CMD_SHIFT_DOWN = '_';
-static int const CMD_RESET_SCALE= 'R';
-static int const CMD_PREV_COL 	= '[';
-static int const CMD_NEXT_COL 	= ']';
+static int const CMD_CLEAR_ALL 	= 'C';
+static int const CMD_CLEAR_SEL  = 'c';
+static int const CMD_SCALE_UP_SEL 	= '=';
+static int const CMD_SCALE_DOWN_SEL = '-';
+static int const CMD_SCALE_UP_ALL 	= '+';
+static int const CMD_SCALE_DOWN_ALL = '_';
+static int const CMD_RESET_SCALE    = 'R';
+static int const CMD_SHIFT_UP_SEL 	= ']';
+static int const CMD_SHIFT_DOWN_SEL = '[';
+static int const CMD_SHIFT_UP_ALL 	= '}';
+static int const CMD_SHIFT_DOWN_ALL = '{';
+
 static int const CMD_HELP 		= '?';
 
 // Commands that require CTRL + KEY
