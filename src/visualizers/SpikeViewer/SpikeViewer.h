@@ -18,6 +18,8 @@ TetrodePlot *plots[MAX_N_PLOT];
 static int nPlots = 0;
 static int selectedPlot = 0;
 
+static bool allOverlay = true;
+
 void drawTetrodePlots();
 void idleFunc();
 void resizeWinFunc(int w, int h);
@@ -63,6 +65,8 @@ static int const CMD_SHIFT_UP_SEL 	= ']';
 static int const CMD_SHIFT_DOWN_SEL = '[';
 static int const CMD_SHIFT_UP_ALL 	= '}';
 static int const CMD_SHIFT_DOWN_ALL = '{';
+static int const CMD_OVERLAY_SEL 	= 'o';
+static int const CMD_OVERLAY_ALL	= 'O';
 
 static int const CMD_HELP 		= '?';
 

@@ -21,7 +21,7 @@ int winWidth = 1262;
 int winHeight = 762;
 
 int nCol = 4;
-int nRow = 4;
+int nRow = 2;
 
 int main( int argc, char** argv )
 {
@@ -62,11 +62,15 @@ void initPlots(int nCol, int nRow){
 	int dWinX = winWidth/nCol;
 	int dWinY = winHeight/nRow;
 	
-	char* ports[] = {"7000", "7001", "7002", "7003", "7004", "7005", "7006", "7007", "7008", "7009", "7010", "7011", "7012", "7013", "7014", "7015", "7016"};
+	char* ports[] = {	"6300", "6301", "6302", "6303", "6304", "6305", "6306", "6307",
+//	 					"7008", "7009", "7010", "7011", "7012", "7013", "7014", "7015",
+//	 					"7016", "7017", "7018", "7019", "7020",	 "7021", "7022", "7023",
+//	 					"7024", "7025", "7026", "7027", "7028", "7029", "7030", "7031",
+					};
 	for (int i=0; i<nCol; i++)
 		for (int j=0; j<nRow; j++)
 		{
-			plots[nPlots] = new TetrodePlot(dWinX*i, dWinY*(nRow-j-1), dWinX, dWinY, ports[nPlots]);
+			plots[nPlots] = new TetrodePlot(dWinX*i, dWinY*(nRow-j-1), dWinX, dWinY, ports[nPlots%32]);
 			plots[nPlots]->setTetrodeNumber(nPlots);
 			plots[nPlots]->initNetworkRxThread();
 			nPlots++;
@@ -157,6 +161,16 @@ void keyPressedFn(unsigned char key, int x, int y){
 		
 		case CMD_CLEAR_SEL:
 		plots[selectedPlot]->clearPlot();
+		break;
+		
+		case CMD_OVERLAY_ALL:
+		allOverlay = !allOverlay;
+		for (int i=0; i<nPlots; i++)
+			plots[i]->setWaveformOverlay(allOverlay);
+		break;
+		
+		case CMD_OVERLAY_SEL:
+		plots[selectedPlot]->toggleWaveformOverlay();
 		break;
 	}
 	std::cout<<"Normal  Key Pressed:"<<(int)key<<", "<<key<<std::endl;
