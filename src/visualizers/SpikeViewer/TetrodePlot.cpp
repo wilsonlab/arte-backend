@@ -8,8 +8,8 @@ TetrodePlot::TetrodePlot(int x, int y, int w, int h, char *p){
 	xPos = x, yPos = y;
 	plotWidth = w, plotHeight = h;
 	
-	plotPadX = 2;
-	plotPadY = 2;
+	yPadding = 0;
+	xPadding = 0;
 	resizePlot(plotWidth, plotHeight);
 
 	disableWaveOverlay = true;
@@ -42,7 +42,7 @@ TetrodePlot::TetrodePlot(int x, int y, int w, int h, char *p){
 	spike = spike_net_t();
 	
 	font = GLUT_BITMAP_8_BY_13;
-	titleFont = GLUT_BITMAP_9_BY_15;
+	titleFont = GLUT_BITMAP_8_BY_13;
 //	bzero(&spikeBuff, sizeof(spikeBuff));
 //	spikeBuff = new spike_net_t[MAX_SPIKE_BUFF_SIZE];
 	nSpikes = 0;

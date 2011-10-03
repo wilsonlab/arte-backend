@@ -7,6 +7,8 @@ int winHeight = 762;
 int nCol = 4;
 int nRow = 2;
 
+void *font = GLUT_BITMAP_8_BY_13;
+
 int main( int argc, char** argv )
 {
 
@@ -105,7 +107,7 @@ void drawCommandString(){
 	glColor3f(1.0,1.0,1.0);
 	drawViewportEdge();
 	
-	drawString(-.95, -.5, GLUT_BITMAP_8_BY_13, ">Begin Typing To Enter A Command");
+	drawString(-.95, -.5, font, ">Begin Typing To Enter A Command");
 	switch(cmdState){
 	
 	}

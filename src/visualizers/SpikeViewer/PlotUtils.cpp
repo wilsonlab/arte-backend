@@ -11,9 +11,9 @@ void drawString(float x, float y, void *f, char *string){
 }
 void drawViewportEdge(){
 	glBegin(GL_LINE_LOOP);
-		glVertex2f(-.999, -.999);
-		glVertex2f( .999, -.999);
-		glVertex2f( .999, .999);
-		glVertex2f(-.999, .999);
+		glVertex2f(-.995, -.995);
+		glVertex2f( .995, -.995);
+		glVertex2f( .995, .995);
+		glVertex2f(-.995, .995);
 	glEnd();
 }

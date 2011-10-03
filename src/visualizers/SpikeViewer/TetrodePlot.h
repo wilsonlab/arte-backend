@@ -39,7 +39,7 @@ class TetrodePlot{
 
 	char plotTitle[200];
 	int tetrodeNumber;
-	static const int titleHeight = 22;
+	static const int titleHeight = 25;
 	int xPos , yPos;
 	int plotWidth, plotHeight;
 
