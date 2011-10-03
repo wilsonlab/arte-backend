@@ -235,7 +235,7 @@ void TetrodePlot::drawTitle(){
 //	memcpy(titleString+len-5, port, 4);
 	
 	double yScale = 2.0/titleHeight;
-	double yOffset = -1*15.0/2*yScale;
+	double yOffset = -1*11.0/2*yScale;
 	
 	double xScale = 2.0/(4*xBox);
 	double xOffset = -1*(9.0 * strlen(titleString))/2*xScale;
@@ -388,14 +388,8 @@ void TetrodePlot::drawBoundingBoxes(void){
 	}
 }
 
-void TetrodePlot::drawViewportEdge(){
-	glBegin(GL_LINE_LOOP);
-		glVertex2f(-.999, -.999);
-		glVertex2f( .999, -.999);
-		glVertex2f( .999, .999);
-		glVertex2f(-.999, .999);
-	glEnd();
-}
+//void TetrodePlot::drawViewportEdge(){
+//}
 
 
 void TetrodePlot::resetSeqNum()
@@ -438,6 +432,7 @@ float TetrodePlot::scaleVoltage(int v, bool shift){
 		return ((float)v * dV * userScale) + voltShift;
 }
 
+/*
 void TetrodePlot::drawString(float x, float y, void *f, char *string){
 
 	glRasterPos2f(x, y);
@@ -448,6 +443,7 @@ void TetrodePlot::drawString(float x, float y, void *f, char *string){
    	glutBitmapCharacter(f, string[i]);
 	}
 }
+*/
 
 void TetrodePlot::initNetworkRxThread(){
 	pthread_t netThread;
@@ -541,6 +537,13 @@ void TetrodePlot::setTetrodeNumber(int n){
 
 bool TetrodePlot::containsPoint(int x, int y){
 	return ((xPos < x && xPos + plotWidth > x) && (yPos<y && yPos+plotHeight > y));
+}
+
+int TetrodePlot::getMaxX(){
+	return xPos+xBox*4;
+}
+int TetrodePlot::getMinX(){
+	return xPos;
 }
 	
 

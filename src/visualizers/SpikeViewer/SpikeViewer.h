@@ -9,7 +9,9 @@
 #include <set>
 #include <getopt.h>
 #include "TetrodePlot.h"
+#include "PlotUtils.h"
 
+static char app_name[] = "Arte Network Spike Viewer v0.9 - (C) 2011 Stuart Layton, MIT";
 
 static const int MAX_N_PLOT = 64;
 
@@ -32,12 +34,40 @@ void mouseClickFn(int button, int state, int x, int y);
 // ===================================
 // 		Command Variables
 // ===================================
+
+// Application Title
+void drawAppTitle();
+void setViewportForTitle();
+
+// Command Functions
+void scaleUpAll();
+void scaleUpSel();
+void scaleDownAll();
+void scaleDownSel();
+void shiftUpAll();
+void shiftUpSel();
+void shiftDownAll();
+void shiftDownSel();
+void toggleOverlayAll();
+void toggleOverlaySel();
+void clearAll();
+void clearSel();
+void showHelp();
+void quit();
+
+void initCommandListAndMap();
+
+// Command Engine Map Declaration
+void drawCommandString();
+void setViewportForCommandWin();
+
 static int const cmdStrLen = 500;
 static char cmd[cmdStrLen];
 static int cmdStrIdx = 0;
+static int cmdWinHeight=22;
+static int cmdWinWidth = 100;
+static float cmdWinCol[] = {.2, .2, .2};
 
-
-// Command Engine Map Declaration
 typedef void cmdfunc_t(void);
 typedef void cmdfunc2_t(void*);
 typedef std::map<char, cmdfunc_t*> cmdfnmap_t;
@@ -51,7 +81,7 @@ static cmdfnmap2_t slowCmdMap;
 static int const CMD_STATE_QUICK = 0; // state where quick commands get executed
 static int const CMD_STATE_SLOW = 1;  // state where user specifies what command is to be executed
 static int const CMD_STATE_SLOW_ARG = 2;// state where user enters in the command argument
-static int CMD_CUR_STATE = CMD_STATE_QUICK;
+static int cmdState = CMD_STATE_QUICK;
 
 // Simple commands that respond immediately
 static int const CMD_CLEAR_ALL 	= 'C';

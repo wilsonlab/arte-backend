@@ -24,6 +24,7 @@
 
 #include "netcom.h"
 #include "datapacket.h"
+#include "PlotUtils.h"
 //#include "viewerCommandDefs.h"
 
 
@@ -38,7 +39,7 @@ class TetrodePlot{
 
 	char plotTitle[200];
 	int tetrodeNumber;
-	static const int titleHeight = 25;
+	static const int titleHeight = 22;
 	int xPos , yPos;
 	int plotWidth, plotHeight;
 
@@ -156,13 +157,13 @@ class TetrodePlot{
 	void setViewportForWaveN(int n);
 	void setViewportForProjectionN(int n);
 	void setViewportForCommandString();
-	void drawViewportEdge();
+//	void drawViewportEdge();
 
 	int calcWaveMaxInd();
 
 	float scaleVoltage(int v, bool);
 
-	void drawString(float x, float y, void *f, char *string);
+//	void drawString(float x, float y, void *f, char *string);
 	
 	int incrementIdx(int i);
 	
@@ -199,6 +200,10 @@ public:
 	void setTetrodeNumber(int);
 	
 	bool containsPoint(int x, int y);
+	
+	int getMaxX();
+	int getMinX();
+	
 	// implement scaleUp(), scaleDown(), setScale(), getScale()
 	// shiftUp(), shiftDown(), setShift(), getShift()
 	// clearProjections()
