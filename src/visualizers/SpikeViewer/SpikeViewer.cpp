@@ -5,7 +5,7 @@ int winWidth = 1262;
 int winHeight = 762;
 
 int nCol = 4;
-int nRow = 2;
+int nRow = 4;
 
 void *font = GLUT_BITMAP_8_BY_13;
 
@@ -48,7 +48,7 @@ void initPlots(int nCol, int nRow){
 	int dWinY = (winHeight-cmdWinHeight)/nRow;
 	
 	char* ports[] = {	"6300", "6301", "6302", "6303", "6304", "6305", "6306", "6307",
-//	 					"7008", "7009", "7010", "7011", "7012", "7013", "7014", "7015",
+	 					"7008", "7009", "7010", "7011", "7012", "7013", "7014", "7015",
 //	 					"7016", "7017", "7018", "7019", "7020",	 "7021", "7022", "7023",
 //	 					"7024", "7025", "7026", "7027", "7028", "7029", "7030", "7031",
 					};
@@ -56,7 +56,7 @@ void initPlots(int nCol, int nRow){
 	for (int i=0; i<nCol; i++)
 		for (int j=0; j<nRow; j++)
 		{
-			plots[nPlots] = new TetrodePlot(dWinX*i, dWinY*(nRow-j-1)+cmdWinHeight, dWinX, dWinY, ports[nPlots%32]);
+			plots[nPlots] = new TetrodePlot(dWinX*i, dWinY*(nRow-j-1)+cmdWinHeight, dWinX, dWinY, ports[nPlots%16]);
 			plots[nPlots]->setTetrodeNumber(nPlots);
 			plots[nPlots]->initNetworkRxThread();
 			nPlots++;
@@ -97,7 +97,7 @@ void drawAppTitle(){
 
 }
 void setViewportForCommandWin(){
-	glViewport(2,2,cmdWinWidth-2,cmdWinHeight-2);	
+	glViewport(0,2,cmdWinWidth,cmdWinHeight-2);	
 }
 void drawCommandString(){
 	setViewportForCommandWin();
@@ -107,7 +107,7 @@ void drawCommandString(){
 	glColor3f(1.0,1.0,1.0);
 	drawViewportEdge();
 	
-	drawString(-.95, -.5, font, ">Begin Typing To Enter A Command");
+	drawString(-.99, -.5, font, ">Begin Typing To Enter A Command");
 	switch(cmdState){
 	
 	}
@@ -117,23 +117,21 @@ void resizeWinFunc(int w, int h){
 	glClear(GL_COLOR_BUFFER_BIT);
 	
 	winWidth = w;
-//	cmdWinWidth = w/2;
-	
-	winHeight = h-cmdWinHeight;
+	winHeight =h;
 	
 	int dWinX = w/nCol;
-	int dWinY = h/nRow - cmdWinHeight;
+	int dWinY = (h - cmdWinHeight)/nRow;// - cmdWinHeight - 22/(nRow-1);
 	for (int i=0; i<nPlots; i++)
 	{
 		int c = i%nCol;
 		int r = i/nCol;
 		
 		plots[i]->movePlot(c*dWinX, (nRow-r-1)*dWinY + cmdWinHeight);
-		plots[i]->resizePlot(w/nCol, h/nRow);
+		plots[i]->resizePlot(dWinX, dWinY);
 	}
 	
-	cmdWinWidth = plots[nCol/2 - 1]->getMaxX();
-	
+	cmdWinWidth = plots[nCol/2 - 1]->getMaxX()+2;
+	glClear(GL_COLOR_BUFFER_BIT);
 //	printf("Resizing window to:%dx%d\n", w,h);
 }
 
@@ -143,7 +141,7 @@ void keyPressedFn(unsigned char key, int x, int y){
         case CMD_STATE_QUICK:
             if (quickCmdMap.end() != quickCmdMap.find(key))
             {
-//              std::cout<<"Executing Quick Command:"<<key<<std::endl;
+              std::cout<<"Executing Quick Command:"<<key<<std::endl;
                 quickCmdMap.find(key)->second();
             }
 
@@ -250,6 +248,7 @@ void toggleOverlaySel(){
 void clearAll(){
 	for (int i=0; i<nPlots; i++)
 		plots[i]->clearPlot();
+	glClear(GL_COLOR_BUFFER_BIT);
 }
 void clearSel(){
 	plots[selectedPlot]->clearPlot();
@@ -269,10 +268,10 @@ void initCommandListAndMap(){
 	quickCmdMap[CMD_SCALE_UP_ALL] 	= scaleUpAll;
 	quickCmdMap[CMD_SCALE_DOWN_SEL] = scaleDownSel; 
 	quickCmdMap[CMD_SCALE_DOWN_ALL] = scaleDownAll;
-	quickCmdMap[CMD_SHIFT_UP_SEL] 	= scaleUpSel; 
-	quickCmdMap[CMD_SHIFT_UP_ALL] 	= scaleUpAll;
-	quickCmdMap[CMD_SHIFT_DOWN_SEL] = scaleDownSel;
-	quickCmdMap[CMD_SHIFT_DOWN_ALL] = scaleDownAll;
+	quickCmdMap[CMD_SHIFT_UP_SEL] 	= shiftUpSel; 
+	quickCmdMap[CMD_SHIFT_UP_ALL] 	= shiftUpAll;
+	quickCmdMap[CMD_SHIFT_DOWN_SEL] = shiftDownSel;
+	quickCmdMap[CMD_SHIFT_DOWN_ALL] = shiftDownAll;
 	quickCmdMap[CMD_OVERLAY_SEL] 	= toggleOverlaySel;
 	quickCmdMap[CMD_OVERLAY_ALL] 	= toggleOverlayAll;
 

@@ -7,9 +7,11 @@ TetrodePlot::TetrodePlot(int x, int y, int w, int h, char *p){
 	std::cout<<"Initializing a new TetrodePlot\n"<<std::flush;
 	xPos = x, yPos = y;
 	plotWidth = w, plotHeight = h;
-	
-	yPadding = 0;
-	xPadding = 0;
+	padLeft = 1;
+	padRight = 1;
+	padBottom = 1;
+	padTop = 1;
+
 	resizePlot(plotWidth, plotHeight);
 
 	disableWaveOverlay = true;
@@ -86,14 +88,14 @@ void TetrodePlot::initColors(){
 }
 void TetrodePlot::resizePlot(int w, int h)
 {
-	plotWidth = w - plotPadX*2;
-	plotHeight = h - plotPadY*2;
+	plotWidth = w - padLeft - padRight;
+	plotHeight = h - padTop - padBottom;
 	xBox = plotWidth/4;
-	yBox = plotHeight/2;
+	yBox = (plotHeight)/2;
 }
 void TetrodePlot::movePlot(int x, int y){
-	xPos = x+plotPadX;
-	yPos = y+plotPadY;
+	xPos = x;
+	yPos = y;
 }
 void TetrodePlot::draw()
 {
@@ -231,9 +233,6 @@ void TetrodePlot::drawTitle(){
 	memcpy(titleString+3, num, 2);
 	memcpy(titleString+14, port, 4);
 	
-//	int len = strlen(titleString);
-//	memcpy(titleString+len-5, port, 4);
-	
 	double yScale = 2.0/titleHeight;
 	double yOffset = -1*11.0/2*yScale;
 	
@@ -244,18 +243,18 @@ void TetrodePlot::drawTitle(){
 		xOffset = -1;
 	if(yOffset<-1)
 		yOffset = -1;
-//	std::cout<<"Title xOffset:"<<xOffset<<std::endl;
+
 	drawString(xOffset,yOffset, titleFont, titleString);
 }
 
 
 void TetrodePlot::eraseWaveforms(){
 
-	glViewport(xPos, yPos, xBox, yBox*2 - yPadding);
-
-	glColor3f(0,0,0);
-	glRectf(-1, -1, 2, 2);
-
+	for (int i=0; i<4; i++){
+		setViewportForWaveN(i);
+		glColor3f(0,0,0);
+		glRectf(-1, -1, 2, 2);
+	}
 }
 
 
@@ -265,8 +264,9 @@ void TetrodePlot::setViewportForTitleBox(){
 
 	float viewDX = xBox*4;
 	float viewDY = titleHeight;
-	float viewX = 0;
-	float viewY = plotHeight-titleHeight;//yBox*2 - titleHeight;
+	float viewX = padLeft;
+	float viewY = 2*yBox - titleHeight - padBottom;
+	
 	glViewport(viewX+xPos,viewY+yPos,viewDX,viewDY);
 }
 void TetrodePlot::setViewportForWaveN(int n){
@@ -276,11 +276,11 @@ void TetrodePlot::setViewportForWaveN(int n){
 	switch (n){
 	case 0:
 		viewX=0;
-		viewY=yBox - titleHeight/2;
+		viewY=yBox - titleHeight/2 - padBottom;
 		break;
 	case 1:
 		viewX = xBox/2;
-		viewY = yBox - titleHeight/2;
+		viewY = yBox - titleHeight/2 - padBottom;
 		break;
 	case 2:
 		viewX=0;
@@ -294,10 +294,10 @@ void TetrodePlot::setViewportForWaveN(int n){
 		std::cout<<"drawing of more than 4 channels is not supported, returning! Requested:"<<n<<std::endl;
 		return;
 	}
-	viewX = viewX + xPadding;
-	viewY = viewY + yPadding;
-	viewDX = viewDX - 2*xPadding;
-	viewDY = viewDY - 2*yPadding;
+	viewX = viewX + padLeft;
+	viewY = viewY + padBottom;
+	viewDX = viewDX + padLeft;
+	viewDY = viewDY - padBottom;
 	
 	glViewport(viewX+xPos,viewY+yPos,viewDX,viewDY);
 }
@@ -312,15 +312,15 @@ void TetrodePlot::setViewportForProjectionN(int n){
     switch (n){
     case 0:
         viewX=xBox;
-        viewY=yBox -titleHeight/2;
+        viewY=yBox-titleHeight/2 - padBottom;
         break;
     case 1:
         viewX = xBox*2;
-        viewY = yBox-titleHeight/2;
+        viewY = yBox-titleHeight/2 - padBottom;
         break;
     case 2:
         viewX=xBox*3;
-        viewY=yBox-titleHeight/2;
+        viewY=yBox-titleHeight/2 - padBottom;
         break;
     case 3:
         viewX = xBox;
@@ -338,10 +338,10 @@ void TetrodePlot::setViewportForProjectionN(int n){
         std::cout<<"drawing of more than 4 channels is not supported, returning! Requested:"<<n<<std::endl;
         return;
     }
-	viewX = viewX + xPadding;
-	viewY = viewY + yPadding;
-	viewDX = viewDX - 2*xPadding;
-	viewDY = viewDY - 2*yPadding;
+	viewX = viewX + padLeft;
+	viewY = viewY + padBottom;
+	viewDX = viewDX;
+	viewDY = viewDY - padBottom;
 
 
 	glViewport(viewX+xPos, viewY+yPos, viewDX, viewDY);
