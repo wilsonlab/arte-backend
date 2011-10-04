@@ -431,19 +431,7 @@ float TetrodePlot::scaleVoltage(int v, bool shift){
 	else
 		return ((float)v * dV * userScale) + voltShift;
 }
-
-/*
-void TetrodePlot::drawString(float x, float y, void *f, char *string){
-
-	glRasterPos2f(x, y);
-
-//	string = "123";
-	int len = strlen(string);
-	for (int i = 0; i < len; i++) {
-   	glutBitmapCharacter(f, string[i]);
-	}
-}
-*/
+	
 
 void TetrodePlot::initNetworkRxThread(){
 	pthread_t netThread;

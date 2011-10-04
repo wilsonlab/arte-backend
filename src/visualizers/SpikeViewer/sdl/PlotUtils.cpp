@@ -6,7 +6,7 @@ void drawString(float x, float y, void *f, char *string){
 //	string = "123";
 	int len = strlen(string);
 	for (int i = 0; i < len; i++) {
-   	glutBitmapCharacter(f, string[i]);
+//   	glutBitmapCharacter(f, string[i]);
 	}
 }
 void drawViewportEdge(){
