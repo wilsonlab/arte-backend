@@ -1,17 +1,31 @@
-/*
- * SDL OpenGL Tutorial.
- * (c) Michael Vance, 2000
- * briareos@lokigames.com
- *
- * Distributed under terms of the LGPL. 
- */
 #include "SDLViewer.h"
-
-//static GLboolean should_rotate = GL_TRUE;
 
 int main( int argc, char* argv[] )
 {
-	// SDL Setup Vars
+	nCol = 4;
+	nRow = 2;
+
+	winWidth = 800;
+	winHeight = 600;
+	
+
+	initSdl();
+	initPlots(nCol,nRow);
+		
+	plots[selectedPlot]->setSelected(true);
+
+    while( 1 ) {
+        process_events( );
+        draw_screen( );
+		usleep(SLEEP);
+    }
+
+    return 0;
+}
+
+
+static void initSdl(){
+// SDL Setup Vars
     const SDL_VideoInfo* info = NULL;  
     int bpp = 0;
     int flags = 0;
@@ -21,7 +35,6 @@ int main( int argc, char* argv[] )
         fprintf( stderr, "Video initialization failed: %s\n", SDL_GetError( ) );
         quit(1);
     }
-
    	//Grab the video informaion, fail if none
     info = SDL_GetVideoInfo( );
     if( !info ) {
@@ -45,21 +58,7 @@ int main( int argc, char* argv[] )
              SDL_GetError( ) );
         quit( 1 );
     }
-
-//    setup_opengl( winWidth, winHeight );
-
-	initPlots(nCol,nRow);
-		
-	plots[selectedPlot]->setSelected(true);
-
-    while( 1 ) {
-        process_events( );
-        draw_screen( );
-    }
-
-    return 0;
 }
-
 static void quit( int code )
 {
     SDL_Quit();
@@ -68,6 +67,8 @@ static void quit( int code )
 
 static void handle_key_down( SDL_keysym* keysym )
 {
+	keyPressedFn(keysym->sym);
+
     switch( keysym->sym ) {
     case SDLK_ESCAPE:
         quit( 0 );
@@ -81,23 +82,33 @@ static void process_events( void )
 {
     /* Our SDL event placeholder. */
     SDL_Event event;
-
+	
     /* Grab all the events off the queue. */
+	SDL_keysym k;
     while( SDL_PollEvent( &event ) ) {
 
         switch( event.type ) {
-        case SDL_KEYDOWN:
+		case SDL_MOUSEBUTTONDOWN:
+			printf("Mouse Button Clicked\n");
+			break;        
+
+		case SDL_KEYDOWN:
             /* Handle key presses. */
-            handle_key_down( &event.key.keysym );
+		 	printf("\n------------------------\nThe %s key was pressed!\n",  SDL_GetKeyName(event.key.keysym.sym));
+//            handle_key_down( &event.key.keysym );
+			k = event.key.keysym;
+			printf("KeySym mod:%d", k.mod);
             break;
+		
         case SDL_QUIT:
             /* Handle quit requests (like Ctrl-c). */
             quit( 0 );
             break;
         }
-
+		printf("Polling for events\n");
     }
-
+	printf("Processing events\n");
+	
 }
 
 static void draw_screen( void )
@@ -197,8 +208,8 @@ void resizeWinFunc(int w, int h){
 //	printf("Resizing window to:%dx%d\n", w,h);
 }
 */
-/*
-void keyPressedFn(unsigned char key, int x, int y){
+
+void keyPressedFn(int key){
 	switch(cmdState)
     {
         case CMD_STATE_QUICK:
@@ -229,7 +240,7 @@ void keyPressedFn(unsigned char key, int x, int y){
 
     }
 }
-*/
+
 /*
 void specialKeyFn(int key, int x, int y){
 	std::cout<<"Special Key Pressed:"<<key<<", "<<(char)key<<std::endl;

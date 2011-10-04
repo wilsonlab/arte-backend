@@ -32,16 +32,22 @@ static int nRow = 4;
 
 static int winWidth = 800;
 static int winHeight = 600;
+
+static int SLEEP = 1e6/100;
 void drawTetrodePlots();
 void idleFunc();
 void resizeWinFunc(int w, int h);
 void initPlots(int c, int r);
 
+static void initSdl();
 static void quit(int code);
 static void handle_key_down( SDL_keysym* keysym );
+void keyPressedFn(int key);
+void specialKeyFn(int key, int x, int y);
+void mouseClickFn(int button, int state, int x, int y);
 static void process_events( void );
 static void draw_screen( void );
-static void setup_opengl( int width, int height );
+
 
 // ===================================
 // 		Command Variables
