@@ -27,6 +27,11 @@ static int selectedPlot = 0;
 
 static bool allOverlay = true;
 
+static int nCol = 4;
+static int nRow = 4;
+
+static int winWidth = 800;
+static int winHeight = 600;
 void drawTetrodePlots();
 void idleFunc();
 void resizeWinFunc(int w, int h);

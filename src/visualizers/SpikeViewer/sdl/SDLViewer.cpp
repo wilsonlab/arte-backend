@@ -11,14 +11,9 @@
 
 int main( int argc, char* argv[] )
 {
-    /* Information about the current video settings. */
-    const SDL_VideoInfo* info = NULL;
-    /* Dimensions of our window. */
-    int width = 0;
-    int height =0;
-    /* Color depth in bits of our window. */
+	// SDL Setup Vars
+    const SDL_VideoInfo* info = NULL;  
     int bpp = 0;
-    /* Flags we will pass into SDL_SetVideoMode. */
     int flags = 0;
 
 	//Initialiaze SDL Video subsystem, quit if it fails
@@ -34,7 +29,6 @@ int main( int argc, char* argv[] )
         fprintf( stderr, "Video query failed: %s\n", SDL_GetError() );
         quit(1);
     }
-
 
     bpp = info->vfmt->BitsPerPixel;
 
@@ -149,15 +143,11 @@ void drawTetrodePlots(){
 	// glutSwapBuffers();
 	// glFlush();
 }
-void idleFunc(){
-//	std::cout<<"SpikeViewer.cpp - idleFunc()"<<std::endl;
-	drawTetrodePlots();
-	usleep(IDLE_SLEEP_USEC);   
-}
 
 void setViewportForTitle(){
 	glViewport(plots[nCol/2 ]->getMinX(), 2, cmdWinWidth-2, cmdWinHeight-2);
 }
+
 void drawAppTitle(){
 	glColor3f(1.0,1.0,1.0);
 	setViewportForTitle();
@@ -184,7 +174,7 @@ void drawCommandString(){
 	
 	}
 }
-
+/*
 void resizeWinFunc(int w, int h){
 	glClear(GL_COLOR_BUFFER_BIT);
 	
@@ -206,7 +196,7 @@ void resizeWinFunc(int w, int h){
 	glClear(GL_COLOR_BUFFER_BIT);
 //	printf("Resizing window to:%dx%d\n", w,h);
 }
-
+*/
 /*
 void keyPressedFn(unsigned char key, int x, int y){
 	switch(cmdState)

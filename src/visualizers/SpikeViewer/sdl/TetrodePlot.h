@@ -24,6 +24,7 @@
 
 #include "netcom.h"
 #include "datapacket.h"
+#include "PlotUtils.h"
 //#include "viewerCommandDefs.h"
 
 
@@ -38,14 +39,12 @@ class TetrodePlot{
 
 	char plotTitle[200];
 	int tetrodeNumber;
-	static const int titleHeight = 25;
-	int xPos , yPos;
+	static const int titleHeight = 22;
+	int xPos, yPos;
 	int plotWidth, plotHeight;
 
-	double xBox, yBox;
+	double xBox, yBox;	
 
-	double xPadding, yPadding;
-	int plotPadX, plotPadY;
 
 	double waveformLineWidth;
 	bool disableWaveOverlay;
@@ -156,17 +155,19 @@ class TetrodePlot{
 	void setViewportForWaveN(int n);
 	void setViewportForProjectionN(int n);
 	void setViewportForCommandString();
-	void drawViewportEdge();
+//	void drawViewportEdge();
 
 	int calcWaveMaxInd();
 
 	float scaleVoltage(int v, bool);
 
-	void drawString(float x, float y, void *f, char *string);
+//	void drawString(float x, float y, void *f, char *string);
 	
 	int incrementIdx(int i);
 	
 public:
+	double padLeft, padRight, padTop, padBottom;
+	
 	TetrodePlot();
 	TetrodePlot(int x, int y, int w, int h, char* port);
 	void draw();
@@ -199,6 +200,10 @@ public:
 	void setTetrodeNumber(int);
 	
 	bool containsPoint(int x, int y);
+	
+	int getMaxX();
+	int getMinX();
+	
 	// implement scaleUp(), scaleDown(), setScale(), getScale()
 	// shiftUp(), shiftDown(), setShift(), getShift()
 	// clearProjections()
