@@ -56,10 +56,7 @@ void clearWindow(){
 void resizeWinFunc(int w, int h){
 	sv.resizePlot(w,h);
 	clearWindow();
-
-
 }
-
 
 void keyPressedFn(unsigned char key, int x, int y){
 	sv.keyPressedFn(key);
