@@ -1,46 +1,36 @@
 #include "SpikeViewer.h"
 
-static int IDLE_SLEEP_USEC = (1e6)/80;
-int winWidth = 1262;
-int winHeight = 762;
-
-int nCol = 4;
-int nRow = 4;
-
-void *font = GLUT_BITMAP_8_BY_13;
-
-int main( int argc, char** argv )
-{
-
-	initCommandListAndMap();
-	glutInit(&argc,argv);
+SpikeViewer::SpikeViewer(int c, int r, int w, int h, char * ports[]){
+	nRow = r;
+	nCol = c;
+	winWidth = w;
+	winHeight = h;
 	
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB );
-	glutInitWindowPosition( 5, 20);
-	glutInitWindowSize( winWidth, winHeight);
-	glutCreateWindow("Arte Network Spike Viewer");
-
-	glutReshapeFunc( resizeWinFunc );
-	glutIdleFunc( idleFunc );
-	glutDisplayFunc( drawTetrodePlots );
-
-	glutKeyboardFunc(keyPressedFn);
-	glutSpecialFunc(specialKeyFn);
-	glutMouseFunc(mouseClickFn);
+	nPlots = 0;
+	selectedPlot = 0;
+	allOverlay = true;
 	
-	initPlots(nCol,nRow);
-	//for (int i=0; i<nPlots; i++)
-	//	plots[i]->initNetworkRxThread();
-		
-	plots[selectedPlot]->setSelected(true);
-	
-	glClear(GL_COLOR_BUFFER_BIT);
-	glutMainLoop( );
+	cmdStrIdx = 0;
+	cmdWinHeight=22;
+	cmdWinWidth = 100;
 
-	return(0);
+	cmdWinCol[0] = .2;
+	cmdWinCol[1] = .2;
+	cmdWinCol[2] = .2;
+	cmdState = CMD_STATE_QUICK;
+	
+	currentCommand = 0;
+	enteringCommand = false;
+
+	font = GLUT_BITMAP_8_BY_13;
+	
+	initCommandSets();
 }
 
-void initPlots(int nCol, int nRow){
+SpikeViewer::~SpikeViewer(){
+	
+}
+void SpikeViewer::initPlots(){
 	std::cout<<"SpikeViewer.cpp - initPlots()"<<std::endl;
 	nPlots = 0;
 	
@@ -63,10 +53,11 @@ void initPlots(int nCol, int nRow){
 		}
 		
 	cmdWinWidth = plots[nRow*nCol/2 -1 ]->getMaxX();
-		
+	selectedPlot = 0;
+	plots[selectedPlot]->setSelected(true);
 }
 
-void drawTetrodePlots(){
+void SpikeViewer::drawPlot(){
 
 	for (int i=0; i<nPlots; i++)
 	{
@@ -75,31 +66,24 @@ void drawTetrodePlots(){
 	
 	drawCommandString();
 	drawAppTitle();
-	glutSwapBuffers();
-	glFlush();
-}
-void idleFunc(){
-//	std::cout<<"SpikeViewer.cpp - idleFunc()"<<std::endl;
-	drawTetrodePlots();
-	usleep(IDLE_SLEEP_USEC);   
 }
 
-void setViewportForTitle(){
+void SpikeViewer::setViewportForTitle(){
 	glViewport(plots[nCol/2 ]->getMinX(), 2, cmdWinWidth-2, cmdWinHeight-2);
 }
-void drawAppTitle(){
+void SpikeViewer::drawAppTitle(){
 	glColor3f(1.0,1.0,1.0);
 	setViewportForTitle();
-	float xOffset = -1 + 2 * (1 - (9.0 * strlen(app_name) / cmdWinWidth)) - .025;
-	if(xOffset<-.95)
-		xOffset = -.95;
-	drawString(xOffset, -.7, GLUT_BITMAP_9_BY_15, app_name);
+//	float xOffset = -1 + 2 * (1 - (9.0 * strlen(app_name) / cmdWinWidth)) - .025;
+//	if(xOffset<-.95)
+//		xOffset = -.95;
+//	drawString(xOffset, -.7, GLUT_BITMAP_9_BY_15, app_name);
 
 }
-void setViewportForCommandWin(){
+void SpikeViewer::setViewportForCommandWin(){
 	glViewport(0,2,cmdWinWidth,cmdWinHeight-2);	
 }
-void drawCommandString(){
+void SpikeViewer::drawCommandString(){
 	setViewportForCommandWin();
 	// Draw the viewport edge
 	glColor3f(cmdWinCol[0], cmdWinCol[1], cmdWinCol[2]);
@@ -113,9 +97,8 @@ void drawCommandString(){
 	}
 }
 
-void resizeWinFunc(int w, int h){
-	glClear(GL_COLOR_BUFFER_BIT);
-	
+void SpikeViewer::resizePlot(int w, int h){
+
 	winWidth = w;
 	winHeight =h;
 	
@@ -131,19 +114,67 @@ void resizeWinFunc(int w, int h){
 	}
 	
 	cmdWinWidth = plots[nCol/2 - 1]->getMaxX()+2;
-	glClear(GL_COLOR_BUFFER_BIT);
-//	printf("Resizing window to:%dx%d\n", w,h);
 }
 
-void keyPressedFn(unsigned char key, int x, int y){
+void SpikeViewer::scaleUpAll(){
+	for (int i=0; i<nPlots; i++)
+		plots[i]->scaleUp();
+}
+void SpikeViewer::scaleUpSel(){
+	plots[selectedPlot]->scaleUp();
+}
+void SpikeViewer::scaleDownAll(){
+	for (int i=0; i<nPlots; i++)
+		plots[i]->scaleDown();
+}
+void SpikeViewer::scaleDownSel(){
+	plots[selectedPlot]->scaleDown();
+}
+void SpikeViewer::shiftUpAll(){
+	for (int i=0; i<nPlots; i++)
+		plots[i]->shiftUp();
+}
+void SpikeViewer::shiftUpSel(){
+	plots[selectedPlot]->shiftUp();
+}
+void SpikeViewer::shiftDownAll(){
+	for(int i=0; i<nPlots; i++)
+		plots[i]->shiftDown();
+}
+void SpikeViewer::shiftDownSel(){
+	plots[selectedPlot]->shiftDown();
+}
+void SpikeViewer::toggleOverlayAll(){
+	allOverlay = !allOverlay;
+	for (int i=0; i<nPlots; i++)
+		plots[i]->setWaveformOverlay(allOverlay);
+}
+
+void SpikeViewer::toggleOverlaySel(){
+	plots[selectedPlot]->toggleWaveformOverlay();
+}
+void SpikeViewer::clearAll(){
+	for (int i=0; i<nPlots; i++)
+		plots[i]->clearPlot();
+	glClear(GL_COLOR_BUFFER_BIT);
+}
+void SpikeViewer::clearSel(){
+	plots[selectedPlot]->clearPlot();
+}
+void SpikeViewer::showHelp(){
+	printf("Showing help message");
+}
+void SpikeViewer::quit(){
+	exit(1);
+}
+void SpikeViewer::keyPressedFn(unsigned char key){
 	switch(cmdState)
     {
         case CMD_STATE_QUICK:
-            if (quickCmdMap.end() != quickCmdMap.find(key))
-            {
-              std::cout<<"Executing Quick Command:"<<key<<std::endl;
-                quickCmdMap.find(key)->second();
-            }
+		std::cout<<"SpikeViewer::keyPressedFn()"<<std::endl;
+
+            if (quickCmdSet.find(key) != quickCmdSet.end())
+				executeQuickCommand(key);
 
             else if(key == KEY_ENTER)
                 cmdState = CMD_STATE_SLOW;
@@ -167,7 +198,7 @@ void keyPressedFn(unsigned char key, int x, int y){
     }
 }
 
-void specialKeyFn(int key, int x, int y){
+void SpikeViewer::specialKeyFn(int key){
 	std::cout<<"Special Key Pressed:"<<key<<", "<<(char)key<<std::endl;
 	plots[selectedPlot]->setSelected(false);
 	switch(key){
@@ -195,7 +226,8 @@ void specialKeyFn(int key, int x, int y){
 
 	plots[selectedPlot]->setSelected(true);
 }
-void mouseClickFn(int button, int state, int x, int y){
+
+void SpikeViewer::mouseClickFn(int button, int state, int x, int y){
 	printf("Mouse clicked at:%d,%d\n",x,y);
 	for (int i=0; i<nPlots; i++){
 		if(plots[i]->containsPoint(x,winHeight-y))
@@ -207,101 +239,83 @@ void mouseClickFn(int button, int state, int x, int y){
 	}
 }
 
+void SpikeViewer::initCommandSets(){
+    // List of quick one key commands
+	quickCmdSet.insert(CMD_CLEAR_ALL);
+	quickCmdSet.insert(CMD_CLEAR_SEL);
+	quickCmdSet.insert(CMD_SCALE_UP_SEL);
+	quickCmdSet.insert(CMD_SCALE_UP_ALL);
+	quickCmdSet.insert(CMD_SCALE_DOWN_SEL);
+	quickCmdSet.insert(CMD_SCALE_DOWN_ALL);
+	quickCmdSet.insert(CMD_SHIFT_UP_SEL);
+	quickCmdSet.insert(CMD_SHIFT_UP_ALL);
+	quickCmdSet.insert(CMD_SHIFT_DOWN_SEL);
+	quickCmdSet.insert(CMD_SHIFT_DOWN_ALL);
+	quickCmdSet.insert(CMD_OVERLAY_SEL);
+	quickCmdSet.insert(CMD_OVERLAY_ALL);
 
-void scaleUpAll(){
-	for (int i=0; i<nPlots; i++)
-		plots[i]->scaleUp();
+	quickCmdSet.insert(CMD_QUIT);
+	quickCmdSet.insert(CMD_HELP);
 }
-void scaleUpSel(){
-	plots[selectedPlot]->scaleUp();
-}
-void scaleDownAll(){
-	for (int i=0; i<nPlots; i++)
-		plots[i]->scaleDown();
-}
-void scaleDownSel(){
-	plots[selectedPlot]->scaleDown();
-}
-void shiftUpAll(){
-	for (int i=0; i<nPlots; i++)
-		plots[i]->shiftUp();
-}
-void shiftUpSel(){
-	plots[selectedPlot]->shiftUp();
-}
-void shiftDownAll(){
-	for(int i=0; i<nPlots; i++)
-		plots[i]->shiftDown();
-}
-void shiftDownSel(){
-	plots[selectedPlot]->shiftDown();
-}
-void toggleOverlayAll(){
-	allOverlay = !allOverlay;
-	for (int i=0; i<nPlots; i++)
-		plots[i]->setWaveformOverlay(allOverlay);
-}
+void SpikeViewer::executeQuickCommand(unsigned char key){
+	std::cout<<"executing quick command:"<<key<<std::endl;
+	switch(key){
+		case CMD_CLEAR_ALL:
+		clearAll();
+		break;
 
-void toggleOverlaySel(){
-	plots[selectedPlot]->toggleWaveformOverlay();
-}
-void clearAll(){
-	for (int i=0; i<nPlots; i++)
-		plots[i]->clearPlot();
-	glClear(GL_COLOR_BUFFER_BIT);
-}
-void clearSel(){
-	plots[selectedPlot]->clearPlot();
-}
-void showHelp(){
-	printf("Showing help message");
-}
-void quit(){
-	exit(1);
-}
+		case CMD_CLEAR_SEL:
+		clearSel();
+		break;
 
-void initCommandListAndMap(){
-    // List of commands and functions that do not require additional arguments
-	quickCmdMap[CMD_CLEAR_ALL]  = clearAll;
-	quickCmdMap[CMD_CLEAR_SEL]  = clearSel;
-	quickCmdMap[CMD_SCALE_UP_SEL] 	= scaleUpSel;
-	quickCmdMap[CMD_SCALE_UP_ALL] 	= scaleUpAll;
-	quickCmdMap[CMD_SCALE_DOWN_SEL] = scaleDownSel; 
-	quickCmdMap[CMD_SCALE_DOWN_ALL] = scaleDownAll;
-	quickCmdMap[CMD_SHIFT_UP_SEL] 	= shiftUpSel; 
-	quickCmdMap[CMD_SHIFT_UP_ALL] 	= shiftUpAll;
-	quickCmdMap[CMD_SHIFT_DOWN_SEL] = shiftDownSel;
-	quickCmdMap[CMD_SHIFT_DOWN_ALL] = shiftDownAll;
-	quickCmdMap[CMD_OVERLAY_SEL] 	= toggleOverlaySel;
-	quickCmdMap[CMD_OVERLAY_ALL] 	= toggleOverlayAll;
+		case CMD_SCALE_UP_SEL:
+		scaleUpSel();
+		break;
 
-    quickCmdMap[CMD_HELP]       = showHelp;
-//    quickCmdMap[CMD_RESET_SEQ]  = resetSeqNum;
-    quickCmdMap[CMD_QUIT]       = quit;
+		case CMD_SCALE_UP_ALL:
+		scaleUpAll();
+		break;
 
-    // List of commands and functions that _DO_ require additional arguments
-/*
-    slowCmdMap[CMD_GAIN_ALL]    = setGainAll;
-    slowCmdMap[CMD_GAIN_SINGLE] = setGainSingle;
-    slowCmdMap[CMD_THOLD_ALL]   = setTholdAll;
-    slowCmdMap[CMD_THOLD_SINGLE]= setTholdSingle;
-    slowCmdMap[CMD_SET_FRAMERATE]=setFrameRate;
-    slowCmdMap[CMD_SET_PORT]    = setPortNumber;
-    slowCmdMap[CMD_SET_WIN_POSX]= setWindowXPos;
-    slowCmdMap[CMD_SET_WIN_POSY]= setWindowYPos;
-    slowCmdMap[CMD_SET_WIN_W]   = setWindowWidth;
-    slowCmdMap[CMD_SET_WIN_H]   = setWindowHeight;
-	slowCmdMap[CMD_SET_WIN_NAME]= setWindowName;
-	slowCmdMap[CMD_SET_POST_SAMPS] = setNPostSamps;*/
+		case CMD_SCALE_DOWN_SEL:
+		scaleDownSel();
+		break;
 
-    // List of the above commands that the user is allowed to invoke while the 
-    // program is running, the other commands are hidden from the user but 
-    // used on start up.
-/*
-    slowCmdSet.insert(CMD_GAIN_ALL);
-    slowCmdSet.insert(CMD_GAIN_SINGLE);
-    slowCmdSet.insert(CMD_SET_WIN_LEN);
-    slowCmdSet.insert(CMD_SET_FRAMERATE);
-*/
+		case CMD_SCALE_DOWN_ALL:
+		scaleDownAll();
+		break;
+
+		case CMD_SHIFT_UP_ALL:
+		shiftUpAll();
+		break;
+
+		case CMD_SHIFT_UP_SEL:
+		shiftUpSel();
+		break;
+
+		case CMD_SHIFT_DOWN_ALL:
+		shiftDownAll();
+		break;
+		
+		case CMD_SHIFT_DOWN_SEL:
+		shiftDownSel();
+		break;
+		
+		case CMD_OVERLAY_SEL:
+		toggleOverlaySel();
+		break;
+		
+		case CMD_OVERLAY_ALL:
+		toggleOverlayAll();
+		break;
+		
+		case CMD_HELP:
+		showHelp();
+		break;
+		
+		case CMD_QUIT:
+		quit();
+		break;
+		
+	}
 }
 

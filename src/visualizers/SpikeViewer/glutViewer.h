@@ -1,55 +1,37 @@
 #if defined(__linux__)
 	#include <GL/glut.h>
-	#include <GL/gl.h>
-	#include <GL/glu.h>
 #else
 	#include <GLUT/glut.h>
 #endif
-
-#include <stdio.h>
-#include <stdlib.h>
 #include <sstream>
 #include <iostream>
 #include <map>
 #include <set>
 #include <getopt.h>
 #include "TetrodePlot.h"
+#include "PlotUtils.h"
+#include "SpikeViewer.h"
 
-#include <SDL/SDL.h>
-static char app_name[] = "Arte Network Spike Viewer v0.9 - (C) 2011 Stuart Layton, MIT";
+//static char app_name[] = "Arte Network Spike Viewer v0.9 - (C) 2011 Stuart Layton, MIT";
 
-static const int MAX_N_PLOT = 64;
 
-TetrodePlot *plots[MAX_N_PLOT];
+//TetrodePlot *plots[MAX_N_PLOT];
 
-static int nPlots = 0;
-static int selectedPlot = 0;
+//static int nPlots = 0;
+//static int selectedPlot = 0;
 
-static bool allOverlay = true;
+//static bool allOverlay = true;
 
-static int nCol = 4;
-static int nRow = 4;
-
-static int winWidth = 800;
-static int winHeight = 600;
-
-static int SLEEP = 1e6/200;
-void drawTetrodePlots();
+void redraw();
 void idleFunc();
-void resizeWindow(int w, int h);
+void resizeWinFunc(int w, int h);
 void initPlots(int c, int r);
 
-static void initSdl();
-static void quit(int code);
-static void handle_key_down( SDL_keysym* keysym );
-void keyPressedFn(SDLKey k, bool c);
-void specialKeyFn(SDLKey k);
+void keyPressedFn(unsigned char key, int x, int y);
+void specialKeyFn(int key, int x, int y);
 void mouseClickFn(int button, int state, int x, int y);
-static void process_events( void );
-static void draw_screen( void );
-static char parseSdlKey(SDLKey k, bool caps);
 
-
+/*
 // ===================================
 // 		Command Variables
 // ===================================
@@ -69,7 +51,6 @@ void shiftDownAll();
 void shiftDownSel();
 void toggleOverlayAll();
 void toggleOverlaySel();
-void clearWindow();
 void clearAll();
 void clearSel();
 void showHelp();
@@ -121,7 +102,7 @@ static int const CMD_OVERLAY_ALL	= 'O';
 static int const CMD_HELP 		= '?';
 
 // Commands that require CTRL + KEY
-static int const CMD_QUIT = 'Q';
+static int const CMD_QUIT = 17;
 static int const CMD_RESET_SEQ = 18;
 
 // Commands that require an input string
@@ -163,5 +144,4 @@ static struct option long_options[] =
 	{0, 0, 0, 0}
 };
 
-void parseCommandLineArgs(int argc, char**argv);
-
+void parseCommandLineArgs(int argc, char**argv);*/

@@ -1,19 +1,25 @@
 #include "SDLViewer.h"
 
+int bpp = 0;
+int flags = 0;
+
 int main( int argc, char* argv[] )
 {
-	nCol = 4;
-	nRow = 2;
+	nCol = 3;
+	nRow = 4;
 
 	winWidth = 800;
 	winHeight = 600;
 	
 
 	initSdl();
+	initCommandListAndMap();
 	initPlots(nCol,nRow);
 		
 	plots[selectedPlot]->setSelected(true);
 
+	
+	clearWindow();
     while( 1 ) {
         process_events( );
         draw_screen( );
@@ -23,12 +29,11 @@ int main( int argc, char* argv[] )
     return 0;
 }
 
-
 static void initSdl(){
 // SDL Setup Vars
     const SDL_VideoInfo* info = NULL;  
-    int bpp = 0;
-    int flags = 0;
+    
+
 
 	//Initialiaze SDL Video subsystem, quit if it fails
     if( SDL_Init( SDL_INIT_VIDEO ) < 0 ) {
@@ -51,7 +56,7 @@ static void initSdl(){
     SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
     SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 
-    flags = SDL_OPENGL;
+    flags = SDL_OPENGL | SDL_RESIZABLE;
 
     if( SDL_SetVideoMode( winWidth, winHeight, bpp, flags ) == 0 ) {
   	fprintf( stderr, "Video mode set failed: %s\n",
@@ -65,26 +70,17 @@ static void quit( int code )
     exit( code );
 }
 
-static void handle_key_down( SDL_keysym* keysym )
-{
-	keyPressedFn(keysym->sym);
-
-    switch( keysym->sym ) {
-    case SDLK_ESCAPE:
-        quit( 0 );
-        break;
-    default:
-        break;
-    }
-}
-
 static void process_events( void )
 {
     /* Our SDL event placeholder. */
     SDL_Event event;
 	
+	SDLKey key;
+	char *c;
+	unsigned char d;
+	bool caps;
+	
     /* Grab all the events off the queue. */
-	SDL_keysym k;
     while( SDL_PollEvent( &event ) ) {
 
         switch( event.type ) {
@@ -93,22 +89,23 @@ static void process_events( void )
 			break;        
 
 		case SDL_KEYDOWN:
-            /* Handle key presses. */
-		 	printf("\n------------------------\nThe %s key was pressed!\n",  SDL_GetKeyName(event.key.keysym.sym));
-//            handle_key_down( &event.key.keysym );
-			k = event.key.keysym;
-			printf("KeySym mod:%d", k.mod);
-            break;
+		key = event.key.keysym.sym;
+		caps = event.key.keysym.mod & (KMOD_SHIFT | KMOD_CAPS);
+		keyPressedFn(key, caps);
+		specialKeyFn(key);
+        break;		
+
+		case SDL_VIDEORESIZE:
+		std::cout<<"Resizing!"<<std::endl;
+		resizeWindow( event.resize.w, event.resize.h);
+		break;
 		
         case SDL_QUIT:
             /* Handle quit requests (like Ctrl-c). */
             quit( 0 );
             break;
         }
-		printf("Polling for events\n");
-    }
-	printf("Processing events\n");
-	
+    }	
 }
 
 static void draw_screen( void )
@@ -185,10 +182,8 @@ void drawCommandString(){
 	
 	}
 }
-/*
-void resizeWinFunc(int w, int h){
-	glClear(GL_COLOR_BUFFER_BIT);
-	
+
+void resizeWindow(int w, int h){	
 	winWidth = w;
 	winHeight =h;
 	
@@ -204,15 +199,49 @@ void resizeWinFunc(int w, int h){
 	}
 	
 	cmdWinWidth = plots[nCol/2 - 1]->getMaxX()+2;
-	glClear(GL_COLOR_BUFFER_BIT);
+
+ 	if( SDL_SetVideoMode( winWidth, winHeight, bpp, flags ) == 0 ) {
+  	fprintf( stderr, "Resize failed: Video mode set failed: %s\n",
+             SDL_GetError( ) );
+        quit( 1 );
+    }
+	clearWindow();
 //	printf("Resizing window to:%dx%d\n", w,h);
 }
-*/
+static char parseSdlKey(SDLKey k, bool caps){
 
-void keyPressedFn(int key){
+	char *name = SDL_GetKeyName(k);
+	if (strlen(name)>1)
+	{
+		std::cout<<"Got key:"<<name<<std::endl;
+		return 0;
+	}
+	char c = *name;
+	
+	if (c>=97 & c<=122 & caps)
+		return c - 32;
+	else if (c=='[' & caps)
+		return '{';
+	else if (c==']' & caps)
+		return '}';
+	else if (c=='-' & caps)
+		return '_';
+	else if (c=='=' & caps)
+		return '+';
+	else 
+		return c;
+}
+
+
+void keyPressedFn(SDLKey k, bool caps){
+	
+	char key = parseSdlKey(k,caps);
+	
+	std::cout<<"KeyPressedFn got:"<<key<<std::endl;
 	switch(cmdState)
     {
         case CMD_STATE_QUICK:
+
             if (quickCmdMap.end() != quickCmdMap.find(key))
             {
               std::cout<<"Executing Quick Command:"<<key<<std::endl;
@@ -241,27 +270,27 @@ void keyPressedFn(int key){
     }
 }
 
-/*
-void specialKeyFn(int key, int x, int y){
-	std::cout<<"Special Key Pressed:"<<key<<", "<<(char)key<<std::endl;
+
+void specialKeyFn(SDLKey key){
+
 	plots[selectedPlot]->setSelected(false);
 	switch(key){
-		case GLUT_KEY_LEFT:
+		case SDLK_LEFT:
 			selectedPlot--;
 			if (selectedPlot<0 || selectedPlot%nCol == nCol-1)
 				selectedPlot+=nCol;
 			break;
-		case GLUT_KEY_RIGHT:
+		case SDLK_RIGHT:
 			selectedPlot++;
 			if (selectedPlot%nCol==0)
 				selectedPlot-=nCol;
 			break;
-		case GLUT_KEY_UP:
+		case SDLK_UP:
 			selectedPlot-=nCol;
 			if(selectedPlot<0)
 				selectedPlot+= nPlots;
 			break;
-		case GLUT_KEY_DOWN:
+		case SDLK_DOWN:
 			selectedPlot+=nCol;
 			if(selectedPlot>=nPlots)
 				selectedPlot-=nPlots;
@@ -270,7 +299,7 @@ void specialKeyFn(int key, int x, int y){
 
 	plots[selectedPlot]->setSelected(true);
 }
-*/
+
 /*
 void mouseClickFn(int button, int state, int x, int y){
 	printf("Mouse clicked at:%d,%d\n",x,y);
@@ -325,7 +354,13 @@ void toggleOverlaySel(){
 void clearAll(){
 	for (int i=0; i<nPlots; i++)
 		plots[i]->clearPlot();
-	glClear(GL_COLOR_BUFFER_BIT);
+	clearWindow();
+}
+void clearWindow(){
+	 	glClearColor (0.0,0.0,0.0,1.0);
+		glClear(GL_COLOR_BUFFER_BIT);
+		SDL_GL_SwapBuffers( );
+		glClear(GL_COLOR_BUFFER_BIT);
 }
 void clearSel(){
 	plots[selectedPlot]->clearPlot();
