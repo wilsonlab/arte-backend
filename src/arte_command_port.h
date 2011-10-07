@@ -64,6 +64,9 @@ class Arte_command_port{
   ArteCommand command_queue_pop();      // Retrieve oldest command
                                         // and delete it from queue
 
+  void  set_zmq_context_ptr(void*);
+  void* get_zmq_context_ptr();
+
   void Testfire_callback();             // Call the callback fn, if you want
                                         // to make sure it's properly wired
                                         // up.
@@ -159,6 +162,12 @@ class Arte_command_port{
   bool is_master;
   std::string primary_port;
   std::string secondary_port;
+
+  // set this to true if client passed in a
+  // zmq::context_t.  In this case, don't mess
+  // with the context when we close; presumably
+  // the client will do this
+  bool _external_context;
 
   boost::property_tree::ptree *my_pt;
   std::string pt_fn;

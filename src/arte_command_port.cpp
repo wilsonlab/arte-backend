@@ -85,6 +85,7 @@ void Arte_command_port::basic_init()
   callback_fn = NULL;
   callback_arg = NULL;
   _auto_start = false;
+  _external_context = false;
 }
 
 
@@ -119,6 +120,25 @@ void Arte_command_port::set_callback_fn( CALLBACK_FN cb_fn, void *arg )
   callback_arg = arg;
 }
 
+//****** zmq::context_t setter/getter - useful if client uses **/
+//**** zmq anywhere else in the process ************************/
+void Arte_command_port::set_zmq_context_ptr(void* zc)
+{
+  if(zc == 0){
+    printf("Client passed a void pointer as zmq::context.\n");
+  } else {
+    my_zmq_context = (zmq::context_t *)zc;
+    _external_context = true;
+  }
+}
+void * Arte_command_port::get_zmq_context_ptr()
+{
+  if(my_zmq_context == 0){
+    printf("Client requested our zmq::context, but we don't have one.\n");
+    printf("Returning NULL\n");
+  }
+  return (void *)my_zmq_context;
+}
 
 //*** Initialize publisher socket and thread for ******/
 //*** listening to subscriber socket ******************/
@@ -129,7 +149,8 @@ int Arte_command_port::start()
     return 1;
   }
 
-  my_zmq_context = new zmq::context_t(1);
+  if(my_zmq_context == NULL)
+    my_zmq_context = new zmq::context_t(1);
 
   if(my_zmq_context == NULL){
     printf("zmq error creating context\n");
@@ -156,10 +177,15 @@ int Arte_command_port::start()
 
 }
 
-
+//**** stop listening for messages - this lets us drop out of ***/
+//***  the listener_thread                                    ***/
 int Arte_command_port::stop()
 {
   running = false;
+
+  if(_external_context == false)
+    delete my_zmq_context;
+
 }
 
 //*********** Publish an ArteCommand to the network *************/

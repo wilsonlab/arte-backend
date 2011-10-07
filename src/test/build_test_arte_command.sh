@@ -1,1 +1,1 @@
-g++ test_arte_command_port.cpp ../arte_command_port.cpp ../arte_command.pb.cc -I ../ -lprotobuf -I /usr/local/boost_1_45_0 -lzmq -ggdb -o test_arte_command_port
+g++ test_arte_command_port.cpp ../arte_command_port.cpp ../arte_command.pb.cc  -I ../ -lprotobuf -I /usr/local/boost_1_45_0 -lzmq -ggdb -o test_arte_command_port
