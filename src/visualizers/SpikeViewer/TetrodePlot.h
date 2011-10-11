@@ -45,7 +45,6 @@ class TetrodePlot{
 
 	double xBox, yBox;	
 
-
 	double waveformLineWidth;
 	bool disableWaveOverlay;
 	
@@ -102,6 +101,16 @@ class TetrodePlot{
 	int readIdx;
 	int writeIdx;
 	uint32_t curSeqNum;
+	
+	static const int MAX_N_PROJ_POINTS = 100000;
+	int nProjPoints;
+
+	GLint projAB[2][MAX_N_PROJ_POINTS];
+//	GLint projAX[2][MAX_N_PROJ_POINTS];
+//	GLint projAY[2][MAX_N_PROJ_POINTS];
+//	GLint projBX[2][MAX_N_PROJ_POINTS];
+//	GLint projBY[2][MAX_N_PROJ_POINTS];	
+//	GLint projXY[2][MAX_N_PROJ_POINTS];
 
 	// ===================================
 	// 		Spike Waveform specific plotting variables

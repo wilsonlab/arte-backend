@@ -4,8 +4,8 @@ static int IDLE_SLEEP_USEC = (1e6)/80;
 int winWidth = 1262;
 int winHeight = 762;
 
-int nCol = 4;
-int nRow = 4;
+int nCol = 3;
+int nRow = 2;
 
 void *font = GLUT_BITMAP_8_BY_13;
 SpikeViewer sv = SpikeViewer(nCol, nRow, winWidth, winHeight, NULL);
