@@ -14,19 +14,103 @@
 
 #include "shaderutils.h"
 
+
 static const int nChan = 4;
 static const int MAX_N_POINT = 4e5;
 
 GLint data[MAX_N_POINT][nChan]; // XYZW
 
 
+GLuint VertexVBOID;
+GLuint IndexVBOID;
 GLuint axesShader;
 GLuint shaderProg;
 
-struct ClusterVertex{
-	int x, y, z, w;
+GLuint geometry_array = 0;
+GLuint indice_array = 0;
+
+GLfloat *geometry;
+GLuint *indices;
+
+
+
+void checkGlError(){
+	GLenum errCode;
+	const GLubyte *errString;
+	if ((errCode = glGetError()) != GL_NO_ERROR) {
+	    errString = gluErrorString(errCode);
+	   fprintf (stderr, "OpenGL Error: %s\n", errString);
+	}
+//	else
+//		std::cout<<"Okay!"<<std::endl;
+}
+struct SpikeVertex{
+	GLint x, y, z, w;
 };
 
+SpikeVertex pvertex[MAX_N_POINT];
+
+void initVBO(){
+	// Initialize
+	
+
+	SpikeVertex baseData[MAX_N_POINT];
+	GLuint indices[MAX_N_POINT];
+
+	std::cout<<"Created starting data structures, they are:"<< sizeof(SpikeVertex) * MAX_N_POINT / 1024 <<" Kilobytes"<<std::endl;
+	std::cout<<std::flush;
+	
+	for (int i=0; i<MAX_N_POINT; i++){
+		baseData[i].x = rand()%200;
+		baseData[i].y = rand()%200+200;
+		baseData[i].z = rand()%200+400;
+		baseData[i].w = rand()%200+600;
+		indices[i] = i;
+	}
+	/* Fill geometry: 0, 1, 2 = vertex_xyz 
+	 *                3, 4, 5 = normal_xyz
+	 *                6, 7 = tex_coord_uv
+	 */
+
+	glGenBuffers(1, &geometry_array);
+	glBindBuffer(GL_ARRAY_BUFFER, geometry_array);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(SpikeVertex)*MAX_N_POINT, baseData, GL_DYNAMIC_DRAW);
+	// glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat)*MAX_N_POINT, baseData);
+
+	glGenBuffers(1, &indice_array);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indice_array);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*MAX_N_POINT, indices, GL_STATIC_DRAW);
+//	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLuint)*MAX_N_POINT, indices);
+
+}
+void drawVBO(){
+//	std::cout<<"Drawing VBO!"<<std::endl;
+	//Render
+	// Step 1
+	glBindBuffer(GL_ARRAY_BUFFER, geometry_array);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indice_array);
+
+	// Step 2
+//	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+//	glEnableClientState(GL_NORMAL_ARRAY);
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	// Step 3
+//	glTexCoordPointer(3, GL_FLOAT, sizeof(GLfloat)*8, (float*)(sizeof(GLfloat)*5));
+//	glNormalPointer(GL_FLOAT, sizeof(GLfloat)*8, (float*)(sizeof(GLfloat)*3));
+	glVertexPointer(4, GL_INT, sizeof(SpikeVertex), NULL);
+
+	// Step 4
+	glDrawElements(GL_POINTS, MAX_N_POINT, GL_UNSIGNED_INT, NULL);
+
+	// Step 5
+	glDisableClientState(GL_VERTEX_ARRAY);
+//	glDisableClientState(GL_NORMAL_ARRAY);
+//	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+}
+void destroyVBO(){
+	
+}
 void setColor(int i){
 	switch(i){
 		case 0:
@@ -51,49 +135,12 @@ void setColor(int i){
 			glColor3f(1.0, 1.0, 1.0);
 	}
 }
-inline int getDimIdx(int dim, int arrayN){
-	if (arrayN==0)
-		return dim;
-	else
-		if(dim==0)
-			return 2;
-		if(dim==1)
-			return 0;
-		if(dim==2)
-			return 3;
-		if(dim==3)
-			return 1;
-		return -1;
-}
-void checkGlError(){
-	GLenum errCode;
-	const GLubyte *errString;
-	if ((errCode = glGetError()) != GL_NO_ERROR) {
-	    errString = gluErrorString(errCode);
-	   fprintf (stderr, "OpenGL Error: %s\n", errString);
-	}
-}
-void initPoints()
-{
-	for (int j=0; j<MAX_N_POINT; j++)
-	{		
-		data[j][getDimIdx(0,0)] = 000 + rand()%200;
-		data[j][getDimIdx(1,0)] = 200 + rand()%200;
-		data[j][getDimIdx(2,0)] = 400 + rand()%200;
-		data[j][getDimIdx(3,0)] = 600 + rand()%200; //val;
-	}
-}
+
+
 void drawPoints(){
 
-	int idx = 0;
-	int nPlot = 100;
 
-	
 
-	glColor3f(1.0, 1.0, 0.0);
-
-	glVertexPointer(4, GL_INT, 4*sizeof(GLint), &data[0][0]);
-	
 	//New shader code here
 	for (int i=0; i<6; i++){
 		setColor(i);
@@ -101,37 +148,13 @@ void drawPoints(){
 		int plotAxes = i;
 		GLint axes = glGetUniformLocation(shaderProg, "axes"); 
 	  	glUniform1i(axes, plotAxes);
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glDrawArrays(GL_POINTS, 0, MAX_N_POINT-1);
-		glDisableClientState(GL_VERTEX_ARRAY);	
+	
+		drawVBO();
 		glUseProgram(0);
 	}
 	
-	/*
-
-	glColor3f(0.0, 1.0, 1.0);
-	glVertexPointer(2, GL_INT, 4*sizeof(GLint), &data1[0][1]);
-	glDrawArrays(GL_POINTS, 0, MAX_N_POINT-1);
-	
-	glColor3f(1.0, 0.0, 1.0);
-	glVertexPointer(2, GL_INT, 4*sizeof(GLint), &data1[0][2]);
-	glDrawArrays(GL_POINTS, 0, MAX_N_POINT-1);
-
-	glColor3f(1.0, 0.0, 0.0);
-	glVertexPointer(2, GL_INT, 4*sizeof(GLint), &data2[0][0]);
-	glDrawArrays(GL_POINTS, 0, MAX_N_POINT-1);
-	
-	glColor3f(0.0, 1.0, 0.0);
-	glVertexPointer(2, GL_INT, 4*sizeof(GLint), &data2[0][1]);
-	glDrawArrays(GL_POINTS, 0, MAX_N_POINT-1);
-	
-	glColor3f(0.0, 0.0, 1.0);
-	glVertexPointer(2, GL_INT, 4*sizeof(GLint), &data2[0][2]);
-	glDrawArrays(GL_POINTS, 0, MAX_N_POINT-1);
-
-	*/
-
 }
+
 void draw(){
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -221,17 +244,16 @@ void initShader(){
 	
 	std::cout<<"Creating glProgram"<<std::endl;
 	shaderProg = glCreateProgram();
-	std::cout<<"\t created with handle:"<<shaderProg<<std::endl;
 	checkGlError();
 	
-	std::cout<<"\tAttaching Shader"<<std::endl;
+	std::cout<<"Attaching Shader"<<std::endl;
 	glAttachShader(shaderProg, axesShader);
 	checkGlError();
 	
 	std::cout<<"Linking Shader Program"<<std::endl;
 	glLinkProgram(shaderProg);
 	checkGlError();
-	std::cout<<"DONE!"<<std::endl;
+	std::cout<<"DONE!\n"<<std::endl;
 	
 }
 int main(int argc, char* argv[]){
@@ -245,7 +267,7 @@ int main(int argc, char* argv[]){
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB );
 	glutInitWindowPosition( 5, 20);
 	glutInitWindowSize(300, 300);
-	glutCreateWindow("OpenGL Swizzle Test on 4D Points");
+	glutCreateWindow("OpenGL VBO Test using Swizzling 4D Points");
 
 	glutReshapeFunc( resize );
 	glutIdleFunc( idle );
@@ -260,30 +282,9 @@ int main(int argc, char* argv[]){
 		printf("Not totally ready   \n");
 		exit(1);
 	}
-	initPoints();
+	initVBO();
 	initShader();
 	glutMainLoop( );
 
 	return(0);
-}
-
-/* A simple function that will read a file into an allocated char pointer buffer */
-char* filetobuf(char *file)
-{
-    FILE *fptr;
-    long length;
-    char *buf;
- 
-    fptr = fopen(file, "rb"); /* Open file for reading */
-    if (!fptr) /* Return NULL on failure */
-        return NULL;
-    fseek(fptr, 0, SEEK_END); /* Seek to the end of the file */
-    length = ftell(fptr); /* Find out how many bytes into the file we are */
-    buf = (char*)malloc(length+1); /* Allocate a buffer for the entire length of the file and a null terminator */
-    fseek(fptr, 0, SEEK_SET); /* Go back to the beginning of the file */
-    fread(buf, length, 1, fptr); /* Read the contents of the file in to the buffer */
-    fclose(fptr); /* Close the file */
-    buf[length] = 0; /* Null terminator */
- 
-    return buf; /* Return the buffer */
 }
