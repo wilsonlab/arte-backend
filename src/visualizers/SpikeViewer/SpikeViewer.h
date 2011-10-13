@@ -4,6 +4,7 @@
 	#include <GLUT/glut.h>
 #endif
 #include <sstream>
+#include <fstream>
 #include <iostream>
 #include <map>
 #include <set>
@@ -84,8 +85,11 @@ private:
 
 	std::set<int> quickCmdSet;
 	int cmdState;	
+	
+	void loadAndCompileShader();
+	bool loadShaderSource(const std::string& filename, std::string& out);
 
-
+	GLuint shaderProg;
 
  	int currentCommand;
 	bool enteringCommand;

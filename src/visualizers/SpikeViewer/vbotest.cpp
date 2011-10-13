@@ -19,6 +19,7 @@ static const int nChan = 4;
 static const int MAX_N_POINT = 4e5;
 
 GLint data[MAX_N_POINT][nChan]; // XYZW
+int nPoints = 0;
 
 
 GLuint VertexVBOID;
@@ -53,7 +54,6 @@ SpikeVertex pvertex[MAX_N_POINT];
 void initVBO(){
 	// Initialize
 	
-
 	SpikeVertex baseData[MAX_N_POINT];
 	GLuint indices[MAX_N_POINT];
 
@@ -61,10 +61,10 @@ void initVBO(){
 	std::cout<<std::flush;
 	
 	for (int i=0; i<MAX_N_POINT; i++){
-		baseData[i].x = rand()%200;
-		baseData[i].y = rand()%200+200;
-		baseData[i].z = rand()%200+400;
-		baseData[i].w = rand()%200+600;
+		baseData[i].x = 0;//rand()%200;
+		baseData[i].y = 0;//rand()%200+200;
+		baseData[i].z = 0;//rand()%200+400;
+		baseData[i].w = 0;//rand()%200+600;
 		indices[i] = i;
 	}
 	/* Fill geometry: 0, 1, 2 = vertex_xyz 
@@ -83,30 +83,41 @@ void initVBO(){
 //	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLuint)*MAX_N_POINT, indices);
 
 }
+void updateVBO(){
+	glBindBuffer(GL_ARRAY_BUFFER, geometry_array);
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	const int MAX_N_NEW = 4;
+	SpikeVertex newData[MAX_N_NEW] = {0};
+	int nNewPoints = rand()%(MAX_N_NEW-1)+1;
+	if (nNewPoints + nPoints > MAX_N_POINT)
+		nNewPoints = MAX_N_POINT - nPoints;
+		
+	for (int i=0; i<nNewPoints; i++){
+		newData[i].x = rand()%250;
+		newData[i].y = rand()%250 + 250;
+		newData[i].z = rand()%250 + 500;
+		newData[i].w = rand()%250 + 750;
+	}
+	glBufferSubData(GL_ARRAY_BUFFER, nPoints*sizeof(SpikeVertex), nNewPoints*sizeof(SpikeVertex), newData);
+//	std::cout<<"nPoints:"<<nPoints<<" nNewPoints:"<<nNewPoints<<std::endl;
+	nPoints+=nNewPoints;
+	glDisableClientState(GL_VERTEX_ARRAY);
+
+}
 void drawVBO(){
-//	std::cout<<"Drawing VBO!"<<std::endl;
-	//Render
-	// Step 1
+	updateVBO();
+
 	glBindBuffer(GL_ARRAY_BUFFER, geometry_array);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indice_array);
 
-	// Step 2
-//	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-//	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_VERTEX_ARRAY);
 
-	// Step 3
-//	glTexCoordPointer(3, GL_FLOAT, sizeof(GLfloat)*8, (float*)(sizeof(GLfloat)*5));
-//	glNormalPointer(GL_FLOAT, sizeof(GLfloat)*8, (float*)(sizeof(GLfloat)*3));
 	glVertexPointer(4, GL_INT, sizeof(SpikeVertex), NULL);
 
-	// Step 4
-	glDrawElements(GL_POINTS, MAX_N_POINT, GL_UNSIGNED_INT, NULL);
+	glDrawElements(GL_POINTS, nPoints, GL_UNSIGNED_INT, NULL);
 
-	// Step 5
 	glDisableClientState(GL_VERTEX_ARRAY);
-//	glDisableClientState(GL_NORMAL_ARRAY);
-//	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 void destroyVBO(){
 	
@@ -178,25 +189,21 @@ void draw(){
 		glVertex2i(1000,1);
 	glEnd();
 	glBegin(GL_LINE_STRIP);
-		glVertex2i(  -1,200);
-		glVertex2i(1001,200);
-		glVertex2i(1001,400);
-		glVertex2i(  -1,400);
-		glVertex2i(  -1,600);
-		glVertex2i(1001,600);
-		glVertex2i(1001,800);
-		glVertex2i(  -1,800);
+		glVertex2i(  -1,250);
+		glVertex2i(1001,250);
+		glVertex2i(1001,500);
+		glVertex2i(  -1,500);
+		glVertex2i(  -1,750);
+		glVertex2i(1001,750);
 	glEnd();
 	
 	glBegin(GL_LINE_STRIP);
-		glVertex2i(200,  -1);
-		glVertex2i(200,1001);
-		glVertex2i(400,1001);
-		glVertex2i(400,  -1);
-		glVertex2i(600,  -1);
-		glVertex2i(600,1001);
-		glVertex2i(800,1001);
-		glVertex2i(800,  -1);
+		glVertex2i(250,  -1);
+		glVertex2i(250,1001);
+		glVertex2i(500,1001);
+		glVertex2i(500,  -1);
+		glVertex2i(750,  -1);
+		glVertex2i(750,1001);
 	glEnd();
 	
 	glutSwapBuffers();
@@ -256,6 +263,9 @@ void initShader(){
 	std::cout<<"DONE!\n"<<std::endl;
 	
 }
+void keyPressedFn(unsigned char key, int x, int y){
+	nPoints = 0;
+}
 int main(int argc, char* argv[]){
 	
 	srand ( time(NULL) );
@@ -272,6 +282,8 @@ int main(int argc, char* argv[]){
 	glutReshapeFunc( resize );
 	glutIdleFunc( idle );
 	glutDisplayFunc( draw );
+	glutKeyboardFunc(keyPressedFn);
+	
 	glClearColor(0.0,0.0,0.0,0.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	

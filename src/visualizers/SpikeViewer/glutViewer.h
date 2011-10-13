@@ -1,7 +1,12 @@
+#define GL_GLEXT_PROTOTYPES
+#include <glew.h> // Include the GLEW header file
+
 #if defined(__linux__)
 	#include <GL/glut.h>
 #else
 	#include <GLUT/glut.h>
+	#include <OpenGL/glu.h>
+	#include <OpenGL/glext.h>
 #endif
 #include <sstream>
 #include <iostream>

@@ -47,17 +47,22 @@ TetrodePlot::TetrodePlot(int x, int y, int w, int h, char *p){
 	titleFont = GLUT_BITMAP_8_BY_13;
 //	bzero(&spikeBuff, sizeof(spikeBuff));
 //	spikeBuff = new spike_net_t[MAX_SPIKE_BUFF_SIZE];
+	
 	nSpikes = 0;
 	readIdx = 0;
 	writeIdx = 0;
 	curSeqNum = 0;
 	totalSpikesRead = 0;
 	
-	isSelected = false;
+	nProjPoints=0;
+	newIdx=0;
 	
+	isSelected = false;
+	newSpike = false;
 	tetrodeNumber=-1;
 	
 	initColors();
+	initVBO();
 	
 }
 
@@ -86,6 +91,35 @@ void TetrodePlot::initColors(){
 	colTitleSelected[1] = 0.5; 
 	colTitleSelected[2] = 0.15;
 }
+void TetrodePlot::initVBO(){
+		
+		SpikeVertex baseData[MAX_N_PROJ_POINTS];
+		GLuint indices[MAX_N_PROJ_POINTS];
+		countInVBO = 0;
+		
+		std::cout<<"Created starting data structures, they are:"<< sizeof(SpikeVertex) * MAX_N_PROJ_POINTS / 1024 <<" Kilobytes"<<std::endl;
+		std::cout<<std::flush;
+
+		for (int i=0; i<MAX_N_PROJ_POINTS; i++){
+			baseData[i].x = 0;//rand()%200;
+			baseData[i].y = 0;//rand()%200+200;
+			baseData[i].z = 0;//rand()%200+400;
+			baseData[i].w = 0;//rand()%200+600;
+			indices[i] = i;
+		}
+
+		glGenBuffers(1, &VertexVBOID);
+		glBindBuffer(GL_ARRAY_BUFFER, VertexVBOID);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(SpikeVertex)*MAX_N_PROJ_POINTS, baseData, GL_DYNAMIC_DRAW);
+		// glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat)*MAX_N_POINT, baseData);
+
+		glGenBuffers(1, &IndexVBOID);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndexVBOID);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*MAX_N_PROJ_POINTS, indices, GL_STATIC_DRAW);
+	//	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLuint)*MAX_N_POINT, indices);
+//		glBindBuffer(1,0);
+	
+}
 void TetrodePlot::resizePlot(int w, int h)
 {
 	plotWidth = w - padLeft - padRight;
@@ -103,15 +137,27 @@ void TetrodePlot::draw()
 		eraseWaveforms();
 		
 	highlightSelectedWaveform();
-
 	// Get the new spikes in the queue and plot them
 	do{
 		drawWaveforms();
 		drawProjections();
-	}while(tryToGetSpikeForPlotting(&spike));
+		if (newSpike)
+			addSpikeToVBO();
+	}while(newSpike = tryToGetSpikeForPlotting(&spike));
 	
 	drawTitle();
 	drawBoundingBoxes();
+}
+void TetrodePlot::addSpikeToVBO(){
+
+	countInVBO++;
+	SpikeVertex *newSpike = &sv;
+	int newIdx = countInVBO % MAX_N_PROJ_POINTS;
+
+	glBindBuffer(GL_ARRAY_BUFFER, VertexVBOID);
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glBufferSubData(GL_ARRAY_BUFFER, newIdx*sizeof(SpikeVertex), sizeof(SpikeVertex), newSpike);
+	glDisableClientState(GL_VERTEX_ARRAY);
 }
 void TetrodePlot::highlightSelectedWaveform(){
 //	setViewportForWaveN(selectedWaveform);
@@ -167,52 +213,89 @@ void TetrodePlot::drawProjections(){
 
 	maxIdx = maxIdx  - maxIdx%4;  
 
-	for (int i=0; i<nProj; i++) // <----------------------------------------
-		drawProjectionN(i, maxIdx);
+	sv.x = spike.data[maxIdx];
+	sv.y = spike.data[maxIdx+1];
+	sv.z = spike.data[maxIdx+2];
+	sv.w = spike.data[maxIdx+3];
+	
+	for (int i=0; i<nProj; i++)
+		drawProjectionN(i);
+	
 	clearProjectionNextPlot = false;
 }
 
 
-void TetrodePlot::drawProjectionN(int n, int idx){
+void TetrodePlot::drawProjectionN(int n){
 
 	setViewportForProjectionN(n);
 
 	int d1, d2;
 	if (n==0){
-		d1 = 0;
-		d2 = 1;
+		d1 = sv.x;
+		d2 = sv.y;
 	}
 	else if(n==1){
-		d1 = 0;
-		d2 = 2;
+		d1 = sv.x;
+		d2 = sv.z;
 	}
 	else if(n==2){
-		d1 = 0;
-		d2 = 3;
+		d1 = sv.x;
+		d2 = sv.w;
 	}
 	else if(n==3){
-		d1 = 1;
-		d2 = 2;
+		d1 = sv.y;
+		d2 = sv.z;
 	}
 	else if(n==4){
-		d1 = 1;
-		d2 = 3;
+		d1 = sv.y;
+		d2 = sv.w;
 	}
 	else if (n==5){
-		d1 = 2;
-		d2 = 3;
+		d1 = sv.z;
+		d2 = sv.w;
 	}
 	else{
-		d1 = 0;
-		d2 = 1;
+		d1 = sv.x;
+		d2 = sv.y;
 		std::cout<<"Invalid projection combination selected, please restrict value to 0:5"<<std::endl;
 	}
 
-	glColor3f( 1.0, 1.0, 1.0 );
-	glBegin(GL_POINTS);
-		glVertex2f(scaleVoltage(spike.data[idx+d1], false), scaleVoltage(spike.data[idx+d2], false));
-		//glVertex2f(0,0);
-	glEnd();
+	glColor3f( 1.0, 1.0, 1.0);
+	drawProjectionVBO(n);
+
+	if (newSpike){
+		glColor3f( 1.0, 1.0, 0.0 );
+		glPointSize(1);
+		glBegin(GL_POINTS);
+			glVertex2f(scaleVoltage(d1, false), scaleVoltage(d2, false));
+			//glVertex2f(0,0);
+		glEnd();
+		glPointSize(1);
+	}
+}
+
+void TetrodePlot::drawProjectionVBO(int plotAxes){
+
+
+
+	int nPlot = (countInVBO > MAX_N_PROJ_POINTS) ? MAX_N_PROJ_POINTS:countInVBO;
+//	std::cout<<"Plotting nSpikes:"<<nSpikes<< " nPoints:"<<nPlot<<std::endl;
+//	glUseProgram(shaderProg);	// Apply the shader program
+
+	GLint axes = glGetUniformLocation(shaderProg, "axes"); 
+  	glUniform1i(axes, plotAxes);
+	// Draw the VBO
+
+	glBindBuffer(GL_ARRAY_BUFFER, VertexVBOID);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndexVBOID);
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glVertexPointer(4, GL_INT, sizeof(SpikeVertex), NULL);
+	glDrawElements(GL_POINTS, nPlot, GL_UNSIGNED_INT, NULL);
+	glDisableClientState(GL_VERTEX_ARRAY);
+
+
+//	glUseProgram(0);	//Disable the shader program
+
 }
 void TetrodePlot::drawTitle(){
 	setViewportForTitleBox();
@@ -525,6 +608,7 @@ void TetrodePlot::clearPlot(){
 		glColor3f(0,0,0);
 		glRecti(-1,-1,2,2);
 	}
+	countInVBO=0;
 		
 //	clearProjectionNextPlot = true;
 }
@@ -546,4 +630,7 @@ int TetrodePlot::getMinX(){
 	return xPos;
 }
 	
+void TetrodePlot::setShaderProgram(GLuint p){
+	shaderProg = p;
+}
 

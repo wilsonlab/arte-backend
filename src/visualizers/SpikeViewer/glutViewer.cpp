@@ -12,6 +12,7 @@ SpikeViewer sv = SpikeViewer(nCol, nRow, winWidth, winHeight, NULL);
 
 int main( int argc, char** argv )
 {
+
 	glutInit(&argc,argv);
 	
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB );
@@ -26,7 +27,16 @@ int main( int argc, char** argv )
 	glutKeyboardFunc(keyPressedFn);
 	glutSpecialFunc(specialKeyFn);
 	glutMouseFunc(mouseClickFn);
+
+	glewInit();
+	if (GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader)
+		printf("Ready for GLSL\n");
+	else {
+		printf("Not totally ready   \n");
+		exit(1);
+	}
 	
+	exit(1);
 	sv.initPlots();
 			
 	glClear(GL_COLOR_BUFFER_BIT);

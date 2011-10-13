@@ -25,6 +25,7 @@
 #include "netcom.h"
 #include "datapacket.h"
 #include "PlotUtils.h"
+#include "spikevertex.h"
 //#include "viewerCommandDefs.h"
 
 
@@ -54,6 +55,7 @@ class TetrodePlot{
 	bool isSelected;
 	
 	bool clearProjectionNextPlot;
+	bool newSpike;
 	
 	// ===================================
 	// 		Scaling Variables
@@ -102,15 +104,9 @@ class TetrodePlot{
 	int writeIdx;
 	uint32_t curSeqNum;
 	
-	static const int MAX_N_PROJ_POINTS = 100000;
+	static const int MAX_N_PROJ_POINTS = 5e4;
 	int nProjPoints;
-
-	GLint projAB[2][MAX_N_PROJ_POINTS];
-//	GLint projAX[2][MAX_N_PROJ_POINTS];
-//	GLint projAY[2][MAX_N_PROJ_POINTS];
-//	GLint projBX[2][MAX_N_PROJ_POINTS];
-//	GLint projBY[2][MAX_N_PROJ_POINTS];	
-//	GLint projXY[2][MAX_N_PROJ_POINTS];
+	int newIdx;
 
 	// ===================================
 	// 		Spike Waveform specific plotting variables
@@ -155,10 +151,9 @@ class TetrodePlot{
 	void drawWaveforms();
 	void drawWaveformN(int n);
 	void drawProjections();
-	void drawProjectionN(int n, int idx);
+	void drawProjectionN(int);
 	void drawTitle();
 	void drawBoundingBoxes();
-
 
 	void setViewportForTitleBox();
 	void setViewportForWaveN(int n);
@@ -173,7 +168,18 @@ class TetrodePlot{
 //	void drawString(float x, float y, void *f, char *string);
 	
 	int incrementIdx(int i);
+
+	void initVBO();
+	void addSpikeToVBO();
+	void drawProjectionVBO(int axes);
 	
+	SpikeVertex sv;
+	int countInVBO;
+	GLuint VertexVBOID;
+	GLuint IndexVBOID;
+	GLuint axesShader;
+	GLuint shaderProg;
+
 public:
 	double padLeft, padRight, padTop, padBottom;
 	
@@ -212,6 +218,8 @@ public:
 	
 	int getMaxX();
 	int getMinX();
+	
+	void setShaderProgram(GLuint p);
 	
 	// implement scaleUp(), scaleDown(), setScale(), getScale()
 	// shiftUp(), shiftDown(), setShift(), getShift()

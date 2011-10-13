@@ -24,11 +24,67 @@ SpikeViewer::SpikeViewer(int c, int r, int w, int h, char * ports[]){
 
 	font = GLUT_BITMAP_8_BY_13;
 	
+	loadAndCompileShader();
+	
 	initCommandSets();
 }
 
 SpikeViewer::~SpikeViewer(){
 	
+}
+bool SpikeViewer::loadShaderSource(const std::string& filename, std::string& out){
+
+	std::ifstream file;
+    file.open(filename.c_str());
+    if (!file) {
+	       return false;
+    }
+
+	std::stringstream stream;
+
+	stream << file.rdbuf();
+	file.close();
+
+	out = stream.str();
+
+	return true;
+
+}
+void SpikeViewer::loadAndCompileShader(){
+
+	GLuint axesShader = glCreateShader(GL_VERTEX_SHADER);
+
+	const std::string shaderfile = "cluster.vert";
+	std::string shadersource;
+	std::cout<<"Reading shader source from file:"<<shaderfile<<std::endl;
+	
+	if ( !loadShaderSource(shaderfile, shadersource) )
+	{
+		std::cout<<"Failed to load shader:"<<shaderfile<<" quiting!"<<std::endl;
+		exit(1);
+	}
+
+	std::cout<<"Loaded Shader! Its length is:" <<  (int)shadersource.size() <<std::endl;
+	GLchar *source = new GLchar[5000];
+	memcpy(source, shadersource.c_str(), shadersource.size());
+	
+ 	int len = strlen(source);
+	glShaderSource(axesShader, 1, (const GLchar**) &source, (const GLint *) &len);
+
+	std::cout<<"Compiling shader!"<<std::endl;
+	glCompileShader(axesShader);
+
+	std::cout<<"Creating glProgram"<<std::endl;
+	shaderProg = glCreateProgram();
+
+	std::cout<<"Attaching Shader"<<std::endl;
+	glAttachShader(shaderProg, axesShader);
+
+	std::cout<<"Linking Shader Program"<<std::endl;
+	glLinkProgram(shaderProg);
+
+	std::cout<<"DONE!\n"<<std::endl;
+
 }
 void SpikeViewer::initPlots(){
 	std::cout<<"SpikeViewer.cpp - initPlots()"<<std::endl;
@@ -49,6 +105,7 @@ void SpikeViewer::initPlots(){
 			plots[nPlots] = new TetrodePlot(dWinX*i, dWinY*(nRow-j-1)+cmdWinHeight, dWinX, dWinY, ports[nPlots%16]);
 			plots[nPlots]->setTetrodeNumber(nPlots);
 			plots[nPlots]->initNetworkRxThread();
+//			plots[nPlots]->setShaderProgram(shaderProg);
 			nPlots++;
 		}
 		
