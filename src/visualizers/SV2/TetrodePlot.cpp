@@ -25,22 +25,20 @@ TetrodePlot::TetrodePlot(int x, int y, int w, int h, char *p){
 	// ===================================
 	// 		Scaling Variables
 	// ===================================
-	xRange = MAX_INT;
-	yRange = MAX_INT;
 
-	xScale = 2.0/(double)xRange;
-	yScale = 2.0/(double)yRange;
-
-	dV = 1.0/((float)MAX_VOLT*2);
-	userScale = 2.5;
+	
+	userScale = .4;
 	dUserScale = .3;
 
-	voltShift = -.85;
-	userShift = .1;
+	userShift = MAX_VOLT*1/4;
 	dUserShift = .05;
+	
+	minAmpRange = MIN_VOLT*userScale+userShift;
+	maxAmpRange = MAX_VOLT*userScale+userShift;
 
 	nChan=4;
 	nProj=6;
+	
 	spike = spike_net_t();
 	
 	font = GLUT_BITMAP_8_BY_13;
@@ -101,10 +99,10 @@ void TetrodePlot::initVBO(){
 		std::cout<<std::flush;
 
 		for (int i=0; i<MAX_N_PROJ_POINTS; i++){
-			baseData[i].x = 0;//rand()%200;
-			baseData[i].y = 0;//rand()%200+200;
-			baseData[i].z = 0;//rand()%200+400;
-			baseData[i].w = 0;//rand()%200+600;
+			baseData[i].x = 0;//rand()%MAX_VOLT*2 + MIN_VOLT;
+			baseData[i].y = 0;//rand()%MAX_VOLT*2 + MIN_VOLT;
+			baseData[i].z = 0;//rand()%MAX_VOLT*2 + MIN_VOLT;
+			baseData[i].w = 1;//rand()%MAX_VOLT*2 + MIN_VOLT;
 			indices[i] = i;
 		}
 
@@ -118,6 +116,7 @@ void TetrodePlot::initVBO(){
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*MAX_N_PROJ_POINTS, indices, GL_STATIC_DRAW);
 	//	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLuint)*MAX_N_POINT, indices);
 //		glBindBuffer(1,0);
+		checkGlError();
 	
 }
 void TetrodePlot::resizePlot(int w, int h)
@@ -133,32 +132,47 @@ void TetrodePlot::movePlot(int x, int y){
 }
 void TetrodePlot::draw()
 {
-	if(disableWaveOverlay)
-		eraseWaveforms();
+//	std::cout<<"TetrodePlot::draw()"<<std::endl;
+	// if(disableWaveOverlay)
+	// 	eraseWaveforms();
 		
-	highlightSelectedWaveform();
+	// highlightSelectedWaveform();
 	// Get the new spikes in the queue and plot them
+
+
 	do{
 		drawWaveforms();
 		drawProjections();
 		if (newSpike)
 			addSpikeToVBO();
 	}while(newSpike = tryToGetSpikeForPlotting(&spike));
-	
+
 	drawTitle();
 	drawBoundingBoxes();
+	
 }
 void TetrodePlot::addSpikeToVBO(){
 
-	SpikeVertex *newSpike = &sv;
+	
 	int newIdx = countInVBO % MAX_N_PROJ_POINTS;
+	
+
+	// if (countInVBO%500==0){
+	// 	printf("Adding new spike to vbo: %d %d %d %d\n", sv.x, sv.y, sv.z, sv.w);
+	// 	printf("Drawing %d spikes in the VBO\n", newIdx);
+	// }
+	SpikeVertex *vertexToAdd = &sv;
+// 	vertexToAdd = &tmp;
+	sv.z = 0;
+	sv.w = 1;
 
 	glBindBuffer(GL_ARRAY_BUFFER, VertexVBOID);
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glBufferSubData(GL_ARRAY_BUFFER, newIdx*sizeof(SpikeVertex), sizeof(SpikeVertex), newSpike);
+	glBufferSubData(GL_ARRAY_BUFFER, newIdx*sizeof(SpikeVertex), sizeof(SpikeVertex), vertexToAdd);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	
 	countInVBO++;
+	newSpike = false;
 	
 }
 void TetrodePlot::highlightSelectedWaveform(){
@@ -177,11 +191,9 @@ void TetrodePlot::drawWaveforms(){
 void TetrodePlot::drawWaveformN(int n)
 {
 	setViewportForWaveN(n);
+	
 	// Disp the threshold value
-	int thresh = spike.thresh[n];
-//	sprintf(txtDispBuff, "T:%d", thresh);
-//	glColor3f(colFont[0],colFont[1],colFont[2]);
-//	drawString(-.9, .8, font, txtDispBuff);
+
 
 	// Draw the actual waveform
 	float dx = 2.0/(spike.n_samps_per_chan-1);
@@ -192,21 +204,23 @@ void TetrodePlot::drawWaveformN(int n)
 	glBegin( GL_LINE_STRIP );
 	for (int i=0; i<spike.n_samps_per_chan; i++)
 	{
-		glVertex2f(x, scaleVoltage(spike.data[sampIdx], true));
+		glVertex2f(x, spike.data[sampIdx]);
 		sampIdx +=4;
 		x +=dx;
 	}
 	glEnd();
 
 	// Draw the threshold line
+	int thresh = spike.thresh[n];
 	glColor3f(colThres[0], colThres[1], colThres[2]); // set threshold line to red
 	glLineStipple(4, 0xAAAA); // make a dashed line
 	glEnable(GL_LINE_STIPPLE);
 	glBegin( GL_LINE_STRIP );
-		glVertex2f(-1.0, scaleVoltage(thresh, true));
-		glVertex2f( 1.0, scaleVoltage(thresh, true));
+		glVertex2f(-1.0, thresh);
+		glVertex2f( 1.0, thresh);
 	glEnd();		
 	glDisable(GL_LINE_STIPPLE);
+	
 	
 }
 void TetrodePlot::drawProjections(){
@@ -223,13 +237,14 @@ void TetrodePlot::drawProjections(){
 	for (int i=0; i<nProj; i++)
 		drawProjectionN(i);
 	
-	clearProjectionNextPlot = false;
 }
 
 
 void TetrodePlot::drawProjectionN(int n){
 
 	setViewportForProjectionN(n);
+	// drawViewportCross(MIN_VOLT,MIN_VOLT,MAX_VOLT,MAX_VOLT);
+	
 
 	int d1, d2;
 	if (n==0){
@@ -266,34 +281,40 @@ void TetrodePlot::drawProjectionN(int n){
 	drawProjectionVBO(n);
 
 	if (newSpike){
-		glColor3f( 1.0, 1.0, 0.0 );
-		glPointSize(3);
+		glColor3f( 1.0, 0.0, 0.0 );
+		glPointSize(5);
 		glBegin(GL_POINTS);
-			glVertex2f(scaleVoltage(d1, false), scaleVoltage(d2, false));
+			glVertex2f(d1, d2);
 			//glVertex2f(0,0);
 		glEnd();
 		glPointSize(1);
 	}
+	
+//	if(countInVBO%500==0 and n == 0)
+//		printf("Plotting new spike:%d,%d\n",d1,d2);
 }
 
 void TetrodePlot::drawProjectionVBO(int plotAxes){
 
-
-
+//	std::cout<<"drawingProjectionVBO"<<std::endl;
 	int nPlot = (countInVBO > MAX_N_PROJ_POINTS) ? MAX_N_PROJ_POINTS:countInVBO;
-//	std::cout<<"Plotting nSpikes:"<<nSpikes<< " nPoints:"<<nPlot<<std::endl;
-//	glUseProgram(shaderProg);	// Apply the shader program
 
-	GLint axes = glGetUniformLocation(shaderProg, "axes"); 
-  	glUniform1i(axes, plotAxes);
+
+	glColor3f(1.0,1.0,1.0);
+//	GLint axes = glGetUniformLocation(shaderProg, "axes"); 
+//	glUniform1i(axes, plotAxes);
 	// Draw the VBO
-
+	
 	glBindBuffer(GL_ARRAY_BUFFER, VertexVBOID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndexVBOID);
+
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glVertexPointer(4, GL_INT, sizeof(SpikeVertex), NULL);
+	
 	glDrawElements(GL_POINTS, nPlot, GL_UNSIGNED_INT, NULL);
 	glDisableClientState(GL_VERTEX_ARRAY);
+
+//	std::cout<<"Drawing VBO nPlot:"<<nPlot<<std::endl;
 
 
 //	glUseProgram(0);	//Disable the shader program
@@ -352,7 +373,8 @@ void TetrodePlot::setViewportForTitleBox(){
 	float viewX = padLeft;
 	float viewY = 2*yBox - titleHeight - padBottom;
 	
-	glViewport(viewX+xPos,viewY+yPos,viewDX,viewDY);
+//	glViewport(viewX+xPos,viewY+yPos,viewDX,viewDY);
+	setViewportWithRange(viewX+xPos, viewY+yPos, viewDX, viewDY, 0, 0, 1, 1);
 }
 void TetrodePlot::setViewportForWaveN(int n){
 	float viewDX = xBox/2;
@@ -384,9 +406,7 @@ void TetrodePlot::setViewportForWaveN(int n){
 	viewDX = viewDX + padLeft;
 	viewDY = viewDY - padBottom;
 	
-	glViewport(viewX+xPos,viewY+yPos,viewDX,viewDY);
-	
-	glScalef(2.0f/(float)MAX_INT, 2.0f/(float)MAX_INT, 0);
+	setViewportWithRange(viewX+xPos, viewY+yPos, viewDX, viewDY, -1, minAmpRange, 1, maxAmpRange);	
 }
 
 
@@ -430,11 +450,7 @@ void TetrodePlot::setViewportForProjectionN(int n){
 	viewDX = viewDX;
 	viewDY = viewDY - padBottom;
 
-
-	glViewport(viewX+xPos, viewY+yPos, viewDX, viewDY);
-	glLoadIdentity ();
-	
-	glTranslatef(-1.0, -1.0, 0.0);
+	setViewportWithRange(viewX+xPos, viewY+yPos, viewDX, viewDY, minAmpRange, minAmpRange, maxAmpRange, maxAmpRange);
 }
 
 int TetrodePlot::incrementIdx(int i){
@@ -461,6 +477,7 @@ int  TetrodePlot::calcWaveMaxInd(){
 
 void TetrodePlot::drawBoundingBoxes(void){
 
+	
 	glColor3f(1.0, 1.0, 1.0);
 	
 	setViewportForTitleBox();
@@ -515,15 +532,6 @@ bool TetrodePlot::tryToGetSpikeForPlotting(spike_net_t *s){
 	return true;
 }
 
-float TetrodePlot::scaleVoltage(int v, bool shift){
-
-	return v;
-	if (shift)
-		return ((float)v * dV * userScale) + voltShift + userShift;
-	else
-		return ((float)v * dV * userScale) + voltShift;
-}
-
 /*
 void TetrodePlot::drawString(float x, float y, void *f, char *string){
 
@@ -540,7 +548,6 @@ void TetrodePlot::drawString(float x, float y, void *f, char *string){
 void TetrodePlot::initNetworkRxThread(){
 	pthread_t netThread;
 	net = NetCom::initUdpRx(host,port);
-//	std::cout<< this << " Address of pointer going into networkThreadFunc\n";
 	pthread_create(&netThread, NULL, networkThreadFunc, this);
 }
 
@@ -553,8 +560,6 @@ void TetrodePlot::getNetworkSpikePacket(){
 		
 		writeIdx = incrementIdx(writeIdx);
 		nSpikes++;
-
-//		printf("\tWriting to buffer! writeIdx:%d nspikes:%d \n", writeIdx, nSpikes);	
 	}
 }
 

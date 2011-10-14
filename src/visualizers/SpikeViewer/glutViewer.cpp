@@ -36,8 +36,9 @@ int main( int argc, char** argv )
 		exit(1);
 	}
 	
-	exit(1);
 	sv.initPlots();
+	sv.loadAndCompileShader();
+	
 			
 	glClear(GL_COLOR_BUFFER_BIT);
 	glutMainLoop( );

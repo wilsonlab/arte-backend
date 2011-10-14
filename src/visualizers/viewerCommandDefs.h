@@ -54,7 +54,7 @@ void drawString(float x, float y, char *string);
 // ===================================
 // 		Command Variables
 // ===================================
-static int const cmdStrLen = 50;
+static int const cmdStrLen = 500;
 static char cmd[cmdStrLen];
 static int cmdStrIdx = 0;
 

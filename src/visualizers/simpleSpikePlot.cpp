@@ -76,7 +76,9 @@ void *getNetSpike(void *ptr){
 	{
 		spike_net_t s;
 		NetCom::rxSpike(net, &s);
-		spikeBuff[writeIdx] = s;
+		spike_net_t t;
+		t = s;
+		spikeBuff[writeIdx] = t;
 		writeIdx = incrementIdx(writeIdx);
 		nSpikes+=1;
 		totalSpikesRead++;

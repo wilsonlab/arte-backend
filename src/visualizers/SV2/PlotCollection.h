@@ -1,22 +1,30 @@
+#ifndef PLOT_COLLECTION_H_
+#define PLOT_COLLECTION_H_
+
 #if defined(__linux__)
 	#include <GL/glut.h>
-#else
+#else // assume OS X
 	#include <GLUT/glut.h>
+	#include <OpenGL/glu.h>
+	#include <OpenGL/glext.h>
 #endif
+
+
 #include <sstream>
 #include <fstream>
 #include <iostream>
 #include <map>
 #include <set>
 #include <getopt.h>
+#include "glIncludes.h"
 #include "TetrodePlot.h"
 #include "PlotUtils.h"
 #include "commandDefs.h"
 
-class SpikeViewer{
+class PlotCollection{
 public:
-	SpikeViewer(int, int, int, int, char*[]);
-	~SpikeViewer();
+	PlotCollection(int, int, int, int, char*[]);
+	~PlotCollection();
 	void drawPlot();
 	void resizePlot(int w, int h);
 	void initPlots();
@@ -66,7 +74,7 @@ private:
 	int selectedPlot;
 
 	bool allOverlay;
-
+	
 	// Application Title
 	void drawAppTitle();
 	void setViewportForTitle();
@@ -104,7 +112,9 @@ private:
 	static const char CMD_SET_WIN_W		= 'w';
 	static const char CMD_SET_WIN_H		= 'h';
 	
+	char* ports[];
 
 };
-void parseCommandLineArgs(int argc, char**argv);
+//void parseCommandLineArgs(int argc, char**argv);
 
+#endif
