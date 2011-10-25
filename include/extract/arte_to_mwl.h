@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <cstdlib> // apparently needed for exit(0) in Ubuntu
-#include "netcom/datapacket.h"
+#include "datapacket.h"
 #include "global_defs.h"
 
 void write_mwl(void *arte_packet, packetType_t sourcetype);
