@@ -1,14 +1,88 @@
-// Arte_command_port class sends/receives user-packed ArteCommand objects
-// through a zmq pub-sub port.  Clients should include ArteCommand.pb.h
-// and know how to write and read ArteCommand google protocol buffers;
-// The client owning this class should specify a callback function and
-// parameter.  This function will be called from this class to notify the
-// client every time a new ArteCommand comes in through zmq.
-// Clients can then check the size of the stack and consume ArteCommands.
-//
-// For example usage, see src/test/test_arte_command_port.cpp main function
-//
-// greghale@mit.edu
+//************************ How to use the class ****************************/
+//*
+//*  Arte_command_port - a node in a network of communicating processes
+//*
+//*  An Arte_command_port instance is owned by each running processes
+//*  that wants to receive ArteCommand packets.  These packets are
+//*  instances of a google protobuf serialization object ( see
+//*  http://code.google.com/p/protobuf/ for info about protobufs).
+//*
+//*  ArteCommands are described in arte_command.proto; which is
+//*  compiled by protoc to arte_command.pb.cpp and arte_command.pb.h
+//*  
+//*  ArteCommands are heirarchical.  Each has a toplevel with descriptive
+//*  fields relevant to any command (originator name, intended source name,
+//*  timestamp, etc), as well as a long list of optional sub-commands
+//*
+//*  Clients that want to send and receive commands follow a few
+//*  fairly simple steps.
+//*
+//*  First, create a function to use as a callback function pointer.
+//*  Arte_command_port will call this function when there are commands
+//*  waiting in the inbox
+//*
+//*  Second, instantiate Arte_command_port, pass it the arte_setup property
+//*  tree, and start it.  The instance will decide whether it should run
+//*  as master or slave (explained soon).
+//*
+//*  When client wants to SEND a message, instantiate an ArteCommand,
+//*  set the fields of the command with the data you want to pass,
+//*  and call the instance's send_command(ArteCommand)  method
+//*
+//*  When you want to process a command, call the instances's 
+//*  command_port_pop() method.
+//*
+//*  The number of commands waiting to be processed can be checked with
+//*  the instance's command_queue_size() method.
+//*
+//*  The easiest way to respond commands is simply to call
+//*  command_queue_pop() every time Arte_command_port calls your
+//*  designated callback function.  Then command_queue_size()
+//*  to make sure that all waiting commands have been processed.
+//*
+//*  The inboxes between different processes are independent.  One
+//*  instance of Arte_command_port has a single inbox.  If multiple
+//*  clients share a single Arte_command_port, they run the risk
+//*  of disposing of each other's commands before the other has a chance
+//*  to read.  Therefore a single process should have only one
+//*  Arte_command_port  instance.
+//*
+//*  Multiple processes on the same machine may have independent
+//*  Arte_command_port instances.  Messages are broadcast to every
+//*  process on every machine in the network described in the arte
+//*  setup property tree.
+//*
+//*  Arte_command_port instances decide among themselves wich will be
+//*  master.  On a given machine, there is exactly one master instance.
+//*  All other instances are slaves.  This is an implementation wart
+//*  made necessary by a limitation of the socket protocol we use.
+//*
+//*  The master on a given machine is a hub that sends messages to itself,
+//*  to every other machine on the network, and to all slave processes. 
+//*  If the master process dies, no commands will be able to reach from 
+//*  the outside network to the slaves, and no commands will be able to 
+//*  move between slaves on a machine, or from those slaves to the rest 
+//*  of the network.
+//*
+//*  There is no way to detect the occurance of the death of a master
+//*  on one machine from another machine; but processes on the same
+//*  machine will realize the death when they try to send a message,
+//*  because they expect confirmation from the master, and this confirmation
+//*  only comes when the master is running.
+//*
+//*  After a 1-second timeout, a slave waiting for confirmation will
+//*  try to take ownership of the master role.  If it is the first do to
+//*  so from among all slave processes, it will be master.  If it attemps
+//*  to become master but another slave has already been designated new
+//*  master, this late instance will resume its role as slave.
+//*
+//*  Because slaves negotiate master role upon death of the master, it is
+//*  recommended that all clients send out periodic dummy messages; 
+//*  this ensures that the pool of slaves on a machine with a dead master
+//*  will not go for too long missing all incoming messages from the outside.
+//* 
+//*  Example usage in arte-ephys/src/test/test_arte_command_port.cpp
+//*
 
 #ifndef _ARTE_COMMAND_PORT_H
 #define _ARTE_COMMAND_PORT_H
@@ -141,24 +215,11 @@ class Arte_command_port{
   zmq::socket_t  *my_publisher;
   zmq::socket_t  *my_master_secondary_listener;
 
+  // Delete zmq objects that got newed
+  void clear_memory();
+
   pthread_t listener_thread;
 
-  // one master command process per machine
-  // this is because zmq won't allow 2 
-  // servers to bind the same PUB socket
-  // for sending.  The workaround is, we
-  // Try to bind this socket.  If we get it,
-  // We are the master.  Masters both subscribe
-  // to and publish on the main command port.
-  // Masters are also the server in a REP-REQ
-  // topology, on the SECONDARY port.  Any
-  // messages coming to the master from this
-  // port must be forwarded to the primary
-  // port by the master process.
-  // A non-master process is a slave.  Slaves
-  // are clients (doing a connect, not bind)
-  // in REQ_REP topology, and then sending
-  // their REQ messages to the secondary port
   bool is_master;
   std::string primary_port;
   std::string secondary_port;

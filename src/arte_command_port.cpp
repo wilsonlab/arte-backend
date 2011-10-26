@@ -1,9 +1,92 @@
+//******************************** How the class works ****************************
+//*
+//*  Consructors:    Plain / 
+//*                  Property tree, fn pointer, callback, auto_start
+//*                  Config file path, fn pointer, callback, auto_start
+//*
+//*    basic_init(): zero/null variables & pointers
+//*    set _auto_start member from arguments
+//*    infer master/slave sent/recv port names from config file
+//*       -primary_port = master port number
+//*       -secondary_port = slave port number
+//*       -out_m (out master zmq string) will be tcp://*:#### (primary)
+//*       -out_s (out slave zmq string) will be  tcp://localhost:#### (2ndary)
+//*       -in_secondary (master's receipt port for slave messages)
+//*        will be tcp://*:#### (2ndary)
+//*       -in_list: master's vector of zmq strings for masters on all machines 
+//*        in network
+//*           tcp://host1:#### (primary)
+//*           tcp://host2:#### (primary)
+//*           tcp://hostN:#### (primary)
+//*   set_addy_str copies needed zmq strings into member variables for later use
+//*
+//*   set_callback_fn simply copies the addy of fn point and the (void *) pointer
+//*     for the callback arg into member variables for later use
+//*
+//*   in case of boost::property_tree or path to an xml file, the addy strs are
+//*   inferred from hostname, primary port, and secondary port fields
+//* 
+//*  Destructor    =========================================
+//* 
+//*   Destruction deletes the zmq_context if it was newed by this arte_command_port
+//*   my_publisher and my_subscriber are always newed by this instance, so always
+//*   deleted here
+//*
+//*  start()       =========================================
+//*   
+//*   Check start conditions (zmq strings are all specified) and then
+//*   1) init_send() to open sending channel and determine masterness, then
+//*   2) create a new thread that will listen for incoming messages in a loop.
+//*   
+//*  init_send()   =========================================
+//*
+//*   create the publisher socket & bind; declare self master on success
+//*   on failure, declare slave, use my_publisher to make a REQ socket
+//*    
+//*  listen_in_thread() ===================================
+//*
+//*   both master and slave setup subscriber & connect to all known publishing hosts
+//*
+//*   master bind 2ndary listener as REP, 
+//*   while running==true, poll for packet from other masters & from slaves
+//*    -in response to messages on subscriber port, handle_primary_mesage()
+//*    -in response to message on  REP port, handle_secondary_message()
+//*   
+//*   slave only subscribed (above) to all publishers on all hosts
+//*   while running==true wait for messages on my_subscriber,
+//*    -in response to message on subscriber port, handle_primary_message()
+//*
+//*  handle_primary_message()  =========================
+//*
+//*   allocate this_command_pb ArteCommand protobuf & clear it
+//*   construct a std::string command_str from the zmq::message.data() char*
+//*   resize command_str, pad with a's.  
+//*   unpack command_str into this_command_pb, push this_command_pb on the queue
+//*   call the callback_fn with the arg we received on init
+//*   r_msg.rebuild() zeros the message.data() and message.size()
+//*
+//*  handle_secondary_message() ========================
+//*
+//*   init a zmq::message_t outgoing that forwards the original
+//*   init a message_t to use as a response to the slave REQ
+//*   copy incoming secondary message data into outgoing
+//*   copy incoming secondary message data into outgoing_resp
+//*   send the outgoing_resp out on the REP port
+//*   send the outgoing out on the publisher port
+//*   z_msg.rebuild() the reference that came in as argument
+//* 
+//*  do_pt_settings()  =================================
+//*
+//*   
+
 #include <stdio.h>
 #include <stdint.h>
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/property_tree/exceptions.hpp>
 #include <boost/foreach.hpp>
 #include "arte_command_port.h"
+
+
 
 //************* Simple constructor ****************/
 Arte_command_port::Arte_command_port()
@@ -37,6 +120,23 @@ Arte_command_port::Arte_command_port(std::string pt_pathname,
   set_callback_fn ( cb_func, cb_arg );
   if(_auto_start)
     start();
+}
+
+// Arte_command_port::~Arte_command_port()
+// {
+//   clear_memory();
+// }
+
+void Arte_command_port::clear_memory()
+{
+  //  if(my_master_secondary_listener)
+  //  delete my_master_secondary_listener;
+  //if(my_subscriber)
+    //    delete my_subscriber;
+  //if(my_publisher)
+    //  delete my_publisher;
+  //if(my_zmq_context && !(_external_context))
+    //  delete my_zmq_context;
 }
 
 //** Read hostname and port number from config file into our zmq addy strings **/
@@ -125,7 +225,7 @@ void Arte_command_port::set_callback_fn( CALLBACK_FN cb_fn, void *arg )
 void Arte_command_port::set_zmq_context_ptr(void* zc)
 {
   if(zc == 0){
-    printf("Client passed a void pointer as zmq::context.\n");
+    printf("Client passed arte_command_port a void pointer as zmq::context.\n");
   } else {
     my_zmq_context = (zmq::context_t *)zc;
     _external_context = true;
@@ -183,9 +283,6 @@ int Arte_command_port::stop()
 {
   running = false;
 
-  if(_external_context == false)
-    delete my_zmq_context;
-
 }
 
 //*********** Publish an ArteCommand to the network *************/
@@ -221,7 +318,19 @@ int Arte_command_port::send_command(ArteCommand the_command)
 
   if(is_master == false){
     zmq::message_t response;
-    my_publisher->recv( &response );
+    zmq::pollitem_t items [] = { { *my_publisher, 0, ZMQ_POLLIN, 0 } };
+    zmq::poll (&items[0],1, 1000 * 1000);
+    // if we got a reply, process it
+    if (items[0].revents & ZMQ_POLLIN){
+      my_publisher->recv( &response );
+    } else {
+      // we didn't get one, so reinitialize and try to be master
+      printf("Timeout waiting for response to last command.\n");
+      printf("Trying to re-initialize sender, and resend message.\n");
+      stop();
+      clear_memory();
+      start();
+    }
   }
 
   return 0;
@@ -232,7 +341,9 @@ int Arte_command_port::send_command(ArteCommand the_command)
 Arte_command_port::~Arte_command_port()
 {
   
-  delete my_zmq_context;    // this was newed in start()
+  printf("Arte_command_port destructer\n");
+  if(! _external_context)
+    delete my_zmq_context;    // this was newed in start()
   delete my_publisher;  // this was newed in init_send()
   delete my_subscriber; // this was newed in listen_in_thred()
                      

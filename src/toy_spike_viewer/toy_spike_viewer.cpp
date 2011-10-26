@@ -75,7 +75,7 @@ int main (int argc, char *argv[]){
 
       
       if(true){
-	if(spike.ts - last_drawn_ts > 330){
+	if(spike.ts - last_drawn_ts > 0){
 	  last_drawn_ts = spike.ts;
 	//packet_count++;
 	//if(packet_count % 10 == 0)
