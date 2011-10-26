@@ -486,6 +486,7 @@ int Arte_command_port::listen_in_thread()
   }
 
   if( is_master == true ){
+    assert( my_zmq_context != NULL );
     my_master_secondary_listener = new zmq::socket_t( *my_zmq_context, ZMQ_REP );
     if( my_master_secondary_listener == NULL ){
       printf("zmq error in listen_in_thread creating REP socket\n");
