@@ -75,6 +75,26 @@
 //*   send the outgoing out on the publisher port
 //*   z_msg.rebuild() the reference that came in as argument
 //* 
+//*  send_command()     ===============================
+//*
+//*   receive ArteCommand the_command from client
+//*   allocate a std::string to receive serialized command contents
+//*   erase it and fill it with \0's.
+//*   Init a zmq::message_t with the command_str char* data
+//*   send the zmq message out on my_publisher.  The effect is different
+//*    between master and slave
+//*    -master: my_publisher is still a publisher; publish zmq_message
+//*    -slave: my_pub is actuall a REQ port; so msg is going to master
+//*     process elsewhere on this machine
+//*   master is done.
+//*   if slave, init a zmq::message_t to catch the REP from master process
+//*   poll wait for a response.  If response takes more than 1 second, 
+//*    is prob dead; so stop, clear_memory (right now does nothing - mem leak?)
+//*    and start(). This start() call reinitializes and tries to grab
+//*    the master status.  If another slave already grabbed master spot,
+//*    this one will fall back to slave.
+//*   
+//*
 //*  do_pt_settings()  =================================
 //*
 //*   
@@ -335,8 +355,6 @@ int Arte_command_port::send_command(ArteCommand the_command)
 
   return 0;
 }
-
-//Arte_command_port::send_command2(
 
 Arte_command_port::~Arte_command_port()
 {
