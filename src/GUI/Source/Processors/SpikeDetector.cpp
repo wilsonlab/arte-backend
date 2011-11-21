@@ -109,6 +109,8 @@ void SpikeDetector::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMes
 	int maxSamples = getNumSamples();
 	int spikeSize = 2 + prePeakSamples*2 + postPeakSamples*2; 
 
+    spikeBuffer->clear();
+
     for (int sample = prePeakSamples + 1; sample < maxSamples - postPeakSamples - 1; sample++)
     {
         for (int chan = 0; chan < getNumOutputs(); chan++) 

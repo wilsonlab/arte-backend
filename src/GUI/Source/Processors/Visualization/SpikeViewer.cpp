@@ -101,7 +101,6 @@ void SpikeViewer::renderOpenGL()
 
 		clearWaveforms();
 
-
 		while (i.getNextEvent (message, samplePosition)) {
 
 			int numbytes = message.getRawDataSize();
@@ -122,8 +121,16 @@ void SpikeViewer::renderOpenGL()
 			//for (int n = 0; n < 4; n++) {
 				setViewportForWaveN(chan);
 				float peak = drawWaveform(dataptr, numSamples);
+
+				peaks.set(chan,peak*1.25);
 				//peaks.set(chan,peak);
 				
+			}
+
+			if (peaks.size() == 4)
+			{
+				drawProjections();
+				peaks.clear();
 			}
 
 			//std::cout << " Bytes received: " << numbytes << std::endl;
@@ -149,12 +156,50 @@ void SpikeViewer::renderOpenGL()
 			
 		// }
 
-		eventBuffer->clear();
+		//eventBuffer->clear();
 
 	}
 
 	//glOrtho(0, 0.5, 0.5, 0, 0, 1);
 	glFlush();
+
+}
+
+void SpikeViewer::drawProjections() 
+{
+	
+	for (int i = 0; i < 6; i++)
+	{
+		setViewportForProjectionN(i);
+
+		int d1,d2;
+		
+		if (i == 0){
+			d1 = 0;
+			d2 = 1;	
+		} else if (i == 1) {
+			d1 = 0;
+			d2 = 2;
+		} else if (i == 2) {
+			d1 = 0;
+			d2 = 3;
+		} else if (i == 3) {
+			d1 = 1;
+			d2 = 2;
+		} else if (i == 4) {
+			d1 = 1;
+			d2 = 3;
+		} else if (i == 5) {
+			d1 = 2;
+			d2 = 3;
+		}
+
+		glColor3f(0.0, 0.0, 0.0);
+		glBegin(GL_POINTS);
+			glVertex2f(1-peaks[d1],peaks[d2]);
+		glEnd();
+
+	}
 
 }
 

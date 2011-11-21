@@ -81,8 +81,8 @@ void LfpViewer::renderOpenGL()
 	
 		for (int n = 0; n < nSamples-skip; n+= skip )
 		{
-			glVertex2f(float(n)/nSamples,*streamBuffer->getSampleData(chan,n)/100000.0+0.03+chan*0.06);
-			glVertex2f(float(n+skip)/nSamples,*streamBuffer->getSampleData(chan,n+skip)/100000.0+0.03+chan*0.06);
+			glVertex2f(float(n)/nSamples,*streamBuffer->getSampleData(chan,n)/0.5+0.03+chan*0.06);
+			glVertex2f(float(n+skip)/nSamples,*streamBuffer->getSampleData(chan,n+skip)/0.5+0.03+chan*0.06);
 		}
 		
 		//std::cout << *streamBuffer->getSampleData(0,0) << std::endl;

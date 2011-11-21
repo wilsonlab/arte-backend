@@ -50,6 +50,8 @@ public:
 private:
 	int nTrodes;
 
+	Array<float> peaks;
+
 	float xBox, yBox, xPadding, yPadding;
 
 	void drawBorder();
@@ -57,6 +59,7 @@ private:
 	void clearWaveforms();
 	void clearProjections();
 
+	void drawProjections();
 	float drawWaveform(uint8* dataptr, int numSamples);
 
 	void setViewportForWaveN(int n);
