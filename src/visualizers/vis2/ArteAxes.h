@@ -8,6 +8,7 @@
 #endif
 
 #include "ArteUIElement.h"
+#include "datapacket.h"
 
 #define WAVE1 0
 #define WAVE2 1
@@ -22,31 +23,36 @@
  	
 class ArteAxes: public ArteUIElement{
 	int type;
-	plotWaveform(int c);
-	plotProjection(int p);
+	void plotWaveform(int c);
+	void plotProjection(int p);
 	double xlims[2];
 	double ylims[2];
 	spike_net_t* s;
 	GLfloat waveColor[3];
 	GLfloat thresholdColor[3];
-	GLfloat projectionColor[3];
+	GLfloat pointColor[3];
 	
 	int calcWaveformPeakIdx();
 	
+	
 public:
 	ArteAxes();
-	ArteAxes(int x, int y, int w, int h, int t);
+	ArteAxes(int x, int y, double w, double h, int t);
 	void plotData();
 	void updateSpikeData(spike_net_t *s);
-	void setXLims(double xmin, xmax);
-	void setYLims(double ymin, ymax);
+	void setXLims(double xmin, double xmax);
+	void setYLims(double ymin, double ymax);
 	void setType(int type);
+	
+	void redraw();
 	
 	void setWaveformColor(GLfloat r, GLfloat g, GLfloat b);
 	void setThresholdColor(GLfloat r, GLfloat g, GLfloat b);
-	void setProjectionColor(GLfloat r, GLfloat g, GLfloat b);
+	void setPointColor(GLfloat r, GLfloat g, GLfloat b);
 	
-}
+	bool drawWaveformLine;
+	bool drawWaveformPoints;
+};
 
 
 

@@ -13,21 +13,21 @@ type(1)
 ArteAxes::ArteAxes(int x, int y, double w, double h, int t):
 ArteUIElement(x,y,w,h)
 {
-	if (t<WAVE1 || t>PROJ3x4)
-		error("Invalid Axes type specified");
+	// if (t<WAVE1 || t>PROJ3x4)
+		//("Invalid Axes type specified");
 	type = t;
 	setWaveformColor(1.0,1.0,0.6);
 	setThresholdColor(1.0, 0.1, 0.1);
-	setProjectionColor(1.0, 1.0, 1.0);
+	setPointColor(1.0, 1.0, 1.0);
 }
 void ArteAxes::updateSpikeData(spike_net_t *newSpike){
 	s = newSpike;
 }
 void ArteAxes::redraw(){
-	if (!enabled)
-		return;
-	plotData();
 	ArteUIElement::redraw();
+	if (ArteUIElement::enabled)
+		plotData();
+	ArteUIElement::drawElementEdges();
 }
 void ArteAxes::plotData(){
 	switch(type){
@@ -46,65 +46,83 @@ void ArteAxes::plotData(){
 		case PROJ3x4:
 		plotProjection(type);
 		break;
-		default:
-		error("ArteAxes::plotData(), Invalid type specified, cannot be plotted");
+		// default:
+		// error("ArteAxes::plotData(), Invalid type specified, cannot be plotted");
 	}
 }
-void ArteAxes::setXLims(double xmin, xmax){
-	if (xmin>=ymin)
-		error("ArteAxes::setXLims xmin must be less than xmax");
+void ArteAxes::setXLims(double xmin, double xmax){
+	// if (xmin>=ymin)
+		// error("ArteAxes::setXLims xmin must be less than xmax");
 	xlims[0] = xmin;
 	xlims[1] = xmax;
 }
-void ArteAxes::setYLims(double ymin, ymax){
-	if (ymin>=ymin)
-		error("ArteAxes::setYLims ymin must be less than ymax");
+void ArteAxes::setYLims(double ymin, double ymax){
+	// if (ymin>=ymin)
+		// error("ArteAxes::setYLims ymin must be less than ymax");
 	xlims[0] = ymin;
 	ylims[1] = ymax;
 }
 void ArteAxes::setType(int t){
-	if (t<WAVE1 || t>PROJ3x4)
-		error("Invalid Axes type specified");
+	// if (t<WAVE1 || t>PROJ3x4)
+		// error("Invalid Axes type specified");
 	type = t;
 }
 
 
 void ArteAxes::plotWaveform(int chan){
 
-	if (chan>WAVE4 || chan<WAVE1)
-		error("ArteAxes::plotWaveform() invalid channel, must be between 0 and 4");
+	// if (chan>WAVE4 || chan<WAVE1)
+		// error("ArteAxes::plotWaveform() invalid channel, must be between 0 and 4");
 		
-	float dx = (xlims[1]-xlimx[0]) / (s.n_samps_per_chan-1);
+	//compute the spatial width for each wawveform sample	
+	float dx = (xlims[1]-xlims[0]) / (s->n_samps_per_chan-1);
 	float x = -1;
 	int	sampIdx = chan; 
 
-	glColor3fv(waveColor);
-	glBegin( GL_LINE_STRIP );
-	for (int i=0; i<s->n_samps_per_chan; i++)
-	{
-		glVertex2f(x, s->data[sampIdx]);
-		sampIdx +=4;
-		x +=dx;
+	//Draw the individual waveform points connected with a line
+	// if drawWaveformPoints is set to false then force the drawing of the line, _SOMETHING_ must be drawn
+	if(drawWaveformLine || !drawWaveformPoints){
+		glColor3fv(waveColor);
+		glBegin( GL_LINE_STRIP );
+		for (int i=0; i<s->n_samps_per_chan; i++)
+		{
+			glVertex2f(x, s->data[sampIdx]);
+			sampIdx +=4;
+			x +=dx;
+		}
+		glEnd();
 	}
-	glEnd();
-
-	// Draw the threshold line
-	int thresh = s->thresh[n];
 	
-	glColor3fv(tresholdColor); // set threshold line to red
+	if(drawWaveformPoints){
+		x = -1;
+		glColor3fv(pointColor);
+		glPointSize(5);
+		glBegin( GL_LINE_STRIP );
+		for (int i=0; i<s->n_samps_per_chan; i++)
+		{
+			glVertex2f(x, s->data[sampIdx]);
+			sampIdx +=4;
+			x +=dx;
+		}
+		glEnd();
+	}
+	// Draw the threshold line
+	int thresh = s->thresh[chan];
+	
+	glColor3fv(thresholdColor); 
 	glLineStipple(4, 0xAAAA); // make a dashed line
 	glEnable(GL_LINE_STIPPLE);
 	glBegin( GL_LINE_STRIP );
-		glVertex2f(xlim[0], thresh);
-		glVertex2f(xlim[1], thresh);
+		glVertex2f(xlims[0], thresh);
+		glVertex2f(xlims[1], thresh);
 	glEnd();		
 	glDisable(GL_LINE_STIPPLE);
 }
 
 
 void ArteAxes::plotProjection(int proj){
-	if (proj<PROJ1x2 || proj>PROJ3x4)
-		error("ArteAxes:plotProjection() invalid projection specified");
+	// if (proj<PROJ1x2 || proj>PROJ3x4)
+		// error("ArteAxes:plotProjection() invalid projection specified");
 		
 	int d1, d2;
 	if (proj==PROJ1x2){
@@ -132,20 +150,17 @@ void ArteAxes::plotProjection(int proj){
 		d2 = 3;
 	}
 	else{
-		error("ArteAxes::plotProjection(int proj) error invalid projection specified");
+		// error("ArteAxes::plotProjection() invalid projection specified cannot determine d1 and d2");
 	}
 	
 	int maxIdx = calcWaveformPeakIdx();
-	int idx1 = maxIdx+d1;
-	int idx2 = maxIdx+d2;
 	
-	glColor3fv(projectionColor);
+	glColor3fv(pointColor);
 	glPointSize(1);
 	glBegin(GL_POINTS);
-		glVertex2f(s->data[d1], s->data[d2]);
+		glVertex2f(s->data[maxIdx+d1], s->data[maxIdx+d2]);
 	glEnd();
 	
-	}
 }
 
 int ArteAxes::calcWaveformPeakIdx(){
@@ -173,4 +188,9 @@ void ArteAxes::setThresholdColor(GLfloat r, GLfloat g, GLfloat b){
 	thresholdColor[0] = r;
 	thresholdColor[1] = g;
 	thresholdColor[2] = b;
+}
+void ArteAxes::setPointColor(GLfloat r, GLfloat g, GLfloat b){
+	pointColor[0] = r;
+	pointColor[1] = g;
+	pointColor[2] = b;
 }

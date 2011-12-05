@@ -9,9 +9,11 @@
 #include <iostream>
 #include <stdlib.h>
 #include <assert.h>
+#include <pthread.h>
 
 #include "netcom.h"
 #include "datapacket.h"
+
 
 
 class TetrodeSource{
@@ -22,13 +24,11 @@ class TetrodeSource{
 
 	static int const MAX_SPIKE_BUFF_SIZE = 50;
 
-	stl::queue<spike_net_t> *spikebuffer;
+	std::queue<spike_net_t> *spikebuffer;
 	
-	uint32_t nSpikeRead;
-
-
+	uint32_t nSpikesRead;
 	
-	pthead_mutex_t mtx;
+	pthread_mutex_t mtx;
 	
 	spike_net_t tmpSpike;
 	
@@ -42,7 +42,8 @@ public:
 	
 	void enableSource(char *p);
 	void disableSource();
-	void getNetworkSpikePacket();
+	void getNetworkSpikePackets();
+	bool getNextSpike(spike_net_t *spike);	
 	
 	uint32_t getNSpikesRead();
 	int getBufferSize();

@@ -6,20 +6,21 @@ TetrodeSource::TetrodeSource(){
 	readingPackets = false;
 }
 
-spike_net_t TetrodeSource::getNextSpike(){
+bool TetrodeSource::getNextSpike(spike_net_t *spike){
 	pthread_mutex_lock(&mtx);
 
 	if (spikebuffer->empty()){
 		pthread_mutex_unlock(&mtx);
-		return null;
+		return false;
 	}
 
 	else{
 		spike_net_t s = spikebuffer->front();
+		spike = &s;
 		spikebuffer->pop();
 		pthread_mutex_unlock(&mtx);
 
-		return s;
+		return true;
 	}		
 }
 
@@ -32,30 +33,29 @@ void TetrodeSource::enableSource(char * p){
 	pthread_create(&netThread, NULL, networkThreadFunc, this);
 }
 void TetrodeSource::disableSource(){
-	readingPackets = false;
-	
+	readingPackets = false;	
 }
 
-void TetrodeSource::getNetworkSpikePacket(){
+void TetrodeSource::getNetworkSpikePackets(){
 	readingPackets = true;
 	
 	while(readingPackets){
-		
-		NetCom::rxSpike(net, &tmpSpike);
+		spike_net_t newSpike;
+		NetCom::rxSpike(net, &newSpike);
 	
 		pthread_mutex_lock(&mtx);
 		
 		while (spikebuffer->size()>MAX_SPIKE_BUFF_SIZE)
 			spikebuffer->pop();
 		
-		spikebuffer->push(&tmpSpike);
+		spikebuffer->push(newSpike);
 		pthread_mutex_unlock(&mtx);
 		
-		nSpikeRead++;
+		nSpikesRead++;
 	}
 }
 
-void TetrodeSource::getBufferSize(){
+int TetrodeSource::getBufferSize(){
 	return spikebuffer->size();
 }
 void TetrodeSource::flush(){
@@ -67,7 +67,7 @@ void TetrodeSource::flush(){
 }
 void *networkThreadFunc(void *ptr){
 	TetrodeSource *tp = (TetrodeSource*) ptr;
-	tp->getNetworkSpikePacket();
+	tp->getNetworkSpikePackets();
 }
 
 
