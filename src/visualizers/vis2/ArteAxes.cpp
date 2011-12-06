@@ -8,6 +8,7 @@ type(1)
 	xlims[1] = 1;
 	ylims[0] = 0;
 	ylims[1] = 0;
+	ArteUIElement::elementName = (char*) "ArteAxes";
 }
 
 ArteAxes::ArteAxes(int x, int y, double w, double h, int t):
@@ -19,6 +20,8 @@ ArteUIElement(x,y,w,h)
 	setWaveformColor(1.0,1.0,0.6);
 	setThresholdColor(1.0, 0.1, 0.1);
 	setPointColor(1.0, 1.0, 1.0);
+	ArteUIElement::elementName = (char*) "ArteAxes";
+
 }
 void ArteAxes::updateSpikeData(spike_net_t *newSpike){
 	s = newSpike;

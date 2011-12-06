@@ -3,6 +3,7 @@
 ArteUIElement::ArteUIElement():
 xpos(0),  ypos(0), width(100), height(100), enabled(true), padding(1)
 {	
+	elementName = (char*) "ArteUIElement";
 }
 
 ArteUIElement::ArteUIElement(int x, int y, double w, double h):
@@ -12,7 +13,16 @@ enabled(true), padding(1)
 	ypos = y+padding;
 	width = w-padding*2;
 	height = h-padding*2;
-	
+	elementName = (char*) "ArteUIElement";	
+}
+ArteUIElement::ArteUIElement(int x, int y, double w, double h, int p):
+enabled(true), padding(p)
+{
+	xpos = x+padding;
+	ypos = y+padding;
+	width = w-padding*2;
+	height = h-padding*2;
+	elementName = (char*) "ArteUIElement";	
 }
 
 void ArteUIElement::redraw(){
@@ -31,6 +41,8 @@ bool ArteUIElement::getEnabled(){
 }
 void ArteUIElement::setGlViewport(){
 	glViewport(xpos, ypos, width, height);
+	glLoadIdentity();
+	// std::cout<<xpos<<"x"<<ypos<<"-"<<width<<"x"<<height<<"\t"<<elementName<<std::endl;
 }
 void ArteUIElement::setPos(int x, int y, double w, double h){
 	xpos = x+padding;
