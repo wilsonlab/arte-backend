@@ -1,25 +1,22 @@
 #include "ArteTetrodePlot.h"
 
 ArteTetrodePlot::ArteTetrodePlot():
+ArteUIElement(),
 titleHeight(15){
-	ArteUIElement();
 	plotTitle = (char*) "ArteTetrodePlot";
-	initAxes();
 	//titleBox = ArteTitleBox(100-titleHeight,0,2,titleHeight, plotTitle);
-	ArteUIElement::elementName = (char*) "ArtePlot";
+//	ArteUIElement::elementName = (char*) "ArtePlot";
 
 	
 }
 ArteTetrodePlot::ArteTetrodePlot(int x, int y, int w, int h, char *n):
-ArteUIElement(x,y,w,h), 
+ArteUIElement(x,y,w,h,1), 
 titleHeight(15){
 	plotTitle = n;
-	initAxes();
-	titleBox = ArteTitleBox(x, y+h-titleHeight-3, w, titleHeight+3, plotTitle);
-	// titleBox = ArteTitleBox(200, 50, 50, 10, plotTitle);
-	std::cout<< x+h-titleHeight << "," << y << " - " << w << "," <<titleHeight<<std::endl;
-	ArteUIElement::elementName = (char*) "ArtePlot";
 
+	titleBox = ArteTitleBox(x, y+h-titleHeight-3, w, titleHeight+3, plotTitle);
+//	std::cout<< x+h-titleHeight << "," << y << " - " << w << "," <<titleHeight<<std::endl;
+//	ArteUIElement::elementName = (char*) "ArtePlot";
 }
 
 void ArteTetrodePlot::setDataSource(TetrodeSource source){
@@ -32,11 +29,22 @@ void ArteTetrodePlot::redraw(){
 	// std::cout<<"ArteTetrodePlot() starting drawing"<<std::endl;
 	ArteUIElement::redraw();
 
+	spike_net_t tempSpike;
 	std::list<ArteAxes>::iterator i;
-
-	for (i=axesList.begin(); i!= axesList.end(); ++i){
-		i->redraw();
+	bool axesDrawnOnce = false;
+	while(tetSource.getBufferSize()>0){
+		tetSource.getNextSpike(&tempSpike);
+		axesDrawnOnce = true;
+		
+		for (i=axesList.begin(); i!= axesList.end(); ++i){
+			i->updateSpikeData(&tempSpike);
+			i->redraw();
+		}
 	}
+	if (!axesDrawnOnce)
+		for (i= axesList.begin(); i!=axesList.end(); ++i)
+			i->redraw();
+
 	titleBox.redraw();
 	ArteUIElement::drawElementEdges();
 	// std::cout<<"ArteTetrodePlot() Done drawing"<<std::endl;
@@ -60,6 +68,7 @@ void ArteTetrodePlot::initAxes(){
 		std::list<ArteAxes> tmp;
 		axesList = tmp;
 	}
+
 	for (int i=WAVE1; i<=WAVE4; i++) // macro constants from ArteAxes.h
 	{
 		// divide axes width by 2 because wave plots are half of a projection plot width
@@ -80,4 +89,38 @@ void ArteTetrodePlot::initAxes(){
 		ax.setEnabled(false);
 		axesList.push_back(ax);
 	}
+}
+void ArteTetrodePlot::setPosition(int x, int y, double w, double h){
+	ArteUIElement::setPosition(x,y,w,h);
+	int minX = ArteUIElement::xpos;
+	int minY = ArteUIElement::ypos;
+	
+	double axesWidth = ArteUIElement::width/4.0;
+	double axesHeight = (ArteUIElement::height - titleHeight)/2.0;
+	
+	int axX, axY, axW, axH;
+	
+	std::list<ArteAxes>::iterator i;
+	int idx = 0, idx2 = 0;
+	
+	for (i=axesList.begin(); i!=axesList.end(); ++i){
+		if (idx<=WAVE4){
+			axX = minX  + axesWidth/2 * ( idx % 2 );
+			axY = minY +  axesHeight * ( idx / 2);
+			i->setPosition(axX, axY, axesWidth/2, axesHeight);
+		}
+		else{
+			idx2 = idx - PROJ1x2;
+			axX = minX + axesWidth *  (idx2%3 + 1); // add 1 to offset for the waveform plots
+			axY = minY + axesHeight * (idx2 / 3); // no need to offset for the y direction
+			i->setPosition(axX, axY, axesWidth, axesHeight);
+		}
+		idx++;
+	}
+	
+	titleBox.setPosition(x, y+h-titleHeight-3, w, titleHeight+3);
+}
+
+int ArteTetrodePlot::getNumberOfAxes(){
+	return axesList.size();
 }

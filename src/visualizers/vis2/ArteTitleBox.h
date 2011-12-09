@@ -28,6 +28,7 @@ public:
 	void setSelected(bool sel);
 	void setColor(float, float, float);
 	void setSelectedColor(float, float, float);
+	void setPosition(int,int,double,double);
 };
 
 

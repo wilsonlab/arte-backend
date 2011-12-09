@@ -7,10 +7,12 @@ void createGlutWindow(int xIn, int yIn, int wIn, int hIn, char *title, int argc,
 	y = yIn;
 	w = wIn;
 	h = hIn;
+	nPlots = 1;
+	
 	
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-	glutInitWindowPosition( x, y);
+	glutInitWindowSize( x, y);
 	glutInitWindowSize( w, h);
 	glutCreateWindow(title);
 	
@@ -43,6 +45,7 @@ void resizeWindow(int wNew, int hNew){
 	glutReshapeWindow(wNew,hNew);
 	resizeCallback(wNew,hNew);
 	windowSized = true;
+	positionTetrodePlots();
 }
 void showWindow(){
 	/*
@@ -60,17 +63,50 @@ void showWindow(){
 		std::cout<<"Layout dimensions have not been specified"<<std::endl;
 		exit(1);
 	}
-	for(int i=0; i<1; i++)
-	{
-		ArteTetrodePlot tp = ArteTetrodePlot(0,0,w/3,h/3,"Plot1");
-		tp.setEnabled(false);
-		tetrodePlots.push_back(tp);
-	}
-	// pc = new PlotCollection(nCol, nRow, w, h, ports);
 
-	// pc->initPlots();
+	// This is a hackish way to name  each plot, it will go away eventually so don't rely on it
+	char temp[100][100] = {0};
+	
+	for(int i=0; i<nPlots; i++)
+	{
+		sprintf(temp[i], "Tetrode:%d", i);
+		
+		std::cout<<"Setting up:"<<temp[i]<<" using port:"<< ports[i]<<std::endl;
+		TetrodeSource ts = TetrodeSource(ports[i]);
+		ArteTetrodePlot tp = ArteTetrodePlot(1,1,1,1,temp[i]);
+		tp.setDataSource(ts);
+		ts.enableSource();
+		tp.setEnabled(true);
+		tp.initAxes();
+					
+		tetrodePlots.push_back(tp);
+		
+	/*	if ((i+1)%nCol==0 && i != 0){
+			xax = 0;
+			yax += hax;
+		}
+		else
+			xax += wax;*/
+	}
+	positionTetrodePlots();
 	
 	glutMainLoop();
+}
+
+// Try to force the plots into a square grid
+void calcGridSize(int n, int *c, int *r){
+	// Assume its square and take the square root, if not square add one
+	*c = sqrt(n);
+	if (n / *c > *c)
+		(*c)++;
+		
+	// assume that N = r * c, if not then add one, 
+	//this will leave some empty space but only when n can't be factored
+	*r = n / *c;
+	if (n%*c != 0)
+		*r++;
+		
+	std::cout<<"Total plots:"<<n<<" setting up grid of"<<*c<<"x"<<*r<<std::endl;
 }
 
 void setPorts(char* portsNew[]){
@@ -83,7 +119,7 @@ void setLayoutDims(int c, int r){
 	layoutDimsSpecified = true;
 }
 void displayCallback(){
-	glClear(GL_COLOR_BUFFER_BIT);
+//	glClear(GL_COLOR_BUFFER_BIT);
 
 	std::list<ArteTetrodePlot>::iterator i;
 	for (i=tetrodePlots.begin(); i!=tetrodePlots.end(); ++i){
@@ -97,29 +133,37 @@ void idleCallback(){
 	displayCallback();
 	usleep(sleepTime);
 }
+void positionTetrodePlots(){
+	calcGridSize(nPlots,&nCol,&nRow);
+	double xax = 0, yax = 0, wax = w/nCol, hax = h/nRow;
+	int plotCount = 0;
+//	printf("GlutWindow~positionTetrodePlots() nPlots:%d axWidth:%d, axHeight:%d\n", nPlots, (int)wax, (int)hax);
 
+	std::list<ArteTetrodePlot>::iterator i;	
+	for (i=tetrodePlots.begin(); i!=tetrodePlots.end(); ++i)
+	{
+		i->setPosition(xax,yax,wax,hax);	
+		if ((plotCount+1)%nCol==0 && plotCount != 0){
+			xax = 0;
+			yax += hax;
+		}
+		else
+			xax += wax;
+		plotCount++;
+	}
+}
 void resizeCallback(int wNew, int hNew){
 	
 	w = wNew;
 	h = hNew;
-//	std::cout<<"resizeCallback() w:"<<wNew<<" h:"<<hNew<<std::endl;
-//	glLoadIdentity();
-
+	std::cout<<"resizeCallback() w:"<<wNew<<" h:"<<hNew<<std::endl;
+	
 	glClearColor(0.0,0.0,0.0,0.0);
 	glClear(GL_COLOR_BUFFER_BIT);
-	
+	glutSwapBuffers();
+	glClear(GL_COLOR_BUFFER_BIT);
 
-	setViewportWithRange(0,0,w,h,0,0,w,h);
-
-// 	glViewport(0,0,w,h);
-// 	glLoadIdentity();
-// 	glTranslatef(-1.0,-1.0, 0.0);
-// //	float scaleX = 2.0/float(w);
-// //	float scaleY = 2.0/float(h);
-// 	std::cout<<"Scaling viewport by:"<<scaleX<<" and "<<scaleY<<std::endl;
-// //	glScalef(.05,.05,1.0);
-// 	glScalef(scaleX, scaleY, 1.0);
-
+	positionTetrodePlots();
 }
 
 void keyPressedCallback(unsigned char key, int x, int y){

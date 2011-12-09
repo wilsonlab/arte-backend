@@ -13,13 +13,26 @@ void checkGlError(){
 		std::cout<<"OpenGL Okay!"<<std::endl;
 }
 void drawString(float x, float y, void *f, char *string){
-
 	glRasterPos2f(x, y);
-//	string = "123";
 	int len = strlen(string);
+	glColor3f(1.0, 1.0, 1.0);
 	for (int i = 0; i < len; i++) {
-   	glutBitmapCharacter(f, string[i]);
+ 		glutBitmapCharacter(f, string[i]);
 	}
+}
+
+void strokeString(void * font, char *message){
+	// glPushMatrix();
+	 glLoadIdentity();
+   	glTranslatef(-700, 0, 0);
+	//glViewport(0,0,500,500);
+	int len = (int) strlen(message);
+	glColor3f(1.0, 1.0, 1.0);
+	for (int i = 0; i < len; i++) {
+		glutStrokeCharacter(font, message[i]);
+	}
+
+	// glPopMatrix();
 }
 void drawViewportEdge(){
 	glPushMatrix();

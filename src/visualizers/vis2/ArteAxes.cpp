@@ -30,6 +30,8 @@ void ArteAxes::redraw(){
 	ArteUIElement::redraw();
 	if (ArteUIElement::enabled)
 		plotData();
+	
+//	printf("\tArteAxes::redraw() dims: %dx%d - %dx%d\n", ArteUIElement::xpos, ArteUIElement::ypos, (int)ArteUIElement::width, (int) ArteUIElement::height);
 	ArteUIElement::drawElementEdges();
 }
 void ArteAxes::plotData(){
@@ -49,8 +51,9 @@ void ArteAxes::plotData(){
 		case PROJ3x4:
 		plotProjection(type);
 		break;
-		// default:
-		// error("ArteAxes::plotData(), Invalid type specified, cannot be plotted");
+		default:
+			std::cout<<"ArteAxes::plotData(), Invalid type specified, cannot plot"<<std::endl;
+			exit(1);
 	}
 }
 void ArteAxes::setXLims(double xmin, double xmax){
@@ -60,22 +63,33 @@ void ArteAxes::setXLims(double xmin, double xmax){
 	xlims[1] = xmax;
 }
 void ArteAxes::setYLims(double ymin, double ymax){
-	// if (ymin>=ymin)
-		// error("ArteAxes::setYLims ymin must be less than ymax");
+	if (ymin>=ymin){
+		std::cout<<"ArteAxes::setYLims ymin must be less than ymax"<<std::endl;
+		return;
+	}
 	xlims[0] = ymin;
 	ylims[1] = ymax;
 }
 void ArteAxes::setType(int t){
-	// if (t<WAVE1 || t>PROJ3x4)
-		// error("Invalid Axes type specified");
+	 if (t<WAVE1 || t>PROJ3x4){
+		std::cout<<"Invalid Axes type specified";
+		return;
+	}
+	
 	type = t;
 }
 
 
 void ArteAxes::plotWaveform(int chan){
 
-	// if (chan>WAVE4 || chan<WAVE1)
-		// error("ArteAxes::plotWaveform() invalid channel, must be between 0 and 4");
+	std::cout<<"ArteAxes::plotWaveform():"<<chan<<std::endl;
+	
+	if (chan>WAVE4 || chan<WAVE1)
+	{
+		std::cout<<"ArteAxes::plotWaveform() invalid channel, must be between 0 and 4"<<std::endl;
+		return;
+	}
+
 		
 	//compute the spatial width for each wawveform sample	
 	float dx = (xlims[1]-xlims[0]) / (s->n_samps_per_chan-1);
@@ -91,7 +105,7 @@ void ArteAxes::plotWaveform(int chan){
 		{
 			glVertex2f(x, s->data[sampIdx]);
 			sampIdx +=4;
-			x +=dx;
+			x +=dx; 
 		}
 		glEnd();
 	}
@@ -124,6 +138,7 @@ void ArteAxes::plotWaveform(int chan){
 
 
 void ArteAxes::plotProjection(int proj){
+	std::cout<<"ArteAxes::plotProjection():"<<proj<<std::endl;
 	// if (proj<PROJ1x2 || proj>PROJ3x4)
 		// error("ArteAxes:plotProjection() invalid projection specified");
 		
@@ -153,7 +168,8 @@ void ArteAxes::plotProjection(int proj){
 		d2 = 3;
 	}
 	else{
-		// error("ArteAxes::plotProjection() invalid projection specified cannot determine d1 and d2");
+		std::cout<<"ArteAxes::plotProjection() invalid projection specified cannot determine d1 and d2"<<std::endl;
+		return;
 	}
 	
 	int maxIdx = calcWaveformPeakIdx();
@@ -196,4 +212,7 @@ void ArteAxes::setPointColor(GLfloat r, GLfloat g, GLfloat b){
 	pointColor[0] = r;
 	pointColor[1] = g;
 	pointColor[2] = b;
+}
+void ArteAxes::setPosition(int x, int y, double w, double h){
+	ArteUIElement::setPosition(x,y,w,h);	
 }

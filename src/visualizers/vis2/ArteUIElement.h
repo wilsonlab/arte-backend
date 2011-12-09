@@ -12,7 +12,6 @@ protected:
 	double padding;
 	
 	void setGlViewport();
-	char *elementName;
 		
 public:
 	ArteUIElement();
@@ -22,7 +21,10 @@ public:
 	void drawElementEdges();
 	void setEnabled(bool e);
 	bool getEnabled();
-	void setPos(int x, int y, double w, double h);
+	void setPosition(int x, int y, double w, double h);
+	
+	char *elementName;
+	
 };
 
 

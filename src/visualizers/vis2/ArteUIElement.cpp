@@ -1,13 +1,13 @@
 #include "ArteUIElement.h"
 
 ArteUIElement::ArteUIElement():
-xpos(0),  ypos(0), width(100), height(100), enabled(true), padding(1)
+xpos(0),  ypos(0), width(100), height(100), enabled(true), padding(0)
 {	
 	elementName = (char*) "ArteUIElement";
 }
 
 ArteUIElement::ArteUIElement(int x, int y, double w, double h):
-enabled(true), padding(1)
+enabled(true), padding(0)
 {
 	xpos = x+padding;
 	ypos = y+padding;
@@ -30,6 +30,7 @@ void ArteUIElement::redraw(){
 	setGlViewport();
 }
 void ArteUIElement::drawElementEdges(){
+	// std::cout<<"ArteUIELement::drawElementEdges(), Position:"<<xpos<<","<<ypos<<" : "<<width<<","<<height<<std::endl;
 	setGlViewport();
 	drawViewportEdge();
 }
@@ -44,7 +45,7 @@ void ArteUIElement::setGlViewport(){
 	glLoadIdentity();
 	// std::cout<<xpos<<"x"<<ypos<<"-"<<width<<"x"<<height<<"\t"<<elementName<<std::endl;
 }
-void ArteUIElement::setPos(int x, int y, double w, double h){
+void ArteUIElement::setPosition(int x, int y, double w, double h){
 	xpos = x+padding;
 	ypos = y+padding;
 	width = w - padding*2;

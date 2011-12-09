@@ -21,7 +21,6 @@ class ArteTetrodePlot : public ArteUIElement{
 	ArteTitleBox titleBox;
 	TetrodeSource tetSource;
 	bool enabled;
-	void initAxes();
 	void drawTitle();
 	
 	double titleHeight;
@@ -29,12 +28,13 @@ class ArteTetrodePlot : public ArteUIElement{
 public:
 	ArteTetrodePlot();
 	ArteTetrodePlot(int x, int y,int w,int h, char *n);
-
+	void initAxes();
 	void redraw();
-
 	void setTitle(char *n);
 	void setEnabled(bool enabled);
 	void setDataSource(TetrodeSource tp);
+	void setPosition(int,int,double,double);
+	int getNumberOfAxes();
 };
 
 

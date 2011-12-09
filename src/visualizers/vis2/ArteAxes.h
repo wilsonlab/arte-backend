@@ -50,6 +50,8 @@ public:
 	void setThresholdColor(GLfloat r, GLfloat g, GLfloat b);
 	void setPointColor(GLfloat r, GLfloat g, GLfloat b);
 	
+	void setPosition(int,int,double,double);
+	
 	bool drawWaveformLine;
 	bool drawWaveformPoints;
 };
