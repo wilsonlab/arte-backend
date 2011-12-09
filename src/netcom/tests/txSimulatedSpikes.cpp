@@ -80,7 +80,7 @@ spike_net_t genFakeSpike(){
 		nSpike++;
         for (int i=0; i<s.n_samps_per_chan; i++)
         {
-                s.gains[i] = 1000;
+                s.gains[i] = 100;
                 s.thresh[i] = 5000;
 
 				int dataIdx = (i+nSpike)%32;
@@ -89,7 +89,7 @@ spike_net_t genFakeSpike(){
 						if (noise>0)
 							n = (rand() % (noise*2))-noise;
 
-                        s.data[idx++] =  (trace[dataIdx]*200) + n;
+                        s.data[idx++] =  (trace[dataIdx]*s.gains[i]) + n;
                 }
         }
         return s;
