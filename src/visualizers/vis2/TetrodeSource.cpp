@@ -8,7 +8,6 @@ TetrodeSource::TetrodeSource():
 TetrodeSource::TetrodeSource(char *p):
 					nSpikesRead(0),
 					readingPackets(false){
-
 	port = p;
 }
 
@@ -20,10 +19,10 @@ bool TetrodeSource::setPort(char *p){
 	return true;
 }	
 bool TetrodeSource::getNextSpike(spike_net_t *spike){
+//	printf("size of spikebuffer:%d\n", (int)spikebuffer.size());
 	pthread_mutex_lock(&mtx);
-
 	if ( spikebuffer.empty()){
-		std::cout<<"TetrodeSource::getNextSpike(), spikebuffer is empty"<<std::endl;
+//		std::cout<<"TetrodeSource::getNextSpike(), spikebuffer is empty"<<std::endl;
 		pthread_mutex_unlock(&mtx);
 		return false;
 	}
@@ -33,13 +32,17 @@ bool TetrodeSource::getNextSpike(spike_net_t *spike){
 		s = spikebuffer.front();
 		*spike = s;
 		spikebuffer.pop();
-		std::cout<<"TetrodeSource::getNextSpike() popped spike from the buffer"<<std::endl;
+//		std::cout<<"TetrodeSource::getNextSpike() popped spike from the buffer"<<std::endl;
 		pthread_mutex_unlock(&mtx);
 		return true;
 	}		
 }
 
 void TetrodeSource::enableSource(){
+	pthread_mutex_lock(&mtx);
+	spikebuffer = std::queue<spike_net_t>();
+	pthread_mutex_unlock(&mtx);
+
 	if (port==NULL)
 	{
 		std::cout<<"TetrodeSource::enableSource(), No port specified, it is currently NULL"<<std::endl;
@@ -58,6 +61,7 @@ void TetrodeSource::getNetworkSpikePackets(){
 	readingPackets = true;
 	std::cout<<"TetrodeSource::getNetworkSpikePackets starting!"<<std::endl;
 	while(readingPackets){
+
 		spike_net_t newSpike;
 		NetCom::rxSpike(net, &newSpike);
 		pthread_mutex_lock(&mtx);
@@ -69,10 +73,13 @@ void TetrodeSource::getNetworkSpikePackets(){
 		}
 		*/
 		spikebuffer.push(newSpike);
-		
+		nSpikesRead++;
+//		printf("Read %d spikes, %d in buffer\n", nSpikesRead, spikebuffer.size());
+//		printf("\t New Spike timestamp:%d\n",newSpike.ts);
 		pthread_mutex_unlock(&mtx);
 		
-		nSpikesRead++;
+		if (nSpikesRead%100==0)
+			std::cout<<"TetrodeSource::getNetworkSpikePackets() read a total of:"<<nSpikesRead<<" spikes"<<std::endl;
 	}
 	std::cout<<"TetrodeSource::getNetworkSpikePackets ending!"<<std::endl;
 }

@@ -7,6 +7,7 @@
 	#include <GLUT/glut.h>
 #endif
 #include <list>
+#include <math.h>
 
 #include "ArteAxes.h"
 #include "ArteTitleBox.h"
@@ -24,6 +25,7 @@ class ArteTetrodePlot : public ArteUIElement{
 	void drawTitle();
 	
 	double titleHeight;
+	void *ptr;
 	
 public:
 	ArteTetrodePlot();
@@ -32,8 +34,10 @@ public:
 	void redraw();
 	void setTitle(char *n);
 	void setEnabled(bool enabled);
+	bool getEnabled();
 	void setDataSource(TetrodeSource tp);
 	void setPosition(int,int,double,double);
+	TetrodeSource *getDataSource();
 	int getNumberOfAxes();
 };
 

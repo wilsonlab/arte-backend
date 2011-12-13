@@ -43,6 +43,11 @@ void resizeWindow(int wNew, int hNew){
 	std::cout<<"Resizing the window"<<std::endl;
 
 	glutReshapeWindow(wNew,hNew);
+
+	glClear(GL_COLOR_BUFFER_BIT);
+	glutSwapBuffers();
+	glClear(GL_COLOR_BUFFER_BIT);
+
 	resizeCallback(wNew,hNew);
 	windowSized = true;
 	positionTetrodePlots();
@@ -71,12 +76,11 @@ void showWindow(){
 	{
 		sprintf(temp[i], "Tetrode:%d", i);
 		
-		std::cout<<"Setting up:"<<temp[i]<<" using port:"<< ports[i]<<std::endl;
+		std::cout<<"Setting up:"<<temp[i]<<" using port:"<< ports[i]<<"..."<<std::endl;
 		TetrodeSource ts = TetrodeSource(ports[i]);
 		ArteTetrodePlot tp = ArteTetrodePlot(1,1,1,1,temp[i]);
 		tp.setDataSource(ts);
-		ts.enableSource();
-		tp.setEnabled(true);
+		tp.setEnabled(false);
 		tp.initAxes();
 					
 		tetrodePlots.push_back(tp);
@@ -94,19 +98,24 @@ void showWindow(){
 }
 
 // Try to force the plots into a square grid
-void calcGridSize(int n, int *c, int *r){
+void calcGridSize(){
 	// Assume its square and take the square root, if not square add one
-	*c = sqrt(n);
-	if (n / *c > *c)
-		(*c)++;
+	int n = nPlots;
+	int cols;
+	int rows; 
+	cols = (int)sqrt(n);
+	// if the square root of number of plots doesn't produce a integer then go up to the next int
+	if (n > cols * cols)
+		(cols)++;
 		
 	// assume that N = r * c, if not then add one, 
 	//this will leave some empty space but only when n can't be factored
-	*r = n / *c;
-	if (n%*c != 0)
-		*r++;
-		
-	std::cout<<"Total plots:"<<n<<" setting up grid of"<<*c<<"x"<<*r<<std::endl;
+	rows = n / cols;
+	if (n > cols * rows)
+		rows++;
+	
+	nRow = rows;
+	nCol = cols;
 }
 
 void setPorts(char* portsNew[]){
@@ -123,6 +132,13 @@ void displayCallback(){
 
 	std::list<ArteTetrodePlot>::iterator i;
 	for (i=tetrodePlots.begin(); i!=tetrodePlots.end(); ++i){
+		if (!i->getEnabled())
+		{
+			TetrodeSource * ts = i->getDataSource();
+			ts->enableSource();
+			i->setEnabled(true);
+			continue;
+		}
 		i->redraw();
 	}
 	glutSwapBuffers();
@@ -134,7 +150,9 @@ void idleCallback(){
 	usleep(sleepTime);
 }
 void positionTetrodePlots(){
-	calcGridSize(nPlots,&nCol,&nRow);
+//	calcGridSize();
+	nCol = 1;
+	nRow = 1;
 	double xax = 0, yax = 0, wax = w/nCol, hax = h/nRow;
 	int plotCount = 0;
 //	printf("GlutWindow~positionTetrodePlots() nPlots:%d axWidth:%d, axHeight:%d\n", nPlots, (int)wax, (int)hax);
@@ -151,12 +169,13 @@ void positionTetrodePlots(){
 			xax += wax;
 		plotCount++;
 	}
+	
 }
 void resizeCallback(int wNew, int hNew){
 	
 	w = wNew;
 	h = hNew;
-	std::cout<<"resizeCallback() w:"<<wNew<<" h:"<<hNew<<std::endl;
+//	std::cout<<"resizeCallback() w:"<<wNew<<" h:"<<hNew<<std::endl;
 	
 	glClearColor(0.0,0.0,0.0,0.0);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -168,6 +187,8 @@ void resizeCallback(int wNew, int hNew){
 
 void keyPressedCallback(unsigned char key, int x, int y){
 	std::cout<<"GlutWindow.keyPressedCallback()"<<std::endl;
+	if (key=='q')
+		exit(0);
 //	pc->keyPressedFn(key);
 }
 

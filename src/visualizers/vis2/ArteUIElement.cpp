@@ -18,8 +18,9 @@ enabled(true), padding(0)
 ArteUIElement::ArteUIElement(int x, int y, double w, double h, int p):
 enabled(true), padding(p)
 {
+	padding = 0;
 	xpos = x+padding;
-	ypos = y+padding;
+	ypos = y+padding;	
 	width = w-padding*2;
 	height = h-padding*2;
 	elementName = (char*) "ArteUIElement";	
@@ -31,7 +32,9 @@ void ArteUIElement::redraw(){
 }
 void ArteUIElement::drawElementEdges(){
 	// std::cout<<"ArteUIELement::drawElementEdges(), Position:"<<xpos<<","<<ypos<<" : "<<width<<","<<height<<std::endl;
+	glColor3f(1.0, 1.0, 1.0);
 	setGlViewport();
+	glLineWidth(2);
 	drawViewportEdge();
 }
 void ArteUIElement::setEnabled(bool e){

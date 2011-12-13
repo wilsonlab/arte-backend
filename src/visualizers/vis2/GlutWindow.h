@@ -24,7 +24,7 @@ static int x,y,w,h;
 static int nRow;
 static int nCol;
 static char** ports;
-static int sleepTime = 1e6/100;
+static int sleepTime = 1e6/60;
 static int nPlots;
 
 static bool windowPositioned = false;
@@ -32,7 +32,9 @@ static bool windowSized = false;
 static bool portsSpecified = false;
 static bool layoutDimsSpecified = false;
 
+
 static std::list<ArteTetrodePlot> tetrodePlots;
+static std::list<TetrodeSource> tetrodeSources;
 //
 
 void positionTetrodePlots();
@@ -53,7 +55,7 @@ void setPorts(char *ports[]);
 void setLayoutDims(int c, int r);
 void showWindow();
 
-void calcGridSize(int n, int* c, int *r);
+void calcGridSize();
 
 
 

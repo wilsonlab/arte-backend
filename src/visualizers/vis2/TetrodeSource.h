@@ -21,17 +21,11 @@ class TetrodeSource{
 	char host[128];// = "127.0.0.1";
 	char * port;
 	NetComDat net; // = NetCom::initUdpRx(host,port);
-
-	static int const MAX_SPIKE_BUFF_SIZE = 100;
-
+	static int const MAX_SPIKE_BUFF_SIZE = 4000;
 	std::queue<spike_net_t> spikebuffer;
-	
 	uint32_t nSpikesRead;
-	
 	pthread_mutex_t mtx;
-	
 	spike_net_t tmpSpike;
-	
 	bool readingPackets;
 
 
@@ -49,8 +43,7 @@ public:
 	
 	uint32_t getNSpikesRead();
 	int getBufferSize();
-	void flush();
-	
+	void flush();	
 };
 
 

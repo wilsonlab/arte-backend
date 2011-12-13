@@ -2,7 +2,7 @@
 #include "PlotUtils.h"
 
 ArteTitleBox::ArteTitleBox():
-ArteUIElement(0,0,15,100,1)
+ArteUIElement(0,0,15,100,0)
 {
 	setColor(.15, .15, .50);
 	setSelectedColor(.15, .50, .15);
@@ -12,7 +12,7 @@ ArteUIElement(0,0,15,100,1)
 }
 
 ArteTitleBox::ArteTitleBox(int x, int y,int w,int h, char *n):
-ArteUIElement(x,y,w,h,1)
+ArteUIElement(x,y,w,h,0)
 {
 	setColor(.15, .15, .50);
 	setSelectedColor(.15, .50, .15);
