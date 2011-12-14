@@ -9,7 +9,7 @@ spike_net_t genFakeSpike();
 timeval then, now;
 int nSpike =0;
 int noise = 400;
-
+uint64_t count = 0;
 int main(int argc, char* argv[]){
 
 	
@@ -40,10 +40,13 @@ int main(int argc, char* argv[]){
 	gettimeofday(&then,NULL);
 	while (true)
 	{
+		count++;
+		spike.ts = count;
 		NetCom::txSpike(net, &spike);
 		usleep(sleep);
 		spike = genFakeSpike();
 		gettimeofday(&now,NULL);
+		
 		long dt = (now.tv_usec - then.tv_usec);
 		then.tv_usec = now.tv_usec;
 //		std::cout<<"Transmitting spikes at rate:"<<1e6/dt<<std::endl;		
@@ -70,7 +73,7 @@ spike_net_t genFakeSpike(){
 
 
         spike_net_t s;
-        s.ts = 987654321;
+        s.ts = 0;
         s.name = 75;
         s.n_chans = 4;
         s.n_samps_per_chan = 32;
@@ -85,12 +88,15 @@ spike_net_t genFakeSpike(){
 
 				int dataIdx = (i+nSpike)%32;
                 for (int j=0; j<s.n_chans; j++){
-						int n = 0;
-						if (noise>0)
-							n = (rand() % (noise*2))-noise;
-
-                        s.data[idx++] =  (trace[dataIdx]*s.gains[i]) + n;
+					int g = s.gains[i];
+					int n = 0;
+					if (noise>0){
+						n = (rand() % (noise*2))-noise;
+						n = n / j;
+					}
+                    s.data[idx++] = (trace[dataIdx]*g) + n;
                 }
         }
+		printf("Gains:%d %d %d %d\n", s.gains[0], s.gains[1], s.gains[2], s.gains[3]);
         return s;
 }
