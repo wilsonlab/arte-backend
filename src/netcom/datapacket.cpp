@@ -53,7 +53,7 @@ void spikeToBuff(spike_net_t* s, char* buff, int *buff_len, bool c){
      data_tx[i] = hton16c(s->data[i], c);
    }
    for(int i = 0; i < s->n_chans; i++){
-     gains_tx[i] = hton16c(s->data[i], c);
+     gains_tx[i] = hton16c(s->gains[i], c);
      thresh_tx[i] = hton16c(s->thresh[i], c);
    }
 
