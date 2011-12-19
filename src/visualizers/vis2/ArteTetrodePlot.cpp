@@ -98,6 +98,8 @@ void ArteTetrodePlot::initAxes(){
 
 		ArteAxes ax = ArteAxes(axX, axY, axesWidth, axesHeight, i);
 		ax.setEnabled(true);
+		// ax.setYLims(0, pow(2,15));
+		ax.setYLims(-1*pow(2,11), pow(2,14));
 		axesList.push_back(ax);
 	}
 }
@@ -138,4 +140,8 @@ int ArteTetrodePlot::getNumberOfAxes(){
 
 TetrodeSource* ArteTetrodePlot::getDataSource(){
 	return &tetSource;
+}
+
+void ArteTetrodePlot::clearOnNextDraw(bool b){
+	ArteUIElement::clearNextDraw = b;
 }

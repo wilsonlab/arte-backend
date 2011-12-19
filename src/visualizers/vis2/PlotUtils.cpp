@@ -73,15 +73,9 @@ void setViewportRange(int xMin,int yMin,int xMax,int yMax){
 //	printf("Dx:%f Dy:%f, Scaling viewport by:%f,%f \n", dx,dy,2.0/dx, 2.0/dy);
 	glLoadIdentity();
 	glTranslatef(-1.0,-1.0,0.0); 
-	glScalef(2.0/dx, 2.0/dy, 1.0);
+	glScalef(2.0f/dx, 2.0f/dy, 1.0);
 	glTranslatef(0-xMin, 0-yMin, 0);
 	
-//	glScalef(0.5,0.5,1); 
-
-
-//	glScalef(1.0f/dx, 1.0/dy, 1.0);
-	
-//	glTranslatef(0-xMin, 0-yMin, 0);
 }
 int roundUp(int numToRound, int multiple) 
 { 
@@ -94,4 +88,26 @@ int roundUp(int numToRound, int multiple)
  	if (remainder == 0)
   		return numToRound;
  	return numToRound + multiple - remainder;
+}
+
+double ad16ToUv(int x, int gain){	
+	int result =  (double)(x * 20e6) / (double)(gain * pow(2,16));
+	return result;
+}
+void makeLabel(int val, int gain, bool convert, char * s){
+	if (convert){
+		val = ad16ToUv(val, gain);
+		if (abs(val)>1e6){
+			val = val/(1e6);
+			sprintf(s, "%dV", (int)val);
+		}
+		else if(abs(val)>1e3){
+			val = val/(1e3);
+			sprintf(s, "%dmV", (int)val);
+		}
+		else
+			sprintf(s, "%duV", (int)val);
+	}
+	else
+		sprintf(s,"%d", (int)val);		
 }

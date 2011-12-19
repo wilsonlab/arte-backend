@@ -31,6 +31,7 @@ static bool windowPositioned = false;
 static bool windowSized = false; 
 static bool portsSpecified = false;
 static bool layoutDimsSpecified = false;
+static bool clearNextDraw = false;
 
 
 static std::list<ArteTetrodePlot> tetrodePlots;
@@ -44,6 +45,7 @@ void keyPressedCallback(unsigned char key, int x, int y);
 
 void specialKeyCallback(int key, int x, int y);
 void mouseClickCallback(int button, int state, int x, int y);
+void mouseEventCallback(int button, int state, int x, int y);
 
 void idleCallback();
 void displayCallback();
@@ -57,6 +59,9 @@ void showWindow();
 
 void calcGridSize();
 
+void clearDoubleBuffer();
+void clearSingleBuffer();
+void clearPlots();
 
 
 	

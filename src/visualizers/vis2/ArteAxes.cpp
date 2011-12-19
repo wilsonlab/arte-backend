@@ -1,13 +1,15 @@
 #include "ArteAxes.h"
 
 ArteAxes::ArteAxes():
-ArteUIElement(),
-type(1),
-drawWaveformLine(true),
-drawWaveformPoints(false),
-drawGrid(true),
-gotFirstSpike(false),
-overlay(false)
+					ArteUIElement(),
+					type(1),
+					drawWaveformLine(true),
+					drawWaveformPoints(false),
+					drawGrid(true),
+					gotFirstSpike(false),
+					overlay(false),
+					convertLabelUnits(true),
+					resizedFlag(false)
 {	
 	ylims[0] = 0;
 	ylims[1] = 1;
@@ -20,12 +22,14 @@ overlay(false)
 }
 
 ArteAxes::ArteAxes(int x, int y, double w, double h, int t):
-ArteUIElement(x,y,w,h),
-drawWaveformLine(true),
-drawWaveformPoints(false),
-drawGrid(true),
-gotFirstSpike(false),
-overlay(false)
+					ArteUIElement(x,y,w,h),
+					drawWaveformLine(true),
+					drawWaveformPoints(false),
+					drawGrid(true),
+					gotFirstSpike(false),
+					overlay(false),
+					convertLabelUnits(true),
+					resizedFlag(false)
 {
 	// if (t<WAVE1 || t>PROJ3x4)
 		//("Invalid Axes type specified");
@@ -98,9 +102,7 @@ void ArteAxes::setType(int t){
 
 
 void ArteAxes::plotWaveform(int chan){
-	
-	if (drawGrid)
-		drawWaveformGrid();
+
 	if (chan>WAVE4 || chan<WAVE1)
 	{
 		std::cout<<"ArteAxes::plotWaveform() invalid channel, must be between 0 and 4"<<std::endl;
@@ -108,20 +110,19 @@ void ArteAxes::plotWaveform(int chan){
 	}
 	
 	if (s.n_samps_per_chan>1024)
-		return;
-		
+		return;	
+
 	// Set the plotting range for the current axes 
 	// xdims are 0->number of samples per waveform minus one so the line goes all the way to the edges
 	// ydims are specified by the ylims vector		
 	setViewportRange(0, ylims[0], s.n_samps_per_chan-1, ylims[1]);
 	
-
 	if(!overlay){
 		glColor3f(0.0,0.0,0.0);
 		glRectd(0,ylims[0], s.n_samps_per_chan, ylims[1]);
 	}
 	if(drawGrid)
-		drawWaveformGrid();
+		drawWaveformGrid(s.thresh[chan], s.gains[chan]);
 	
 	//compute the spatial width for each wawveform sample	
 	float dx = 1;
@@ -163,7 +164,6 @@ void ArteAxes::plotWaveform(int chan){
 		glEnd();
 	}
 	// Draw the threshold line and label
-	int thresh = s.thresh[chan];
 	
 	glColor3fv(thresholdColor);
 	glLineWidth(1); 
@@ -171,16 +171,24 @@ void ArteAxes::plotWaveform(int chan){
 	glEnable(GL_LINE_STIPPLE);
 
 	glBegin( GL_LINE_STRIP );
-		glVertex2f(0, thresh);
-		glVertex2f(s.n_samps_per_chan, thresh);
+		glVertex2f(0, s.thresh[chan]);
+		glVertex2f(s.n_samps_per_chan, s.thresh[chan]);
 	glEnd();		
 
 	glDisable(GL_LINE_STIPPLE);
 
-	char str[100] = {0};
-	sprintf(str, "%d", (int) thresh);
+	char str[500] = {0};
+	
+	/*if(convertLabelUnits)
+		sprintf(str, "%duV", ad16ToUv(s.thresh[chan], s.gains[chan]));
+	else
+		sprintf(str, "%d", (int) s.thresh[chan]);*/
+	makeLabel(s.thresh[chan], s.gains[chan], convertLabelUnits, str);
+	
+//	printf(str);
+	
 	float yOffset = (ylims[1] - ylims[0])/ArteUIElement::height * 2;
-	drawString(1 ,thresh + yOffset, GLUT_BITMAP_8_BY_13, str);
+	drawString(1 ,s.thresh[chan] + yOffset, GLUT_BITMAP_8_BY_13, str);
 }
 
 
@@ -188,9 +196,14 @@ void ArteAxes::plotProjection(int proj){
 //	std::cout<<"ArteAxes::plotProjection():"<<proj<<" not yet implemented"<<std::endl;
 	// if (proj<PROJ1x2 || proj>PROJ3x4)
 		// error("ArteAxes:plotProjection() invalid projection specified");
-	
-	setViewportRange(ylims[0], ylims[0], ylims[1], ylims[1]);
-	drawViewportCross();
+
+	setViewportRange(ylims[0], ylims[0],ylims[1], ylims[1]);
+
+	if (resizedFlag){
+		glColor3f(0.0,0.0,0.0);
+		glRectd(ylims[0],ylims[0], ylims[1], ylims[1]);
+		resizedFlag = false;
+	}
 	int d1, d2;
 	if (proj==PROJ1x2){
 		d1 = 0;
@@ -221,42 +234,63 @@ void ArteAxes::plotProjection(int proj){
 		return;
 	}
 	
-	int maxIdx = calcWaveformPeakIdx();
+	int idx1, idx2;
+	calcWaveformPeakIdx(d1,d2,&idx1, &idx2);
 //	std::cout<<"MaxIDX:"<<maxIdx<<std::endl;
 	if (drawGrid)
-		drawProjectionGrid();
+		drawProjectionGrid(s.gains[d1], s.gains[d2]);
 	glColor3fv(pointColor);
 	glPointSize(1);
 	glBegin(GL_POINTS);
-		glVertex2f(s.data[maxIdx+d1], s.data[maxIdx+d2]);
+//		glVertex2f(s.data[maxIdx+d1], s.data[maxIdx+d2]);		
+	glVertex2f(s.data[idx1], s.data[idx2]);
 	glEnd();
-	
 }
 
-int ArteAxes::calcWaveformPeakIdx(){
+void ArteAxes::calcWaveformPeakIdx(int d1, int d2, int *idx1, int *idx2){
 //Calculate which sample in the waveform across all channels has the highest peak voltage 
 //and then calculate its sample number
-
-	int idx = -1;
-	int val = -1*2^15;
-	for (int i=0; i<s.n_samps_per_chan * s.n_chans; i++)
-		if(val < s.data[i])
-		{
-			idx = i;
-			val = s.data[i];
+	// 
+	// int idx = -1;
+	// int val = -1*2^15;
+	// for (int i=0; i<s.n_samps_per_chan * s.n_chans; i++)
+	// 	if(val < s.data[i])
+	// 	{
+	// 		idx = i;
+	// 		val = s.data[i];
+	// 	}
+	// // The index of the peak voltage can be any of the channels so shift it back to the first channel
+	// idx = idx - idx%s.n_chans;
+	// return idx;
+	int max1 = -1*pow(2,15);
+	int max2 = max1;
+	
+	for (int i=0; i<s.n_samps_per_chan ; i++){
+		if (s.data[i*s.n_chans + d1] > max1)
+		{	
+			*idx1 = i*s.n_chans + d1;
+			max1 = s.data[*idx1];
 		}
-	// The index of the peak voltage can be any of the channels so shift it back to the first channel
-	idx = idx - idx%s.n_chans;
-	return idx;
+		if (s.data[i*s.n_chans + d2] > max2)
+		{	
+			*idx2 = i*s.n_chans + d2;
+			max2 = s.data[*idx2];
+		}
+	}
 }
-void ArteAxes::drawWaveformGrid(){
+void ArteAxes::drawWaveformGrid(int thold, int gain){
 
 	double voltRange = ylims[1] - ylims[0];
 	double pixelRange = ArteUIElement::height;
 	//This is a totally arbitrary value that i'll mess around with and set as a macro when I figure out a value I like
 	int minPixelsPerTick = 25;
+	int MAX_N_TICKS = 10;
 
 	int nTicks = pixelRange / minPixelsPerTick;
+	while(nTicks>MAX_N_TICKS){
+		minPixelsPerTick += 5;
+		nTicks = pixelRange / minPixelsPerTick;
+	}
 	int voltPerTick = (voltRange / nTicks);
 	// Round to the nearest 200
 
@@ -265,28 +299,47 @@ void ArteAxes::drawWaveformGrid(){
 	glColor3fv(gridColor);
 
 	glLineWidth(1);
-	char str[100] = {0};
-	for (int i=0; i<nTicks; i++){
-		// Draw the individual ticks
-		double tickVoltage = roundUp(ylims[0] + voltPerTick/4 + (i * voltPerTick), 200);
-		// if the tick is too close to the top of the axes don't draw it.
+	char str[200] = {0}; 
 	
+	double tickVoltage = thold;
+	while(tickVoltage < ylims[1] - voltPerTick/2) // Draw the ticks above the thold line
+	{
+		tickVoltage = roundUp(tickVoltage + voltPerTick, 100);
+		
 		glBegin(GL_LINE_STRIP);
 		glVertex2i(0, tickVoltage);
 		glVertex2i(s.n_samps_per_chan, tickVoltage);
 		glEnd();
-	
-		// Write the voltage level
-		sprintf(str, "%d", (int) tickVoltage);
-//		str = itoa(tickVoltage, )
+		
+		makeLabel(tickVoltage, gain, convertLabelUnits, str);
 		drawString(1, tickVoltage+voltPerTick/10, GLUT_BITMAP_8_BY_13, str);
 	}
+	
+	tickVoltage = thold;
+	while(tickVoltage > ylims[0] + voltPerTick) // draw the ticks below the thold line
+	{
+		tickVoltage = roundUp(tickVoltage - voltPerTick, 100);
+
+		glBegin(GL_LINE_STRIP);
+		glVertex2i(0, tickVoltage);
+		glVertex2i(s.n_samps_per_chan, tickVoltage);
+		glEnd();
+			
+		makeLabel(tickVoltage, gain, convertLabelUnits, str);
+		drawString(1, tickVoltage+voltPerTick/10, GLUT_BITMAP_8_BY_13, str);
+	}
+	
+	
 }
-void ArteAxes::drawProjectionGrid(){
+void ArteAxes::drawProjectionGrid(int gain1, int gain2){
+	return; // Disabled method, figure out how you want to implement this in the future
+	
 	double voltRange = ylims[1] - ylims[0];
+	double threeQuarters  = voltRange * 3.0f / 4.0f;
+	
 	double pixelRange = ArteUIElement::height;
 	//This is a totally arbitrary value that i'll mess around with and set as a macro when I figure out a value I like
-	int minPixelsPerTick = 25;
+	int minPixelsPerTick = 50;
 
 	int nTicks = pixelRange / minPixelsPerTick;
 	int voltPerTick = (voltRange / nTicks);
@@ -298,22 +351,24 @@ void ArteAxes::drawProjectionGrid(){
 
 	glLineWidth(1);
 	char str[100] = {0};
-	for (int i=0; i<nTicks; i++){
-		// Draw the individual ticks
-		double tickVoltage = roundUp(ylims[0] + voltPerTick/4 + (i * voltPerTick), 200);
-		// if the tick is too close to the top of the axes don't draw it.
-
-		glBegin(GL_LINE_STRIP);
-		glVertex2i(0, tickVoltage);
-		glVertex2i(tickVoltage, tickVoltage);
-		glVertex2i(tickVoltage, 0);
-		glEnd();
-
-		// Write the voltage level
-		sprintf(str, "%d", (int) tickVoltage);
-//		str = itoa(tickVoltage, )
-		drawString(1, tickVoltage+voltPerTick/10, GLUT_BITMAP_8_BY_13, str);
-	}
+	
+	makeLabel(threeQuarters, gain1, convertLabelUnits, str);
+	drawString(threeQuarters, (ylims[1] - ylims[0]) / 100, GLUT_BITMAP_8_BY_13, str );
+	glBegin(GL_LINE_STRIP);
+	glVertex2f(threeQuarters, ylims[0]);
+	glVertex2f(threeQuarters, ylims[1]);
+	glEnd();
+	glBegin(GL_LINE_STRIP);
+	glVertex2f(ylims[0], threeQuarters);
+	glVertex2f(ylims[1], threeQuarters);
+	glEnd();
+	
+	
+	makeLabel(threeQuarters, gain2, convertLabelUnits, str);
+	
+	drawString( ylims[0] + (ylims[1] - ylims[0])/25, threeQuarters, GLUT_BITMAP_8_BY_13, str );
+	
+		
 }
 void ArteAxes::setWaveformColor(GLfloat r, GLfloat g, GLfloat b){
 	waveColor[0] = r;
@@ -337,4 +392,8 @@ void ArteAxes::setGridColor(GLfloat r, GLfloat g, GLfloat b){
 }
 void ArteAxes::setPosition(int x, int y, double w, double h){
 	ArteUIElement::setPosition(x,y,w,h);	
+	resizedFlag = true;
+}
+void ArteAxes::clearOnNextDraw(bool b){
+	ArteUIElement::clearOnNextDraw(b);
 }

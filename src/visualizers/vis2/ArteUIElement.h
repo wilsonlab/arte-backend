@@ -24,6 +24,8 @@ public:
 	void setPosition(int x, int y, double w, double h);
 	
 	char *elementName;
+	void clearOnNextDraw(bool);
+	bool clearNextDraw;
 	
 };
 

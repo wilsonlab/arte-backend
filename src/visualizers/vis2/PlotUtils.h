@@ -10,6 +10,7 @@
 	#include <OpenGL/glext.h>
 #endif
 
+#include <math.h>
 #include <cstring>
 #include <iostream>
 
@@ -22,4 +23,8 @@ void drawViewportEdge();
 void drawViewportCross();
 
 int roundUp(int, int);
+
+double ad16ToUv(int ad, int gain);
+
+void makeLabel(int val, int gain, bool convert, char * s);
 #endif

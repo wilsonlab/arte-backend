@@ -27,6 +27,7 @@ class ArteTetrodePlot : public ArteUIElement{
 	double titleHeight;
 	void *ptr;
 	
+	
 public:
 	ArteTetrodePlot();
 	ArteTetrodePlot(int x, int y,int w,int h, char *n);
@@ -39,7 +40,10 @@ public:
 	void setPosition(int,int,double,double);
 	TetrodeSource *getDataSource();
 	int getNumberOfAxes();
+	void clearOnNextDraw(bool c);
+	
 };
+
 
 
 #endif

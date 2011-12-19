@@ -35,13 +35,14 @@ class ArteAxes: public ArteUIElement{
 	GLfloat pointColor[3];
 	GLfloat gridColor[3];
 	
-	int calcWaveformPeakIdx();
+	void calcWaveformPeakIdx(int,int,int*,int*);
 	
 	bool gotFirstSpike;
+	bool resizedFlag;
 	
-  	void drawWaveformGrid();
-	void drawProjectionGrid();
-	
+  	void drawWaveformGrid(int thold, int gain);
+	void drawProjectionGrid(int gain1, int gain2);
+
 public:
 	ArteAxes();
 	ArteAxes(int x, int y, double w, double h, int t);
@@ -64,6 +65,9 @@ public:
 	bool drawWaveformPoints;
 	bool overlay;
 	bool drawGrid;
+	bool convertLabelUnits;
+	
+	void clearOnNextDraw(bool c);
 };
 
 

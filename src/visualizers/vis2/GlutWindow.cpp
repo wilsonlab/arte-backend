@@ -28,9 +28,10 @@ void createGlutWindow(int xIn, int yIn, int wIn, int hIn, char *title, int argc,
 	if (GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader)
 		printf("Ready for GLSL\n");
 	else {
-		printf("Not totally ready   \n");
+		printf("Not ready for GLSL\n");
 		exit(1);
 	}
+	glClearColor(0.0,0.0,0.0,0.0);
 	
 }
 void positionWindow(int xNew, int yNew){
@@ -43,10 +44,6 @@ void resizeWindow(int wNew, int hNew){
 	std::cout<<"Resizing the window"<<std::endl;
 
 	glutReshapeWindow(wNew,hNew);
-
-	glClear(GL_COLOR_BUFFER_BIT);
-	glutSwapBuffers();
-	glClear(GL_COLOR_BUFFER_BIT);
 
 	resizeCallback(wNew,hNew);
 	windowSized = true;
@@ -130,6 +127,10 @@ void setLayoutDims(int c, int r){
 void displayCallback(){
 //	glClear(GL_COLOR_BUFFER_BIT);
 
+	if(clearNextDraw)
+	{
+		clearSingleBuffer();
+	}
 	std::list<ArteTetrodePlot>::iterator i;
 	for (i=tetrodePlots.begin(); i!=tetrodePlots.end(); ++i){
 		if (!i->getEnabled())
@@ -139,8 +140,16 @@ void displayCallback(){
 			i->setEnabled(true);
 			continue;
 		}
+		if(clearNextDraw){
+			glFinish();
+			i->clearOnNextDraw(true);
+		}
 		i->redraw();
+		
 	}
+	
+	clearNextDraw = false;
+	
 	glutSwapBuffers();
 	glFlush();
 	
@@ -177,16 +186,23 @@ void resizeCallback(int wNew, int hNew){
 	h = hNew;
 //	std::cout<<"resizeCallback() w:"<<wNew<<" h:"<<hNew<<std::endl;
 	
-	glClearColor(0.0,0.0,0.0,0.0);
-	glClear(GL_COLOR_BUFFER_BIT);
-	glutSwapBuffers();
-	glClear(GL_COLOR_BUFFER_BIT);
+	clearNextDraw = true;
+
+	clearPlots();
 
 	positionTetrodePlots();
 }
 
 void keyPressedCallback(unsigned char key, int x, int y){
 	std::cout<<"GlutWindow.keyPressedCallback()"<<std::endl;
+	switch(key){
+		case 'q':
+		exit(0);
+		break;
+		case 'c':
+		clearPlots();
+		break;
+	}
 	if (key=='q')
 		exit(0);
 //	pc->keyPressedFn(key);
@@ -200,4 +216,19 @@ void specialKeyCallback(int key, int x, int y){
 void mouseClickCallback(int button, int state, int x, int y){
 	std::cout<<"GlutWindow.mouseClickCallback()"<<std::endl;
 	// pc->mouseClickFn(button, state, x, y);
+}
+
+void clearDoubleBuffer(){
+	glFinish();
+	glClear(GL_COLOR_BUFFER_BIT);
+	glutSwapBuffers();
+	glClear(GL_COLOR_BUFFER_BIT);
+	
+}
+void clearSingleBuffer(){
+	glFinish();
+	glClear(GL_COLOR_BUFFER_BIT);
+}
+void clearPlots(){
+	clearNextDraw = true;
 }
