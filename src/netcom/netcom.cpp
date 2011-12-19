@@ -42,6 +42,7 @@ NetComDat NetCom::initUdpTx(char host[], int port){
 
 NetComDat NetCom::initUdpRx(char host[], char * port){
 
+	printf("initializing NetComDat for UDP-RX\n");
 	int sockfd;
     struct addrinfo hints, *servinfo, *p;
     int rv;
@@ -143,9 +144,11 @@ void NetCom::rxSpike(NetComDat net, spike_net_t* spike){
 
   char buff[BUFFSIZE-1];
   int buff_len = 0;
-
+  // printf("Netcom::rxSpike() calling rxBuff()\n");
   rxBuff(net, buff, &buff_len);
+//  printf("Netcom::rxSpike() converting buff to spike\n");
   buffToSpike(spike, buff, true);
+  //printf("Netcom::rxSpike() the buff is converted\n");
 }
 
 int NetCom::txWave(NetComDat net, lfp_bank_net_t *lfp){

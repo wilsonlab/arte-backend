@@ -15,7 +15,7 @@ int main(int argc, char* argv[]){
 	
 	if (argc<4)
 	{
-		std::cout<<"Usage: txArteSpikes ip port rate"<<std::endl;
+		std::cout<<"Usage: txArteSpikes ip port rate noise-level(optional)"<<std::endl;
 		return 0;
 	}
 	char *host = argv[1];
@@ -26,6 +26,7 @@ int main(int argc, char* argv[]){
 		noise = atoi(argv[4]);
 	else
 		noise = 0;
+	
 	std::cout<<"noise: "<<noise<<std::endl;
 
 	srand( time(NULL));
@@ -91,12 +92,10 @@ spike_net_t genFakeSpike(){
 					int g = s.gains[i];
 					int n = 0;
 					if (noise>0){
-						n = (rand() % (noise*2))-noise;
-						n = n / j;
+						n = rand() % noise - noise/2;
 					}
                     s.data[idx++] = (trace[dataIdx]*g) + n;
                 }
         }
-		printf("Gains:%d %d %d %d\n", s.gains[0], s.gains[1], s.gains[2], s.gains[3]);
         return s;
 }
