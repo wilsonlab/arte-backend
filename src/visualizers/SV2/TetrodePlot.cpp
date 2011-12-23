@@ -28,10 +28,10 @@ TetrodePlot::TetrodePlot(int x, int y, int w, int h, char *p){
 
 	
 	userScale = .4;
-	dUserScale = .3;
+	dUserScale = .1;
 
-	userShift = MAX_VOLT*1/4;
-	dUserShift = .05;
+	userShift = MAX_VOLT*2/4;
+	dUserShift = userShift/8;
 	
 	minAmpRange = MIN_VOLT*userScale+userShift;
 	maxAmpRange = MAX_VOLT*userScale+userShift;
@@ -460,7 +460,7 @@ int TetrodePlot::incrementIdx(int i){
 	return i;
 }
 
-int  TetrodePlot::calcWaveMaxInd(){
+int TetrodePlot::calcWaveMaxInd(){
 
 	int idx = -1;
 	int val = -1*2^15;
@@ -470,6 +470,7 @@ int  TetrodePlot::calcWaveMaxInd(){
 			idx = i;
 			val = spike.data[i];
 		}
+	
 	return idx;
 }
 
@@ -581,25 +582,37 @@ bool TetrodePlot::isPlotSelected(){
 }
 
 void TetrodePlot::scaleUp(){
-	userScale += dUserScale;
+	userScale -= dUserScale;
+	minAmpRange = MIN_VOLT*userScale+userShift;
+	maxAmpRange = MAX_VOLT*userScale+userShift;
 }
 void TetrodePlot::scaleDown(){
-	userScale -= dUserScale;	
+	userScale += dUserScale;	
+	minAmpRange = MIN_VOLT*userScale+userShift;
+	maxAmpRange = MAX_VOLT*userScale+userShift;
 }
 void TetrodePlot::setScale(float s){
 	userScale = s;
+	minAmpRange = MIN_VOLT*userScale+userShift;
+	maxAmpRange = MAX_VOLT*userScale+userShift;
 }
 float TetrodePlot::getScale(){
 	return userScale;
 }
 void TetrodePlot::shiftUp(){
-	userShift += dUserShift;
+	userShift -= dUserShift;
+	minAmpRange = MIN_VOLT*userScale+userShift;
+	maxAmpRange = MAX_VOLT*userScale+userShift;
 }
 void TetrodePlot::shiftDown(){
-	userShift -= dUserShift;
+	userShift += dUserShift;
+	minAmpRange = MIN_VOLT*userScale+userShift;
+	maxAmpRange = MAX_VOLT*userScale+userShift;
 }
 void TetrodePlot::setShift(float s){
 	userShift = s;
+	minAmpRange = MIN_VOLT*userScale+userShift;
+	maxAmpRange = MAX_VOLT*userScale+userShift;
 }
 float TetrodePlot::getShift(){
 	return userShift;

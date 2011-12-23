@@ -99,11 +99,14 @@ void PlotCollection::initPlots(){
 	int dWinX = winWidth/nCol;
 	int dWinY = (winHeight-cmdWinHeight)/nRow;
 	
- 	const char* ports2[] = {	"6300", "6301", "6302", "6303", "6304", "6305", "6306", "6307",
+ 	const char* ports[] = {	"6300", "6301", "6302", "6303", "6304", "6305", "6306", "6307",
+						"6308", "6309", "6310", "6311", "6312", "6313", "6314", "6315",
+						"7000", "7001", "7002", "7003", "7004", "7005", "7006", "7007",
 	 					"7008", "7009", "7010", "7011", "7012", "7013", "7014", "7015",
-	 					"7016", "7017", "7018", "7019", "7020",	 "7021", "7022", "7023",
-	 					"7024", "7025", "7026", "7027", "7028", "7029", "7030", "7031",
- 					};
+						"7016", "7017", "7018", "7019", "7020",	 "7021", "7022", "7023",
+
+					};
+					
 	std::cout<<"PlotCollection::initPlots() WARNING! WARNING! WARNING! Not using the user specified ports!"<<std::endl;
 	std::cout<<"PlotCollection::initPlots() WARNING! WARNING! WARNING! Not using the user specified ports!"<<std::endl;
 	std::cout<<"PlotCollection::initPlots() WARNING! WARNING! WARNING! Not using the user specified ports!"<<std::endl;
@@ -112,7 +115,7 @@ void PlotCollection::initPlots(){
 	for (int i=0; i<nCol; i++)
 		for (int j=0; j<nRow; j++)
 		{
-			plots[nPlots] = new TetrodePlot(dWinX*i, dWinY*(nRow-j-1)+cmdWinHeight, dWinX, dWinY, (char *)ports2[nPlots%16]);
+			plots[nPlots] = new TetrodePlot(dWinX*i, dWinY*(nRow-j-1)+cmdWinHeight, dWinX, dWinY, (char *)ports[nPlots%40]);
 			plots[nPlots]->setTetrodeNumber(nPlots);
 			plots[nPlots]->initNetworkRxThread();
 //			plots[nPlots]->setShaderProgram(shaderProg);
@@ -151,7 +154,6 @@ void PlotCollection::drawAppTitle(){
 }
 void PlotCollection::setViewportForCommandWin(){
 	glViewport(0,2,cmdWinWidth,cmdWinHeight-2);	
-	
 }
 void PlotCollection::drawCommandString(){
 	setViewportForCommandWin();
@@ -239,17 +241,18 @@ void PlotCollection::quit(){
 	exit(1);
 }
 void PlotCollection::keyPressedFn(unsigned char key){
-	switch(cmdState)
-    {
-        case CMD_STATE_QUICK:
-		std::cout<<"PlotCollection::keyPressedFn()"<<std::endl;
-
-            if (quickCmdSet.find(key) != quickCmdSet.end())
+	// 
+	// switch(cmdState)
+	//     {
+	//         case CMD_STATE_QUICK:
+	// 	std::cout<<"PlotCollection::keyPressedFn()"<<std::endl;
+	// 
+	//             if (quickCmdSet.find(key) != quickCmdSet.end())
 				executeQuickCommand(key);
-
-            else if(key == KEY_ENTER)
+	// 
+	//             else if(key == KEY_ENTER)
                 cmdState = CMD_STATE_SLOW;
-        break;
+        // break;
 /*
         case CMD_STATE_SLOW:
             if(key==KEY_DEL || key==KEY_ENTER || key==KEY_BKSP)
@@ -266,7 +269,7 @@ void PlotCollection::keyPressedFn(unsigned char key){
 //            enterCommandArg(key);
         break;
 */
-    }
+    // }
 }
 
 void PlotCollection::specialKeyFn(int key){
