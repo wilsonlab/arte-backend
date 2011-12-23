@@ -91,6 +91,14 @@ void ArteAxes::getYLims(double *min, double *max){
 	*min = ylims[0];
 	*max = ylims[1];
 }
+void ArteAxes::setXLims(double xmin, double xmax){
+	xlims[0] = xmin;
+	xlims[1] = xmax;
+}
+void ArteAxes::getXLims(double *min, double *max){
+	*min = xlims[0];
+	*max = xlims[1];
+}
 void ArteAxes::setType(int t){
 	 if (t<WAVE1 || t>PROJ3x4){
 		std::cout<<"Invalid Axes type specified";
@@ -98,6 +106,9 @@ void ArteAxes::setType(int t){
 	}
 	
 	type = t;
+}
+int ArteAxes::getType(){
+    return type;
 }
 
 
@@ -113,13 +124,16 @@ void ArteAxes::plotWaveform(int chan){
 		return;	
 
 	// Set the plotting range for the current axes 
-	// xdims are 0->number of samples per waveform minus one so the line goes all the way to the edges
+	// the xlims member is ignored as the 
+    // xdims are 0->number of samples per waveform minus one
+    // so the line goes all the way to the edges
 	// ydims are specified by the ylims vector		
+    
 	setViewportRange(0, ylims[0], s.n_samps_per_chan-1, ylims[1]);
 	
 	if(!overlay){
 		glColor3f(0.0,0.0,0.0);
-		glRectd(0,ylims[0], s.n_samps_per_chan, ylims[1]);
+		glRectd(0, ylims[0], s.n_samps_per_chan, ylims[1]);
 	}
 	if(drawGrid)
 		drawWaveformGrid(s.thresh[chan], s.gains[chan]);
@@ -196,72 +210,28 @@ void ArteAxes::plotProjection(int proj){
 //	std::cout<<"ArteAxes::plotProjection():"<<proj<<" not yet implemented"<<std::endl;
 	// if (proj<PROJ1x2 || proj>PROJ3x4)
 		// error("ArteAxes:plotProjection() invalid projection specified");
+    
+	setViewportRange(xlims[0], ylims[0], xlims[1], ylims[1]);
 
-	setViewportRange(ylims[0], ylims[0],ylims[1], ylims[1]);
-
-	if (resizedFlag){
-		glColor3f(0.0,0.0,0.0);
-		glRectd(ylims[0],ylims[0], ylims[1], ylims[1]);
-		resizedFlag = false;
-	}
 	int d1, d2;
-	if (proj==PROJ1x2){
-		d1 = 0;
-		d2 = 1;
-	}
-	else if(proj==PROJ1x3){
-		d1 = 0;
-		d2 = 2;
-	}
-	else if(proj==PROJ1x4){
-		d1 = 0;
-		d2 = 3;
-	}
-	else if(proj==PROJ2x3){
-		d1 = 1;
-		d2 = 2;
-	}
-	else if(proj==PROJ2x4){
-		d1 = 1;
-		d2 = 3;
-	}
-	else if (proj==PROJ3x4){
-		d1 = 2;
-		d2 = 3;
-	}
-	else{
-		std::cout<<"ArteAxes::plotProjection() invalid projection specified cannot determine d1 and d2"<<std::endl;
-		return;
-	}
+    n2ProjIdx(proj, &d1, &d2);
 	
 	int idx1, idx2;
 	calcWaveformPeakIdx(d1,d2,&idx1, &idx2);
-//	std::cout<<"MaxIDX:"<<maxIdx<<std::endl;
+
 	if (drawGrid)
 		drawProjectionGrid(s.gains[d1], s.gains[d2]);
+
 	glColor3fv(pointColor);
 	glPointSize(1);
+
 	glBegin(GL_POINTS);
-//		glVertex2f(s.data[maxIdx+d1], s.data[maxIdx+d2]);		
-	glVertex2f(s.data[idx1], s.data[idx2]);
+        glVertex2f(s.data[idx1], s.data[idx2]);
 	glEnd();
 }
 
 void ArteAxes::calcWaveformPeakIdx(int d1, int d2, int *idx1, int *idx2){
-//Calculate which sample in the waveform across all channels has the highest peak voltage 
-//and then calculate its sample number
-	// 
-	// int idx = -1;
-	// int val = -1*2^15;
-	// for (int i=0; i<s.n_samps_per_chan * s.n_chans; i++)
-	// 	if(val < s.data[i])
-	// 	{
-	// 		idx = i;
-	// 		val = s.data[i];
-	// 	}
-	// // The index of the peak voltage can be any of the channels so shift it back to the first channel
-	// idx = idx - idx%s.n_chans;
-	// return idx;
+
 	int max1 = -1*pow(2,15);
 	int max2 = max1;
 	

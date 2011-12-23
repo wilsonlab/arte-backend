@@ -111,3 +111,43 @@ void makeLabel(int val, int gain, bool convert, char * s){
 	else
 		sprintf(s,"%d", (int)val);		
 }
+
+void n2ProjIdx(int proj, int *p1, int *p2){
+    int d1, d2;
+	if (proj==PROJ1x2){
+		d1 = 0;
+		d2 = 1;
+	}
+	else if(proj==PROJ1x3){
+		d1 = 0;
+		d2 = 2;
+	}
+	else if(proj==PROJ1x4){
+		d1 = 0;
+		d2 = 3;
+	}
+	else if(proj==PROJ2x3){
+		d1 = 1;
+		d2 = 2;
+	}
+	else if(proj==PROJ2x4){
+		d1 = 1;
+		d2 = 3;
+	}
+	else if (proj==PROJ3x4){
+		d1 = 2;
+		d2 = 3;
+	}
+	else{
+		std::cout<<"ArteAxes::plotProjection() invalid projection specified cannot determine d1 and d2"<<std::endl;
+        *p1 = -1;
+        *p2 = -1;
+		return;
+	}
+    *p1 = d1;
+    *p2 = d2;
+}
+
+// std::addressof was introduced in C++11, an equivalent function is defined below
+// definition from http://en.cppreference.com/w/cpp/memory/addressof
+

@@ -10,24 +10,14 @@
 
 #include "ArteUIElement.h"
 #include "datapacket.h"
+#include "PlotUtils.h"
 
-
-
-#define WAVE1 0
-#define WAVE2 1
-#define WAVE3 2
-#define WAVE4 3
-#define PROJ1x2 4
-#define PROJ1x3 5
-#define PROJ1x4 6
-#define PROJ2x3 7
-#define PROJ2x4 8
-#define PROJ3x4 9
  	
 class ArteAxes: public ArteUIElement{
 	int type;
 	void plotWaveform(int c);
 	void plotProjection(int p);
+    double xlims[2];
 	double ylims[2];
 	spike_net_t s;
 	GLfloat waveColor[3];
@@ -48,10 +38,13 @@ public:
 	ArteAxes(int x, int y, double w, double h, int t);
 	void plotData();
 	void updateSpikeData(spike_net_t s);
+	void setXLims(double xmin, double xmax);
+	void getXLims(double *xmin, double *xmax);
 	void setYLims(double ymin, double ymax);
 	void getYLims(double *ymin, double *ymax);
 	void setType(int type);
-	
+	int getType();
+    
 	void redraw();
 	
 	void setWaveformColor(GLfloat r, GLfloat g, GLfloat b);

@@ -68,3 +68,7 @@ void ArteUIElement::setPosition(int x, int y, double w, double h){
 void ArteUIElement::clearOnNextDraw(bool c){
 	clearNextDraw = c;
 }
+
+bool ArteUIElement::hitTest(int x, int y){
+    return (x>xpos && x<xpos+width) && (y>ypos && y<ypos+height);
+}

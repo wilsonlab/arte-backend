@@ -2,7 +2,9 @@
 
 ArteTetrodePlot::ArteTetrodePlot():
 ArteUIElement(),
-titleHeight(15){
+titleHeight(15),
+enableTitle(true), 
+limitsChanged(true){
 	plotTitle = (char*) "ArteTetrodePlot";
 	//titleBox = ArteTitleBox(100-titleHeight,0,2,titleHeight, plotTitle);
 //	ArteUIElement::elementName = (char*) "ArtePlot";
@@ -11,7 +13,9 @@ titleHeight(15){
 }
 ArteTetrodePlot::ArteTetrodePlot(int x, int y, int w, int h, char *n):
 ArteUIElement(x,y,w,h,1), 
-titleHeight(15){
+titleHeight(15),
+enableTitle(true), 
+limitsChanged(true){
 	plotTitle = n;
 
 	titleBox = ArteTitleBox(x, y+h-titleHeight-3, w, titleHeight+3, plotTitle);
@@ -26,13 +30,16 @@ void ArteTetrodePlot::setDataSource(TetrodeSource source){
 	std::cout<<"ArteTetrodePlot::setDataSource()"<<std::endl;
 }
 
-// Each plot needs to update its children axes when its redraw gets called. it also needs to call the parent plot
-// when children axes get added it should place them in the correct location because it KNOWS where WAVE1 and PROJ1x3
-// should go by default. This isn't as general as it should be but its a good push in the right direction
+// Each plot needs to update its children axes when its redraw gets called.
+//  it also needs to call the parent plot  when children axes get added it
+//  should place them in the correct location because it KNOWS where WAVE1 and PROJ1x3
+//  should go by default. This isn't as general as it should be but its a good push in
+//  the right direction
+
 void ArteTetrodePlot::redraw(){
 	// std::cout<<"ArteTetrodePlot() starting drawing"<<std::endl;
 	ArteUIElement::redraw();
-
+    
 	spike_net_t tempSpike;
 	std::list<ArteAxes>::iterator i;
 	bool axesDrawnOnce = false;
@@ -40,8 +47,26 @@ void ArteTetrodePlot::redraw(){
 		axesDrawnOnce = true;	
 		for (i=axesList.begin(); i!= axesList.end(); ++i){
 			i->updateSpikeData(tempSpike);
-			i->redraw();
+       
+            if (limitsChanged){
+
+       			int n = i->getType();
+                
+                if (n>=WAVE1 && n<=WAVE4)
+                    i->setYLims(limits[n][0], limits[n][1]);
+                
+                else if( n>=PROJ1x2 && n<=PROJ3x4){
+                    int d1, d2;
+                    n2ProjIdx(i->getType(), &d1, &d2);
+                    i->setXLims(limits[d1][0], limits[d1][1]);
+                    i->setYLims(limits[d2][0], limits[d2][1]);
+                }
+            }
+            i->redraw();
+
 		}
+        if (limitsChanged)
+            limitsChanged = false;
 	}
 
 	if (!axesDrawnOnce)
@@ -52,9 +77,11 @@ void ArteTetrodePlot::redraw(){
 	ArteUIElement::drawElementEdges();
 	// std::cout<<"ArteTetrodePlot() Done drawing"<<std::endl;
 }
+
 void ArteTetrodePlot::setTitle(char *n){
 	plotTitle = n;
 }
+
 void ArteTetrodePlot::setEnabled(bool e){
 	ArteUIElement::enabled = e;
 	std::list<ArteAxes>::iterator i;
@@ -62,17 +89,22 @@ void ArteTetrodePlot::setEnabled(bool e){
 		i->setEnabled(e);
 	}
 }
+
 bool ArteTetrodePlot::getEnabled(){
 	return ArteUIElement::enabled;
 }
+
+
 void ArteTetrodePlot::initAxes(){
-	int minX = ArteUIElement::xpos;
+	initLimits();
+    
+    int minX = ArteUIElement::xpos;
 	int minY = ArteUIElement::ypos;
 	
 	double axesWidth = ArteUIElement::width/4.0;
 	double axesHeight = (ArteUIElement::height - titleHeight)/2.0;
 	
-	int axX, axY, axW, axH;
+	int axX, axY;
 	
 	if (!axesList.empty()){
 		std::list<ArteAxes> tmp;
@@ -88,21 +120,41 @@ void ArteTetrodePlot::initAxes(){
 		ax.setEnabled(false);
 		ax.setYLims(-1*pow(2,11), pow(2,14));
 		axesList.push_back(ax);
+        switch(i){
+            case 0:
+                ax.setWaveformColor(1.0, 0.0, 0.0);
+                break;
+            case 1:
+                ax.setWaveformColor(0.0, 1.0, 0.0);
+                break;
+            case 2:
+                ax.setWaveformColor(0.0, 0.0, 1.0);
+                break;
+            case 3:
+                ax.setWaveformColor(1.0, 1.0, 0.0);
+                break;
+        }
 	}
 
 	for (int i=PROJ1x2; i<=PROJ3x4; i++){
-		// use i2 instead of i so we can index from 0 instead of 4
+		// use i2 instead of i so we can index from 0 instead of 4 for the plot placement
 		int i2 = i - PROJ1x2;
 		axX = minX + axesWidth *  (i2%3 + 1); // add 1 to offset for the waveform plots
 		axY = minY + axesHeight * (i2 / 3); // no need to offset for the y direction
 
 		ArteAxes ax = ArteAxes(axX, axY, axesWidth, axesHeight, i);
 		ax.setEnabled(true);
-		// ax.setYLims(0, pow(2,15));
-		ax.setYLims(-1*pow(2,11), pow(2,14));
+        int d1, d2;
+        n2ProjIdx(i, &d1, &d2);
+		ax.setXLims(limits[d1][0], limits[d1][1]);
+		ax.setYLims(limits[d1][0], limits[d1][1]);
+//        ax.setXLims(-1*pow(2,11), pow(2,14));
+//		ax.setYLims(-1*pow(2,11), pow(2,14));
+
 		axesList.push_back(ax);
 	}
 }
+
 void ArteTetrodePlot::setPosition(int x, int y, double w, double h){
 	ArteUIElement::setPosition(x,y,w,h);
 	int minX = ArteUIElement::xpos;
@@ -111,7 +163,7 @@ void ArteTetrodePlot::setPosition(int x, int y, double w, double h){
 	double axesWidth = ArteUIElement::width/4.0;
 	double axesHeight = (ArteUIElement::height - titleHeight)/2.0;
 	
-	int axX, axY, axW, axH;
+	int axX, axY;
 	
 	std::list<ArteAxes>::iterator i;
 	int idx = 0, idx2 = 0;
@@ -124,7 +176,7 @@ void ArteTetrodePlot::setPosition(int x, int y, double w, double h){
 		}
 		else{
 			idx2 = idx - PROJ1x2;
-			axX = minX + axesWidth *  (idx2%3 + 1); // add 1 to offset for the waveform plots
+			axX = minX + axesWidth *  (idx2 % 3 + 1); // add 1 to offset for the waveform plots
 			axY = minY + axesHeight * (idx2 / 3); // no need to offset for the y direction
 			i->setPosition(axX, axY, axesWidth, axesHeight);
 		}
@@ -145,3 +197,151 @@ TetrodeSource* ArteTetrodePlot::getDataSource(){
 void ArteTetrodePlot::clearOnNextDraw(bool b){
 	ArteUIElement::clearNextDraw = b;
 }
+
+void ArteTetrodePlot::setTitleEnabled(bool e){
+
+    // if the new setting does not equal the old than clear on the next draw
+    clearNextDraw = !(e!=enableTitle);
+
+    enableTitle = e;
+    if (e)
+        titleHeight = 15;
+    else
+        titleHeight = 0;
+    
+    setPosition(ArteUIElement::xpos, ArteUIElement::ypos, 
+                ArteUIElement::width, ArteUIElement::height);
+}
+
+
+void ArteTetrodePlot::mouseDown(int x, int y){
+
+    selectedAxesN = -1;
+    std::list<ArteAxes>::iterator i;
+    int idx=-1;
+    bool hit = false;
+
+    selectedAxes = NULL;
+    for (i=axesList.begin(); i!=axesList.end(); ++i)
+    {
+        if (i->hitTest(x,y))
+        {
+            selectedAxes = addressof(*i);
+            selectedAxesN = i->getType();
+            hit = true;
+//            break;
+        }
+        idx++;
+    }
+    if (!hit)
+        selectedAxes = NULL;
+    if (selectedAxes != NULL)
+        std::cout<<"ArteTetrodePlot::mouseDown() hit:"<<selectedAxes<<" AxesType:"<<selectedAxes->getType()<<std::endl;
+    else
+        std::cout<<"ArteTetrodePlot::mouseDown() NO HIT!"<<std::endl;
+    
+}
+void ArteTetrodePlot::mouseDragX(int dx){
+
+    if (selectedAxes == NULL || dx==0)
+        return;
+//    zoomAxes(selectedAxes->getType(), true, dx>0);
+    zoomAxes(selectedAxesN, true, dx<0);
+
+}
+void ArteTetrodePlot::mouseDragY(int dy){
+    if (selectedAxes == NULL || dy==0)
+        return;
+//    zoomAxes(selectedAxes->getType(), false, dy>0);
+
+    zoomAxes(selectedAxesN, false, dy<0);
+
+}
+
+void ArteTetrodePlot::zoomAxes(int n, bool xdim, bool zoomin){
+//    std::cout<<"ArteTetrodePlot::zoomAxes() n:"<< n<<" xdim"<< xdim<<" in:"<<zoomin<<std::endl;
+    // If trying to zoom an invalid axes type
+    if (n<WAVE1 || n>PROJ3x4)
+        return;
+    if (n<=WAVE4)
+        zoomWaveform(n, xdim, zoomin);
+    else
+        zoomProjection(n, xdim, zoomin);
+}
+
+void ArteTetrodePlot::zoomWaveform(int n, bool xdim, bool zoomin){
+
+    // waveform plots don't have a xlimits
+    if (xdim)
+        return;
+//    std::cout<<"Zooming Waveform:"<<n<<" zoomin:"<<zoomin<<" ";
+    double min, max;
+    
+    if(xdim)
+        return;
+
+    min = limits[n][0];
+    max = limits[n][1];
+    
+    double mean = (max + min)/2.0f;
+    double delta = max - mean;
+    
+    if (zoomin)
+        delta = delta / .9;
+    else
+        delta = delta * .9;
+    
+    min = mean - delta;
+    max = mean + delta;
+    
+    
+
+    limits[n][0] = min;
+    limits[n][1] = max;
+    
+    limitsChanged = true;
+}
+void ArteTetrodePlot::zoomProjection(int n, bool xdim, bool zoomin){
+    int d1, d2;
+    n2ProjIdx(n, &d1, &d2);
+    
+    if(xdim)
+        n = d1;
+    else
+        n = d2;
+
+    double min, max;
+    
+    min = limits[n][0];
+    max = limits[n][1];
+    
+    double mean = (max + min)/2.0f;
+    double delta = max - mean;
+    
+    if (zoomin)
+        delta = delta / .9;
+    else
+        delta = delta * .9;
+    
+    min = mean - delta;
+    max = mean + delta;
+    
+    
+    
+    limits[n][0] = min;
+    limits[n][1] = max;
+    
+    limitsChanged = true;
+
+}
+
+void ArteTetrodePlot::initLimits(){
+    for (int i=0; i<4; i++)
+    {
+        limits[i][0] = -1*pow(2,11);
+        limits[i][1] = pow(2,14);
+    }
+
+}
+
+
