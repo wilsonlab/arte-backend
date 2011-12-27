@@ -67,6 +67,7 @@
 		11C15ED814A3D264009D89F5 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		11C15ED914A3D26C009D89F5 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = /System/Library/Frameworks/GLUT.framework; sourceTree = "<absolute>"; };
 		11C15EDC14A3D455009D89F5 /* ArteOpenGLComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ArteOpenGLComponent.cpp; path = ../../Source/ArteOpenGLComponent.cpp; sourceTree = "<group>"; };
+		11DACA8514AA34C300B9817A /* ArteKeyEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ArteKeyEvent.h; path = ../../../../src/arte/src/visualizers/vis2/ArteKeyEvent.h; sourceTree = "<group>"; };
 		12AACA6F48F17CBFCC217444 /* AppConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppConfig.h; path = ../../JuceLibraryCode/AppConfig.h; sourceTree = SOURCE_ROOT; };
 		2436501E2845F993E1ABE1FF /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = System/Library/Frameworks/QuickTime.framework; sourceTree = SDKROOT; };
 		27AEBCBAB2C3F75165E0CB40 /* JuceLibraryCode2.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = JuceLibraryCode2.mm; path = ../../JuceLibraryCode/JuceLibraryCode2.mm; sourceTree = SOURCE_ROOT; };
@@ -127,6 +128,7 @@
 		11C15ED314A3D118009D89F5 /* ArteElements */ = {
 			isa = PBXGroup;
 			children = (
+				11DACA8514AA34C300B9817A /* ArteKeyEvent.h */,
 				11C15EBD14A3D112009D89F5 /* ArteAxes.cpp */,
 				11C15EBE14A3D112009D89F5 /* ArteAxes.h */,
 				11C15EBF14A3D112009D89F5 /* ArteTetrodePlot.cpp */,
@@ -332,9 +334,7 @@
 					"JUCE_ObjCExtraSuffix=mCuIUT",
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
 				);
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-				);
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				MACOSX_DEPLOYMENT_TARGET_ppc = 10.4;
@@ -395,9 +395,7 @@
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-				);
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				MACOSX_DEPLOYMENT_TARGET_ppc = 10.4;
