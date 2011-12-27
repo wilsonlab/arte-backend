@@ -22,6 +22,10 @@ public:
 	void setEnabled(bool e);
 	bool getEnabled();
 	void setPosition(int x, int y, double w, double h);
+    double getHeight();
+    double getWidth();
+    int getX();
+    int getY();
 	
 	char *elementName;
 	void clearOnNextDraw(bool);

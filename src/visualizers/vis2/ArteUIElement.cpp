@@ -72,3 +72,16 @@ void ArteUIElement::clearOnNextDraw(bool c){
 bool ArteUIElement::hitTest(int x, int y){
     return (x>xpos && x<xpos+width) && (y>ypos && y<ypos+height);
 }
+
+double ArteUIElement::getHeight(){
+    return height;
+}
+double ArteUIElement::getWidth(){
+    return width;
+}
+int ArteUIElement::getX(){
+    return xpos;
+}
+int ArteUIElement::getY(){
+    return ypos;
+}

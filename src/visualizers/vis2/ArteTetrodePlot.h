@@ -35,9 +35,13 @@ class ArteTetrodePlot : public ArteUIElement{
     ArteAxes* selectedAxes;
     int selectedAxesN;
     
-    void zoomAxes(int n, bool xdim, bool zoomin);
-    void zoomProjection (int n, bool xdim, bool zoomin);
-    void zoomWaveform (int n, bool xdim, bool zoomin);
+    void zoomAxes(int n, bool xdim, int zoomval);
+    void zoomProjection (int n, bool xdim, int zoomval);
+    void zoomWaveform (int n, bool xdim, int zoomval);
+    
+    void panAxes(int n, bool xdim, int panval);
+    void panProjection (int n, bool xdim, int panval);
+    void panWaveform(int n, bool xdim, int panval);
     
     void initLimits();
 	
@@ -58,8 +62,8 @@ public:
     
     void mouseDown(int x, int y);
     
-    void mouseDragX(int dx);
-    void mouseDragY(int dy);
+    void mouseDragX(int dx, bool shift, bool ctr);
+    void mouseDragY(int dy, bool shift, bool ctr);
 
 };
 

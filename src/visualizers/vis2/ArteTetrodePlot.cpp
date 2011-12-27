@@ -241,35 +241,38 @@ void ArteTetrodePlot::mouseDown(int x, int y){
         std::cout<<"ArteTetrodePlot::mouseDown() NO HIT!"<<std::endl;
     
 }
-void ArteTetrodePlot::mouseDragX(int dx){
+void ArteTetrodePlot::mouseDragX(int dx, bool shift, bool ctrl){
 
     if (selectedAxes == NULL || dx==0)
         return;
 //    zoomAxes(selectedAxes->getType(), true, dx>0);
-    zoomAxes(selectedAxesN, true, dx<0);
+    if (shift)
+        zoomAxes(selectedAxesN, true, dx);
+    if (ctrl)
+        panAxes(selectedAxesN, true, dx);
 
 }
-void ArteTetrodePlot::mouseDragY(int dy){
+void ArteTetrodePlot::mouseDragY(int dy, bool shift, bool ctrl){
     if (selectedAxes == NULL || dy==0)
         return;
-//    zoomAxes(selectedAxes->getType(), false, dy>0);
-
-    zoomAxes(selectedAxesN, false, dy<0);
-
+    if(shift)
+        zoomAxes(selectedAxesN, false, dy);
+    if(ctrl)
+        panAxes(selectedAxesN, false, dy);
 }
 
-void ArteTetrodePlot::zoomAxes(int n, bool xdim, bool zoomin){
+void ArteTetrodePlot::zoomAxes(int n, bool xdim, int zoom){
 //    std::cout<<"ArteTetrodePlot::zoomAxes() n:"<< n<<" xdim"<< xdim<<" in:"<<zoomin<<std::endl;
     // If trying to zoom an invalid axes type
     if (n<WAVE1 || n>PROJ3x4)
         return;
     if (n<=WAVE4)
-        zoomWaveform(n, xdim, zoomin);
+        zoomWaveform(n, xdim, zoom);
     else
-        zoomProjection(n, xdim, zoomin);
+        zoomProjection(n, xdim, zoom);
 }
 
-void ArteTetrodePlot::zoomWaveform(int n, bool xdim, bool zoomin){
+void ArteTetrodePlot::zoomWaveform(int n, bool xdim, int zoom){
 
     // waveform plots don't have a xlimits
     if (xdim)
@@ -285,23 +288,17 @@ void ArteTetrodePlot::zoomWaveform(int n, bool xdim, bool zoomin){
     
     double mean = (max + min)/2.0f;
     double delta = max - mean;
-    
-    if (zoomin)
-        delta = delta / .9;
-    else
-        delta = delta * .9;
-    
+    delta = delta / pow(.99, -1*zoom);
+
     min = mean - delta;
     max = mean + delta;
-    
-    
 
     limits[n][0] = min;
     limits[n][1] = max;
     
     limitsChanged = true;
 }
-void ArteTetrodePlot::zoomProjection(int n, bool xdim, bool zoomin){
+void ArteTetrodePlot::zoomProjection(int n, bool xdim, int zoom){
     int d1, d2;
     n2ProjIdx(n, &d1, &d2);
     
@@ -317,11 +314,7 @@ void ArteTetrodePlot::zoomProjection(int n, bool xdim, bool zoomin){
     
     double mean = (max + min)/2.0f;
     double delta = max - mean;
-    
-    if (zoomin)
-        delta = delta / .9;
-    else
-        delta = delta * .9;
+    delta = delta / pow(.99, -1*zoom);
     
     min = mean - delta;
     max = mean + delta;
@@ -333,6 +326,80 @@ void ArteTetrodePlot::zoomProjection(int n, bool xdim, bool zoomin){
     
     limitsChanged = true;
 
+}
+void ArteTetrodePlot::panAxes(int n, bool xdim, int panval){
+    //    std::cout<<"ArteTetrodePlot::zoomAxes() n:"<< n<<" xdim"<< xdim<<" in:"<<zoomin<<std::endl;
+    // If trying to zoom an invalid axes type
+    if (n<WAVE1 || n>PROJ3x4)
+        return;
+    if (n<=WAVE4)
+        panWaveform(n, xdim, panval);
+    else
+        panProjection(n, xdim, panval);
+}
+
+void ArteTetrodePlot::panWaveform(int n, bool xdim, int pan){
+    
+    // waveform plots don't have a xlimits
+    if (xdim)
+        return;
+    //    std::cout<<"Zooming Waveform:"<<n<<" zoomin:"<<zoomin<<" ";
+    double min, max;
+    
+    if(xdim)
+        return;
+    
+    min = limits[n][0];
+    max = limits[n][1];
+    
+    double dy = max-min;
+    
+    double yPixels = selectedAxes->getHeight();
+    
+    double pixelWidth = -1 * dy/yPixels;
+    
+    double delta = pan * pixelWidth;
+    min = min + delta;
+    max = max + delta;
+    
+    limits[n][0] = min;
+    limits[n][1] = max;
+    
+    limitsChanged = true;
+}
+void ArteTetrodePlot::panProjection(int n, bool xdim, int pan){
+    int d1, d2;
+    n2ProjIdx(n, &d1, &d2);
+    
+    if(xdim)
+        n = d1;
+    else
+        n = d2;
+    
+    double min, max;
+    
+    min = limits[n][0];
+    max = limits[n][1];
+    
+    double dy = max-min;
+    
+    double yPixels = selectedAxes->getHeight();
+    
+    double pixelWidth = -1 * dy/yPixels;
+    
+    double delta = pan * pixelWidth;
+    min = min + delta;
+    max = max + delta;
+    
+    limits[n][0] = min;
+    limits[n][1] = max;
+    
+    
+    limits[n][0] = min;
+    limits[n][1] = max;
+    
+    limitsChanged = true;
+    
 }
 
 void ArteTetrodePlot::initLimits(){

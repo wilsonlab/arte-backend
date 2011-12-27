@@ -53,6 +53,7 @@ public:
 	void setGridColor(GLfloat, GLfloat, GLfloat);
 	
 	void setPosition(int,int,double,double);
+   
 	
 	bool drawWaveformLine;
 	bool drawWaveformPoints;
