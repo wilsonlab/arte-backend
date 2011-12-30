@@ -36,13 +36,16 @@ MainWindow::MainWindow()
     addAndMakeVisible(oglc5);
     addAndMakeVisible(oglc6);
     
-    oglc1->setBounds(30,  50, 300, 300);
-    oglc2->setBounds(345, 50, 300, 300);
-    oglc3->setBounds(660, 50, 300, 300);
-    oglc4->setBounds(30,  380, 300, 300);
-    oglc5->setBounds(345, 380, 300, 300);
-    oglc6->setBounds(660, 380, 300, 300);
+//    myComp.setBounds (RelativeBounds ("otherComp.right + 50, topMarker, left + 100, top + 100"));
+    oglc1->setBounds(30,  20, 300, 300);
+    oglc2->setBounds(345, 20, 300, 300);
+    oglc3->setBounds(660, 20, 300, 300);
+    oglc4->setBounds(30,  330, 300, 300);
+    oglc5->setBounds(345, 330, 300, 300);
+    oglc6->setBounds(660, 330, 300, 300);
     
+    grabKeyboardFocus();
+    addKeyListener(this);
 }
 
 MainWindow::~MainWindow()
@@ -61,3 +64,13 @@ void MainWindow::closeButtonPressed()
     
     JUCEApplication::getInstance()->systemRequestedQuit();
 }
+
+bool MainWindow::keyPressed (const KeyPress &key, Component *originatingComponent){
+    oglc1->processKeyPress(key);
+    oglc2->processKeyPress(key);
+    oglc3->processKeyPress(key);
+    oglc4->processKeyPress(key);
+    oglc5->processKeyPress(key);
+    oglc6->processKeyPress(key);
+}
+

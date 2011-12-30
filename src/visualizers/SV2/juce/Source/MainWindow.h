@@ -12,7 +12,7 @@
 #include "ArteOpenGLComponent.cpp"
 
 //==============================================================================
-class MainWindow  : public DocumentWindow
+class MainWindow  : public DocumentWindow, public KeyListener
 {
 public:
     //==============================================================================
@@ -35,7 +35,9 @@ private:
     ArteOpenGLComponent *oglc5;
     ArteOpenGLComponent *oglc6;
 
-    
+    bool keyPressed (const KeyPress &key, Component *originatingComponent);
+    void zoomAllPlots(int zoomval);
+    void panAllPlots(int zoomval);
     
 };
 

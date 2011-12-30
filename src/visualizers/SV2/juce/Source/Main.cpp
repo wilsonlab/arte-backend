@@ -11,8 +11,8 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "MainWindow.h"
 
-#define kWindowWidth 1200
-#define kWindowHeight 800
+#define kWindowWidth 1000
+#define kWindowHeight 650
 
 //==============================================================================
 class jSpikeApplication  : public JUCEApplication

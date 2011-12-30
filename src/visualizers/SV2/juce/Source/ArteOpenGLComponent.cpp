@@ -18,6 +18,7 @@
 #include "JuceHeader.h"
 #include "ArteTetrodePlot.h"
 #include "TetrodeSource.h"
+#include "ArteKeyEvent.h"
 
 #if JUCE_OPENGL
 
@@ -100,11 +101,16 @@ public:
         
         int dx = x - prevMouseX;
         int dy = y - prevMouseY;
+        
+        const ModifierKeys m = e.mods;
+        
+        if (m.isShiftDown())
+            std::cout<<"ShiftModifier"<<std::endl;
     
         if (dx!=0)
-            tp.mouseDragX(dx);
+            tp.mouseDragX(dx, m.isShiftDown(), m.isCommandDown());
         if (dy!=0)
-            tp.mouseDragY(dy);
+            tp.mouseDragY(dy, m.isShiftDown(), m.isCommandDown());
         
         prevMouseX = x;
         prevMouseY = y;
@@ -139,6 +145,21 @@ public:
         count++;
         repaint();
     }
+    bool processKeyPress (const KeyPress &key){
+
+        ArteKeyEvent k;
+        k.key = key.getKeyCode();
+        k.shift = key.getModifiers().isShiftDown();
+        k.ctrl = key.getModifiers().isCommandDown();
+        k.alt = key.getModifiers().isAltDown();
+        
+        tp.processKeyEvent(k);
+        return true;        
+    }
+    
+
+   
+
     
 private:
     int count;
@@ -177,11 +198,15 @@ public:
         setName ("OpenGL");
         canvas.initialize(p);
         addAndMakeVisible (&canvas);
+        setMouseClickGrabsKeyboardFocus(false);
     }
     
     void resized()
     {
-        canvas.setBounds (0, 0, getWidth(), getHeight());
+        canvas.setBoundsRelative (0, 0, 1, 1);
+    }
+    bool processKeyPress (const KeyPress &key){
+        return canvas.processKeyPress(key);
     }
     
 private:
