@@ -14,6 +14,7 @@
 #include "ArteUIElement.h"
 #include "TetrodeSource.h"
 #include "PlotUtils.h"
+#include "ArteKeyEvent.h"
 
 
 class ArteTetrodePlot : public ArteUIElement{
@@ -65,6 +66,7 @@ public:
     void mouseDragX(int dx, bool shift, bool ctr);
     void mouseDragY(int dy, bool shift, bool ctr);
 
+    bool processKeyEvent(ArteKeyEvent k);
 };
 
 

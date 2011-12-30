@@ -343,7 +343,7 @@ void ArteTetrodePlot::panWaveform(int n, bool xdim, int pan){
     // waveform plots don't have a xlimits
     if (xdim)
         return;
-    //    std::cout<<"Zooming Waveform:"<<n<<" zoomin:"<<zoomin<<" ";
+    //    std::cout<<"Panning Waveform:"<<n<<" pan:"<<pan<<" "<<std::endl;
     double min, max;
     
     if(xdim)
@@ -354,7 +354,11 @@ void ArteTetrodePlot::panWaveform(int n, bool xdim, int pan){
     
     double dy = max-min;
     
-    double yPixels = selectedAxes->getHeight();
+    // Need to grab something if pan event is driven by the keyboard, which means that all the plots are getting panned so this should be okay
+    if (selectedAxes == NULL)
+        selectedAxes = &axesList.front();
+    
+    double yPixels = (ArteUIElement::height - titleHeight)/2.0;
     
     double pixelWidth = -1 * dy/yPixels;
     
@@ -383,7 +387,7 @@ void ArteTetrodePlot::panProjection(int n, bool xdim, int pan){
     
     double dy = max-min;
     
-    double yPixels = selectedAxes->getHeight();
+    double yPixels = (ArteUIElement::height - titleHeight)/2.0;
     
     double pixelWidth = -1 * dy/yPixels;
     
@@ -409,6 +413,32 @@ void ArteTetrodePlot::initLimits(){
         limits[i][1] = pow(2,14);
     }
 
+}
+
+bool ArteTetrodePlot::processKeyEvent(ArteKeyEvent k){
+    std::cout<<"Key:"<<(char)k.key<<std::endl;
+    switch(k.key)
+    {
+        case '=':
+            for (int i=0; i<=WAVE4; i++)
+                zoomWaveform(i, false, 3);
+            break;        
+        case '+':
+            for (int i=0; i<=WAVE4; i++)
+                panWaveform(i, false, 3);
+            break;
+        case '-':
+            for (int i=0; i<=WAVE4; i++)
+                zoomWaveform(i, false, -3);
+            break;    
+        case '_':
+            for (int i=0; i<=WAVE4; i++)
+                panWaveform(i, false, -3);
+            break;
+        case 'C':
+            clearOnNextDraw(true);
+            break;
+    }
 }
 
 

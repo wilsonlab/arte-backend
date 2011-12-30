@@ -37,7 +37,7 @@ ArteAxes::ArteAxes(int x, int y, double w, double h, int t):
 	setWaveformColor(1.0,1.0,0.6);
 	setThresholdColor(1.0, 0.1, 0.1);
 	setPointColor(1.0, 1.0, 1.0);
-	setGridColor(0.15, 0.15, 0.15);
+	setGridColor(0.2, 0.2, 0.2);
 	ArteUIElement::elementName = (char*) "ArteAxes";
 
 }

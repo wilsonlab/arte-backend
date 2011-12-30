@@ -17,9 +17,9 @@ struct ArteKeyEvent{
 //    ArteKeyEvent(int k){
 //        key = k;
 //        shift = false;
-//        ctrl = false;
+//        `ctrl = false;
 //        alt = false;
 //    }
-}
+};
 
 #endif
