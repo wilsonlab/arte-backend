@@ -10,9 +10,13 @@
 #define jSpike_MainWindow_h
 #include "JuceHeader.h"
 #include "ArteOpenGLComponent.cpp"
+#include "vector"
+
 
 //==============================================================================
-class MainWindow  : public DocumentWindow, public KeyListener
+class MainWindow  : public DocumentWindow,
+                    public KeyListener//,
+//                    public ButtonListener
 {
 public:
     //==============================================================================
@@ -28,16 +32,15 @@ public:
     
 private:
     ScopedPointer<Component> taskbarIcon;
-    ArteOpenGLComponent *oglc1;
-    ArteOpenGLComponent *oglc2;
-    ArteOpenGLComponent *oglc3;
-    ArteOpenGLComponent *oglc4;
-    ArteOpenGLComponent *oglc5;
-    ArteOpenGLComponent *oglc6;
 
+    std::vector<ArteOpenGLComponent*> tPlots;
+    std::vector<Button*> cfgButtons;
+    void initializeComponents();
     bool keyPressed (const KeyPress &key, Component *originatingComponent);
     void zoomAllPlots(int zoomval);
     void panAllPlots(int zoomval);
+    
+//    void buttonClicked(juce::Button *btn);
     
 };
 

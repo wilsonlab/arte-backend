@@ -36,6 +36,7 @@ public:
 //        #else
         theMainWindow.centreWithSize (kWindowWidth, kWindowHeight);
         theMainWindow.setVisible (true);
+
 //        #endif        
     }
 
