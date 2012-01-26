@@ -19,7 +19,7 @@
 class GenericEditor;
 
 class FilterViewport  : public Component,
-                        public DragAndDropTarget
+                        public DragAndDropTarget//,
                         //public KeyListener
 {
 public:
@@ -35,9 +35,7 @@ public:
     void updateVisibleEditors();
     void setActiveEditor(GenericEditor* e) {activeEditor = e; updateVisibleEditors();}
 
-    // Interactions with tabbed component:
-    int addTab(String tabName, Component* componentToAdd);
-    void removeTab(int);
+
 
     // DragAndDropTarget methods:
     bool isInterestedInDragSource (const String& /*sourceDescription*/, Component* /*sourceComponent*/);
@@ -58,6 +56,7 @@ public:
     void moveSelection( const KeyPress &key);
     
 private:
+
     String message;
     bool somethingIsBeingDraggedOver;
     bool shiftDown;
@@ -67,7 +66,6 @@ private:
 
     Array<GenericEditor*, CriticalSection> editorArray;
     GenericEditor* activeEditor;
-    Array<int> tabArray;
 
     void refreshEditors();
 
@@ -78,7 +76,5 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilterViewport);  
 
 };
-
-
 
 #endif  // __FILTERVIEWPORT_H_80260F3F__

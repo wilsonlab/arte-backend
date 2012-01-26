@@ -20,12 +20,6 @@
 
       addMouseListener(this, true);
 
-      int numTabs = tabComponent->getTabbedButtonBar().getNumTabs();
-      for (int n = 0; n < numTabs; n++) {
-          std::cout << "Adding tab." << std::endl;
-          tabArray.add(n);
-      }
-
     }
 
     FilterViewport::~FilterViewport()
@@ -49,35 +43,8 @@
 
     }
 
-    int FilterViewport::addTab(String name, Component* component) {
-
-        int tabIndex = tabComponent->getTabbedButtonBar().getNumTabs();
-        tabComponent->addTab(name, Colours::pink, component, true, tabIndex);
-        tabComponent->getTabbedButtonBar().setCurrentTabIndex(tabIndex);
-
-        tabArray.add(tabIndex);
-
-        return tabIndex;
-
-    }
-
-    void FilterViewport::removeTab(int index) {
-        
-        int newIndex = tabArray.indexOf(index);
-        tabArray.remove(newIndex);
-
-        tabComponent->getTabbedButtonBar().removeTab(newIndex);
-
-    }
-
-    //==============================================================================
-    // These methods implement the DragAndDropTarget interface, and allow our component
-    // to accept drag-and-drop of objects from other Juce components..
-
     bool FilterViewport::isInterestedInDragSource (const String& description, Component* component)
     {
-        //check the sourceDescription value
-        
         if (description.startsWith("Processors")) {
             return false;
         } else {
@@ -159,7 +126,7 @@
             source = (GenericProcessor*) editorArray[insertionPoint-1]->getProcessor();
         }
 
-        activeEditor = (GenericEditor*) graph->createNewProcessor(description, this, source, dest);
+        activeEditor = (GenericEditor*) graph->createNewProcessor(description, source, dest);
 
         std::cout << "Active editor: " << activeEditor << std::endl;
 

@@ -27,7 +27,9 @@
 #include "../UI/UIComponent.h"
 #include "../UI/Configuration.h"
 
-ProcessorGraph::ProcessorGraph(int numChannels) : currentNodeId(100), lastNodeId(1), 
+ProcessorGraph::ProcessorGraph() : 
+	currentNodeId(100), 
+	lastNodeId(1), 
 	SOURCE_NODE_ID(0), 
 	RECORD_NODE_ID(199), 
 	AUDIO_NODE_ID(200), 
@@ -39,7 +41,10 @@ ProcessorGraph::ProcessorGraph(int numChannels) : currentNodeId(100), lastNodeId
 
 	// ProcessorGraph will always have 0 inputs (all content is generated within graph)
 	// but it will have N outputs, where N is the number of channels for the audio monitor
-	setPlayConfigDetails(0,2,44100.0, 128);
+	setPlayConfigDetails(0, // number of inputs
+				         2, // number of outputs
+				         44100.0, // sampleRate
+				         128);    // blockSize
 
 	createDefaultNodes();
 
@@ -88,7 +93,6 @@ void ProcessorGraph::createDefaultNodes()
 
 
 void* ProcessorGraph::createNewProcessor(String& description,
-										 FilterViewport* vp,
 										 GenericProcessor* source,
 										 GenericProcessor* dest) {
 
@@ -226,7 +230,7 @@ void* ProcessorGraph::createNewProcessor(String& description,
 
 		std::cout << std::endl;
 
-		processor->setViewport(vp);
+		processor->setViewport(filterViewport);
 		processor->setConfiguration(config);
 
 		return processor->createEditor();
@@ -323,7 +327,9 @@ GenericProcessor* ProcessorGraph::createProcessorFromDescription(String& descrip
 		//if (subProcessorType.equalsIgnoreCase("Stream Viewer")) {
 			
 			std::cout << "Creating a display node." << std::endl;
-			processor = new DisplayNode(description, &numSamplesInThisBuffer, 16, lock, currentNodeId);
+			processor = new DisplayNode(description, &numSamplesInThisBuffer,
+										 16, lock, currentNodeId,
+										 UI->getDataViewport());
 
 			processor->setUIComponent(UI);
 		//}
@@ -377,9 +383,13 @@ void ProcessorGraph::setUIComponent(UIComponent* ui)
 	config = ui->getConfiguration();
 }
 
+void ProcessorGraph::setFilterViewport(FilterViewport* fv)
+{
+	filterViewport = fv;
+}
 
-bool ProcessorGraph::enableSourceNode() {
-	std::cout << "Enabling source node..." << std::endl;
+bool ProcessorGraph::enableSourceNodes() {
+	std::cout << "Enabling source nodes..." << std::endl;
 
 	for (int n = 0; n < config->numDataSources(); n++) 
 	{
@@ -391,9 +401,9 @@ bool ProcessorGraph::enableSourceNode() {
 	return true;
 }
 
-bool ProcessorGraph::disableSourceNode() {
+bool ProcessorGraph::disableSourceNodes() {
 
-	std::cout << "Disabling source node..." << std::endl;
+	std::cout << "Disabling source nodes..." << std::endl;
 
 	for (int n = 0; n < config->numDataSources(); n++) 
 	{
@@ -556,11 +566,10 @@ const String ProcessorGraph::loadState(const File& file)
 	do {
 
 		GenericEditor* editor = (GenericEditor*) createNewProcessor(description,
-										 UI->getViewport(),
 										 sourceNode,
 										 destNode);
 
-		UI->getViewport()->addEditor(editor);
+		filterViewport->addEditor(editor);
 		sourceNode = (GenericProcessor*) editor->getProcessor();
 
 		forEachXmlChildElementWithTagName (*xml, e, T("PROCESSOR"))
@@ -576,11 +585,10 @@ const String ProcessorGraph::loadState(const File& file)
 
 	// add the last one:
 	GenericEditor* editor = (GenericEditor*) createNewProcessor(description,
-								UI->getViewport(),
 								sourceNode,
 								destNode);
 
-	UI->getViewport()->addEditor(editor);
+	filterViewport->addEditor(editor);
 
 	delete xml;
 

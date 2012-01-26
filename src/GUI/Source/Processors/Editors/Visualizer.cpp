@@ -40,8 +40,11 @@ SelectorButton::~SelectorButton()
 }
 
 
-Visualizer::Visualizer (GenericProcessor* parentNode, FilterViewport* vp) 
-	: GenericEditor(parentNode, vp), tabIndex(-1), dataWindow(0),
+Visualizer::Visualizer (GenericProcessor* parentNode, 
+						FilterViewport* vp,
+						DataViewport* dv) 
+	: GenericEditor(parentNode, vp), dataViewport(dv),
+	  tabIndex(-1), dataWindow(0),
 	  streamBuffer(0), eventBuffer(0)
 
 {
@@ -66,7 +69,7 @@ Visualizer::~Visualizer()
 
 	if (tabIndex > -1)
 	{
-		viewport->removeTab(tabIndex);
+		dataViewport->removeTab(tabIndex);
 	}
 
 	deleteAllChildren();
@@ -107,13 +110,13 @@ void Visualizer::buttonClicked(Button* button)
 		if (tabSelector->getToggleState() && tabIndex < 0)
 		{
 			if (getName().equalsIgnoreCase("Visualizers/LFP Viewer"))
-				tabIndex = viewport->addTab("LFP",new LfpViewer(streamBuffer,eventBuffer,UI));
+				tabIndex = dataViewport->addTabToDataViewport("LFP",new LfpViewer(streamBuffer,eventBuffer,UI));
 			else if (getName().equalsIgnoreCase("Visualizers/Spike Viewer"))
-				tabIndex = viewport->addTab("Spikes",new SpikeViewer(streamBuffer,eventBuffer,UI));
+				tabIndex = dataViewport->addTabToDataViewport("Spikes",new SpikeViewer(streamBuffer,eventBuffer,UI));
 		
 		} else if (!tabSelector->getToggleState() && tabIndex > -1)
 		{
-			viewport->removeTab(tabIndex);
+			dataViewport->removeTab(tabIndex);
 			tabIndex = -1;
 		}
 	}

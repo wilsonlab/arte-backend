@@ -27,11 +27,10 @@ class ProcessorGraph : public AudioProcessorGraph,
 					   public ActionBroadcaster
 {
 public:
-	ProcessorGraph(int numChannels);
+	ProcessorGraph();
 	~ProcessorGraph();
 
-	void* createNewProcessor(String& description, 
-							 FilterViewport* viewport,
+	void* createNewProcessor(String& description,
 							 GenericProcessor* source,
 							 GenericProcessor* dest);
 
@@ -39,22 +38,22 @@ public:
 
 	void removeProcessor(GenericProcessor* processor);
 
-	bool enableSourceNode();
-	bool disableSourceNode();
-
-	int numSamplesInThisBuffer;
-
-	int currentNodeId;
-	int lastNodeId;
-
-	const CriticalSection lock;
+	bool enableSourceNodes();
+	bool disableSourceNodes();
 
 	RecordNode* getRecordNode();
 	GenericProcessor* getSourceNode(int snID);
 	AudioNode* getAudioNode();
 
 	void setUIComponent(UIComponent* ui);
+	void setFilterViewport(FilterViewport *fv);
 	
+	int numSamplesInThisBuffer;
+
+	int currentNodeId;
+	int lastNodeId;
+
+	const CriticalSection lock;
 
 	const String saveState(const File& file);
 	const String loadState(const File& file);
@@ -74,9 +73,8 @@ private:
 	void createDefaultNodes();
 
 	UIComponent* UI;
+	FilterViewport* filterViewport;
 	Configuration* config;
-
-
 
 };
 

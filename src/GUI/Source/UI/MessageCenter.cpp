@@ -30,9 +30,13 @@ MessageCenter::~MessageCenter() {
 void MessageCenter::paint(Graphics& g)
 {
 	
+	g.setColour (Colour(50,50,50));
+
+	g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), 5);
+
 	g.setColour (messageBackground);
    
-   	g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), 5);
+   	g.fillRoundedRectangle (5, 5, getWidth()-10, getHeight()-10, 3);
 
 }
 

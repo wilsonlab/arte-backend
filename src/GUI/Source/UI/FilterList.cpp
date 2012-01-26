@@ -34,8 +34,6 @@ FilterList::~FilterList()
 
 }
 
-//==============================================================================
-// this just fills in the background of the listbox
 void FilterList::paint (Graphics& g)
 {
     g.setColour (Colours::grey.withAlpha(0.5f));

@@ -21,10 +21,28 @@ public:
 	DataViewport();
 	~DataViewport();
 
+    int addTabToDataViewport(String tabName, Component* componentToAdd);
+    void removeTab(int);
+
 private:
+
+	//TabBarButton* createTabButton(const String& tabName, int tabIndex);
+
+	Array<int> tabArray;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DataViewport);
 	
 };
+
+// class CustomTabButton : public TabBarButton
+
+// {
+// public:
+// 	CustomTabButton();
+// 	~CustomTabButton();
+
+// private:	
+
+// };
 
 #endif  // __DATAVIEWPORT_H_B38FE628__

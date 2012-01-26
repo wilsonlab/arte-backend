@@ -25,14 +25,18 @@
 
 
 class UIComponent : public Component,
-				    public ActionBroadcaster
+				    public ActionBroadcaster,
+				    public DragAndDropContainer // required for 
+				    				            // drag-and-drop
+				    				            // internal components
 
 {
 public: 
 	UIComponent(ProcessorGraph* pgraph, AudioComponent* audio);
 	~UIComponent();
 
-	FilterViewport* getViewport() {return filterViewport;}
+	FilterViewport* getFilterViewport() {return filterViewport;}
+	DataViewport* getDataViewport() {return dataViewport;}
 	Configuration* getConfiguration() {return config;}
 
 private:

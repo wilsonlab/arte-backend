@@ -16,14 +16,16 @@
 #include "Editors/Visualizer.h"
 #include "GenericProcessor.h"
 
-//class StreamViewer;
+class DataViewport;
 
 class DisplayNode : public GenericProcessor
 
 {
 public:
 	// real member functions:
-	DisplayNode(const String name, int* nSamples, int nChans, const CriticalSection& lock, int nodeId);
+	DisplayNode(const String name, int* nSamples, 
+		int nChans, const CriticalSection& lock, int nodeId,
+		DataViewport* dv);
 	~DisplayNode();
 
 	AudioProcessorEditor* createEditor();
@@ -34,6 +36,7 @@ public:
 	
 private:
 
+	DataViewport* dataViewport;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DisplayNode);
 

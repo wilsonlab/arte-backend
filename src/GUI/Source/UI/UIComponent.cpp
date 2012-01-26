@@ -16,8 +16,6 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 
 {	
 
-	
-
 	infoLabel = new InfoLabel();
 	addChildComponent(infoLabel);
 
@@ -25,10 +23,14 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 
 	dataViewport = new DataViewport ();
 	addChildComponent(dataViewport);
+	dataViewport->addTabToDataViewport("dv",0);
+	dataViewport->addTabToDataViewport("dv2",0);
+	dataViewport->addTabToDataViewport("dv3",0);
 
 	std::cout << "Created data viewport." << std::endl;
 
 	filterViewport = new FilterViewport(processorGraph, dataViewport);
+	processorGraph->setFilterViewport(filterViewport);
 	addAndMakeVisible(filterViewport);
 
 	std::cout << "Created filter viewport." << std::endl;
@@ -54,7 +56,6 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 
 	std::cout << "Created configuration object." << std::endl;
 
-
 	setBounds(0,0,920,700);
 
 	std::cout << "Component width = " << getWidth() << std::endl;
@@ -62,7 +63,6 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 
 	std::cout << "Finished UI stuff." << std::endl;
 	
-
 }
 
 UIComponent::~UIComponent()
@@ -98,7 +98,7 @@ void UIComponent::resized()
 		filterList->setBounds(20,60,192,h-280);
 
 	if (messageCenter != 0)
-		messageCenter->setBounds(20,h-40,w-120,20);
+		messageCenter->setBounds(20,h-40,w-160,30);
 
 }
 

@@ -20,20 +20,14 @@ MainWindow::MainWindow()
 {
     centreWithSize (500, 400);
     setResizable (true, false);
-    //setResizeLimits(500, 400, 1000, 800);
+    //setResizeLimits(500, 400, 10000, 10000);
 
-    // create ProcessorGraph and AudioComponent, and connect them.
-    // callbacks will be set by the play button in the control panel
-    
-
-    processorGraph = new ProcessorGraph(16);
+    // Create ProcessorGraph and AudioComponent, and connect them.
+    // Callbacks will be set by the play button in the control panel
+    processorGraph = new ProcessorGraph();
     audioComponent = new AudioComponent();
     audioComponent->connectToProcessorGraph(processorGraph);
     
-    
-    std::cout << "Window width = " << getWidth() << std::endl;
-    std::cout << "Window height = " << getHeight() << std::endl;
-
     setContentComponent (new UIComponent(processorGraph, audioComponent), true, true);
 
     processorGraph->setUIComponent((UIComponent*) getContentComponent());
@@ -43,8 +37,6 @@ MainWindow::MainWindow()
   // // uncomment next two lines to load saved state on startup:
     //File file = File("./savedState.xml");
     //processorGraph->loadState(file);
-
-    
 
 }
 
@@ -64,7 +56,7 @@ void MainWindow::closeButtonPressed()
 { 
     if (audioComponent->callbacksAreActive()) {
       audioComponent->endCallbacks();
-      processorGraph->disableSourceNode();
+      processorGraph->disableSourceNodes();
     }
 
     // // uncomment next two lines to save state on quit:

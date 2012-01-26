@@ -15,6 +15,7 @@
 #include "../../../JuceLibraryCode/JuceHeader.h"
 #include "GenericEditor.h"
 #include "../../UI/UIComponent.h"
+#include "../../UI/DataViewport.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -40,6 +41,7 @@
 
 
 class FilterViewport;
+class DataViewport;
 
 class DataWindow : public DocumentWindow
 {
@@ -67,7 +69,7 @@ class Visualizer : public GenericEditor,
 				   public Button::Listener
 {
 public:
-	Visualizer (GenericProcessor*, FilterViewport*);
+	Visualizer (GenericProcessor*, FilterViewport*, DataViewport*);
 	~Visualizer();
 
 	void buttonClicked (Button* button);
@@ -84,6 +86,7 @@ private:
 	AudioSampleBuffer* streamBuffer;
 	MidiBuffer* eventBuffer;
 	UIComponent* UI;
+	DataViewport* dataViewport;
 
 	int tabIndex;
 
