@@ -29,7 +29,8 @@ IntanThread::IntanThread() : DataThread(),
 
 	ftdi_write_data(&ftdic, &startCode, 1);
 
-	dataBuffer = new DataBuffer(16, 4096);
+	dataBuffer = new DataBuffer(16,4096);
+	//dataBuffer = new DataBuffer(16, 4096);
 
 	startThread();
 
@@ -66,11 +67,15 @@ void IntanThread::updateBuffer()
     for (int index = 0; index < sizeof(buffer); index += 3) { 
            
           ++ch;
-            
-         thisSample[ch%16] = float((buffer[index] & 127) + 
+           
+         for (int n = 0; n < 1; n++) { // 
+
+         thisSample[ch%16+n*16] = float((buffer[index] & 127) + 
                      ((buffer[index+1] & 127) << 7) + 
-                     ((buffer[index+2] & 3) << 14) - 32768)/32768; 
-                     
+                     ((buffer[index+2] & 3) << 14) - 32768)/32768;
+
+         }
+  
 
          TTLval = (buffer[index+2] & 4) >> 2; // extract TTL value (bit 3)
          channelVal = buffer[index+2] & 60;   // extract channel value

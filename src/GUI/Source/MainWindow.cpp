@@ -19,7 +19,7 @@ MainWindow::MainWindow()
                       DocumentWindow::allButtons)
 {
     centreWithSize (500, 400);
-    setResizable (true, true);
+    setResizable (true, false);
     //setResizeLimits(500, 400, 1000, 800);
 
     // create ProcessorGraph and AudioComponent, and connect them.

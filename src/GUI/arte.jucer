@@ -218,6 +218,11 @@
               file="Source/Processors/ProcessorGraph.h"/>
       </GROUP>
       <GROUP id="RNGb1yR" name="UI">
+        <FILE id="MuFSLOI" name="InfoLabel.cpp" compile="1" resource="0" file="Source/UI/InfoLabel.cpp"/>
+        <FILE id="aCcIvXz" name="InfoLabel.h" compile="0" resource="0" file="Source/UI/InfoLabel.h"/>
+        <FILE id="bWElQSS" name="DataViewport.cpp" compile="1" resource="0"
+              file="Source/UI/DataViewport.cpp"/>
+        <FILE id="mMoQ3ls" name="DataViewport.h" compile="0" resource="0" file="Source/UI/DataViewport.h"/>
         <FILE id="iFsLzAy" name="Configuration.cpp" compile="1" resource="0"
               file="Source/UI/Configuration.cpp"/>
         <FILE id="vNTFgW9" name="Configuration.h" compile="0" resource="0"

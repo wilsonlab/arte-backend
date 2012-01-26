@@ -8,12 +8,9 @@
   ==============================================================================
 */
 
-// and this is a component that can have things dropped onto it..
-
 #include "FilterViewport.h"
 
-    //==============================================================================
-   FilterViewport::FilterViewport(ProcessorGraph* pgraph, TabbedComponent* tcomp)
+   FilterViewport::FilterViewport(ProcessorGraph* pgraph, DataViewport* tcomp)
         : message ("Drag-and-drop some rows from the top-left box onto this component!"),
           somethingIsBeingDraggedOver (false), graph(pgraph), tabComponent(tcomp), shiftDown(false),
            insertionPoint(0), componentWantsToMove(false), indexOfMovingComponent(-1)
@@ -25,6 +22,7 @@
 
       int numTabs = tabComponent->getTabbedButtonBar().getNumTabs();
       for (int n = 0; n < numTabs; n++) {
+          std::cout << "Adding tab." << std::endl;
           tabArray.add(n);
       }
 
@@ -37,22 +35,14 @@
         //editorArray = 0;
     }
 
-    //==============================================================================
     void FilterViewport::paint (Graphics& g)
     {
 
         if (somethingIsBeingDraggedOver)
         {
-
-            //g.setColour (colours::red);
-           // g.drawLine (lastBound)
-
             g.setColour (Colours::magenta);
-            //g.drawRect (0, 0, getWidth(), getHeight(), 3);
-
         } else {
             g.setColour (Colours::grey.withAlpha(0.5f));
-            //g.drawRect (0, 0, getWidth(), getHeight(), 2);
         }
 
         g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), 15);

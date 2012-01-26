@@ -52,11 +52,11 @@ ListItem::ListItem(const String name_, const String parentName_, bool containsSu
     : name(name_), parentName(parentName_), containsSubItems(containsSubItems_) {
 
     if (name.equalsIgnoreCase("Processors")) {
-       addSubItem (new ListItem ("Data Sources",name,true));
+       addSubItem (new ListItem ("Sources",name,true));
        addSubItem (new ListItem ("Filters",name,true));
-       addSubItem (new ListItem ("Visualizers",name,true));
+       addSubItem (new ListItem ("Sinks",name,true));
        addSubItem (new ListItem ("Utilities",name,true));
-    } else if (name.equalsIgnoreCase("Data Sources")) {
+    } else if (name.equalsIgnoreCase("Sources")) {
        addSubItem (new ListItem ("Intan Demo Board",name,false));
        addSubItem (new ListItem ("Custom FPGA",name,false));
        addSubItem (new ListItem ("Network Stream",name,false));
@@ -66,12 +66,12 @@ ListItem::ListItem(const String name_, const String parentName_, bool containsSu
        addSubItem (new ListItem ("Bandpass Filter",name,false));
        addSubItem (new ListItem ("Resampler",name,false));
        addSubItem (new ListItem ("Spike Detector",name,false));
-    }  else if (name.equalsIgnoreCase("Visualizers")) {
+    }  else if (name.equalsIgnoreCase("Sinks")) {
        addSubItem (new ListItem ("LFP Viewer",name,false));
        addSubItem (new ListItem ("Spike Viewer",name,false));       
     }  else if (name.equalsIgnoreCase("Utilities")) {
        addSubItem (new ListItem ("Splitter",name,false));
-       addSubItem (new ListItem ("Event Node",name,false));
+       addSubItem (new ListItem ("Merger",name,false));
     }
 
 }

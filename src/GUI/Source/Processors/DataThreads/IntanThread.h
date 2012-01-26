@@ -34,6 +34,7 @@ private:
 	unsigned char buffer[240]; // should be 5 samples per channel
 
 	float thisSample[16];
+	//float thisSample[64];
 
 	int ch;
 

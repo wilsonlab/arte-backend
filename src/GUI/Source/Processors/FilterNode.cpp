@@ -56,12 +56,12 @@ FilterNode::FilterNode(const String name_, int* nSamps, int nChans, const Critic
 		filter = new Dsp::SmoothedFilterDesign 
 			<Dsp::Butterworth::Design::BandPass 	// design type
 			<4>,								 	// order
-			16,										// number of channels
+			16,									// number of channels
 			Dsp::DirectFormII>						// realization
 			(1024);									// number of samples over which to fade 
 													//   parameter changes
 	
-		std::cout << "Filter created." << std::endl;
+		std::cout << "Filter created with " << getNumInputs() << " channels." << std::endl;
 
 		setFilterParameters();
 
