@@ -31,25 +31,6 @@ public:
 						bool isMouseDown,
 						bool isFrontTab);
 
-	void createTabButtonShape (Path& p,
-							   int width, int height, int tabIndex,
-							   const String& text, Button& button,
-							   TabbedButtonBar::Orientation o,
-							   bool isMouseOver,
-							   bool isMouseDown,
-							   bool isFrontTab);
-
-	void fillTabButtonShape (Graphics& g,
-							 const Path& path,
-							 const Colour& preferredBackgroundColour,
-							 int tabIndex,
-							 const String& text,
-							 Button& button,
-							 TabbedButtonBar::Orientation o,
-							 bool isMouseOver,
-							 bool isMouseDown,
-							 bool isFrontTab);
-
 	void drawTabButtonText (Graphics& g,
 						    int x, int y, int w, int h,
 						    const Colour& preferredBackgroundColour,
@@ -74,8 +55,6 @@ public:
 									   TabbedButtonBar::Orientation o);
 
 	int getTabButtonOverlap (int tabDepth);
-
-	Button* createTabBarExtrasButton ();
 
 private:	
 

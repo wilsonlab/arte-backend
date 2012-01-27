@@ -12,7 +12,7 @@
 
 DataViewport::DataViewport() :
 	TabbedComponent(TabbedButtonBar::TabsAtTop),
-	tabDepth(30)
+	tabDepth(32)
 {
 
 	setTabBarDepth(tabDepth);
