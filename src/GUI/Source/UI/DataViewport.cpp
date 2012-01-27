@@ -16,7 +16,7 @@ DataViewport::DataViewport() :
 {
 
 	setTabBarDepth(tabDepth);
-	setIndent(10); // gap to leave around the edge
+	setIndent(8); // gap to leave around the edge
 				   // of the content component
 	setColour(TabbedComponent::outlineColourId,
 							Colours::darkgrey);

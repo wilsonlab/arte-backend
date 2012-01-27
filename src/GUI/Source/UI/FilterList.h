@@ -32,6 +32,8 @@ public:
 private:
    TreeView* treeView;
    TreeViewItem* rootItem;
+
+   void resized();
    //Button* showHideButton;
 
 };
@@ -48,6 +50,7 @@ public:
     bool mightContainSubItems();
     const String getUniqueName();
     const String getDragSourceDescription();
+
 
 
 private:

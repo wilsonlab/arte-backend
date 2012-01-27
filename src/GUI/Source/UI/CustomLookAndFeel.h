@@ -21,6 +21,8 @@ public:
 	CustomLookAndFeel();
 	~CustomLookAndFeel();
 
+	// ======== custom tab methods: ============================= 
+
 	void drawTabButton (Graphics & g, 
 						int w, int h, 
 						const Colour& preferredColour,
@@ -55,6 +57,27 @@ public:
 									   TabbedButtonBar::Orientation o);
 
 	int getTabButtonOverlap (int tabDepth);
+
+	// ======== custom scroll bar methods: =============================
+
+	void drawScrollbarButton (Graphics& g,
+                              ScrollBar& scrollbar,
+                              int width, int height,
+                              int buttonDirection,
+                              bool isScrollBarVertical,
+                              bool isMouseOverButton,
+                              bool isButtonDown);
+
+    void drawScrollbar (Graphics& g,
+                        ScrollBar& scrollbar,
+                        int x, int y,
+                        int width, int height,
+                        bool isScrollbarVertical,
+                        int thumbStartPosition,
+                        int thumbSize,
+                        bool isMouseOver,
+                        bool isMouseDown);
+
 
 private:	
 

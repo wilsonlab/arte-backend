@@ -10,8 +10,8 @@
 
 #include "InfoLabel.h"
 
-InfoLabel::InfoLabel() :
-	Label("Info Label", "Open Ephys")
+InfoLabel::InfoLabel()// :
+	//Label("Info Label", "Open Ephys")
 {
 
 	//MemoryInputStream fontStream (BinaryData::misoregular_ttf,
@@ -23,11 +23,19 @@ InfoLabel::InfoLabel() :
 
 	//setFont(miso);
 
-	setColour(Label::textColourId,Colours::lightgrey);
+	//setColour(Label::textColourId,Colours::lightgrey);
 
 }
 
 InfoLabel::~InfoLabel()
 {
 	
+}
+
+void InfoLabel::paint(Graphics& g)
+{
+	
+	g.setColour(Colour(170,178,183));
+	g.fillAll();
+
 }

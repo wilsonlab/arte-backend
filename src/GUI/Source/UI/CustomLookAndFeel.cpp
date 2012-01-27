@@ -46,6 +46,7 @@ void CustomLookAndFeel::drawTabButton (Graphics& g,
     }
 
     int borderSize = 3; // border between adjacent tabs
+    int innerBorderSize = 3;
     int gapSize = 6;     // gap between tab and tabbedComponent
     float cornerSize = 5.0f; // how rounded should the corners be?
 
@@ -61,10 +62,19 @@ void CustomLookAndFeel::drawTabButton (Graphics& g,
 	else if (orientation == TabbedButtonBar::TabsAtTop)
 	{
 		g.fillRoundedRectangle(borderSize,0,w-2*borderSize,h-gapSize,cornerSize-2.0);
+		//g.setColour(Colour(170,178,183));
+		//g.fillRect(borderSize+innerBorderSize,innerBorderSize
+		//             ,w-2*borderSize-2*innerBorderSize,h-gapSize-2*innerBorderSize);
 
 		if (isFrontTab) {
+			g.setColour(Colour(103,116,140));
 			g.fillRect(borderSize,h-2*gapSize,w-2*borderSize,2*gapSize);
 			g.fillRect(0,h-gapSize,w,gapSize);
+			
+			//g.setColour(Colour(170,178,183));
+			//g.fillRect(borderSize+innerBorderSize,innerBorderSize
+		     //        ,w-2*borderSize-2*innerBorderSize,h-gapSize-2*innerBorderSize);
+
 			g.setColour(Colour(70,70,75));
 			g.fillRoundedRectangle(-borderSize,0,2*borderSize,h,cornerSize);
 			g.fillRoundedRectangle(w-borderSize,0,2*borderSize,h,cornerSize);
@@ -191,3 +201,95 @@ void CustomLookAndFeel::drawTabAreaBehindFrontButton (Graphics& g,
    
 }
 
+//==================================================================
+// SCROLL BAR METHODS : 
+//==================================================================
+
+void CustomLookAndFeel::drawScrollbarButton (Graphics& g,
+                              ScrollBar& scrollbar,
+                              int width, int height,
+                              int buttonDirection,
+                              bool isScrollBarVertical,
+                              bool isMouseOverButton,
+                              bool isButtonDown)
+{
+
+	 Path p;
+
+	 float w1 = 0.25f;
+	 float w2 = 0.75f;
+
+    if (buttonDirection == 0)
+        p.addTriangle (width * 0.5f, height * 0.2f,
+                       width * w1, height * 0.7f,
+                       width * w2, height * 0.7f);
+    else if (buttonDirection == 1)
+        p.addTriangle (width * 0.8f, height * 0.5f,
+                       width * 0.3f, height * w1,
+                       width * 0.3f, height * w2);
+    else if (buttonDirection == 2)
+        p.addTriangle (width * 0.5f, height * 0.8f,
+                       width * w1, height * 0.3f,
+                       width * w2, height * 0.3f);
+    else if (buttonDirection == 3)
+        p.addTriangle (width * 0.2f, height * 0.5f,
+                       width * 0.7f, height * w1,
+                       width * 0.7f, height * w2);
+
+    if (isButtonDown)
+        g.setColour (Colours::white);
+    else
+        g.setColour (Colours::darkgrey);
+
+    g.fillPath (p);
+
+    if (isMouseOverButton)
+    	g.strokePath (p, PathStrokeType (1.0f));
+	
+
+}
+
+void CustomLookAndFeel::drawScrollbar (Graphics& g,
+                        ScrollBar& scrollbar,
+                        int x, int y,
+                        int width, int height,
+                        bool isScrollbarVertical,
+                        int thumbStartPosition,
+                        int thumbSize,
+                        bool isMouseOver,
+                        bool isMouseDown)
+ 
+ {
+
+    Path thumbPath;
+
+    const float slotIndent = jmin (width, height) > 15 ? 1.0f : 0.0f;
+    const float thumbIndent = slotIndent + 4.0f;
+    const float thumbIndentx2 = thumbIndent * 2.0f;
+
+    if (isScrollbarVertical)
+    {
+
+        if (thumbSize > 0)
+            thumbPath.addRoundedRectangle (x + thumbIndent,
+                                           thumbStartPosition + thumbIndent,
+                                           width - thumbIndentx2,
+                                           thumbSize - thumbIndentx2,
+                                           (width - thumbIndentx2) * 0.3f);
+    }
+    else
+    {
+       
+        if (thumbSize > 0)
+            thumbPath.addRoundedRectangle (thumbStartPosition + thumbIndent,
+                                           y + thumbIndent,
+                                           thumbSize - thumbIndentx2,
+                                           height - thumbIndentx2,
+                                           (height - thumbIndentx2) * 0.3f);
+
+    }
+ 
+    g.setColour (Colours::darkgrey);
+    g.fillPath (thumbPath);
+
+ }

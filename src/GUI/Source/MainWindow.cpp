@@ -20,7 +20,12 @@ MainWindow::MainWindow()
 {
     centreWithSize (500, 400);
     setResizable (true, false);
+    
+    // constraining size doesn't seem to work:
     //setResizeLimits(500, 400, 10000, 10000);
+    //ComponentBoundsConstrainer* cbc = getConstrainer();
+    //cbc->setMinimumWidth(300);
+    //cbc->setMinimumHeight(200);
 
     // Create ProcessorGraph and AudioComponent, and connect them.
     // Callbacks will be set by the play button in the control panel

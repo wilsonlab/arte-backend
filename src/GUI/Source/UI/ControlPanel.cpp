@@ -117,7 +117,7 @@ void DiskSpaceMeter::paint(Graphics& g)
 
 	g.fillAll(Colours::grey);
 	
-	g.setColour(Colours::lightgrey);
+	g.setColour(Colours::pink);
 	g.fillRect(0.0f,0.0f,getWidth()*diskFree,float(getHeight()));
 
 	g.setColour(Colours::black);
@@ -172,16 +172,22 @@ ControlPanel::~ControlPanel()
 	graph = 0;
 }
 
+void ControlPanel::paint(Graphics& g)
+{
+	g.setColour(Colour(40,40,40));
+	g.fillRoundedRectangle(0,0,getWidth(),getHeight(),8.0f);
+}
+
 void ControlPanel::resized()
 {
 	int w = getWidth();
 	int h = getHeight();
 
 	if (playButton != 0)
-		playButton->setBounds(w-h*5,0,h,h);
+		playButton->setBounds(w-h*5,5,h-5,h-10);
 	
 	if (recordButton != 0)
-		recordButton->setBounds(w-h*4,0,h,h);
+		recordButton->setBounds(w-h*4,5,h-5,h-10);
 
 	if (masterClock != 0)
 		masterClock->setBounds(w-h*3,0,h*2,h);
@@ -193,7 +199,7 @@ void ControlPanel::resized()
 		diskMeter->setBounds(150,h/4,h*4,h/2);
 
 	if (audioEditor != 0)
-		audioEditor->setBounds(w-h*12,0,h*5,h);
+		audioEditor->setBounds(w-h*12,5,h*5,h-10);
 }
 
 void ControlPanel::buttonClicked(Button* button) 

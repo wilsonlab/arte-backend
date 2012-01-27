@@ -48,6 +48,13 @@ void FilterList::paint (Graphics& g)
 }
 
 
+void FilterList::resized()
+{
+  if (treeView != 0)
+    treeView->setBoundsInset (BorderSize(10,10,10,10));
+}
+
+
 ListItem::ListItem(const String name_, const String parentName_, bool containsSubItems_) 
     : name(name_), parentName(parentName_), containsSubItems(containsSubItems_) {
 
@@ -80,15 +87,12 @@ ListItem::~ListItem() {}//clearSubItems();}
 
 void ListItem::paintItem(Graphics& g, int width, int height) {
     
-   // if (isSelected()) {
-    //    g.fillAll (Colours::lightgrey.withAlpha (0.1f));
-   // }
+    if (isSelected())
+        g.fillAll (Colour(249,210,14));
+    else
+        g.fillAll (Colour(170,178,183));
 
-    if (isSelected()) {
-        g.setColour (Colours::yellow);
-    } else {
-        g.setColour (Colours::black);
-    }
+    g.setColour(Colours::black);
 
     g.setFont( height*0.7f);
     g.drawText (getUniqueName(),4, 0, width-4, height, Justification::centredLeft, true);

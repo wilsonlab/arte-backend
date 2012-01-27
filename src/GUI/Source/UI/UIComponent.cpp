@@ -16,14 +16,14 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 
 {	
 
-	infoLabel = new InfoLabel();
-	addChildComponent(infoLabel);
+	//infoLabel = new InfoLabel();
+	//addChildComponent(infoLabel);
 
-	std::cout << "Created info label." << std::endl;
+	//std::cout << "Created info label." << std::endl;
 
 	dataViewport = new DataViewport ();
 	addChildComponent(dataViewport);
-	dataViewport->addTabToDataViewport("Info",0);
+	dataViewport->addTabToDataViewport("Info",new InfoLabel());
 	//dataViewport->addTabToDataViewport("Spike Display",0);
 	//dataViewport->addTabToDataViewport("LFP Display",0);
 
@@ -87,8 +87,8 @@ void UIComponent::resized()
 	int w = getWidth();
 	int h = getHeight();
 
-	if (infoLabel != 0)
-		infoLabel->setBounds(400,400,400,200);
+	//if (infoLabel != 0)
+	//	infoLabel->setBounds(400,400,400,200);
 	
 	if (dataViewport != 0) {
 		dataViewport->setBounds(212,45,w-230,h-230);
@@ -98,7 +98,7 @@ void UIComponent::resized()
 		filterViewport->setBounds(10,h-175,w-20,125);
 
 	if (controlPanel != 0)
-		controlPanel->setBounds(10,10,w-20,25);
+		controlPanel->setBounds(10,10,w-20,30);
 
 	if (filterList != 0)
 		filterList->setBounds(10,50,192,h-235);

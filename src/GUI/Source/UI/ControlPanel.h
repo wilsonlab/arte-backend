@@ -90,6 +90,8 @@ private:
 	ProcessorGraph* graph;
 	AudioEditor* audioEditor;
 
+	void paint(Graphics& g);
+
 	void resized();
 	void buttonClicked(Button* button);
 

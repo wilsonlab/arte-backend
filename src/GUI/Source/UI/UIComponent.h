@@ -41,7 +41,7 @@ public:
 
 private:
 
-	InfoLabel* infoLabel;
+	//InfoLabel* infoLabel;
 	DataViewport* dataViewport;
 	FilterViewport* filterViewport;
 	FilterList* filterList;

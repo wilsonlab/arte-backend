@@ -13,7 +13,7 @@
 
 #include "../../JuceLibraryCode/JuceHeader.h"
 
-class InfoLabel : public Label
+class InfoLabel : public Component
 
 {
 public: 
@@ -23,6 +23,7 @@ public:
 private:
 
 	//Font* miso;
+	void paint(Graphics& g);
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (InfoLabel);
 	
