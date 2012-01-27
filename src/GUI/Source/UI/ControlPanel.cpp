@@ -127,6 +127,7 @@ void DiskSpaceMeter::paint(Graphics& g)
 
 Clock::Clock() : Label(T("Clock"),"00:00.00")
 {
+	setColour(Label::textColourId, Colours::white);
 }
 
 Clock::~Clock()
@@ -138,7 +139,7 @@ ControlPanel::ControlPanel(ProcessorGraph* graph_, AudioComponent* audio_) :
 {
 
 	audioEditor = (AudioEditor*) graph->getAudioNode()->createEditor();
-	addAndMakeVisible(audioEditor);
+	addChildComponent(audioEditor);
 
 	playButton = new PlayButton();
 	playButton->addListener (this);

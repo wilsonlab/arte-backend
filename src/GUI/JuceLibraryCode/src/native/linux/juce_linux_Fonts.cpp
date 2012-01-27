@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library - "Jules' Utility Class Extensions"
-   Copyright 2004-10 by Raw Material Software Ltd.
+   Copyright 2004-11 by Raw Material Software Ltd.
 
   ------------------------------------------------------------------------------
 
@@ -25,6 +25,10 @@
 
 // (This file gets included by juce_linux_NativeCode.cpp, rather than being
 // compiled on its own).
+
+
+//UPDATED TO MOST RECENT VERSION ON 1/27/12
+
 #if JUCE_INCLUDED_FILE
 
 
@@ -57,7 +61,7 @@ public:
         }
     }
 
-    const String& getFamilyName() const throw()     { return family; }
+    const String& getFamilyName() const throw()    { return family; }
 
     const String& getFileName (const int style, int& faceIndex) const throw()
     {
@@ -65,11 +69,11 @@ public:
         return names[style].fileName;
     }
 
-    void setMonospaced (bool mono) throw()      { monospaced = mono; }
-    bool getMonospaced() const throw()          { return monospaced; }
+    void setMonospaced (bool mono) throw()     { monospaced = mono; }
+    bool getMonospaced() const throw()         { return monospaced; }
 
-    void setSerif (const bool serif) throw()    { hasSerif = serif; }
-    bool getSerif() const throw()               { return hasSerif; }
+    void setSerif (const bool serif) throw()   { hasSerif = serif; }
+    bool getSerif() const throw()              { return hasSerif; }
 
 private:
     //==============================================================================
@@ -86,23 +90,12 @@ private:
 };
 
 //==============================================================================
-class FreeTypeInterface  : public DeletedAtShutdown
+class LinuxFontFileIterator
 {
 public:
-    //==============================================================================
-    FreeTypeInterface()
-        : ftLib (0),
-          lastFace (0),
-          lastBold (false),
-          lastItalic (false)
+    LinuxFontFileIterator()
+        : index (0)
     {
-        if (FT_Init_FreeType (&ftLib) != 0)
-        {
-            ftLib = 0;
-            DBG ("Failed to initialize FreeType");
-        }
-
-        StringArray fontDirs;
         fontDirs.addTokens (String::fromUTF8 (getenv ("JUCE_FONT_PATH")), ";,", String::empty);
         fontDirs.removeEmptyStrings (true);
 
@@ -122,8 +115,98 @@ public:
         if (fontDirs.size() == 0)
             fontDirs.add ("/usr/X11R6/lib/X11/fonts");
 
-        for (int i = 0; i < fontDirs.size(); ++i)
-            enumerateFaces (fontDirs[i]);
+        fontDirs.removeEmptyStrings (true);
+    }
+
+    bool next()
+    {
+        if (iter != 0)
+        {
+            while (iter->next())
+                if (getFile().hasFileExtension ("ttf;pfb;pcf"))
+                    return true;
+        }
+
+        if (index >= fontDirs.size())
+            return false;
+
+        iter = new DirectoryIterator (fontDirs [index++], true);
+        return next();
+    }
+
+    File getFile() const    { jassert (iter != 0); return iter->getFile(); }
+
+private:
+    StringArray fontDirs;
+    int index;
+    ScopedPointer<DirectoryIterator> iter;
+};
+
+
+//==============================================================================
+class FreeTypeInterface  : public DeletedAtShutdown
+{
+public:
+    //==============================================================================
+    FreeTypeInterface()
+        : ftLib (0),
+          lastFace (0),
+          lastBold (false),
+          lastItalic (false)
+    {
+        if (FT_Init_FreeType (&ftLib) != 0)
+        {
+            ftLib = 0;
+            DBG ("Failed to initialize FreeType");
+        }
+
+        LinuxFontFileIterator fontFileIterator;
+
+        while (fontFileIterator.next())
+        {
+            FT_Face face;
+            int faceIndex = 0;
+            int numFaces = 0;
+
+            do
+            {
+                if (FT_New_Face (ftLib, fontFileIterator.getFile().getFullPathName().toUTF8(),
+                                 faceIndex, &face) == 0)
+                {
+                    if (faceIndex == 0)
+                        numFaces = face->num_faces;
+
+                    if ((face->face_flags & FT_FACE_FLAG_SCALABLE) != 0)
+                    {
+                        FreeTypeFontFace* const newFace = findOrCreate (face->family_name, true);
+                        int style = (int) FreeTypeFontFace::Plain;
+
+                        if ((face->style_flags & FT_STYLE_FLAG_BOLD) != 0)
+                            style |= (int) FreeTypeFontFace::Bold;
+
+                        if ((face->style_flags & FT_STYLE_FLAG_ITALIC) != 0)
+                            style |= (int) FreeTypeFontFace::Italic;
+
+                        newFace->setFileName (fontFileIterator.getFile().getFullPathName(),
+                                              faceIndex, (FreeTypeFontFace::FontStyle) style);
+                        newFace->setMonospaced ((face->face_flags & FT_FACE_FLAG_FIXED_WIDTH) != 0);
+
+                        // Surely there must be a better way to do this?
+                        const String name (face->family_name);
+                        newFace->setSerif (! (name.containsIgnoreCase ("Sans")
+                                               || name.containsIgnoreCase ("Verdana")
+                                               || name.containsIgnoreCase ("Arial")));
+
+                        //DBG (fontFileIterator.getFile().getFullPathName() << "  -  " << name);
+                    }
+
+                    FT_Done_Face (face);
+                }
+
+                ++faceIndex;
+            }
+            while (faceIndex < numFaces);
+        }
     }
 
     ~FreeTypeInterface()
@@ -151,66 +234,6 @@ public:
         faces.add (newFace);
 
         return newFace;
-    }
-
-    // Enumerate all font faces available in a given directory
-    void enumerateFaces (const String& path)
-    {
-        File dirPath (path);
-        if (path.isEmpty() || ! dirPath.isDirectory())
-            return;
-
-        DirectoryIterator di (dirPath, true);
-
-        while (di.next())
-        {
-            File possible (di.getFile());
-
-            if (possible.hasFileExtension ("ttf")
-                 || possible.hasFileExtension ("pfb")
-                 || possible.hasFileExtension ("pcf"))
-            {
-                FT_Face face;
-                int faceIndex = 0;
-                int numFaces = 0;
-
-                do
-                {
-                    if (FT_New_Face (ftLib, possible.getFullPathName().toUTF8(),
-                                     faceIndex, &face) == 0)
-                    {
-                        if (faceIndex == 0)
-                            numFaces = face->num_faces;
-
-                        if ((face->face_flags & FT_FACE_FLAG_SCALABLE) != 0)
-                        {
-                            FreeTypeFontFace* const newFace = findOrCreate (face->family_name, true);
-                            int style = (int) FreeTypeFontFace::Plain;
-
-                            if ((face->style_flags & FT_STYLE_FLAG_BOLD) != 0)
-                                style |= (int) FreeTypeFontFace::Bold;
-
-                            if ((face->style_flags & FT_STYLE_FLAG_ITALIC) != 0)
-                                style |= (int) FreeTypeFontFace::Italic;
-
-                            newFace->setFileName (possible.getFullPathName(), faceIndex, (FreeTypeFontFace::FontStyle) style);
-                            newFace->setMonospaced ((face->face_flags & FT_FACE_FLAG_FIXED_WIDTH) != 0);
-
-                            // Surely there must be a better way to do this?
-                            const String name (face->family_name);
-                            newFace->setSerif (! (name.containsIgnoreCase ("Sans")
-                                                   || name.containsIgnoreCase ("Verdana")
-                                                   || name.containsIgnoreCase ("Arial")));
-                        }
-
-                        FT_Done_Face (face);
-                    }
-
-                    ++faceIndex;
-                }
-                while (faceIndex < numFaces);
-            }
-        }
     }
 
     // Create a FreeType face object for a given font
@@ -448,7 +471,7 @@ public:
                 sansSerif.add (faces[i]->getFamilyName());
     }
 
-    juce_DeclareSingleton_SingleThreaded_Minimal (FreeTypeInterface)
+    juce_DeclareSingleton_SingleThreaded_Minimal (FreeTypeInterface);
 
 private:
     //==============================================================================
@@ -473,11 +496,11 @@ public:
 
         if (face == 0)
         {
-#if JUCE_DEBUG
+           #if JUCE_DEBUG
             String msg ("Failed to create typeface: ");
             msg << font.getTypefaceName() << " " << (font.isBold() ? 'B' : ' ') << (font.isItalic() ? 'I' : ' ');
             DBG (msg);
-#endif
+           #endif
         }
         else
         {
@@ -509,15 +532,12 @@ const StringArray Font::findAllTypefaceNames()
     return s;
 }
 
-namespace
+namespace LinuxFontHelpers
 {
-    const String pickBestFont (const StringArray& names,
-                               const char* const choicesString)
+    String pickBestFont (const StringArray& names,
+                         const char* const* choicesString)
     {
-        StringArray choices;
-        choices.addTokens (String (choicesString), ",", String::empty);
-        choices.trim();
-        choices.removeEmptyStrings();
+        const StringArray choices (choicesString);
 
         int i, j;
         for (j = 0; j < choices.size(); ++j)
@@ -537,36 +557,39 @@ namespace
         return names[0];
     }
 
-    const String linux_getDefaultSansSerifFontName()
+    String getDefaultSansSerifFontName()
     {
         StringArray allFonts;
         FreeTypeInterface::getInstance()->getSansSerifNames (allFonts);
 
-        return pickBestFont (allFonts, "Verdana, Bitstream Vera Sans, Luxi Sans, Sans");
+        const char* targets[] = { "Verdana", "Bitstream Vera Sans", "Luxi Sans", "Sans", 0 };
+        return pickBestFont (allFonts, targets);
     }
 
-    const String linux_getDefaultSerifFontName()
+    String getDefaultSerifFontName()
     {
         StringArray allFonts;
         FreeTypeInterface::getInstance()->getSerifNames (allFonts);
 
-        return pickBestFont (allFonts, "Bitstream Vera Serif, Times, Nimbus Roman, Serif");
+        const char* targets[] = { "Bitstream Vera Serif", "Times", "Nimbus Roman", "Serif", 0 };
+        return pickBestFont (allFonts, targets);
     }
 
-    const String linux_getDefaultMonospacedFontName()
+    String getDefaultMonospacedFontName()
     {
         StringArray allFonts;
         FreeTypeInterface::getInstance()->getMonospacedNames (allFonts);
 
-        return pickBestFont (allFonts, "Bitstream Vera Sans Mono, Courier, Sans Mono, Mono");
+        const char* targets[] = { "Bitstream Vera Sans Mono", "Courier", "Sans Mono", "Mono", 0 };
+        return pickBestFont (allFonts, targets);
     }
 }
 
 void Font::getPlatformDefaultFontNames (String& defaultSans, String& defaultSerif, String& defaultFixed, String& /*defaultFallback*/)
 {
-    defaultSans = linux_getDefaultSansSerifFontName();
-    defaultSerif = linux_getDefaultSerifFontName();
-    defaultFixed = linux_getDefaultMonospacedFontName();
+    defaultSans = LinuxFontHelpers::getDefaultSansSerifFontName();
+    defaultSerif = LinuxFontHelpers::getDefaultSerifFontName();
+    defaultFixed = LinuxFontHelpers::getDefaultMonospacedFontName();
 }
 
 #endif

@@ -26,7 +26,7 @@
             rtasFolder="c:\SDKs\PT_80_SDK" libraryType="1" juceFolder="JuceLibraryCode"
             extraLinkerFlags="-lftdi"/>
     <LINUX_MAKE targetFolder="Builds/Linux" vstFolder="~/SDKs/vstsdk2.4" juceFolder="JuceLibraryCode"
-                extraLinkerFlags="-lftdi" extraCompilerFlags="-D__STDC_LIMIT_MACROS"/>
+                extraLinkerFlags="-lftdi -lftgl" extraCompilerFlags="-D__STDC_LIMIT_MACROS"/>
   </EXPORTFORMATS>
   <CONFIGURATIONS>
     <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="arte"/>
@@ -127,6 +127,9 @@
           <FILE id="DXYynnz" name="Splitter.h" compile="0" resource="0" file="Source/Processors/Utilities/Splitter.h"/>
         </GROUP>
         <GROUP id="W4eqkOy" name="Visualization">
+          <FILE id="AXVHGiz" name="OpenGLCanvas.cpp" compile="1" resource="0"
+                file="Source/Processors/Visualization/OpenGLCanvas.cpp"/>
+          <FILE id="51k3it9" name="OpenGLCanvas.h" compile="0" resource="0" file="Source/Processors/Visualization/OpenGLCanvas.h"/>
           <FILE id="gg9Hcka" name="LfpViewer.cpp" compile="1" resource="0" file="Source/Processors/Visualization/LfpViewer.cpp"/>
           <FILE id="q6tUk9J" name="LfpViewer.h" compile="0" resource="0" file="Source/Processors/Visualization/LfpViewer.h"/>
           <FILE id="qWfLvG" name="SpikeViewer.cpp" compile="1" resource="0" file="Source/Processors/Visualization/SpikeViewer.cpp"/>
