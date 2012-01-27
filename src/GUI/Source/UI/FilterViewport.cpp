@@ -36,10 +36,13 @@
         {
             g.setColour (Colours::magenta);
         } else {
-            g.setColour (Colours::grey.withAlpha(0.5f));
+            g.setColour (Colour(127,137,147));
         }
 
-        g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), 15);
+        g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), 8);
+
+        g.setColour (Colour(170,178,183));
+        g.fillRect (6,6,getWidth()-12,getHeight()-12);
 
     }
 

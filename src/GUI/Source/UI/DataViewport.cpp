@@ -11,10 +11,13 @@
 #include "DataViewport.h"
 
 DataViewport::DataViewport() :
-	TabbedComponent(TabbedButtonBar::TabsAtBottom)
+	TabbedComponent(TabbedButtonBar::TabsAtTop),
+	tabDepth(30)
 {
 
-	setTabBarDepth(30);
+	setTabBarDepth(tabDepth);
+	setIndent(10); // gap to leave around the edge
+				   // of the content component
 	setColour(TabbedComponent::outlineColourId,
 							Colours::darkgrey);
 	setColour(TabbedComponent::backgroundColourId,
@@ -36,6 +39,8 @@ DataViewport::~DataViewport()
      addTab(name, Colours::lightgrey, component, true, tabIndex);
      getTabbedButtonBar().setCurrentTabIndex(tabIndex);
 
+     setOutline(0);
+
      tabArray.add(tabIndex);
 
      return tabIndex;
@@ -54,9 +59,26 @@ DataViewport::~DataViewport()
 
  }
 
- // TabBarButton* DataViewport::createTabButton(const String& tabName, int tabIndex)
- // {
- 	
- // 	CustomTabButton* b = new CustomTabButton(tabName, tabIndex);
+void DataViewport::paint(Graphics& g)
+{
 
- // }
+	const TabbedButtonBar::Orientation o = getOrientation();
+
+	int x = 0;
+	int y = 0;
+	int r = getWidth();
+	int b = getHeight();
+
+	if (o == TabbedButtonBar::TabsAtTop)
+        y += tabDepth;
+    else if (o == TabbedButtonBar::TabsAtBottom)
+        b -= tabDepth;
+    else if (o == TabbedButtonBar::TabsAtLeft)
+        x += tabDepth;
+    else if (o == TabbedButtonBar::TabsAtRight)
+        r -= tabDepth;
+
+	g.setColour(Colour(103,116,140));
+	g.fillRoundedRectangle(x,y,r-x,b-y,8);
+
+}

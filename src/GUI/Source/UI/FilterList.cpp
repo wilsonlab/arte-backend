@@ -36,8 +36,10 @@ FilterList::~FilterList()
 
 void FilterList::paint (Graphics& g)
 {
-    g.setColour (Colours::grey.withAlpha(0.5f));
-    g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), 12);
+    g.setColour (Colour(103,116,140));
+    g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), 8);
+    g.setColour (Colour(170,178,183));
+    g.fillRect(6,6,getWidth()-12,getHeight()-12);
     //g.setColour (Colours::black);
    // g.drawRoundedRectangle(0, 0, getWidth(), getHeight(), 10, 3);
    // g.setColour (Colours::black);

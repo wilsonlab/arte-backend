@@ -95,18 +95,21 @@ void GenericEditor::paint (Graphics& g)
 {
 	//g.addTransform(AffineTransform::rotation( double_Pi/20));
 
+	g.setColour(Colour(127,137,147));
+	g.fillAll();
+
 	g.setColour(Colours::black);
-	g.fillRoundedRectangle(0,0,getWidth(),getHeight(),10.0);
+	g.fillRoundedRectangle(0,0,getWidth(),getHeight(),7.0);
 
 	if (isSelected) {
 		g.setColour(backgroundColor);
 	} else {
 		g.setColour(Colours::lightgrey);
 	}
-	g.fillRoundedRectangle(1,1,getWidth()-2,getHeight()-2,9.0);
+	g.fillRoundedRectangle(1,1,getWidth()-2,getHeight()-2,6.0);
 
 	g.setColour(Colours::grey);
-	g.fillRoundedRectangle(4,15,getWidth()-8, getHeight()-19,8.0);
+	g.fillRoundedRectangle(4,15,getWidth()-8, getHeight()-19,5.0);
 	g.fillRect(4,15,getWidth()-8, 20);
 
 	g.setColour(Colours::black);

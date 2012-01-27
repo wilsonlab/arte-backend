@@ -38,8 +38,8 @@ TabBarButton::TabBarButton (const String& name, TabbedButtonBar& owner_)
       owner (owner_),
       overlapPixels (0)
 {
-    shadow.setShadowProperties (2.2f, 0.7f, 0, 0);
-    setComponentEffect (&shadow);
+    //shadow.setShadowProperties (2.2f, 0.7f, 0, 0);
+    //setComponentEffect (&shadow);
     setWantsKeyboardFocus (false);
 }
 

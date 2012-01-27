@@ -15,7 +15,7 @@
 //==============================================================================
 MainWindow::MainWindow()
     : DocumentWindow (JUCEApplication::getInstance()->getApplicationName(),
-                      Colours::darkgrey,
+                      Colour(70,70,75),
                       DocumentWindow::allButtons)
 {
     centreWithSize (500, 400);

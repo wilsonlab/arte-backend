@@ -26,23 +26,16 @@ public:
 
 private:
 
-	//TabBarButton* createTabButton(const String& tabName, int tabIndex);
-
 	Array<int> tabArray;
+
+	void paint(Graphics& g);
+
+	int tabDepth;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DataViewport);
 	
 };
 
-// class CustomTabButton : public TabBarButton
 
-// {
-// public:
-// 	CustomTabButton();
-// 	~CustomTabButton();
-
-// private:	
-
-// };
 
 #endif  // __DATAVIEWPORT_H_B38FE628__
