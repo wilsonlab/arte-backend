@@ -92,6 +92,7 @@ OBJECTS := \
   $(OBJDIR)/SourceNode_c2d6336c.o \
   $(OBJDIR)/GenericProcessor_733760aa.o \
   $(OBJDIR)/ProcessorGraph_68b34a0b.o \
+  $(OBJDIR)/CustomLookAndFeel_53a8fcdb.o \
   $(OBJDIR)/InfoLabel_a2051bf4.o \
   $(OBJDIR)/DataViewport_2cf95d2c.o \
   $(OBJDIR)/Configuration_6915cd84.o \
@@ -366,6 +367,11 @@ $(OBJDIR)/GenericProcessor_733760aa.o: ../../Source/Processors/GenericProcessor.
 $(OBJDIR)/ProcessorGraph_68b34a0b.o: ../../Source/Processors/ProcessorGraph.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling ProcessorGraph.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/CustomLookAndFeel_53a8fcdb.o: ../../Source/UI/CustomLookAndFeel.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling CustomLookAndFeel.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/InfoLabel_a2051bf4.o: ../../Source/UI/InfoLabel.cpp

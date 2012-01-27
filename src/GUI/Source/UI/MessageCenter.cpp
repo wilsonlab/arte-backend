@@ -52,7 +52,7 @@ void MessageCenter::actionListenerCallback(const String& message)
 	
 	messageDisplayArea->setText(message,false);
 
-	messageBackground = Colours::yellow;
+	messageBackground = Colours::orange;
 
 	repaint();
 

@@ -10,27 +10,32 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "MainWindow.h"
+#include "UI/CustomLookAndFeel.h"
 
 
 //==============================================================================
-class arteApplication  : public JUCEApplication
+class OpenEphysApplication  : public JUCEApplication
 {
 public:
     //==============================================================================
-    arteApplication() {}
+    OpenEphysApplication() {}
 
-    ~arteApplication() {}
+    ~OpenEphysApplication() {}
 
     //==============================================================================
     void initialise (const String& commandLine)
     {
         mainWindow = new MainWindow();
         mainWindow->setUsingNativeTitleBar (true);
+
+        customLookAndFeel = new CustomLookAndFeel();
+        LookAndFeel::setDefaultLookAndFeel(customLookAndFeel);
     }
 
     void shutdown()
     {
         mainWindow = 0;
+        customLookAndFeel = 0;
     }
 
     //==============================================================================
@@ -38,7 +43,7 @@ public:
     {quit();}
 
     //==============================================================================
-    const String getApplicationName() { return "arte";}
+    const String getApplicationName() { return "Open Ephys Data Acquisition Software";}
     const String getApplicationVersion() {return ProjectInfo::versionString;}
     bool moreThanOneInstanceAllowed() {return true;}
     void anotherInstanceStarted (const String& commandLine)
@@ -46,8 +51,9 @@ public:
 
 private:
     ScopedPointer <MainWindow> mainWindow;
+    ScopedPointer <CustomLookAndFeel> customLookAndFeel;
 };
 
 //==============================================================================
 // This macro generates the main() routine that starts the app.
-START_JUCE_APPLICATION(arteApplication)
+START_JUCE_APPLICATION(OpenEphysApplication)

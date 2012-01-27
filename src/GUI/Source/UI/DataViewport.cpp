@@ -33,7 +33,7 @@ DataViewport::~DataViewport()
  		setVisible(true);
 
      int tabIndex = getTabbedButtonBar().getNumTabs();
-     addTab(name, Colours::pink, component, true, tabIndex);
+     addTab(name, Colours::lightgrey, component, true, tabIndex);
      getTabbedButtonBar().setCurrentTabIndex(tabIndex);
 
      tabArray.add(tabIndex);
