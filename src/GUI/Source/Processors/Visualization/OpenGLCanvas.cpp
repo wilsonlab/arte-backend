@@ -326,19 +326,19 @@ void OpenGLCanvas::mouseWheelMoveInCanvas(const MouseEvent&e,
 
 {
 	if (getTotalHeight() > getHeight()) {
-	if (wheelIncrementY < 0)
+	if (wheelIncrementY > 0)
 	{
 		if (scrollPix + getHeight() < getTotalHeight())
 		{
-			scrollPix -= int(100.0f*wheelIncrementY);
+			scrollPix += int(100.0f*wheelIncrementY);
 			if (scrollPix + getHeight() > getTotalHeight())
 				scrollPix = getTotalHeight() - getHeight();
 		}
-	} else if (wheelIncrementY > 0)
+	} else if (wheelIncrementY < 0)
 	{
 		if (scrollPix > 0)
 		{
-			scrollPix -= int(100.0f*wheelIncrementY);
+			scrollPix += int(100.0f*wheelIncrementY);
 			if (scrollPix < 0)
 				scrollPix = 0;
 		}

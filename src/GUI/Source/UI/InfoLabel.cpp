@@ -47,7 +47,10 @@ void InfoLabel::renderOpenGL()
 void InfoLabel::drawLabel()
 {
 	
-	glViewport(xBuffer, yBuffer-getScrollAmount(), getWidth()-2*xBuffer,jmax(getHeight(),getTotalHeight())-2*yBuffer);
+	glViewport(xBuffer,
+		 	   yBuffer-getScrollAmount(),
+		 	   getWidth()-2*xBuffer,
+		 	   jmax(getHeight(),getTotalHeight())-2*yBuffer);
 
 	float mult = 1/float(getWidth());
 

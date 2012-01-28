@@ -293,3 +293,209 @@ void CustomLookAndFeel::drawScrollbar (Graphics& g,
     g.fillPath (thumbPath);
 
  }
+
+//==================================================================
+// SLIDER METHODS : 
+//==================================================================
+
+
+void CustomLookAndFeel::drawLinearSliderThumb (Graphics& g,
+                                         int x, int y,
+                                         int width, int height,
+                                         float sliderPos,
+                                         float minSliderPos,
+                                         float maxSliderPos,
+                                         const Slider::SliderStyle style,
+                                         Slider& slider)
+{
+    const float sliderRadius = (float) (getSliderThumbRadius (slider) - 2);
+
+    Colour knobColour (Colours::darkgrey);//LookAndFeelHelpers::createBaseColour (slider.findColour (Slider::thumbColourId),
+                       //                                      slider.hasKeyboardFocus (false) && slider.isEnabled(),
+                       //                                      slider.isMouseOverOrDragging() && slider.isEnabled(),
+                       //                                      slider.isMouseButtonDown() && slider.isEnabled()));
+
+    const float outlineThickness = slider.isEnabled() ? 2.0f : 0.5f;
+
+    if (style == Slider::LinearHorizontal || style == Slider::LinearVertical)
+    {
+        float kx, ky;
+
+        if (style == Slider::LinearVertical)
+        {
+            kx = x + width * 0.5f;
+            ky = sliderPos;
+        }
+        else
+        {
+            kx = sliderPos;
+            ky = y + height * 0.5f;
+        }
+
+        drawSliderKnob (g,
+                         kx - sliderRadius,
+                         ky - sliderRadius,
+                         sliderRadius * 2.0f,
+                         knobColour, outlineThickness);
+    }
+    else
+    {
+        if (style == Slider::ThreeValueVertical)
+        {
+            drawSliderKnob (g, x + width * 0.5f - sliderRadius,
+                             sliderPos - sliderRadius,
+                             sliderRadius * 2.0f,
+                             knobColour, outlineThickness);
+        }
+        else if (style == Slider::ThreeValueHorizontal)
+        {
+            drawSliderKnob (g,sliderPos - sliderRadius,
+                             y + height * 0.5f - sliderRadius,
+                             sliderRadius * 2.0f,
+                             knobColour, outlineThickness);
+        }
+
+        if (style == Slider::TwoValueVertical || style == Slider::ThreeValueVertical)
+        {
+            const float sr = jmin (sliderRadius, width * 0.4f);
+
+            drawGlassPointer (g, jmax (0.0f, x + width * 0.5f - sliderRadius * 2.0f),
+                              minSliderPos - sliderRadius,
+                              sliderRadius * 2.0f, knobColour, outlineThickness, 1);
+
+            drawGlassPointer (g, jmin (x + width - sliderRadius * 2.0f, x + width * 0.5f), maxSliderPos - sr,
+                              sliderRadius * 2.0f, knobColour, outlineThickness, 3);
+        }
+        else if (style == Slider::TwoValueHorizontal || style == Slider::ThreeValueHorizontal)
+        {
+            const float sr = jmin (sliderRadius, height * 0.4f);
+
+            drawGlassPointer (g, minSliderPos - sr,
+                              jmax (0.0f, y + height * 0.5f - sliderRadius * 2.0f),
+                              sliderRadius * 2.0f, knobColour, outlineThickness, 2);
+
+            drawGlassPointer (g, maxSliderPos - sliderRadius,
+                              jmin (y + height - sliderRadius * 2.0f, y + height * 0.5f),
+                              sliderRadius * 2.0f, knobColour, outlineThickness, 4);
+        }
+    }
+}
+
+void CustomLookAndFeel::drawLinearSliderBackground (Graphics& g,
+                                              int x, int y,
+                                              int width, int height,
+                                              float sliderPos,
+                                              float minSliderPos,
+                                              float maxSliderPos,
+                                              const Slider::SliderStyle /*style*/,
+                                              Slider& slider)
+{
+    const float sliderRadius = (float) (getSliderThumbRadius (slider) - 2);
+
+    Path indent;
+   // Path backgroundPath;
+
+    if (slider.isHorizontal())
+    {
+        const float iy = y + height * 0.5f - sliderRadius * 0.5f;
+        const float ih = sliderRadius;
+
+        indent.addRoundedRectangle (x - sliderRadius * 0.5f, iy,
+                                    width + sliderRadius, ih,
+                                    5.0f);
+
+     //   backgroundPath.addRoundedRectangle (x - sliderRadius * 0.5f, iy,
+      //                              (width + sliderRadius)*minSliderPos, ih,
+      //                              5.0f);
+
+      //  g.setColour(Colours::orange);                            
+      //  g.fillPath (backgroundPath);
+    }
+    else
+    {
+        const float ix = x + width * 0.5f - sliderRadius * 0.5f;
+        const float iw = sliderRadius;
+        indent.addRoundedRectangle (ix, y - sliderRadius * 0.5f,
+                                    iw, height + sliderRadius,
+                                    5.0f);
+
+     //   backgroundPath.addRoundedRectangle (ix, y - sliderRadius * 0.5f,
+      //                              iw, (height + sliderRadius)*sliderPos,
+      //                              5.0f);
+
+      //  g.setColour(Colours::orange);                            
+      //  g.fillPath (backgroundPath);
+        //g.fillPath (indent);
+    }
+
+    g.setColour (Colours::darkgrey);
+    g.strokePath (indent, PathStrokeType (0.5f));
+}
+
+int CustomLookAndFeel::getSliderThumbRadius (Slider& slider)
+{
+    return jmin (7,
+                 slider.getHeight() / 2,
+                 slider.getWidth() / 2) + 2;
+}
+
+void CustomLookAndFeel::drawSliderKnob (Graphics& g,
+                                   const float x, const float y,
+                                   const float diameter,
+                                   const Colour& colour,
+                                   const float outlineThickness) throw()
+{
+    if (diameter <= outlineThickness)
+        return;
+
+    g.setColour(Colours::darkgrey);
+    
+    g.fillEllipse (x, y, diameter, diameter);
+
+     g.setColour(Colours::black);
+    g.drawEllipse (x, y, diameter, diameter, outlineThickness);
+}
+
+void CustomLookAndFeel::drawGlassPointer (Graphics& g,
+                                    const float x, const float y,
+                                    const float diameter,
+                                    const Colour& colour, const float outlineThickness,
+                                    const int direction) throw()
+{
+    if (diameter <= outlineThickness)
+        return;
+
+    Path p;
+    p.startNewSubPath (x + diameter * 0.5f, y);
+    p.lineTo (x + diameter, y + diameter * 0.6f);
+    p.lineTo (x + diameter, y + diameter);
+    p.lineTo (x, y + diameter);
+    p.lineTo (x, y + diameter * 0.6f);
+    p.closeSubPath();
+
+    p.applyTransform (AffineTransform::rotation (direction * (float_Pi * 0.5f), x + diameter * 0.5f, y + diameter * 0.5f));
+
+    {
+        ColourGradient cg (Colours::white.overlaidWith (colour.withMultipliedAlpha (0.3f)), 0, y,
+                           Colours::white.overlaidWith (colour.withMultipliedAlpha (0.3f)), 0, y + diameter, false);
+
+        cg.addColour (0.4, Colours::white.overlaidWith (colour));
+
+        g.setGradientFill (cg);
+        g.fillPath (p);
+    }
+
+    ColourGradient cg (Colours::transparentBlack,
+                       x + diameter * 0.5f, y + diameter * 0.5f,
+                       Colours::black.withAlpha (0.5f * outlineThickness * colour.getFloatAlpha()),
+                       x - diameter * 0.2f, y + diameter * 0.5f, true);
+
+    cg.addColour (0.5, Colours::transparentBlack);
+    cg.addColour (0.7, Colours::black.withAlpha (0.07f * outlineThickness));
+
+    g.setGradientFill (cg);
+    g.fillPath (p);
+
+    g.setColour (Colours::black.withAlpha (0.5f * colour.getFloatAlpha()));
+    g.strokePath (p, PathStrokeType (outlineThickness));
+}

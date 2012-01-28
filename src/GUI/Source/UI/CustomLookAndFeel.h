@@ -79,6 +79,44 @@ public:
                         bool isMouseDown);
 
 
+   	// ======== custom slider methods: =============================
+
+    void drawLinearSliderThumb (Graphics& g,
+                                 int x, int y,
+                                 int width, int height,
+                                 float sliderPos,
+                                 float minSliderPos,
+                                 float maxSliderPos,
+                                 const Slider::SliderStyle style,
+                                 Slider& slider);
+
+	void drawLinearSliderBackground (Graphics& g,
+                                              int x, int y,
+                                              int width, int height,
+                                              float /*sliderPos*/,
+                                              float /*minSliderPos*/,
+                                              float /*maxSliderPos*/,
+                                              const Slider::SliderStyle /*style*/,
+                                              Slider& slider);
+
+
+    int getSliderThumbRadius (Slider& slider);
+
+    void drawSliderKnob (Graphics& g,
+                                   const float x, const float y,
+                                   const float diameter,
+                                   const Colour& colour,
+                                   const float outlineThickness) throw();
+
+    void drawGlassPointer (Graphics& g,
+                                    const float x, const float y,
+                                    const float diameter,
+                                    const Colour& colour, const float outlineThickness,
+                                    const int direction) throw();
+
+
+
+
 private:	
 
 
