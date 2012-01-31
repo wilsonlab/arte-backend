@@ -74,6 +74,8 @@ RecordButton::~RecordButton()
 
 CPUMeter::CPUMeter() : Label(T("CPU Meter"),"0.0"), cpu(0.0f), lastCpu(0.0f)
 {
+	//startTimer(100);
+	//repaint();
 }
 
 CPUMeter::~CPUMeter()
@@ -99,7 +101,12 @@ void CPUMeter::paint(Graphics& g)
 
 
 DiskSpaceMeter::DiskSpaceMeter()
-{
+
+{	
+	//graph = g;
+	//updateDiskSpace(graph->getRecordNode()->getFreeSpace());
+	//repaint();
+	//startTimer(10000); // refresh every 10 seconds
 }
 
 
@@ -157,6 +164,8 @@ ControlPanel::ControlPanel(ProcessorGraph* graph_, AudioComponent* audio_) :
 
 	diskMeter = new DiskSpaceMeter();
 	addAndMakeVisible(diskMeter);
+
+	startTimer(100);
 
 }
 
@@ -251,6 +260,21 @@ void ControlPanel::buttonClicked(Button* button)
 }
 
 void ControlPanel::actionListenerCallback(const String & msg)
+{
+	//std::cout << "Message Received." << std::endl;
+	if (playButton->getToggleState()) {
+		cpuMeter->updateCPU(audio->getCpuUsage());
+	}
+
+	cpuMeter->repaint();
+
+	diskMeter->updateDiskSpace(graph->getRecordNode()->getFreeSpace());
+	diskMeter->repaint();
+	
+	
+}
+
+void ControlPanel::timerCallback()
 {
 	//std::cout << "Message Received." << std::endl;
 	if (playButton->getToggleState()) {

@@ -55,9 +55,9 @@ int MidiMessage::readVariableLengthVal (const uint8* data, int& numBytesUsed) th
 int MidiMessage::getMessageLengthFromFirstByte (const uint8 firstByte) throw()
 {
     // this method only works for valid starting bytes of a short midi message
-    jassert (firstByte >= 0x80
-              && firstByte != 0xf0
-              && firstByte != 0xf7);
+    //jassert (firstByte >= 0x80
+    //          && firstByte != 0xf0
+    //          && firstByte != 0xf7);
 
     static const char messageLengths[] =
     {
@@ -89,7 +89,7 @@ MidiMessage::MidiMessage (const void* const d, const int dataSize, const double 
     memcpy (data, d, dataSize);
 
     // check that the length matches the data..
-    jassert (size > 3 || data[0] >= 0xf0 || getMessageLengthFromFirstByte (data[0]) == size);
+    //jassert (size > 3 || data[0] >= 0xf0 || getMessageLengthFromFirstByte (data[0]) == size);
 }
 
 MidiMessage::MidiMessage (const int byte1, const double t) throw()

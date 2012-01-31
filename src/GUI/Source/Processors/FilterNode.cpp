@@ -56,7 +56,7 @@ FilterNode::FilterNode(const String name_, int* nSamps, int nChans, const Critic
 		filter = new Dsp::SmoothedFilterDesign 
 			<Dsp::Butterworth::Design::BandPass 	// design type
 			<4>,								 	// order
-			16,									// number of channels
+			16,										// number of channels
 			Dsp::DirectFormII>						// realization
 			(1024);									// number of samples over which to fade 
 													//   parameter changes
@@ -130,8 +130,10 @@ void FilterNode::releaseResources()
 void FilterNode::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages)
 {
 	//std::cout << "Filter node processing." << std::endl;
+	//std::cout << buffer.getNumChannels() << std::endl;
 
-	int nSamps = getNumSamples();
+	int nSamps = getNumSamples(midiMessages);
+	//std::cout << nSamps << std::endl;
     filter->process (nSamps, buffer.getArrayOfChannels());
 
     //std::cout << "Filter node:" << *buffer.getSampleData(0,0);

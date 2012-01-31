@@ -45,7 +45,7 @@ public:
     ~ListItem();
 
     void paintItem(Graphics&, int, int);
-  //  void paintOpenCloseButton (Graphics &g, int width, int height, bool isMouseOver);
+    //void paintOpenCloseButton (Graphics &g, int width, int height, bool isMouseOver);
 
     bool mightContainSubItems();
     const String getUniqueName();

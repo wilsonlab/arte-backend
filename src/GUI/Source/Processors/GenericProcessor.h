@@ -19,6 +19,7 @@
 #include <stdio.h>
 
 class FilterViewport;
+class DataViewport;
 class UIComponent;
 
 class GenericProcessor : public AudioProcessor
@@ -33,7 +34,7 @@ public:
 	
 	void prepareToPlay (double sampleRate, int estimatedSamplesPerBlock);
 	void releaseResources();
-	void processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages);
+	virtual void processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages);
 	void setParameter (int parameterIndex, float newValue);
 
 	virtual AudioProcessorEditor* createEditor();
@@ -68,24 +69,42 @@ public:
 	float getParameter (int parameterIndex) {return 1.0;}
 
 	// custom methods:
-	void setViewport(FilterViewport* vp);
 
-	int getNumSamples();
-	void setNumSamples(int);
+	const String name;
+	int* numSamplesInThisBuffer;
+	const CriticalSection& lock;
+	int nodeId;
 
-	int getNumInputs();
-	void setNumInputs(int);
-
-	int getNumOutputs();
-	void setNumOutputs(int);
-
-	int getNodeId();
+	GenericProcessor* sourceNode;
+	GenericProcessor* destNode;
 
 	FilterViewport* viewport;
+	DataViewport* dataViewport;
+
+	Configuration* config;
+
+	AudioProcessorEditor* editor;
+
+		int numInputs;
+	int numOutputs;
+
+	UIComponent* UI;
+
+	int getNumSamples(MidiBuffer&);
+	void setNumSamples(MidiBuffer&, int);
+
+	int getNumInputs() {return numInputs;}
+	void setNumInputs(int);
+
+	int getNumOutputs() {return numOutputs;}
+	void setNumOutputs(int);
+
+	int getNodeId() {return nodeId;}
 
 	// get/set source node functions
 	GenericProcessor* getSourceNode() {return sourceNode;}
 	GenericProcessor* getDestNode() {return destNode;}
+
 	virtual void setSourceNode(GenericProcessor* sn) {sourceNode = sn;}
 	virtual void setDestNode(GenericProcessor* dn) {destNode = dn;}
 
@@ -109,24 +128,17 @@ public:
 	void setConfiguration(Configuration* cf) {config = cf;}
 	Configuration* getConfiguration() {return config;}
 
-	GenericProcessor* sourceNode;
-	GenericProcessor* destNode;
+	void setFilterViewport(FilterViewport* vp) {viewport = vp;}
+	void setDataViewport(DataViewport* dv) {dataViewport = dv;}
 
-	Configuration* config;
+	void checkForMidiEvents(MidiBuffer& mb);
+	void addMidiEvent(MidiBuffer& mb, int a);
 
 private:
 
-	const String name;
-	int* numSamplesInThisBuffer;
-	const CriticalSection& lock;
-	int nodeId;
 
-	int numInputs;
-	int numOutputs;
 
-	UIComponent* UI;
-
-	AudioProcessorEditor* editor;
+	
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GenericProcessor);
 

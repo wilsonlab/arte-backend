@@ -230,7 +230,7 @@ void* ProcessorGraph::createNewProcessor(String& description,
 
 		std::cout << std::endl;
 
-		processor->setViewport(filterViewport);
+		processor->setFilterViewport(filterViewport);
 		processor->setConfiguration(config);
 
 		return processor->createEditor();
@@ -255,7 +255,7 @@ GenericProcessor* ProcessorGraph::createProcessorFromDescription(String& descrip
 
 	GenericProcessor* processor = 0;
 
-	if (processorType.equalsIgnoreCase("Data Sources")) {
+	if (processorType.equalsIgnoreCase("Sources")) {
 
 		if (subProcessorType.equalsIgnoreCase("Intan Demo Board")) {
 

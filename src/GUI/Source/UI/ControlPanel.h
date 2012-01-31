@@ -31,7 +31,7 @@ class RecordButton : public DrawableButton
 		~RecordButton();
 };
 
-class CPUMeter : public Label //Component
+class CPUMeter : public Label//, public Timer //Component
 {
 	public:
 		CPUMeter();
@@ -45,9 +45,11 @@ class CPUMeter : public Label //Component
 		float cpu;
 		float lastCpu;
 
+		//void timerCallback() {repaint();}
+
 };
 
-class DiskSpaceMeter : public Component
+class DiskSpaceMeter : public Component//, public Timer
 {
 public:
 	DiskSpaceMeter();
@@ -59,6 +61,8 @@ public:
 
 private:
 	float diskFree;
+	ProcessorGraph* graph;
+	//void timerCallback() {repaint();}
 	
 };
 
@@ -73,7 +77,8 @@ class Clock : public Label
 
 class ControlPanel : public Component, 
 					 public Button::Listener,
-					 public ActionListener
+					 public ActionListener,
+					 public Timer
 
 {
 public:
@@ -97,7 +102,7 @@ private:
 
 	void actionListenerCallback(const String& msg);
 
-
+	void timerCallback();
 
 };
 

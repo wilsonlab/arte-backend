@@ -57,7 +57,7 @@ void FileReader::prepareToPlay (double sampleRate_, int estimatedSamplesPerBlock
 
 	std::cout << "Samples per block = " << samplesPerBlock << std::endl;
 
-	setNumSamples(samplesPerBlock);
+	
 }
 
 void FileReader::enable () {
@@ -86,6 +86,7 @@ void FileReader::releaseResources()
 void FileReader::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages)
 {
 
+	setNumSamples(midiMessages, samplesPerBlock);
 	//std::cout << buffer.getNumChannels() << std::endl;
 	
     for (int i = 0; i < samplesPerBlock; ++i)

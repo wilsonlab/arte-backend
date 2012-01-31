@@ -172,7 +172,7 @@ void ResamplingNode::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMe
 
 	//std::cout << "Resampling node sample count: " << buffer.getNumSamples() << std::endl;
 
-	int nSamps = getNumSamples();
+	int nSamps = getNumSamples(midiMessages);
 	int valuesNeeded;
 
     //std::cout << "END OF OLD BUFFER." << std::endl;

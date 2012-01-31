@@ -36,9 +36,24 @@ FilterList::~FilterList()
 
 void FilterList::paint (Graphics& g)
 {
-    g.setColour (Colour(103,116,140));
+    //g.setColour (Colour(103,116,140));
+
+    Colour c1 (95, 106, 130);
+    Colour c2 (120, 130, 155);
+
+    g.setGradientFill (ColourGradient (c1,
+                                     0.0f, 0.0f,
+                                     c2,
+                                     0.0f, (float) getHeight(),
+                                     false));
     g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), 8);
-    g.setColour (Colour(170,178,183));
+    
+    //g.setColour (Colour(170,178,183));
+    g.setGradientFill (ColourGradient (c1,
+                                     0.0f, (float) getHeight(),
+                                     c2,
+                                     0.0f, 0.0f,
+                                     false));
     g.fillRect(6,6,getWidth()-12,getHeight()-12);
     //g.setColour (Colours::black);
    // g.drawRoundedRectangle(0, 0, getWidth(), getHeight(), 10, 3);
@@ -87,12 +102,15 @@ ListItem::~ListItem() {}//clearSubItems();}
 
 void ListItem::paintItem(Graphics& g, int width, int height) {
     
-    if (isSelected())
-        g.fillAll (Colour(249,210,14));
-    else
-        g.fillAll (Colour(170,178,183));
+    //if (isSelected())
+    //    g.fillAll (Colour(249,210,14));
+    //else
+    //    g.fillAll (Colour(170,178,183));
 
-    g.setColour(Colours::black);
+    if (isSelected())
+      g.setColour(Colours::yellow);
+    else
+      g.setColour(Colours::black);
 
     g.setFont( height*0.7f);
     g.drawText (getUniqueName(),4, 0, width-4, height, Justification::centredLeft, true);
@@ -106,17 +124,17 @@ const String ListItem::getDragSourceDescription()
 }
 
 // void ListItem::paintOpenCloseButton (Graphics &g, int width, int height, bool isMouseOver)
-// {
-//     g.setColour(Colours::black);
+//  {
+//      g.setColour(Colours::black);
 
-//     if (isOpen()) {
+//      if (isOpen()) {
         
-//         g.drawLine(width/4, height/2, width*3/4, height/2, 1.0f);
+//          g.drawLine(width/4, height/2, width*3/4, height/2, 1.0f);
 
-//     } else {
-//         g.drawEllipse(0, 0, height/2, height/2, 1.0f);
+//      } else {
+//          g.drawEllipse(0, 0, height/2, height/2, 1.0f);
 //     }
-// }
+//  }
 
 bool ListItem::mightContainSubItems() {
     return containsSubItems;

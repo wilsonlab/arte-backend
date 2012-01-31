@@ -72,13 +72,13 @@ void SourceNode::enable() {
 	
 	std::cout << "Source node received enable signal" << std::endl;
 
-	if (getName().equalsIgnoreCase("Data Sources/Intan Demo Board")) {
+	if (getName().equalsIgnoreCase("Sources/Intan Demo Board")) {
 		dataThread = new IntanThread();
 		inputBuffer = dataThread->getBufferAddress();
-	} else if (getName().equalsIgnoreCase("Data Sources/Custom FPGA")) {
+	} else if (getName().equalsIgnoreCase("Sources/Custom FPGA")) {
 		dataThread = new FPGAThread();
 		inputBuffer = dataThread->getBufferAddress();
-	} else if (getName().equalsIgnoreCase("Data Sources/File Reader")) {
+	} else if (getName().equalsIgnoreCase("Sources/File Reader")) {
 		dataThread = new FileReaderThread();
 		inputBuffer = dataThread->getBufferAddress();
 	}
@@ -103,7 +103,9 @@ void SourceNode::processBlock (AudioSampleBuffer& outputBuffer, MidiBuffer& midi
 
 	outputBuffer.clear();
 	int numRead = inputBuffer->readAllFromBuffer(outputBuffer,outputBuffer.getNumSamples());
-	setNumSamples(numRead); // write the total number of samples
+	//setNumSamples(numRead); // write the total number of samples
+	setNumSamples(midiMessages, numRead);
+	//std::cout << numRead << std::endl;
 }
 
 

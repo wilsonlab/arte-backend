@@ -70,7 +70,7 @@ void RecordNode::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessag
 
 	if (isRecording) {
 
-		int nSamps = getNumSamples();
+		int nSamps = getNumSamples(midiMessages);
 
 		for (int n = 0; n < nSamps; n++) {
 		
