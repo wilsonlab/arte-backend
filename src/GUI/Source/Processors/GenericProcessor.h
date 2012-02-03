@@ -27,10 +27,11 @@ class GenericProcessor : public AudioProcessor
 {
 public:
 
-	GenericProcessor(const String name, int* nSamples, int nChans, const CriticalSection& lock, int nodeId);
+	GenericProcessor(const String& name_);
 	virtual ~GenericProcessor();
 	
 	const String getName() const {return name;}
+	//virtual void setName(const String& name_) {}
 	
 	void prepareToPlay (double sampleRate, int estimatedSamplesPerBlock);
 	void releaseResources();
@@ -71,8 +72,8 @@ public:
 	// custom methods:
 
 	const String name;
-	int* numSamplesInThisBuffer;
-	const CriticalSection& lock;
+	//int* numSamplesInThisBuffer;
+	//const CriticalSection& lock;
 	int nodeId;
 
 	GenericProcessor* sourceNode;
@@ -85,7 +86,7 @@ public:
 
 	AudioProcessorEditor* editor;
 
-		int numInputs;
+	int numInputs;
 	int numOutputs;
 
 	UIComponent* UI;
@@ -93,20 +94,23 @@ public:
 	int getNumSamples(MidiBuffer&);
 	void setNumSamples(MidiBuffer&, int);
 
-	int getNumInputs() {return numInputs;}
-	void setNumInputs(int);
+	virtual int getNumInputs();
+	virtual void setNumInputs(int);
+	virtual void setNumInputs();
 
-	int getNumOutputs() {return numOutputs;}
-	void setNumOutputs(int);
+	virtual int getNumOutputs();
+	virtual void setNumOutputs(int);
+	virtual void setNumOutputs();
 
 	int getNodeId() {return nodeId;}
+	void setNodeId(int id) {nodeId = id;}
 
 	// get/set source node functions
 	GenericProcessor* getSourceNode() {return sourceNode;}
 	GenericProcessor* getDestNode() {return destNode;}
 
-	virtual void setSourceNode(GenericProcessor* sn) {sourceNode = sn;}
-	virtual void setDestNode(GenericProcessor* dn) {destNode = dn;}
+	virtual void setSourceNode(GenericProcessor* sn);
+	virtual void setDestNode(GenericProcessor* dn);
 
 	virtual bool isSource() {return false;}
 	virtual bool isSink() {return false;}

@@ -23,9 +23,7 @@ class DisplayNode : public GenericProcessor
 {
 public:
 	// real member functions:
-	DisplayNode(const String name, int* nSamples, 
-		int nChans, const CriticalSection& lock, int nodeId,
-		DataViewport* dv);
+	DisplayNode();
 	~DisplayNode();
 
 	AudioProcessorEditor* createEditor();

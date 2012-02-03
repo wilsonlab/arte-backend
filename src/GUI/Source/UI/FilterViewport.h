@@ -17,6 +17,7 @@
 #include "DataViewport.h"
 
 class GenericEditor;
+class SignalChainTabButton;
 
 class FilterViewport  : public Component,
                         public DragAndDropTarget//,
@@ -32,10 +33,11 @@ public:
     // Creating and deleting editors:
     void deleteNode(GenericEditor* editor);
     void addEditor (GenericEditor*);
-    void updateVisibleEditors();
-    void setActiveEditor(GenericEditor* e) {activeEditor = e; updateVisibleEditors();}
+    void updateVisibleEditors(GenericEditor* activeEditor, int action);
+    void selectEditor(GenericEditor* e);
+   // void setActiveEditor(GenericEditor* e) {activeEditor = e; updateVisibleEditors();}
 
-
+    void signalChainCanBeEdited(bool t);
 
     // DragAndDropTarget methods:
     bool isInterestedInDragSource (const String& /*sourceDescription*/, Component* /*sourceComponent*/);
@@ -54,6 +56,12 @@ public:
     //void modifierKeysChanged (const ModifierKeys & modifiers);
     bool keyPressed (const KeyPress &key);
     void moveSelection( const KeyPress &key);
+
+  //  void updateActiveEditor(GenericEditor* e)
+  //  {
+  //      activeEditor = e;
+   //     updateVisibleEditors();
+   // }
     
 private:
 
@@ -61,19 +69,72 @@ private:
     bool somethingIsBeingDraggedOver;
     bool shiftDown;
 
+    bool canEdit;
+
     ProcessorGraph* graph;
     DataViewport* tabComponent;
 
     Array<GenericEditor*, CriticalSection> editorArray;
-    GenericEditor* activeEditor;
+    Array<SignalChainTabButton*, CriticalSection> signalChainArray;
+ //   GenericEditor* activeEditor;
+
+   // int activeTab;
 
     void refreshEditors();
+    void createNewTab(GenericEditor* editor);
+    void removeTab(int tabIndex);
+    //void drawTabs();
+
+    int borderSize, tabSize, tabButtonSize;
 
     int insertionPoint;
     bool componentWantsToMove;
     int indexOfMovingComponent;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilterViewport);  
+
+};
+
+class SignalChainTabButton : public Button
+{
+public:
+    SignalChainTabButton() : Button("Name") 
+    {
+        setRadioGroupId(99);
+        //setToggleState(false,true);
+        setClickingTogglesState(true);
+    }
+    ~SignalChainTabButton() {}
+
+    void setEditor(GenericEditor* p) {firstEditor = p;}
+    GenericEditor* getEditor() {return firstEditor;}
+
+private:
+
+    GenericEditor* firstEditor;
+
+    void paintButton(Graphics &g, bool isMouseOver, bool isButtonDown)
+    {
+        if (getToggleState() == true)
+            g.setColour(Colours::teal);
+        else 
+            g.setColour(Colours::darkgrey);
+
+        if (isMouseOver)
+            g.setColour(Colours::white);
+        
+        //if (isButtonDown)
+        //    g.setColour(Colours::black);
+       // else if (isOver() == ButtonState::buttonOver)
+        //    g.setColour(Colours::white);
+       // else 
+       //     g.setColour(Colours::darkgrey);
+
+        g.fillEllipse(0,0,getWidth(),getHeight());
+    }
+
+    void clicked();
+
 
 };
 

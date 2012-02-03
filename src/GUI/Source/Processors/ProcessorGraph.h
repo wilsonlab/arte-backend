@@ -19,6 +19,7 @@ class GenericProcessor;
 class RecordNode;
 class SourceNode;
 class FilterViewport;
+class SignalChainTabButton;
 class AudioNode;
 class UIComponent;
 class Configuration;
@@ -30,9 +31,9 @@ public:
 	ProcessorGraph();
 	~ProcessorGraph();
 
-	void* createNewProcessor(String& description,
-							 GenericProcessor* source,
-							 GenericProcessor* dest);
+	void* createNewProcessor(String& description);//,
+							 //GenericProcessor* source,
+							 //GenericProcessor* dest);
 
 	GenericProcessor* createProcessorFromDescription(String& description);
 
@@ -47,13 +48,14 @@ public:
 
 	void setUIComponent(UIComponent* ui);
 	void setFilterViewport(FilterViewport *fv);
+
+	void updateConnections(Array<SignalChainTabButton*>);
 	
-	int numSamplesInThisBuffer;
+//	int numSamplesInThisBuffer;
 
-	int currentNodeId;
-	int lastNodeId;
+	
 
-	const CriticalSection lock;
+	//const CriticalSection lock;
 
 	const String saveState(const File& file);
 	const String loadState(const File& file);
@@ -62,13 +64,14 @@ public:
 
 private:	
 
-	int SOURCE_NODE_ID;
+	int currentNodeId;
+
+	Array<int> source_node_IDs;
+
 	const int RECORD_NODE_ID;
 	const int AUDIO_NODE_ID;
 	const int OUTPUT_NODE_ID;
 	const int RESAMPLING_NODE_ID;
-
-	//Array<int, CriticalSection> nodeArray; 
 
 	void createDefaultNodes();
 

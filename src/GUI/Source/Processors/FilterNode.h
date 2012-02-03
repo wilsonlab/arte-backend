@@ -24,7 +24,7 @@ class FilterNode : public GenericProcessor
 {
 public:
 	
-	FilterNode(const String name, int* nSamples, int nChans, const CriticalSection& lock, int nodeId);
+	FilterNode();
 	~FilterNode();
 	
 	void prepareToPlay (double sampleRate, int estimatedSamplesPerBlock);
@@ -35,6 +35,11 @@ public:
 	AudioProcessorEditor* createEditor();
 
 	bool hasEditor() const {return true;}
+
+	// void setSourceNode(GenericProcessor* sn);
+	// void setDestNode(GenericProcessor* dn);
+	
+	void setNumInputs(int);
 	
 private:
 	double sampleRate, lowCut, highCut;

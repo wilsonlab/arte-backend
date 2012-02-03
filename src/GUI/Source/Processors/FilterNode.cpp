@@ -12,14 +12,11 @@
 #include "FilterNode.h"
 //#include "FilterEditor.h"
 
-FilterNode::FilterNode(const String name_, int* nSamps, int nChans, const CriticalSection& lock_, int id)
-	: GenericProcessor(name_, nSamps, nChans, lock_, id), 
+FilterNode::FilterNode()
+	: GenericProcessor("Bandpass Filter"), filter(0),
 	  sampleRate (40000.0), highCut(6000.0), lowCut(600.0)
 	
 {
-
-	setNumInputs(nChans);
-	setNumOutputs(nChans);
 
 		// each family of filters is given its own namespace
 		// RBJ: filters from the RBJ cookbook
@@ -53,17 +50,9 @@ FilterNode::FilterNode(const String name_, int* nSamps, int nChans, const Critic
 		//  the Params style of changing filter settings, and in general all fo the features
 		//  necessary to interoperate with the Filter virtual base class and its derived classes
 
-		filter = new Dsp::SmoothedFilterDesign 
-			<Dsp::Butterworth::Design::BandPass 	// design type
-			<4>,								 	// order
-			16,										// number of channels
-			Dsp::DirectFormII>						// realization
-			(1024);									// number of samples over which to fade 
-													//   parameter changes
-	
-		std::cout << "Filter created with " << getNumInputs() << " channels." << std::endl;
 
-		setFilterParameters();
+	
+
 
 }
 
@@ -84,6 +73,77 @@ AudioProcessorEditor* FilterNode::createEditor()
 	//return 0;
 }
 
+// void FilterNode::setSourceNode(GenericProcessor* sn)
+// {
+// 	sourceNode = sn;
+// 	setNumInputs(sourceNode->getNumOutputs());
+
+// 	if (destNode != 0)
+// 	{
+// 		destNode->setNumInputs(getNumOutputs());
+// 	}
+
+// }
+
+// void FilterNode::setDestNode(GenericProcessor* dn) 
+// {
+// 	if (dn != 0) {
+// 		if (!dn->isSource())
+// 		{
+// 			destNode = dn;
+// 			destNode->setSourceNode(this);
+// 		}
+// 	} 
+// }	
+
+
+void FilterNode::setNumInputs(int inputs)
+{		
+
+	numInputs = inputs;
+	setNumOutputs(inputs);
+
+	if (filter != 0)
+	{
+		delete filter;
+		filter = 0;
+	}
+
+	const int nChans = inputs;
+
+	if (nChans == 16) {
+
+	filter = new Dsp::SmoothedFilterDesign 
+			<Dsp::Butterworth::Design::BandPass 	// design type
+			<4>,								 	// order
+			16,										// number of channels (must be const)
+			Dsp::DirectFormII>						// realization
+			(1024);									// number of samples over which to fade 
+		
+	} else if (nChans == 32) {
+	
+	filter = new Dsp::SmoothedFilterDesign 
+			<Dsp::Butterworth::Design::BandPass 	// design type
+			<4>,								 	// order
+			32	,									// number of channels (must be const)
+			Dsp::DirectFormII>						// realization
+			(1024);									// number of samples over which to fade 
+													//   parameter changes
+
+	} else {
+		// send a message saying this is not implemented
+	}									
+
+	//std::cout << "Filter created with " << getNumInputs() << " channels." << std::endl;
+
+
+	setFilterParameters();
+
+	setPlayConfigDetails(getNumInputs(), getNumOutputs(), 44100.0, 128);
+
+
+}
+
 //AudioProcessorEditor* FilterNode::createEditor(AudioProcessorEditor* const editor)
 //{
 	
@@ -99,7 +159,8 @@ void FilterNode::setFilterParameters()
 	params[2] = (highCut + lowCut)/2; // center frequency
 	params[3] = highCut - lowCut; // bandwidth
 
-	filter->setParams (params);
+	if (filter != 0)
+		filter->setParams (params);
 
 }
 
@@ -131,6 +192,7 @@ void FilterNode::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessag
 {
 	//std::cout << "Filter node processing." << std::endl;
 	//std::cout << buffer.getNumChannels() << std::endl;
+	//::cout << buffer.getNumSamples() << std::endl;
 
 	int nSamps = getNumSamples(midiMessages);
 	//std::cout << nSamps << std::endl;

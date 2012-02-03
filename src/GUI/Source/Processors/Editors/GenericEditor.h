@@ -44,6 +44,9 @@ public:
 	int desiredWidth;
 	int nodeId;
 
+	void tabNumber(int t) {tNum = t;}
+	int tabNumber() {return tNum;}
+
 	FilterViewport* viewport;
 	Configuration* config;
 
@@ -57,6 +60,9 @@ private:
 	Colour backgroundColor;
 
 	bool isSelected;
+
+	int tNum;
+
 	String name;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GenericEditor);

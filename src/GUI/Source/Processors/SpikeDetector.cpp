@@ -11,15 +11,12 @@
 #include <stdio.h>
 #include "SpikeDetector.h"
 
-SpikeDetector::SpikeDetector(const String name_, int* nSamps, int nChans, const CriticalSection& lock_, int id)
-	: GenericProcessor(name_, nSamps, nChans, lock_, id), 
+SpikeDetector::SpikeDetector()
+    : GenericProcessor("Spike Detector"), 
 	  sampleRate (40000.0), threshold(5000.0), prePeakMs(0.2), postPeakMs(0.6),
 	  accumulator(0)
 	
 {
-
-	setNumInputs(nChans);
-	setNumOutputs(nChans);
 
 	spikeBuffer = new MidiBuffer();
 

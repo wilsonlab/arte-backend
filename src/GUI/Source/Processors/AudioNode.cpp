@@ -11,15 +11,12 @@
 
 #include "AudioNode.h"
 
-AudioNode::AudioNode(const String name_,
-					   int* nSamples, int numChans,
-					   const CriticalSection& lock_,
-					   int id)
-	: GenericProcessor(name_, nSamples, numChans, lock_, id)
+AudioNode::AudioNode()
+	: GenericProcessor("Audio Node")
 {
 
 	// 1024 inputs, 2 outputs (left and right channel)
-	setPlayConfigDetails(numChans,2,44100.0,128);
+	setPlayConfigDetails(1024,2,44100.0,128);
 
 	leftChan.add(0);
 	rightChan.add(1);

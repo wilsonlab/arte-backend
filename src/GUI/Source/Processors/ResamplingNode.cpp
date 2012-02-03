@@ -11,13 +11,8 @@
 #include "ResamplingNode.h"
 #include <stdio.h>
 
-ResamplingNode::ResamplingNode(const String name_,
-							   int* nSamps,
-							   int nChans,
-							   const CriticalSection& lock_,
-							   int id,
-							   bool destBufferType)
-	: GenericProcessor(name_, nSamps, nChans, lock_, id), 
+ResamplingNode::ResamplingNode(bool destBufferType)
+	: GenericProcessor("Resampling Node"), 
 	  ratio (1.0), lastRatio (1.0),
 	  destBufferPos(0), destBufferIsTempBuffer(destBufferType),
 	  destBufferSampleRate(44100.0), sourceBufferSampleRate(40000.0),
@@ -25,10 +20,13 @@ ResamplingNode::ResamplingNode(const String name_,
 	
 {
 
-	setPlayConfigDetails(nChans,nChans,44100.0,128);
+	setNumInputs(2);
+	setNumOutputs(2);
 
-	setNumInputs(nChans);
-	setNumOutputs(nChans);
+		setPlayConfigDetails(2, // number of inputs
+				         2, // number of outputs
+				         44100.0, // sampleRate
+				         128);    // blockSize
 
 	filter = new Dsp::SmoothedFilterDesign 
 		<Dsp::RBJ::Design::LowPass, 1> (1024);

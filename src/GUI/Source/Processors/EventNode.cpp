@@ -13,13 +13,9 @@
 #include "EventNode.h"
 //#include "FilterEditor.h"
 
-EventNode::EventNode(const String name_, int* nSamps, int nChans, const CriticalSection& lock_, int id, bool is)
-	: GenericProcessor(name_, nSamps, nChans, lock_, id), accumulator(0), isSource(is)
-	
+EventNode::EventNode()
+	: GenericProcessor("Event Node")
 {
-
-	setNumInputs(nChans);
-	setNumOutputs(nChans);
 	
 }
 

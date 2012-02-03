@@ -11,17 +11,14 @@
 #include "FileReader.h"
 
 
-FileReader::FileReader(const String name_, int* nSamps, int nChans, const CriticalSection& lock_, int id)
-	: GenericProcessor(name_, nSamps, nChans, lock_, id),
+FileReader::FileReader()
+	: GenericProcessor("File Reader"),
 	  sampleRate (40000.0),
 	  numChannels(16),
 	  samplesPerBlock(1024)
-	
 {
-
 	setNumOutputs(numChannels);
 	setNumInputs(0);
-
 }
 
 FileReader::~FileReader()

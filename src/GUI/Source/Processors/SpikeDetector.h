@@ -24,7 +24,7 @@ class SpikeDetector : public GenericProcessor
 {
 public:
 	
-	SpikeDetector(const String name, int* nSamples, int nChans, const CriticalSection& lock, int nodeId);
+	SpikeDetector();
 	~SpikeDetector();
 	
 	void prepareToPlay (double sampleRate, int estimatedSamplesPerBlock);

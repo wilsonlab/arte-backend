@@ -26,8 +26,10 @@ class SourceNode : public GenericProcessor
 public:
 	
 	// real member functions:
-	SourceNode(const String name, int* nSamples, int nChans, const CriticalSection& lock, int nodeId);
+	SourceNode(const String& name);
 	~SourceNode();
+
+	//void setName(const String name_);
 	
 	void prepareToPlay (double sampleRate, int estimatedSamplesPerBlock);
 	void releaseResources();
@@ -35,7 +37,8 @@ public:
 
 	void setParameter (int parameterIndex, float newValue);
 
-	void setSourceNode(GenericProcessor* sn) {sourceNode = 0;}
+	// void setSourceNode(GenericProcessor* sn);
+	// void setDestNode(GenericProcessor* dn);
 
 	AudioProcessorEditor* createEditor();
 	bool hasEditor() const {return true;}

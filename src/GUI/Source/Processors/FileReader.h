@@ -23,7 +23,7 @@ class FileReader : public GenericProcessor
 public:
 	
 	// real member functions:
-	FileReader(const String name, int* nSamples, int nChans, const CriticalSection& lock, int nodeId);
+	FileReader();
 	~FileReader();
 	
 	void prepareToPlay (double sampleRate, int estimatedSamplesPerBlock);

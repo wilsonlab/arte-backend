@@ -22,7 +22,7 @@ class EventNode : public GenericProcessor
 {
 public:
 	
-	EventNode(const String name, int* nSamples, int nChans, const CriticalSection& lock, int nodeId, bool src);
+	EventNode();
 	~EventNode();
 	
 	void prepareToPlay (double sampleRate, int estimatedSamplesPerBlock);

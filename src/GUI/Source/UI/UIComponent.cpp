@@ -24,8 +24,8 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 	dataViewport = new DataViewport ();
 	addChildComponent(dataViewport);
 	dataViewport->addTabToDataViewport("Info",new InfoLabel());
-	//dataViewport->addTabToDataViewport("Spike Display",0);
-	//dataViewport->addTabToDataViewport("LFP Display",0);
+	dataViewport->addTabToDataViewport("Spike Display",0);
+	dataViewport->addTabToDataViewport("LFP Display",0);
 
 //	for (int n = 0; n < 10; n++)
 //	{

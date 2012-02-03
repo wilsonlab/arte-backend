@@ -13,12 +13,10 @@
 #include "Editors/SourceNodeEditor.h"
 #include <stdio.h>
 
-SourceNode::SourceNode(const String name_, int* nSamps, int nChans, const CriticalSection& lock_, int id)
-	: GenericProcessor(name_, nSamps, nChans, lock_, id),
+SourceNode::SourceNode(const String& name_)
+	: GenericProcessor(name_),
 	  dataThread(0)
 {
-
-	// Source node type determines configuration info
 	if (getName().equalsIgnoreCase("Intan Demo Board")) {
 		setNumOutputs(16);
 		setNumInputs(0);
@@ -30,9 +28,20 @@ SourceNode::SourceNode(const String name_, int* nSamps, int nChans, const Critic
 		setNumInputs(0);
 	}
 
+	setPlayConfigDetails(getNumInputs(), getNumOutputs(), 44100.0, 128);
+
 }
 
 SourceNode::~SourceNode() {}
+
+// void SourceNode::setName(const String name_)
+// {
+// 	name = name_;
+
+// 	// Source node type determines configuration info
+
+
+// }
 
 void SourceNode::setParameter (int parameterIndex, float newValue)
 {
@@ -64,6 +73,18 @@ AudioProcessorEditor* SourceNode::createEditor()
 	//return 0;
 }
 
+// void SourceNode::setSourceNode(GenericProcessor* sn) 
+// {
+// 	sourceNode = 0;
+// }
+
+// void SourceNode::setDestNode(GenericProcessor* dn)
+// {
+// 	destNode = dn;
+// 	if (dn != 0)
+// 		dn->setSourceNode(this);
+// }
+
 //void SourceNode::createEditor() {
 	
 //}
@@ -72,13 +93,13 @@ void SourceNode::enable() {
 	
 	std::cout << "Source node received enable signal" << std::endl;
 
-	if (getName().equalsIgnoreCase("Sources/Intan Demo Board")) {
+	if (getName().equalsIgnoreCase("Intan Demo Board")) {
 		dataThread = new IntanThread();
 		inputBuffer = dataThread->getBufferAddress();
-	} else if (getName().equalsIgnoreCase("Sources/Custom FPGA")) {
+	} else if (getName().equalsIgnoreCase("Custom FPGA")) {
 		dataThread = new FPGAThread();
 		inputBuffer = dataThread->getBufferAddress();
-	} else if (getName().equalsIgnoreCase("Sources/File Reader")) {
+	} else if (getName().equalsIgnoreCase("File Reader")) {
 		dataThread = new FileReaderThread();
 		inputBuffer = dataThread->getBufferAddress();
 	}
@@ -100,11 +121,13 @@ void SourceNode::processBlock (AudioSampleBuffer& outputBuffer, MidiBuffer& midi
 {
 
 	//std::cout << "Source node processing." << std::endl;
+	//std::cout << outputBuffer.getNumChannels() << " " << outputBuffer.getNumSamples() << std::endl;
 
-	outputBuffer.clear();
-	int numRead = inputBuffer->readAllFromBuffer(outputBuffer,outputBuffer.getNumSamples());
-	//setNumSamples(numRead); // write the total number of samples
-	setNumSamples(midiMessages, numRead);
+	
+	 outputBuffer.clear();
+	 int numRead = inputBuffer->readAllFromBuffer(outputBuffer,outputBuffer.getNumSamples());
+	// //setNumSamples(numRead); // write the total number of samples
+	 setNumSamples(midiMessages, numRead);
 	//std::cout << numRead << std::endl;
 }
 

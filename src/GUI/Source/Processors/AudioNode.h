@@ -23,7 +23,7 @@ class AudioNode : public GenericProcessor
 public:
 	
 	// real member functions:
-	AudioNode(const String name, int* nSamples, int numChans, const CriticalSection& lock, int nodeId);
+	AudioNode();
 	~AudioNode();
 	
 	void prepareToPlay (double sampleRate, int estimatedSamplesPerBlock);

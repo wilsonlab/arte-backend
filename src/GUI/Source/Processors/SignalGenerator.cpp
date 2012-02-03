@@ -13,8 +13,9 @@
 //#include "SourceNodeEditor.h"
 #include <stdio.h>
 
-SignalGenerator::SignalGenerator(const String name_, int* nSamps, int nChans, const CriticalSection& lock_, int id)
-	: GenericProcessor(name_, nSamps, nChans, lock_, id),
+SignalGenerator::SignalGenerator()
+	: GenericProcessor("Signal Generator"),
+
 	  frequency(25.0),
 	  sampleRate (44100.0),
 	  currentPhase (0.0),

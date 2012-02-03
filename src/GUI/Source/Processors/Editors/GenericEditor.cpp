@@ -12,7 +12,7 @@
 
 GenericEditor::GenericEditor (GenericProcessor* owner, FilterViewport* vp) 
 	: AudioProcessorEditor (owner), isSelected(false), viewport(vp),
-	  desiredWidth(150)
+	  desiredWidth(150), tNum(-1)
 
 {
 	name = getAudioProcessor()->getName();
@@ -95,7 +95,7 @@ void GenericEditor::paint (Graphics& g)
 {
 	//g.addTransform(AffineTransform::rotation( double_Pi/20));
 
-	int offset = 5;
+	int offset = 0;
 
 	g.setColour(Colour(127,137,147));
 	g.fillAll();

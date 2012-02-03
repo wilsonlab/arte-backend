@@ -10,14 +10,12 @@
 
 #include "RecordNode.h"
 
-RecordNode::RecordNode(const String name_,
-					   int* nSamples, int numChans,
-					   const CriticalSection& lock_,
-					   int id)
-	: GenericProcessor(name_, nSamples, numChans, lock_, id), isRecording(false)
+RecordNode::RecordNode()
+	: GenericProcessor("Record Node"), isRecording(false)
 {
 
-	setPlayConfigDetails(numChans,0,44100.0,128);
+	// need to update this:
+	setPlayConfigDetails(1024,0,44100.0,128);
 
 	outputFile = File("./data"); // create output file
 	outputStream = 0;

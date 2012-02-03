@@ -10,13 +10,19 @@
 
 #include "GenericProcessor.h"
 
-GenericProcessor::GenericProcessor(const String name_, int* nSamps, int nChans, const CriticalSection& lock_, int id)
-	: numSamplesInThisBuffer(nSamps),
-	  name (name_), lock(lock_), nodeId(id), numInputs(nChans), numOutputs(nChans),
-	  sourceNode(0), destNode(0), editor(0)
+GenericProcessor::GenericProcessor(const String& name_) : name(name_),
+	sourceNode(0), destNode(0), editor(0)
+	
 {
 
-	setPlayConfigDetails(numInputs,numOutputs,44100.0,*nSamps);
+	//name = "Generic Processor";
+	//setSourceNode(source_);
+	//setDestNode(dest_);
+
+	//setNumInputs();
+	//setNumOutputs();
+
+	//setPlayConfigDetails(getNumInputs(),getNumOutputs(),1024);
 
 }
 
@@ -118,6 +124,57 @@ int GenericProcessor::getNumSamples(MidiBuffer& midiMessages) {
 	return numRead;
 }
 
+void GenericProcessor::setSourceNode(GenericProcessor* sn)
+{
+	if (!isSource())
+	{
+		if (sn != 0)
+		{
+			if (!sn->isSink())
+			{
+				if (sourceNode != sn) {
+					sourceNode = sn;
+					sn->setDestNode(this);
+					setNumInputs();
+				}
+			} else {
+				sourceNode = 0;
+			}
+		} else {
+			sourceNode = 0;
+		}
+	} else {
+		if (sn != 0)
+			sn->setDestNode(this);
+	}
+}
+
+
+void GenericProcessor::setDestNode(GenericProcessor* dn)
+{
+	if (!isSink())
+	{
+		if (dn != 0)
+		{
+			if (!dn->isSource())
+			{
+				if (destNode != dn) 
+				{
+					destNode = dn;
+					dn->setSourceNode(this);
+				}
+			} else {
+				destNode = 0;
+			}
+		} else {
+			destNode = 0;
+		}
+	} else {
+		if (dn != 0)
+			dn->setSourceNode(this);
+	}
+}
+
 // void GenericProcessor::setSourceNode(GenericProcessor* sn)
 // {
 // 	if (!isSource())
@@ -133,16 +190,35 @@ int GenericProcessor::getNumSamples(MidiBuffer& midiMessages) {
 // 	else
 // 		destNode = 0;
 // }
+int GenericProcessor::getNumInputs()
+{
+	return numInputs;
+}
 
+int GenericProcessor::getNumOutputs()
+{
+	return numOutputs;
+}
 
 void GenericProcessor::setNumInputs(int n) {
 	numInputs = n;
-	setPlayConfigDetails(numInputs,numOutputs,44100.0,1024);
+	//setPlayConfigDetails(numInputs,numOutputs,44100.0,1024);
+}
+
+void GenericProcessor::setNumInputs() {
+	
+	int n = getSourceNode()->getNumOutputs();
+	setNumInputs(n);
+}
+
+void GenericProcessor::setNumOutputs()
+{
+	setNumOutputs(getNumInputs());
 }
 
 void GenericProcessor::setNumOutputs(int n) {
 	numOutputs = n;
-	setPlayConfigDetails(numInputs,numOutputs,44100.0,1024);
+	//setPlayConfigDetails(numInputs,numOutputs,44100.0,1024);
 }
 
 void GenericProcessor::checkForMidiEvents(MidiBuffer& midiMessages)

@@ -13,10 +13,8 @@
 #include "ResamplingNode.h"
 #include <stdio.h>
 
-DisplayNode::DisplayNode(const String name_, int* nSamps, int nChans,
-	 const CriticalSection& lock_, int id, DataViewport* dv)
-	: GenericProcessor(name_, nSamps, nChans, lock_, id),
-	  dataViewport(dv)
+DisplayNode::DisplayNode()
+	: GenericProcessor("Display Node")
 
 {
 	

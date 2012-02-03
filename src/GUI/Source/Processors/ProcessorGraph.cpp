@@ -26,16 +26,14 @@
 #include "Utilities/Splitter.h"
 #include "../UI/UIComponent.h"
 #include "../UI/Configuration.h"
+#include "../UI/FilterViewport.h"
 
 ProcessorGraph::ProcessorGraph() : 
-	currentNodeId(100), 
-	lastNodeId(1), 
-	SOURCE_NODE_ID(0), 
+	currentNodeId(100),
 	RECORD_NODE_ID(199), 
 	AUDIO_NODE_ID(200), 
 	OUTPUT_NODE_ID(201), 
-	RESAMPLING_NODE_ID(202),
-	numSamplesInThisBuffer(1024)
+	RESAMPLING_NODE_ID(202)//,
 	
 	{
 
@@ -61,15 +59,18 @@ void ProcessorGraph::createDefaultNodes()
 		new AudioProcessorGraph::AudioGraphIOProcessor(AudioProcessorGraph::AudioGraphIOProcessor::audioOutputNode);
 
 	// add record node -- sends output to disk
-	RecordNode* recn = new RecordNode(T("Record Node"), &numSamplesInThisBuffer, 1024, lock, RECORD_NODE_ID);
+	RecordNode* recn = new RecordNode();
+	recn->setNodeId(RECORD_NODE_ID);
 	//recn->setConfiguration(config);
 
 	// add audio node -- takes all inputs and selects those to be used for audio monitoring
-	AudioNode* an = new AudioNode(T("Audio Node"), &numSamplesInThisBuffer, 1024, lock, AUDIO_NODE_ID);
+	AudioNode* an = new AudioNode();
+	recn->setNodeId(AUDIO_NODE_ID);
 	//an->setConfiguration(config);
 
 	// add resampling node -- resamples continuous signals to 44.1kHz
-	ResamplingNode* rn = new ResamplingNode(T("Resampling Node"), &numSamplesInThisBuffer, 2, lock, RESAMPLING_NODE_ID, true);
+	ResamplingNode* rn = new ResamplingNode(true);
+	rn->setNodeId(RESAMPLING_NODE_ID);
 
 	addNode(on,OUTPUT_NODE_ID);
 	addNode(recn,RECORD_NODE_ID);
@@ -92,18 +93,16 @@ void ProcessorGraph::createDefaultNodes()
 }
 
 
-void* ProcessorGraph::createNewProcessor(String& description,
-										 GenericProcessor* source,
-										 GenericProcessor* dest) {
+void* ProcessorGraph::createNewProcessor(String& description)//,
+										// GenericProcessor* source,
+										// GenericProcessor* dest) 
+{
 
 	GenericProcessor* processor = createProcessorFromDescription(description);
 
-	int id = ++currentNodeId-1;
+	int id = currentNodeId++;
 
-	//std::cout << "Current node ID: " << currentNodeId << std::endl;
-	//std::cout << "ID: " << id << std::endl;
-
-	bool connectToAudioAndRecordNodes = false;
+	processor->setNodeId(id); // identifier within processor graph
 
 	if (processor != 0) {
 
@@ -111,18 +110,57 @@ void* ProcessorGraph::createNewProcessor(String& description,
 		
 		addNode(processor,id);
 
-		processor->setSourceNode(source);
-		processor->setDestNode(dest);
-		
-		if (!processor->isSink() && 
-		    !processor->isSource() &&
-		    !processor->isSplitter() && 
-		    !processor->isMerger())
+		//processor->setSourceNode(source); // these functions will automatically
+		//processor->setDestNode(dest);     // set the number of channels
+
+		processor->setFilterViewport(filterViewport);
+		processor->setConfiguration(config);
+
+		return processor->createEditor();
+
+	} else {
+
+		sendActionMessage("Not a valid processor type.");
+
+		return 0;
+	}
+
+}
+
+void ProcessorGraph::updateConnections(Array<SignalChainTabButton*> tabs)
+{
+
+	for (int n = 0; n < tabs.size(); n++)
+	{
+		GenericEditor* ge = (GenericEditor*) tabs[n]->getEditor();
+		GenericProcessor* gp = (GenericProcessor*) ge->getProcessor();
+
+		GenericProcessor* dest = (GenericProcessor*) gp->getDestNode();
+
+		while (dest != 0)
 		{
-			connectToAudioAndRecordNodes = true;
+			// wire it up!
 		}
 
-		if (processor->isSource()) {
+	}
+
+	//std::cout << "Current node ID: " << currentNodeId << std::endl;
+	//std::cout << "ID: " << id << std::endl;
+
+	//bool connectToAudioAndRecordNodes = false;
+
+		// if (!processor->isSink() && 
+		//     !processor->isSource() &&
+		//     !processor->isSplitter() && 
+		//     !processor->isMerger())
+		// {
+		// 	connectToAudioAndRecordNodes = true;
+		// }
+
+		// get rid of audio / record connections for testing purposes
+		//connectToAudioAndRecordNodes = false; //
+
+		/*if (processor->isSource()) {
 			
 			int nextChan = 0;
 
@@ -156,11 +194,11 @@ void* ProcessorGraph::createNewProcessor(String& description,
 		source = processor->getSourceNode();
 		dest = processor->getDestNode();
 
-		if (dest != 0) 
-			dest->setSourceNode(processor);
+		// if (dest != 0) 
+		// 	dest->setSourceNode(processor);
 		
-		if (source != 0)
-			source->setDestNode(processor);
+		// if (source != 0)
+		// 	source->setDestNode(processor);
 		
 		if (source != 0) {
 		
@@ -168,16 +206,12 @@ void* ProcessorGraph::createNewProcessor(String& description,
 
 			for (int chan = 0; chan < processor->getNumInputs(); chan++) {
 
-				//std::cout << "1";
+				std::cout << "1";
 				addConnection(source->getNodeId(), // sourceNodeID
 				  	chan, // sourceNodeChannelIndex
 				   	id, // destNodeID
 				  	chan); // destNodeChannelIndex
 			}
-
-			
-
-			//processor->setNumOutputs
 
 			// connect event channel
 			addConnection(source->getNodeId(), // sourceNodeID
@@ -226,24 +260,8 @@ void* ProcessorGraph::createNewProcessor(String& description,
 				  	chan); // destNodeChannelIndex
 			}
 
-		}
-
-		std::cout << std::endl;
-
-		processor->setFilterViewport(filterViewport);
-		processor->setConfiguration(config);
-
-		return processor->createEditor();
-
-	} else {
-
-		sendActionMessage("Not a valid processor type.");
-
-		return 0;
-	}
-
+		}*/
 }
-
 
 GenericProcessor* ProcessorGraph::createProcessorFromDescription(String& description)
 {
@@ -257,52 +275,35 @@ GenericProcessor* ProcessorGraph::createProcessorFromDescription(String& descrip
 
 	if (processorType.equalsIgnoreCase("Sources")) {
 
-		if (subProcessorType.equalsIgnoreCase("Intan Demo Board")) {
-
-			sendActionMessage("New source node created.");
-
-			std::cout << "Creating a new data source." << std::endl;
-			processor = new SourceNode(description, &numSamplesInThisBuffer, 16, lock, currentNodeId);
-
-		} else if (subProcessorType.equalsIgnoreCase("Signal Generator")) {
-			
-			sendActionMessage("New signal generator created.");
-
-			std::cout << "Creating a new signal generator." << std::endl;
-			processor = new SignalGenerator(description, &numSamplesInThisBuffer, 16, lock, currentNodeId);
-
-		} else if (subProcessorType.equalsIgnoreCase("File Reader")) {
-			
-			sendActionMessage("New file reader created.");
-
-			std::cout << "Creating a file reader." << std::endl;
-			processor = new SourceNode(description, &numSamplesInThisBuffer, 16, lock, currentNodeId);
-
-		}
+		processor = new SourceNode(subProcessorType);
+		sendActionMessage("New source node created.");
+		std::cout << "Creating a new data source." << std::endl;
 
 	} else if (processorType.equalsIgnoreCase("Filters")) {
 
-		sendActionMessage("New filter node created.");
-
 		if (subProcessorType.equalsIgnoreCase("Bandpass Filter")) {
 			std::cout << "Creating a new filter." << std::endl;
-			processor = new FilterNode(description, &numSamplesInThisBuffer, 16, lock, currentNodeId);
+			processor = new FilterNode();
 
 		} else if (subProcessorType.equalsIgnoreCase("Resampler")) {
 			std::cout << "Creating a new resampler." << std::endl;
-			processor = new ResamplingNode(description, &numSamplesInThisBuffer, 16, lock, currentNodeId, false);
+			processor = new ResamplingNode(false);
 		
 		} else if (subProcessorType.equalsIgnoreCase("Spike Detector")) {
 			std::cout << "Creating a new spike detector." << std::endl;
-			processor = new SpikeDetector(description, &numSamplesInThisBuffer, 16, lock, currentNodeId);
+			processor = new SpikeDetector();
 		}
+
+		sendActionMessage("New filter node created.");
 
 	} else if (processorType.equalsIgnoreCase("Utilities")) {
 
 	 	if (subProcessorType.equalsIgnoreCase("Splitter")) {
 			
 			std::cout << "Creating a new splitter." << std::endl;
-			processor = new Splitter(description, &numSamplesInThisBuffer, 16, lock, currentNodeId);
+			processor = new Splitter();
+
+			sendActionMessage("New splitter created.");
 
 	 	}
 		
@@ -322,19 +323,20 @@ GenericProcessor* ProcessorGraph::createProcessorFromDescription(String& descrip
 
 	} else if (processorType.equalsIgnoreCase("Visualizers")) {
 
-		sendActionMessage("New visualizer created.");
+		
 		
 		//if (subProcessorType.equalsIgnoreCase("Stream Viewer")) {
 			
 			std::cout << "Creating a display node." << std::endl;
-			processor = new DisplayNode(description, &numSamplesInThisBuffer,
-										 16, lock, currentNodeId,
-										 UI->getDataViewport());
-
+			processor = new DisplayNode();
+		    processor->setDataViewport(UI->getDataViewport());
 			processor->setUIComponent(UI);
 		//}
 	
+		sendActionMessage("New visualizer created.");
 	}
+
+	//processor->setName(processorType);
 
 	return processor;
 
@@ -345,16 +347,17 @@ void ProcessorGraph::removeProcessor(GenericProcessor* processor) {
 	
 	std::cout << "Removing processor with ID " << processor->getNodeId() << std::endl;
 
-	GenericProcessor* source = processor->getSourceNode();
-	GenericProcessor* dest = processor->getDestNode();
-	int numInputs = processor->getNumInputs();
+	// GenericProcessor* source = processor->getSourceNode();
+	// GenericProcessor* dest = processor->getDestNode();
+	// int numInputs = processor->getNumInputs();
 
-	std::cout << "  Source " << source << std::endl;
-	std::cout << "  Dest " << dest << std::endl;
+	// std::cout << "  Source " << source << std::endl;
+	// std::cout << "  Dest " << dest << std::endl;
 
 	removeNode(processor->getNodeId());
 
-	if (dest !=0 && source !=0) {
+	// eliminate connections for now
+	/*if (dest !=0 && source !=0) {
 
 		std::cout << "   Making new connections...." << std::endl;
 
@@ -367,13 +370,13 @@ void ProcessorGraph::removeProcessor(GenericProcessor* processor) {
 						  chan);
 		}
 
-	}
+	}*/
 
-	if (dest != 0)
-		dest->setSourceNode(source);
+	// if (dest != 0)
+	// 	dest->setSourceNode(source);
 	
-	if (source != 0)
-		source->setDestNode(dest);
+	// if (source != 0)
+	// 	source->setDestNode(dest);
 
 }
 
@@ -398,6 +401,8 @@ bool ProcessorGraph::enableSourceNodes() {
 			sn->enable();
 	}
 
+	filterViewport->signalChainCanBeEdited(false);
+
 	return true;
 }
 
@@ -411,6 +416,8 @@ bool ProcessorGraph::disableSourceNodes() {
 		if (sn != 0)
 			sn->disable();
 	}
+
+	filterViewport->signalChainCanBeEdited(true);
 
 	return true;
 }
@@ -556,7 +563,8 @@ const String ProcessorGraph::loadState(const File& file)
 
 	forEachXmlChildElementWithTagName (*xml, e, T("PROCESSOR"))
 	{
-		if (e->getIntAttribute (T("source")) == -1) { // source node
+		if (e->getIntAttribute (T("source")) == -1) 
+		{ // source node
 			description = e->getStringAttribute (T("name"));
 			nextNodeId = e->getIntAttribute (T("dest"));
 			break;
@@ -565,9 +573,9 @@ const String ProcessorGraph::loadState(const File& file)
 
 	do {
 
-		GenericEditor* editor = (GenericEditor*) createNewProcessor(description,
-										 sourceNode,
-										 destNode);
+		GenericEditor* editor = (GenericEditor*) createNewProcessor(description);//,
+										// sourceNode,
+										// destNode);
 
 		filterViewport->addEditor(editor);
 		sourceNode = (GenericProcessor*) editor->getProcessor();
@@ -584,9 +592,9 @@ const String ProcessorGraph::loadState(const File& file)
 	} while (nextNodeId != -1);
 
 	// add the last one:
-	GenericEditor* editor = (GenericEditor*) createNewProcessor(description,
-								sourceNode,
-								destNode);
+	GenericEditor* editor = (GenericEditor*) createNewProcessor(description);//,
+								//sourceNode,
+								//destNode);
 
 	filterViewport->addEditor(editor);
 
