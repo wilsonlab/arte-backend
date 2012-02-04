@@ -25,6 +25,8 @@ public:
 
 	AudioProcessorEditor* createEditor();
 
+	void process(AudioSampleBuffer &buffer, MidiBuffer &midiMessages, int& nSamples) {}
+
 	bool isSplitter() {return true;}
 
 	void switchDest(int);

@@ -12,6 +12,10 @@
 #define __CONFIGURATION_H_9DEA9372__
 
 #include "../../JuceLibraryCode/JuceHeader.h"
+#include "../Processors/GenericProcessor.h"
+
+class GenericProcessor;
+class Configuration;
 
 class Trode
 {
@@ -117,23 +121,11 @@ private:
 class DataSource
 {
 public:
-	DataSource(String name_, int nChans, int firstChanIndex, int ID)
-	{
+	DataSource(GenericProcessor* p, Configuration* c);
 
-		name = name_;
-		id = ID;
+	~DataSource() {}
 
-		numChans = nChans;
-		firstChan = firstChanIndex;
-		nextAvailableChan = firstChan;
-
-		channelMapping.ensureStorageAllocated(nChans);
-
-		totalElectrodes = 0;
-
-	}
-
-	~DataSource() {};
+	GenericProcessor* getProcessor() {return processor;}
 
 	int numTetrodes() {return tetrodes.size();}
 	int numStereotrodes() {return stereotrodes.size();}
@@ -187,6 +179,8 @@ private:
 	int numChans;
 	int nextAvailableChan;
 
+	GenericProcessor* processor;
+
 };
 
 class Configuration
@@ -194,6 +188,8 @@ class Configuration
 public:
 	Configuration() {};
 	~Configuration() {};
+
+	void removeDataSource(GenericProcessor*);
 
 	int numDataSources() {return dataSources.size();}
 	DataSource* getSource(int sourceNum) {return dataSources[sourceNum];}

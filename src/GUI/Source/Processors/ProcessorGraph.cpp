@@ -33,7 +33,9 @@ ProcessorGraph::ProcessorGraph() :
 	RECORD_NODE_ID(199), 
 	AUDIO_NODE_ID(200), 
 	OUTPUT_NODE_ID(201), 
-	RESAMPLING_NODE_ID(202)//,
+	RESAMPLING_NODE_ID(202),
+	totalAudioConnections(0),
+	totalRecordConnections(0)
 	
 	{
 
@@ -108,13 +110,11 @@ void* ProcessorGraph::createNewProcessor(String& description)//,
 
 		std::cout << "  Adding node to graph with ID number " << id << std::endl;
 		
-		addNode(processor,id);
-
-		//processor->setSourceNode(source); // these functions will automatically
-		//processor->setDestNode(dest);     // set the number of channels
-
 		processor->setFilterViewport(filterViewport);
 		processor->setConfiguration(config);
+		processor->addActionListener(messageCenter);
+
+		addNode(processor,id); // have to add it so it can be deleted by the graph
 
 		return processor->createEditor();
 
@@ -127,140 +127,111 @@ void* ProcessorGraph::createNewProcessor(String& description)//,
 
 }
 
-void ProcessorGraph::updateConnections(Array<SignalChainTabButton*> tabs)
+void ProcessorGraph::clearNodes()
 {
+	for (int i = 0; i < getNumNodes(); i++)
+	{
+		Node* node = getNode(i);
+
+		int id = node->nodeId;
+
+		if (!(id == RECORD_NODE_ID || id == AUDIO_NODE_ID ||
+		      id == OUTPUT_NODE_ID || id == RESAMPLING_NODE_ID))
+		   {removeNode(id);}
+
+	}
+}
+
+void ProcessorGraph::updateConnections(Array<SignalChainTabButton*, CriticalSection> tabs)
+{
+	clearNodes(); // clear processor graph
+	//createDefaultNodes(); // add audio and record nodes
 
 	for (int n = 0; n < tabs.size(); n++)
 	{
-		GenericEditor* ge = (GenericEditor*) tabs[n]->getEditor();
-		GenericProcessor* gp = (GenericProcessor*) ge->getProcessor();
 
-		GenericProcessor* dest = (GenericProcessor*) gp->getDestNode();
+		//if (tabs[n]->hasNewConnections())
+		//{
 
-		while (dest != 0)
+		GenericEditor* sourceEditor = (GenericEditor*) tabs[n]->getEditor();
+		GenericProcessor* source = (GenericProcessor*) sourceEditor->getProcessor();
+
+		while (source != 0)// && destEditor->isEnabled())
 		{
-			// wire it up!
-		}
 
-	}
+			GenericProcessor* dest = (GenericProcessor*) source->getDestNode();
 
-	//std::cout << "Current node ID: " << currentNodeId << std::endl;
-	//std::cout << "ID: " << id << std::endl;
-
-	//bool connectToAudioAndRecordNodes = false;
-
-		// if (!processor->isSink() && 
-		//     !processor->isSource() &&
-		//     !processor->isSplitter() && 
-		//     !processor->isMerger())
-		// {
-		// 	connectToAudioAndRecordNodes = true;
-		// }
-
-		// get rid of audio / record connections for testing purposes
-		//connectToAudioAndRecordNodes = false; //
-
-		/*if (processor->isSource()) {
-			
-			int nextChan = 0;
-
-			for (int n = 0; n < config->numDataSources(); n++)
+			if (source->enabledState())
 			{
-				nextChan += config->getSource(n)->getNumChans();
+
+			// add the source to the graph if it doesn't already exist
+			Node* node = getNodeForId(source->getNodeId());
+			if (node == 0)
+				addNode(source, source->getNodeId());
+
+			// add the connections to audio and record nodes if necessary
+			if (!(source->isSink() || source->isSource() ||
+			      source->isSplitter() || source->isMerger()))
+			{
+				std::cout << "   Connecting to audio and record nodes." << std::endl;
+
+				for (int chan = 0; chan < source->getNumOutputs(); chan++) {
+
+					addConnection(source->getNodeId(), // sourceNodeID
+					  	chan, // sourceNodeChannelIndex
+					   	AUDIO_NODE_ID, // destNodeID
+					  	getNextFreeAudioChannel()); // destNodeChannelIndex
+
+					addConnection(source->getNodeId(), // sourceNodeID
+					  	chan, // sourceNodeChannelIndex
+					   	RECORD_NODE_ID, // destNodeID
+					  	getNextFreeRecordChannel()); // destNodeChannelIndex
+				}
 			}
 
-			DataSource* d = new DataSource(processor->getName(),
-			                          processor->getNumOutputs(),
-			                          nextChan,
-			                          id);
+			if (dest != 0) {
 
-			// add tetrodes -- should really be doing this dynamically
-			d->addTrode(4, "TT1");
-			d->addTrode(4, "TT2");
-			d->addTrode(4, "TT3");
-			d->addTrode(4, "TT4");
+				if (dest->enabledState())
+				{
 
-			// for (int n = 0; n < d->numTetrodes(); n++)
-			// {
-			// 	std::cout << d->getTetrode(n)->getName();
-			// }
-			// std::cout << std::endl;
+					// add dest node to graph if it doesn't already exist
+					node = getNodeForId(dest->getNodeId());
+					if (node == 0)
+						addNode(dest, dest->getNodeId());
 
-			config->addDataSource(d);
-			//SOURCE_NODE_ID = id;
+					for (int chan = 0; chan < source->getNumOutputs(); chan++) 
+					{
+
+						// eventually need to account for splitter and mergers
+						//std::cout << "1";
+						addConnection(source->getNodeId(), // sourceNodeID
+						  	chan, // sourceNodeChannelIndex
+						   	dest->getNodeId(), // destNodeID
+						  	chan); // destNodeChannelIndex
+						}
+
+						// connect event channel
+						addConnection(source->getNodeId(), // sourceNodeID
+						  	midiChannelIndex, // sourceNodeChannelIndex
+						   	dest->getNodeId(), // destNodeID
+						  	midiChannelIndex); // destNodeChannelIndex
+					}
+				}
+			}	
+			
+			source = dest; // switch source and dest
 		}
+	}
+}
 
-		// need to update source and dest, in case the processor is a source or a visualizer
-		source = processor->getSourceNode();
-		dest = processor->getDestNode();
+int ProcessorGraph::getNextFreeAudioChannel()
+{
+	return totalAudioConnections++;
+}
 
-		// if (dest != 0) 
-		// 	dest->setSourceNode(processor);
-		
-		// if (source != 0)
-		// 	source->setDestNode(processor);
-		
-		if (source != 0) {
-		
-			std::cout << "   Connecting to source node " << source->getNodeId() << std::endl;
-
-			for (int chan = 0; chan < processor->getNumInputs(); chan++) {
-
-				std::cout << "1";
-				addConnection(source->getNodeId(), // sourceNodeID
-				  	chan, // sourceNodeChannelIndex
-				   	id, // destNodeID
-				  	chan); // destNodeChannelIndex
-			}
-
-			// connect event channel
-			addConnection(source->getNodeId(), // sourceNodeID
-				  	midiChannelIndex, // sourceNodeChannelIndex
-				   	id, // destNodeID
-				  	midiChannelIndex); // destNodeChannelIndex
-
-		}
-
-		if (dest != 0) {
-
-			std::cout << "   Connecting to destination node " << dest->getNodeId() << std::endl;
-
-			for (int chan = 0; chan < processor->getNumOutputs(); chan++) {
-				//std::cout << "1";
-				addConnection(id, // sourceNodeID
-				  	chan, // sourceNodeChannelIndex
-				   	dest->getNodeId(), // destNodeID
-				  	chan); // destNodeChannelIndex
-			}
-
-			std::cout << std::endl;
-
-			// connect event channel
-			addConnection(id, // sourceNodeID
-				  	midiChannelIndex, // sourceNodeChannelIndex
-				   	dest->getNodeId(), // destNodeID
-				  	midiChannelIndex); // destNodeChannelIndex
-
-		}
-
-		if (connectToAudioAndRecordNodes) {
-
-			std::cout << "   Connecting to audio and record nodes." << std::endl;
-
-			for (int chan = 0; chan < processor->getNumOutputs(); chan++) {
-
-				addConnection(id, // sourceNodeID
-				  	chan, // sourceNodeChannelIndex
-				   	AUDIO_NODE_ID, // destNodeID
-				  	chan); // destNodeChannelIndex
-
-				addConnection(id, // sourceNodeID
-				  	chan, // sourceNodeChannelIndex
-				   	RECORD_NODE_ID, // destNodeID
-				  	chan); // destNodeChannelIndex
-			}
-
-		}*/
+int ProcessorGraph::getNextFreeRecordChannel()
+{
+	return totalRecordConnections++;
 }
 
 GenericProcessor* ProcessorGraph::createProcessorFromDescription(String& description)
@@ -306,25 +277,9 @@ GenericProcessor* ProcessorGraph::createProcessorFromDescription(String& descrip
 			sendActionMessage("New splitter created.");
 
 	 	}
-		
-	// 	if (subProcessorType.equalsIgnoreCase("Event Node")) {
-			
-	// 		if (SOURCE_NODE_ID == 0) {
-	// 			SOURCE_NODE_ID = id;
-	// 			std::cout << "Creating a new event source." << std::endl;
-	// 			processor = new EventNode(description, &numSamplesInThisBuffer, 2, lock, SOURCE_NODE_ID, true);
-	// 		} else {
-	// 			std::cout << "Creating a new event receiver." << std::endl;
-	// 			processor = new EventNode(description, &numSamplesInThisBuffer, 2, lock, currentNodeId, false);
-				
-	// 			std::cout << midiChannelIndex << " is MIDI index." << std::endl;
-
-	// 		}
 
 	} else if (processorType.equalsIgnoreCase("Visualizers")) {
 
-		
-		
 		//if (subProcessorType.equalsIgnoreCase("Stream Viewer")) {
 			
 			std::cout << "Creating a display node." << std::endl;
@@ -336,10 +291,7 @@ GenericProcessor* ProcessorGraph::createProcessorFromDescription(String& descrip
 		sendActionMessage("New visualizer created.");
 	}
 
-	//processor->setName(processorType);
-
 	return processor;
-
 }
 
 
@@ -354,7 +306,7 @@ void ProcessorGraph::removeProcessor(GenericProcessor* processor) {
 	// std::cout << "  Source " << source << std::endl;
 	// std::cout << "  Dest " << dest << std::endl;
 
-	removeNode(processor->getNodeId());
+	//removeNode(processor->getNodeId());
 
 	// eliminate connections for now
 	/*if (dest !=0 && source !=0) {
@@ -391,7 +343,15 @@ void ProcessorGraph::setFilterViewport(FilterViewport* fv)
 	filterViewport = fv;
 }
 
+void ProcessorGraph::setMessageCenter(MessageCenter* mc)
+{
+	messageCenter = mc;
+}
+
 bool ProcessorGraph::enableSourceNodes() {
+
+	updateConnections(filterViewport->requestSignalChain());
+
 	std::cout << "Enabling source nodes..." << std::endl;
 
 	for (int n = 0; n < config->numDataSources(); n++) 
@@ -448,158 +408,14 @@ GenericProcessor* ProcessorGraph::getSourceNode(int snID) {
 
 }
 
-XmlElement* ProcessorGraph::createNodeXml (GenericProcessor* const processor)
+void ProcessorGraph::saveState()
 {
-
-	if (processor == 0)
-		return 0;
-	
-	XmlElement* e = new XmlElement("PROCESSOR");
-	e->setAttribute (T("id"), (int) processor->getNodeId());
-	e->setAttribute (T("name"), processor->getName());
-
-	int sourceId = -1;
-	int destId = -1;
-
-	if (processor->getSourceNode() != 0)
-		sourceId = processor->getSourceNode()->getNodeId();
-	
-	if (processor->getDestNode() != 0)
-		destId = processor->getDestNode()->getNodeId();
-
-	e->setAttribute (T("dest"), destId);
-	e->setAttribute (T("source"), sourceId);
-
-	// XmlElement* state = new XmlElement ("STATE");
-
- //    MemoryBlock m;
- //    node->getProcessor()->getStateInformation (m);
- //    state->addTextElement (m.toBase64Encoding());
- //    e->addChildElement (state);
-
- 	return e;
-
+	File file = File("./savedState.xml");
+	filterViewport->saveState(file);
 }
 
-const String ProcessorGraph::saveState(const File& file) 
+void ProcessorGraph::loadState()
 {
-
-	XmlElement* xml = new XmlElement("PROCESSORGRAPH");
-	
-	if (currentNodeId > 100) {
-
-		GenericProcessor* processor = (GenericProcessor*) getNodeForId(currentNodeId)->getProcessor();
-		
-		xml->addChildElement (createNodeXml (processor));
-
-		GenericProcessor* newProcessor = processor->getSourceNode();
-
-		while (newProcessor != 0) {
-			xml->addChildElement (createNodeXml (newProcessor));
-			newProcessor = newProcessor->getSourceNode();
-		}
-
-		newProcessor = processor->getDestNode();
-
-		while (newProcessor != 0) {
-			xml->addChildElement (createNodeXml (newProcessor));
-			newProcessor = newProcessor->getDestNode();
-		}
-
-		// int i;
-		// for (i = 0; i < getNumNodes(); i++)
-		// {
-			
-		// }	
-
-		// for (i = 0; i < getNumConnections(); i++)
-		// {
-		// 	const AudioProcessorGraph::Connection* const fc = getConnection(i);
-
-		// 	XmlElement* e = new XmlElement ("CONNECTION");
-
-		// 	e->setAttribute (T("sourceProcessor"), (int) fc->sourceNodeId);
-		// 	e->setAttribute (T("sourceChannel"), fc->sourceChannelIndex);
-		// 	e->setAttribute (T("destProcessor"), (int) fc->destNodeId);
-		// 	e->setAttribute (T("destChannel"), fc->destChannelIndex);
-
-		// 	xml->addChildElement (e);
-
-		// }
-
-		String error;
-
-		std::cout << "Saving processor graph." << std::endl;
-
-		if (! xml->writeToFile (file, String::empty))
-			error = "Couldn't write to file";
-		
-		delete xml;
-		return error;
-
-	} else {
-		return "No nodes found, not saving.";
-	}
-}
-
-const String ProcessorGraph::loadState(const File& file) 
-{
-	std::cout << "Loading processor graph." << std::endl;
-	
-	XmlDocument doc (file);
-	XmlElement* xml = doc.getDocumentElement();
-
-	if (xml == 0 || ! xml->hasTagName (T("PROCESSORGRAPH")))
-	{
-		delete xml;
-		return "Not a valid file.";
-	}
-
-	String description;// = T(" ");
-	int nextNodeId;
-
-	GenericProcessor* sourceNode = 0;
-	GenericProcessor* destNode = 0;
-
-	forEachXmlChildElementWithTagName (*xml, e, T("PROCESSOR"))
-	{
-		if (e->getIntAttribute (T("source")) == -1) 
-		{ // source node
-			description = e->getStringAttribute (T("name"));
-			nextNodeId = e->getIntAttribute (T("dest"));
-			break;
-		}
-	}
-
-	do {
-
-		GenericEditor* editor = (GenericEditor*) createNewProcessor(description);//,
-										// sourceNode,
-										// destNode);
-
-		filterViewport->addEditor(editor);
-		sourceNode = (GenericProcessor*) editor->getProcessor();
-
-		forEachXmlChildElementWithTagName (*xml, e, T("PROCESSOR"))
-		{	
-			if (e->getIntAttribute (T("id")) == nextNodeId) { // source node
-				description = e->getStringAttribute (T("name"));
-				nextNodeId = e->getIntAttribute (T("dest"));
-				break;
-			}
-		}
-
-	} while (nextNodeId != -1);
-
-	// add the last one:
-	GenericEditor* editor = (GenericEditor*) createNewProcessor(description);//,
-								//sourceNode,
-								//destNode);
-
-	filterViewport->addEditor(editor);
-
-	delete xml;
-
-	return "Everything went ok.";
-
+	File file = File("./savedState.xml");
+	filterViewport->loadState(file);
 }

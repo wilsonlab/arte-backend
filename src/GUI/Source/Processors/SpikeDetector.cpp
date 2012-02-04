@@ -100,10 +100,12 @@ void SpikeDetector::releaseResources()
     lastSpike.clear();
 }
 
-void SpikeDetector::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages)
+void SpikeDetector::process(AudioSampleBuffer &buffer, 
+                            MidiBuffer &midiMessages,
+                            int& nSamples)
 {
 
-	int maxSamples = getNumSamples(midiMessages);
+	int maxSamples = nSamples;//getNumSamples(midiMessages);
 	int spikeSize = 2 + prePeakSamples*2 + postPeakSamples*2; 
 
     spikeBuffer->clear();

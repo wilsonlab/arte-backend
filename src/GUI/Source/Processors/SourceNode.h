@@ -33,9 +33,11 @@ public:
 	
 	void prepareToPlay (double sampleRate, int estimatedSamplesPerBlock);
 	void releaseResources();
-	void processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages);
+	void process(AudioSampleBuffer &buffer, MidiBuffer &midiMessages, int& nSamples);
 
 	void setParameter (int parameterIndex, float newValue);
+
+	void setConfiguration(Configuration* cf);
 
 	// void setSourceNode(GenericProcessor* sn);
 	// void setDestNode(GenericProcessor* dn);

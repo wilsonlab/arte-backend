@@ -19,7 +19,10 @@ MainWindow::MainWindow()
                       DocumentWindow::allButtons)
 {
     centreWithSize (500, 400);
+    //setBounds(0,0,500,400);
     setResizable (true, false);
+    
+    
     
     // constraining size doesn't seem to work:
     //setResizeLimits(500, 400, 10000, 10000);
@@ -37,23 +40,23 @@ MainWindow::MainWindow()
 
     processorGraph->setUIComponent((UIComponent*) getContentComponent());
 
+    loadWindowBounds();
     setVisible (true);
-
-  // // uncomment next two lines to load saved state on startup:
-    //File file = File("./savedState.xml");
-    //processorGraph->loadState(file);
 
 }
 
 MainWindow::~MainWindow()
 {
 
+  saveWindowBounds();
+  processorGraph->saveState();
+
   audioComponent->disconnectProcessorGraph();
 
    deleteAndZero(processorGraph);
    deleteAndZero(audioComponent);
 
-   setContentComponent (0);
+  setContentComponent (0);
 
 }
 
@@ -64,10 +67,70 @@ void MainWindow::closeButtonPressed()
       processorGraph->disableSourceNodes();
     }
 
-    // // uncomment next two lines to save state on quit:
-    //File file = File("./savedState.xml");
-    //processorGraph->saveState(file);
-
     JUCEApplication::getInstance()->systemRequestedQuit();
 
+}
+
+void MainWindow::saveWindowBounds()
+{
+
+    std::cout << "Saving window bounds." << std::endl;
+
+    File file = File("./windowState.xml");
+
+    XmlElement* xml = new XmlElement("MAINWINDOW");
+
+    XmlElement* bounds = new XmlElement("BOUNDS");
+    bounds->setAttribute("x",getScreenX());
+    bounds->setAttribute("y",getScreenY());
+    bounds->setAttribute("w",getWidth());
+    bounds->setAttribute("h",getHeight());
+    bounds->setAttribute("fullscreen",isFullScreen());
+
+    xml->addChildElement(bounds);
+
+    String error;
+    
+    if (! xml->writeToFile (file, String::empty))
+        error = "Couldn't write to file";
+    
+    delete xml;
+}
+
+void MainWindow::loadWindowBounds()
+{
+  
+    std::cout << "Loading window bounds." << std::endl;
+    
+    File file = File("./windowState.xml");
+
+    XmlDocument doc (file);
+    XmlElement* xml = doc.getDocumentElement();
+
+    // if (xml == 0 || ! xml->hasTagName (T("MAINWINDOW")))
+    // {
+    //     delete xml;
+    //    // return "Not a valid file.";
+    // }
+
+    String description;// = T(" ");
+
+    forEachXmlChildElement (*xml, e)
+    {
+
+        int x = e->getIntAttribute("x");
+        int y = e->getIntAttribute("y");
+        int w = e->getIntAttribute("w");
+        int h = e->getIntAttribute("h");
+
+        bool fs = e->getBoolAttribute("fullscreen");
+
+        setTopLeftPosition(x,y);
+        getContentComponent()->setBounds(0,0,w,h);
+        //setFullScreen(fs);
+
+    }
+
+    delete xml;
+   // return "Everything went ok.";
 }

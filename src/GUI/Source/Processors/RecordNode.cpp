@@ -60,7 +60,9 @@ float RecordNode::getFreeSpace()
 	return (1.0f-float(outputFile.getBytesFreeOnVolume())/float(outputFile.getVolumeTotalSize()));
 }
 
-void RecordNode::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages)
+void RecordNode::process(AudioSampleBuffer &buffer, 
+                            MidiBuffer &midiMessages,
+                            int& nSamples)
 {
 
 	//std::cout << "Record node processing block." << std::endl;
@@ -68,9 +70,9 @@ void RecordNode::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessag
 
 	if (isRecording) {
 
-		int nSamps = getNumSamples(midiMessages);
+		//int nSamps = getNumSamples(midiMessages);
 
-		for (int n = 0; n < nSamps; n++) {
+		for (int n = 0; n < nSamples; n++) {
 		
 			float* sample = buffer.getSampleData(1,n);
 			outputStream->writeFloat(*sample);

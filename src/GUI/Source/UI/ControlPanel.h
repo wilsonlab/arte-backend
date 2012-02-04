@@ -16,6 +16,7 @@
 #include "../Processors/Editors/AudioEditor.h"
 #include "../Processors/ProcessorGraph.h"
 #include "../Processors/RecordNode.h"
+#include "CustomLookAndFeel.h"
 
 class PlayButton : public DrawableButton
 {
@@ -103,6 +104,8 @@ private:
 	void actionListenerCallback(const String& msg);
 
 	void timerCallback();
+
+	Font font;
 
 };
 

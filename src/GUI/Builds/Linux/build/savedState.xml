@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <PROCESSORGRAPH>
-  <PROCESSOR id="104" name="Visualizers/Stream Viewer" dest="-1" source="103"/>
-  <PROCESSOR id="103" name="Filters/Resampler" dest="104" source="102"/>
-  <PROCESSOR id="102" name="Filters/Bandpass Filter" dest="103" source="101"/>
-  <PROCESSOR id="101" name="Data Sources/Intan Demo Board" dest="102" source="-1"/>
+  <SIGNALCHAIN>
+    <PROCESSOR name="Sources/Intan Demo Board" insertionPoint="0"/>
+    <PROCESSOR name="Filters/Bandpass Filter" insertionPoint="1"/>
+  </SIGNALCHAIN>
 </PROCESSORGRAPH>

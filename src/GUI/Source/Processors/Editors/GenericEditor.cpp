@@ -91,36 +91,83 @@ void GenericEditor::deselect()
 	setWantsKeyboardFocus(false);
 }
 
+void GenericEditor::enable() 
+{
+	isEnabled = true;
+	GenericProcessor* p = (GenericProcessor*) getProcessor();
+	p->enabledState(true);
+}
+
+void GenericEditor::disable()
+{
+	isEnabled = false;
+	GenericProcessor* p = (GenericProcessor*) getProcessor();
+	p->enabledState(false);
+}
+
+bool GenericEditor::getEnabledState()
+{
+	return isEnabled;
+}
+
+void GenericEditor::setEnabledState(bool t)
+{
+	isEnabled = t;
+}
+
 void GenericEditor::paint (Graphics& g)
 {
-	//g.addTransform(AffineTransform::rotation( double_Pi/20));
-
 	int offset = 0;
+
+	GenericProcessor* p = (GenericProcessor*) getProcessor();
 
 	g.setColour(Colour(127,137,147));
 	g.fillAll();
 
-	g.setColour(Colours::black);
+	if (isSelected)
+		g.setColour(Colours::yellow);
+	else
+		g.setColour(Colours::darkgrey);
+	
+	
 	g.fillRoundedRectangle(0,0,getWidth()-offset,getHeight(),7.0);
+	
 
-	if (isSelected) {
+	if (isEnabled)
 		g.setColour(backgroundColor);
-	} else {
+	else 
 		g.setColour(Colours::lightgrey);
-	}
+
+	// if (p->isSource()) {
+	// 	g.setColour(Colours::red);
+	// } else if (p->isSink()) {
+	// 	g.setColour(Colours::blue);
+	// } else if (p->isSplitter() || p->isMerger())
+	// 	{
+	// 	g.setColour(Colours::darkgrey);
+	// } else {
+	// 	g.setColour(Colours::red);
+	// }
+
 	g.fillRoundedRectangle(1,1,getWidth()-(2+offset),getHeight()-2,6.0);
 
 	g.setColour(Colours::grey);
 	g.fillRoundedRectangle(4,15,getWidth()-(8+offset), getHeight()-19,5.0);
 	g.fillRect(4,15,getWidth()-(8+offset), 20);
 
-	g.setColour(Colours::black);
-
 	Font titleFont = Font(14.0, Font::plain);
 
 	//titleFont.setTypefaceName(T("Miso"));
 
 	g.setFont(titleFont);
+
+	if (isEnabled) 
+	{
+		g.setColour(Colours::black);		
+	} else {
+		g.setColour(Colours::grey);
+	}
+
 	g.drawText(name, 8, 4, 100, 7, Justification::left, false);
 
 }

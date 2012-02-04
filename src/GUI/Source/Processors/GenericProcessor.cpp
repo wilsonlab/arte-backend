@@ -9,6 +9,7 @@
 */
 
 #include "GenericProcessor.h"
+#include "../UI/UIComponent.h"
 
 GenericProcessor::GenericProcessor(const String& name_) : name(name_),
 	sourceNode(0), destNode(0), editor(0)
@@ -66,6 +67,14 @@ void GenericProcessor::prepareToPlay (double sampleRate_, int estimatedSamplesPe
 void GenericProcessor::releaseResources() 
 {	
 }
+
+
+// void GenericProcessor::sendMessage(const String& msg)
+// {
+// 	std::cout << "Message: ";
+// 	std::cout << msg << "...." << std::endl;
+// 	UI->transmitMessage(msg);
+// }
 
 
 void GenericProcessor::setNumSamples(MidiBuffer& midiMessages, int numberToAdd) {
@@ -136,6 +145,7 @@ void GenericProcessor::setSourceNode(GenericProcessor* sn)
 					sourceNode = sn;
 					sn->setDestNode(this);
 					setNumInputs();
+					setSampleRate(sn->getSampleRate());
 				}
 			} else {
 				sourceNode = 0;
@@ -221,6 +231,15 @@ void GenericProcessor::setNumOutputs(int n) {
 	//setPlayConfigDetails(numInputs,numOutputs,44100.0,1024);
 }
 
+float GenericProcessor::getSampleRate()
+{
+	return sampleRate;
+}
+void GenericProcessor::setSampleRate(float sr)
+{
+	sampleRate = sr;
+}
+
 void GenericProcessor::checkForMidiEvents(MidiBuffer& midiMessages)
 {
 
@@ -266,8 +285,11 @@ void GenericProcessor::addMidiEvent(MidiBuffer& midiMessages, int numberToAdd)
 void GenericProcessor::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages)
 {
 	
-	// this method must be implemented by all subclasses
+	int nSamples = getNumSamples(midiMessages); // removes first value from midimessages
 
+	process(buffer, midiMessages, nSamples);
 
-	 
+	setNumSamples(midiMessages, nSamples); // adds it back,
+										   // even if it's unchanged
+
 }

@@ -25,7 +25,7 @@
 
 
 class UIComponent : public Component,
-				    public ActionBroadcaster,
+				    //public ActionBroadcaster,
 				    public DragAndDropContainer // required for 
 				    				            // drag-and-drop
 				    				            // internal components
@@ -39,9 +39,10 @@ public:
 	DataViewport* getDataViewport() {return dataViewport;}
 	Configuration* getConfiguration() {return config;}
 
+	//void transmitMessage(const String& message);
+
 private:
 
-	//InfoLabel* infoLabel;
 	DataViewport* dataViewport;
 	FilterViewport* filterViewport;
 	FilterList* filterList;

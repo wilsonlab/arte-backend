@@ -22,7 +22,8 @@ class FilterViewport;
 class DataViewport;
 class UIComponent;
 
-class GenericProcessor : public AudioProcessor
+class GenericProcessor : public AudioProcessor,
+						 public ActionBroadcaster
 
 {
 public:
@@ -35,7 +36,7 @@ public:
 	
 	void prepareToPlay (double sampleRate, int estimatedSamplesPerBlock);
 	void releaseResources();
-	virtual void processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages);
+	
 	void setParameter (int parameterIndex, float newValue);
 
 	virtual AudioProcessorEditor* createEditor();
@@ -71,6 +72,11 @@ public:
 
 	// custom methods:
 
+	// pure virtual function
+	virtual void process(AudioSampleBuffer& /*buffer*/,
+						 MidiBuffer& /*buffer*/,
+						 int& /*nSamples*/) = 0;
+
 	const String name;
 	//int* numSamplesInThisBuffer;
 	//const CriticalSection& lock;
@@ -91,8 +97,10 @@ public:
 
 	UIComponent* UI;
 
-	int getNumSamples(MidiBuffer&);
-	void setNumSamples(MidiBuffer&, int);
+	//void sendMessage(const String& msg);
+
+	virtual float getSampleRate();
+	virtual void setSampleRate(float sr);
 
 	virtual int getNumInputs();
 	virtual void setNumInputs(int);
@@ -117,8 +125,13 @@ public:
 	virtual bool isSplitter() {return false;}
 	virtual bool isMerger() {return false;}
 
+	virtual bool canSendSignalTo(GenericProcessor*) {return true;}
+
 	virtual void enable() {}
 	virtual void disable() {}
+
+	bool enabledState() {return isEnabled;}
+	void enabledState(bool t) {isEnabled = t;}
 
 	virtual AudioSampleBuffer* getContinuousBuffer() {return 0;}
 	virtual MidiBuffer* getEventBuffer() {return 0;}
@@ -129,7 +142,7 @@ public:
 	void setUIComponent(UIComponent* ui) {UI = ui;}
 	UIComponent* getUIComponent() {return UI;}
 
-	void setConfiguration(Configuration* cf) {config = cf;}
+	virtual void setConfiguration(Configuration* cf) {config = cf;}
 	Configuration* getConfiguration() {return config;}
 
 	void setFilterViewport(FilterViewport* vp) {viewport = vp;}
@@ -140,9 +153,14 @@ public:
 
 private:
 
+	void processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages);
 
+	float sampleRate;
 
+	bool isEnabled;
 	
+	int getNumSamples(MidiBuffer&);
+	void setNumSamples(MidiBuffer&, int);
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GenericProcessor);
 

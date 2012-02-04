@@ -31,6 +31,7 @@ AudioProcessorEditor* DisplayNode::createEditor()
 
 	GenericProcessor* source = (GenericProcessor*) getSourceNode();
 
+
 	visualizer->setBuffers(source->getContinuousBuffer(),source->getEventBuffer());
 	visualizer->setUIComponent(getUIComponent());
 	visualizer->setConfiguration(config);

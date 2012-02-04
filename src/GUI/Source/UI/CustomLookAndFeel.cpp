@@ -10,9 +10,22 @@
 
 #include "CustomLookAndFeel.h"
 
-CustomLookAndFeel::CustomLookAndFeel() {}
+CustomLookAndFeel::CustomLookAndFeel() 
+{
+  MemoryInputStream mis(BinaryData::misoserialized, BinaryData::misoserializedSize, false);
+  Miso = new CustomTypeface(mis);
+}
 
 CustomLookAndFeel::~CustomLookAndFeel() {}
+
+//  ===============
+const Typeface::Ptr CustomLookAndFeel::getTypefaceForFont (const Font& font)
+{
+  
+  return Miso;
+
+}
+
 
 //==============================================================================
 int CustomLookAndFeel::getTabButtonOverlap (int tabDepth)

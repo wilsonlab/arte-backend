@@ -31,6 +31,9 @@ public:
 	bool isSink() {return true;}
 
 	void setDestNode(GenericProcessor* sn) {destNode = 0;}
+
+		void process(AudioSampleBuffer &buffer, MidiBuffer &midiMessages, int& nSamples) {}
+
 	
 private:
 

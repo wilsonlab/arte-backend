@@ -35,6 +35,9 @@
   <MAINGROUP id="h3HbSTV" name="arte">
     <GROUP id="0wpTCpt" name="Resources">
       <GROUP id="kVU7EYu" name="Fonts">
+        <FILE id="CgtHs5a" name="miso-serialized" compile="0" resource="1"
+              file="Resources/Fonts/miso-serialized"/>
+        <FILE id="qy3SOO2" name="unibody-8.otf" compile="0" resource="1" file="Resources/Fonts/unibody-8.otf"/>
         <FILE id="d9abHHj" name="miso-bold.ttf" compile="0" resource="1" file="Resources/Fonts/miso-bold.ttf"/>
         <FILE id="llqyOz2" name="miso-light.ttf" compile="0" resource="1" file="Resources/Fonts/miso-light.ttf"/>
         <FILE id="1aGe2z9" name="miso-regular.ttf" compile="0" resource="1"

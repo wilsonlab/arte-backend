@@ -127,7 +127,7 @@ void Visualizer::buttonClicked(Button* button)
 Renderer::Renderer(AudioSampleBuffer* sBuffer, MidiBuffer* eBuffer, UIComponent* ui)
 	: streamBuffer(sBuffer), eventBuffer(eBuffer)
 {
-	ui->addActionListener(this);
+	//ui->addActionListener(this);
 	config = ui->getConfiguration();
 }
 

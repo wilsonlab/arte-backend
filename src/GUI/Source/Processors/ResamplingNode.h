@@ -32,7 +32,7 @@ public:
 	
 	void prepareToPlay (double sampleRate, int estimatedSamplesPerBlock);
 	void releaseResources();
-	void processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages);
+	void process(AudioSampleBuffer &buffer, MidiBuffer &midiMessages, int& nSamples);
 	void setParameter (int parameterIndex, float newValue);
 
 	AudioSampleBuffer* getContinuousBuffer() {return destBuffer;}

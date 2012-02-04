@@ -79,12 +79,15 @@ void SignalGenerator::releaseResources()
 {	
 }
 
-void SignalGenerator::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages)
+void SignalGenerator::process(AudioSampleBuffer &buffer, 
+                            MidiBuffer &midiMessages,
+                            int& nSamps)
 {
 
 	//std::cout << buffer.getNumChannels() << std::endl;
+	nSamps = buffer.getNumSamples();
 	
-    for (int i = 0; i < buffer.getNumSamples(); ++i)
+    for (int i = 0; i < nSamps; ++i)
     {
         const float sample = amplitude * (float) std::sin (currentPhase);
         currentPhase += phasePerSample;

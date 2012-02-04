@@ -7,6 +7,12 @@
 
 namespace BinaryData
 {
+    extern const char*   misoserialized;
+    const int            misoserializedSize = 36887;
+
+    extern const char*   unibody8_otf;
+    const int            unibody8_otfSize = 18512;
+
     extern const char*   misobold_ttf;
     const int            misobold_ttfSize = 60860;
 

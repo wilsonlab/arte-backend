@@ -30,6 +30,9 @@ SourceNode::SourceNode(const String& name_)
 
 	setPlayConfigDetails(getNumInputs(), getNumOutputs(), 44100.0, 128);
 
+	//sendActionMessage("Intan Demo Board source created.");
+	//sendMessage("Intan Demo Board source created.");
+
 }
 
 SourceNode::~SourceNode() {}
@@ -40,8 +43,29 @@ SourceNode::~SourceNode() {}
 
 // 	// Source node type determines configuration info
 
+void SourceNode::setConfiguration(Configuration* cf)
+{
+	config = cf;
 
-// }
+  //   DataSource* d = new DataSource(this, config);
+
+  //   // add tetrodes -- should really be doing this dynamically
+  //   d->addTrode(4, "TT1");
+  //   d->addTrode(4, "TT2");
+  //   d->addTrode(4, "TT3");
+  //   d->addTrode(4, "TT4");
+
+  //   for (int n = 0; n < d->numTetrodes(); n++)
+  //    {
+  //         std::cout << d->getTetrode(n)->getName();
+  //    }
+  //    std::cout << std::endl;
+
+	 // // add a new data source to this configuration
+  //   config->addDataSource(d);
+
+}
+
 
 void SourceNode::setParameter (int parameterIndex, float newValue)
 {
@@ -117,7 +141,9 @@ void SourceNode::disable() {
 }
 
 
-void SourceNode::processBlock (AudioSampleBuffer& outputBuffer, MidiBuffer& midiMessages)
+void SourceNode::process(AudioSampleBuffer &outputBuffer, 
+                            MidiBuffer &midiMessages,
+                            int& nSamples)
 {
 
 	//std::cout << "Source node processing." << std::endl;
@@ -125,9 +151,9 @@ void SourceNode::processBlock (AudioSampleBuffer& outputBuffer, MidiBuffer& midi
 
 	
 	 outputBuffer.clear();
-	 int numRead = inputBuffer->readAllFromBuffer(outputBuffer,outputBuffer.getNumSamples());
+	 nSamples = inputBuffer->readAllFromBuffer(outputBuffer,outputBuffer.getNumSamples());
 	// //setNumSamples(numRead); // write the total number of samples
-	 setNumSamples(midiMessages, numRead);
+	// setNumSamples(midiMessages, numRead);
 	//std::cout << numRead << std::endl;
 }
 

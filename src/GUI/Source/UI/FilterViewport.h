@@ -57,11 +57,13 @@ public:
     bool keyPressed (const KeyPress &key);
     void moveSelection( const KeyPress &key);
 
-  //  void updateActiveEditor(GenericEditor* e)
-  //  {
-  //      activeEditor = e;
-   //     updateVisibleEditors();
-   // }
+    Array<SignalChainTabButton*, CriticalSection> requestSignalChain() {return signalChainArray;}
+
+    // loading and saving!
+    const String saveState(const File& file);
+    const String loadState(const File& file);
+
+    XmlElement* createNodeXml(GenericEditor*, int);
     
 private:
 
@@ -78,6 +80,7 @@ private:
     Array<SignalChainTabButton*, CriticalSection> signalChainArray;
  //   GenericEditor* activeEditor;
 
+
    // int activeTab;
 
     void refreshEditors();
@@ -91,6 +94,8 @@ private:
     bool componentWantsToMove;
     int indexOfMovingComponent;
 
+    //bool signalChainNeedsSource;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilterViewport);  
 
 };
@@ -98,42 +103,30 @@ private:
 class SignalChainTabButton : public Button
 {
 public:
-    SignalChainTabButton() : Button("Name") 
-    {
-        setRadioGroupId(99);
-        //setToggleState(false,true);
-        setClickingTogglesState(true);
-    }
+    SignalChainTabButton();// : Button("Name") {configurationChanged = true;}
     ~SignalChainTabButton() {}
 
     void setEditor(GenericEditor* p) {firstEditor = p;}
     GenericEditor* getEditor() {return firstEditor;}
 
+    void setNumber(int n) {num = n;}
+
+    bool hasNewConnections() {return configurationChanged;}
+    void hasNewConnections(bool t) {configurationChanged = t;}
+
+
 private:
 
     GenericEditor* firstEditor;
 
-    void paintButton(Graphics &g, bool isMouseOver, bool isButtonDown)
-    {
-        if (getToggleState() == true)
-            g.setColour(Colours::teal);
-        else 
-            g.setColour(Colours::darkgrey);
-
-        if (isMouseOver)
-            g.setColour(Colours::white);
-        
-        //if (isButtonDown)
-        //    g.setColour(Colours::black);
-       // else if (isOver() == ButtonState::buttonOver)
-        //    g.setColour(Colours::white);
-       // else 
-       //     g.setColour(Colours::darkgrey);
-
-        g.fillEllipse(0,0,getWidth(),getHeight());
-    }
+    void paintButton(Graphics &g, bool isMouseOver, bool isButtonDown);
 
     void clicked();
+    
+    int num;
+    bool configurationChanged;
+
+    Font buttonFont;
 
 
 };

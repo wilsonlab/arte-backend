@@ -14,9 +14,12 @@
 
 FilterNode::FilterNode()
 	: GenericProcessor("Bandpass Filter"), filter(0),
-	  sampleRate (40000.0), highCut(6000.0), lowCut(600.0)
+	  sampleRate (25000.0), highCut(6000.0), lowCut(600.0)
 	
 {
+
+	// set up default configuration
+	setPlayConfigDetails(16, 16, 44100.0, 128);
 
 		// each family of filters is given its own namespace
 		// RBJ: filters from the RBJ cookbook
@@ -188,15 +191,17 @@ void FilterNode::releaseResources()
 {	
 }
 
-void FilterNode::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages)
+void FilterNode::process(AudioSampleBuffer &buffer, 
+                            MidiBuffer &midiMessages,
+                            int& nSamples)
 {
 	//std::cout << "Filter node processing." << std::endl;
 	//std::cout << buffer.getNumChannels() << std::endl;
 	//::cout << buffer.getNumSamples() << std::endl;
 
-	int nSamps = getNumSamples(midiMessages);
-	//std::cout << nSamps << std::endl;
-    filter->process (nSamps, buffer.getArrayOfChannels());
+	//int nSamps = getNumSamples(midiMessages);
+	std::cout << nSamples << std::endl;
+    filter->process (nSamples, buffer.getArrayOfChannels());
 
     //std::cout << "Filter node:" << *buffer.getSampleData(0,0);
 

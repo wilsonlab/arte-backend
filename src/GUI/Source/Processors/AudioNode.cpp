@@ -59,7 +59,9 @@ void AudioNode::releaseResources()
 }
 
 
-void AudioNode::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages)
+void AudioNode::process(AudioSampleBuffer &buffer, 
+                            MidiBuffer &midiMessages,
+                            int& nSamples)
 {
 
 	buffer.clear(0,0,buffer.getNumSamples());

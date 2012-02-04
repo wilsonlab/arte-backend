@@ -167,6 +167,11 @@ ControlPanel::ControlPanel(ProcessorGraph* graph_, AudioComponent* audio_) :
 
 	startTimer(100);
 
+	if (1) {
+	MemoryInputStream mis(BinaryData::misoserialized, BinaryData::misoserializedSize, false);
+	Typeface::Ptr typeface = new CustomTypeface(mis);
+	font = Font(typeface);
+	}
 }
 
 ControlPanel::~ControlPanel()
@@ -186,6 +191,10 @@ void ControlPanel::paint(Graphics& g)
 {
 	g.setColour(Colour(40,40,40));
 	g.fillRoundedRectangle(0,0,getWidth(),getHeight(),8.0f);
+
+	g.setFont(font);
+	g.setColour(Colours::white);
+	g.drawText("CONTROL PANEL",getWidth()/2,0,getWidth(),getHeight(),Justification::left,true);
 }
 
 void ControlPanel::resized()

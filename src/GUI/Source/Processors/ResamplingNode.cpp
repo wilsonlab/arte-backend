@@ -165,12 +165,14 @@ void ResamplingNode::releaseResources()
 	// }
 }
 
-void ResamplingNode::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages)
+void ResamplingNode::process(AudioSampleBuffer &buffer, 
+                            MidiBuffer &midiMessages,
+                            int& nSamples)
 {
 
 	//std::cout << "Resampling node sample count: " << buffer.getNumSamples() << std::endl;
 
-	int nSamps = getNumSamples(midiMessages);
+	int nSamps = nSamples;
 	int valuesNeeded;
 
     //std::cout << "END OF OLD BUFFER." << std::endl;

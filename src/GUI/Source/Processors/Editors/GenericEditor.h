@@ -39,6 +39,11 @@ public:
 	void deselect();
 	bool getSelectionState();
 
+	void enable();
+	void disable();
+	bool getEnabledState();
+	void setEnabledState(bool);
+
 	String getName() {return name;}
 
 	int desiredWidth;
@@ -60,6 +65,7 @@ private:
 	Colour backgroundColor;
 
 	bool isSelected;
+	bool isEnabled;
 
 	int tNum;
 

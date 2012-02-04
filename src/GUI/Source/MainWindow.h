@@ -28,11 +28,15 @@ public:
 
 private:
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainWindow)
+  
+    void saveWindowBounds();
+    void loadWindowBounds();
 
    // ScopedPointer <UIComponent> uiComponent;
    AudioComponent* audioComponent;
    ProcessorGraph* processorGraph;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainWindow)
 
 };
 

@@ -13,8 +13,6 @@
 
 #include "../../JuceLibraryCode/JuceHeader.h"
 
-//#include "../UI/UIComponent.h"
-
 class GenericProcessor;
 class RecordNode;
 class SourceNode;
@@ -23,6 +21,7 @@ class SignalChainTabButton;
 class AudioNode;
 class UIComponent;
 class Configuration;
+class MessageCenter;
 
 class ProcessorGraph : public AudioProcessorGraph,
 					   public ActionBroadcaster
@@ -31,10 +30,7 @@ public:
 	ProcessorGraph();
 	~ProcessorGraph();
 
-	void* createNewProcessor(String& description);//,
-							 //GenericProcessor* source,
-							 //GenericProcessor* dest);
-
+	void* createNewProcessor(String& description);
 	GenericProcessor* createProcessorFromDescription(String& description);
 
 	void removeProcessor(GenericProcessor* processor);
@@ -48,19 +44,20 @@ public:
 
 	void setUIComponent(UIComponent* ui);
 	void setFilterViewport(FilterViewport *fv);
+	void setMessageCenter(MessageCenter* mc);
 
-	void updateConnections(Array<SignalChainTabButton*>);
-	
-//	int numSamplesInThisBuffer;
+	void updateConnections(Array<SignalChainTabButton*, CriticalSection>);
 
-	
 
-	//const CriticalSection lock;
+	void saveState();
+	void loadState();
+	//const String saveState(const File& file);
+	//const String loadState(const File& file);
 
-	const String saveState(const File& file);
-	const String loadState(const File& file);
+	//XmlElement* createNodeXml(GenericProcessor*);
 
-	XmlElement* createNodeXml(GenericProcessor*);
+	int getNextFreeAudioChannel();
+	int getNextFreeRecordChannel();
 
 private:	
 
@@ -74,10 +71,15 @@ private:
 	const int RESAMPLING_NODE_ID;
 
 	void createDefaultNodes();
+	void clearNodes();
 
 	UIComponent* UI;
 	FilterViewport* filterViewport;
 	Configuration* config;
+	MessageCenter* messageCenter;
+
+	int totalAudioConnections;
+	int totalRecordConnections;
 
 };
 

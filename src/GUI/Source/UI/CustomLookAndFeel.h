@@ -21,6 +21,9 @@ public:
 	CustomLookAndFeel();
 	~CustomLookAndFeel();
 
+  // ======== custom fonts ================
+  Typeface::Ptr Miso;
+
 	// ======== custom tab methods: ============================= 
 
 	void drawTabButton (Graphics & g, 
@@ -114,7 +117,7 @@ public:
                                     const Colour& colour, const float outlineThickness,
                                     const int direction) throw();
 
-
+    const Typeface::Ptr getTypefaceForFont (const Font& font);
 
 
 private:	

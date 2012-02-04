@@ -66,7 +66,9 @@ void EventNode::releaseResources()
 {	
 }
 
-void EventNode::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages)
+void EventNode::process(AudioSampleBuffer &buffer, 
+                            MidiBuffer &midiMessages,
+                            int& nSamples)
 {
 	accumulator++;
 

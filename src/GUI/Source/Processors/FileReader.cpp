@@ -80,10 +80,12 @@ void FileReader::releaseResources()
 
 }
 
-void FileReader::processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages)
+void FileReader::process(AudioSampleBuffer &buffer, 
+                            MidiBuffer &midiMessages,
+                            int& nSamples)
 {
 
-	setNumSamples(midiMessages, samplesPerBlock);
+	nSamples = samplesPerBlock;
 	//std::cout << buffer.getNumChannels() << std::endl;
 	
     for (int i = 0; i < samplesPerBlock; ++i)
