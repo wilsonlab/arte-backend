@@ -57,6 +57,12 @@ void GenericProcessor::setParameter (int parameterIndex, float newValue)
 // 	viewport = vp;
 // }
 
+void GenericProcessor::setDataViewport(DataViewport* dv)
+
+{	
+	std::cout << "Processor data viewport: " << dv << std::endl;
+	dataViewport = dv;
+}
 
 void GenericProcessor::prepareToPlay (double sampleRate_, int estimatedSamplesPerBlock)
 {

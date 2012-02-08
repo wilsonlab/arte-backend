@@ -63,19 +63,20 @@ OBJECTS := \
   $(OBJDIR)/RootFinder_239a995f.o \
   $(OBJDIR)/State_22979684.o \
   $(OBJDIR)/AudioComponent_521bd9c9.o \
+  $(OBJDIR)/LfpDisplayNode_30ef22fd.o \
   $(OBJDIR)/Splitter_6e27a57b.o \
+  $(OBJDIR)/DataWindow_83ce6754.o \
+  $(OBJDIR)/LfpDisplayCanvas_4a58e87e.o \
   $(OBJDIR)/OpenGLCanvas_3c775a41.o \
-  $(OBJDIR)/LfpViewer_d20edc98.o \
-  $(OBJDIR)/SpikeViewer_94e1b3a8.o \
   $(OBJDIR)/SpikeDetector_300d85e7.o \
   $(OBJDIR)/FileReader_18023b0e.o \
   $(OBJDIR)/AudioNode_94606ff3.o \
   $(OBJDIR)/EventNode_95c842b7.o \
+  $(OBJDIR)/LfpDisplayEditor_99d75351.o \
   $(OBJDIR)/SourceNodeEditor_8d813122.o \
   $(OBJDIR)/SplitterEditor_c2199b6c.o \
   $(OBJDIR)/SpikeDetectorEditor_2fb63eeb.o \
   $(OBJDIR)/AudioEditor_fb2c6555.o \
-  $(OBJDIR)/Visualizer_d5ab35b6.o \
   $(OBJDIR)/FilterEditor_dfe1f39d.o \
   $(OBJDIR)/GenericEditor_becb2ad6.o \
   $(OBJDIR)/FileReaderThread_933ea08.o \
@@ -88,7 +89,6 @@ OBJECTS := \
   $(OBJDIR)/RecordNode_2b7a1a2.o \
   $(OBJDIR)/SignalGenerator_a9cf4806.o \
   $(OBJDIR)/ResamplingNode_27a58a6b.o \
-  $(OBJDIR)/DisplayNode_51f3c75f.o \
   $(OBJDIR)/FilterNode_817e9c9.o \
   $(OBJDIR)/SourceNode_c2d6336c.o \
   $(OBJDIR)/GenericProcessor_733760aa.o \
@@ -225,24 +225,29 @@ $(OBJDIR)/AudioComponent_521bd9c9.o: ../../Source/Audio/AudioComponent.cpp
 	@echo "Compiling AudioComponent.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
+$(OBJDIR)/LfpDisplayNode_30ef22fd.o: ../../Source/Processors/LfpDisplayNode.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling LfpDisplayNode.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
 $(OBJDIR)/Splitter_6e27a57b.o: ../../Source/Processors/Utilities/Splitter.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling Splitter.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
+$(OBJDIR)/DataWindow_83ce6754.o: ../../Source/Processors/Visualization/DataWindow.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling DataWindow.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/LfpDisplayCanvas_4a58e87e.o: ../../Source/Processors/Visualization/LfpDisplayCanvas.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling LfpDisplayCanvas.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
 $(OBJDIR)/OpenGLCanvas_3c775a41.o: ../../Source/Processors/Visualization/OpenGLCanvas.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling OpenGLCanvas.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/LfpViewer_d20edc98.o: ../../Source/Processors/Visualization/LfpViewer.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling LfpViewer.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/SpikeViewer_94e1b3a8.o: ../../Source/Processors/Visualization/SpikeViewer.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling SpikeViewer.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/SpikeDetector_300d85e7.o: ../../Source/Processors/SpikeDetector.cpp
@@ -265,6 +270,11 @@ $(OBJDIR)/EventNode_95c842b7.o: ../../Source/Processors/EventNode.cpp
 	@echo "Compiling EventNode.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
+$(OBJDIR)/LfpDisplayEditor_99d75351.o: ../../Source/Processors/Editors/LfpDisplayEditor.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling LfpDisplayEditor.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
 $(OBJDIR)/SourceNodeEditor_8d813122.o: ../../Source/Processors/Editors/SourceNodeEditor.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling SourceNodeEditor.cpp"
@@ -283,11 +293,6 @@ $(OBJDIR)/SpikeDetectorEditor_2fb63eeb.o: ../../Source/Processors/Editors/SpikeD
 $(OBJDIR)/AudioEditor_fb2c6555.o: ../../Source/Processors/Editors/AudioEditor.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling AudioEditor.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/Visualizer_d5ab35b6.o: ../../Source/Processors/Editors/Visualizer.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling Visualizer.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/FilterEditor_dfe1f39d.o: ../../Source/Processors/Editors/FilterEditor.cpp
@@ -348,11 +353,6 @@ $(OBJDIR)/SignalGenerator_a9cf4806.o: ../../Source/Processors/SignalGenerator.cp
 $(OBJDIR)/ResamplingNode_27a58a6b.o: ../../Source/Processors/ResamplingNode.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling ResamplingNode.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/DisplayNode_51f3c75f.o: ../../Source/Processors/DisplayNode.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling DisplayNode.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/FilterNode_817e9c9.o: ../../Source/Processors/FilterNode.cpp

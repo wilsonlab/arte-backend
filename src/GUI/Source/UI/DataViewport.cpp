@@ -15,6 +15,8 @@ DataViewport::DataViewport() :
 	tabDepth(32)
 {
 
+    tabArray = new Array<int>;
+
 	setTabBarDepth(tabDepth);
 	setIndent(8); // gap to leave around the edge
 				   // of the content component
@@ -27,12 +29,12 @@ DataViewport::DataViewport() :
 
 DataViewport::~DataViewport()
 {
-	
+	deleteAndZero(tabArray);
 }
 
  int DataViewport::addTabToDataViewport(String name, Component* component) {
 
- 	if (tabArray.size() == 0)
+ 	if (tabArray->size() == 0)
  		setVisible(true);
 
      int tabIndex = getTabbedButtonBar().getNumTabs();
@@ -41,7 +43,7 @@ DataViewport::~DataViewport()
 
      setOutline(0);
 
-     tabArray.add(tabIndex);
+     tabArray->add(tabIndex);
 
      return tabIndex;
 
@@ -49,12 +51,12 @@ DataViewport::~DataViewport()
 
  void DataViewport::removeTab(int index) {
         
-     int newIndex = tabArray.indexOf(index);
-     tabArray.remove(newIndex);
+     int newIndex = tabArray->indexOf(index);
+     tabArray->remove(newIndex);
 
      getTabbedButtonBar().removeTab(newIndex);
 
-     if (tabArray.size() == 0)
+     if (tabArray->size() == 0)
      	setVisible(false);
 
  }

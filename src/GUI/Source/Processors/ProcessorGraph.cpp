@@ -13,7 +13,7 @@
 #include "ProcessorGraph.h"
 
 #include "AudioNode.h"
-#include "DisplayNode.h"
+#include "LfpDisplayNode.h"
 #include "EventNode.h"
 #include "FileReader.h"
 #include "FilterNode.h"
@@ -104,9 +104,9 @@ void* ProcessorGraph::createNewProcessor(String& description)//,
 
 	int id = currentNodeId++;
 
-	processor->setNodeId(id); // identifier within processor graph
-
 	if (processor != 0) {
+
+		processor->setNodeId(id); // identifier within processor graph
 
 		std::cout << "  Adding node to graph with ID number " << id << std::endl;
 		
@@ -278,14 +278,18 @@ GenericProcessor* ProcessorGraph::createProcessorFromDescription(String& descrip
 
 	 	}
 
-	} else if (processorType.equalsIgnoreCase("Visualizers")) {
+	} else if (processorType.equalsIgnoreCase("Sinks")) {
 
 		//if (subProcessorType.equalsIgnoreCase("Stream Viewer")) {
 			
+		if (subProcessorType.equalsIgnoreCase("LFP Viewer")) {
 			std::cout << "Creating a display node." << std::endl;
-			processor = new DisplayNode();
-		    processor->setDataViewport(UI->getDataViewport());
+			processor = new LfpDisplayNode();
+		   
+		    std::cout << "Graph data viewport: " << UI->getDataViewport() << std::endl;
+			 processor->setDataViewport(UI->getDataViewport());
 			processor->setUIComponent(UI);
+		}
 		//}
 	
 		sendActionMessage("New visualizer created.");

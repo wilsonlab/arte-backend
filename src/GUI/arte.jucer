@@ -29,8 +29,10 @@
                 extraLinkerFlags="-lftdi -lftgl" extraCompilerFlags="-D__STDC_LIMIT_MACROS"/>
   </EXPORTFORMATS>
   <CONFIGURATIONS>
-    <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="arte"/>
-    <CONFIGURATION name="Release" isDebug="0" optimisation="2" targetName="arte"/>
+    <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="arte" osxSDK="default"
+                   osxCompatibility="default"/>
+    <CONFIGURATION name="Release" isDebug="0" optimisation="2" targetName="arte"
+                   osxSDK="default" osxCompatibility="default"/>
   </CONFIGURATIONS>
   <MAINGROUP id="h3HbSTV" name="arte">
     <GROUP id="0wpTCpt" name="Resources">
@@ -125,18 +127,24 @@
               file="Source/Audio/AudioComponent.h"/>
       </GROUP>
       <GROUP id="yQmqZWk" name="Processors">
+        <FILE id="ZuMpSio" name="LfpDisplayNode.cpp" compile="1" resource="0"
+              file="Source/Processors/LfpDisplayNode.cpp"/>
+        <FILE id="VynGpEg" name="LfpDisplayNode.h" compile="0" resource="0"
+              file="Source/Processors/LfpDisplayNode.h"/>
         <GROUP id="Enz7QFy" name="Utilities">
           <FILE id="YMFH4P2" name="Splitter.cpp" compile="1" resource="0" file="Source/Processors/Utilities/Splitter.cpp"/>
           <FILE id="DXYynnz" name="Splitter.h" compile="0" resource="0" file="Source/Processors/Utilities/Splitter.h"/>
         </GROUP>
         <GROUP id="W4eqkOy" name="Visualization">
+          <FILE id="BX1Vj3V" name="DataWindow.cpp" compile="1" resource="0" file="Source/Processors/Visualization/DataWindow.cpp"/>
+          <FILE id="l2VKLuP" name="DataWindow.h" compile="0" resource="0" file="Source/Processors/Visualization/DataWindow.h"/>
+          <FILE id="2rXPco7" name="LfpDisplayCanvas.cpp" compile="1" resource="0"
+                file="Source/Processors/Visualization/LfpDisplayCanvas.cpp"/>
+          <FILE id="18BC8qM" name="LfpDisplayCanvas.h" compile="0" resource="0"
+                file="Source/Processors/Visualization/LfpDisplayCanvas.h"/>
           <FILE id="AXVHGiz" name="OpenGLCanvas.cpp" compile="1" resource="0"
                 file="Source/Processors/Visualization/OpenGLCanvas.cpp"/>
           <FILE id="51k3it9" name="OpenGLCanvas.h" compile="0" resource="0" file="Source/Processors/Visualization/OpenGLCanvas.h"/>
-          <FILE id="gg9Hcka" name="LfpViewer.cpp" compile="1" resource="0" file="Source/Processors/Visualization/LfpViewer.cpp"/>
-          <FILE id="q6tUk9J" name="LfpViewer.h" compile="0" resource="0" file="Source/Processors/Visualization/LfpViewer.h"/>
-          <FILE id="qWfLvG" name="SpikeViewer.cpp" compile="1" resource="0" file="Source/Processors/Visualization/SpikeViewer.cpp"/>
-          <FILE id="A0JwVAg" name="SpikeViewer.h" compile="0" resource="0" file="Source/Processors/Visualization/SpikeViewer.h"/>
         </GROUP>
         <FILE id="533rUXO" name="SpikeDetector.cpp" compile="1" resource="0"
               file="Source/Processors/SpikeDetector.cpp"/>
@@ -149,6 +157,10 @@
         <FILE id="hGnGAjh" name="EventNode.cpp" compile="1" resource="0" file="Source/Processors/EventNode.cpp"/>
         <FILE id="dUtRN6" name="EventNode.h" compile="0" resource="0" file="Source/Processors/EventNode.h"/>
         <GROUP id="AqvwO6w" name="Editors">
+          <FILE id="cTebrMp" name="LfpDisplayEditor.cpp" compile="1" resource="0"
+                file="Source/Processors/Editors/LfpDisplayEditor.cpp"/>
+          <FILE id="ru5zWWN" name="LfpDisplayEditor.h" compile="0" resource="0"
+                file="Source/Processors/Editors/LfpDisplayEditor.h"/>
           <FILE id="ErsHzHU" name="SourceNodeEditor.cpp" compile="1" resource="0"
                 file="Source/Processors/Editors/SourceNodeEditor.cpp"/>
           <FILE id="wMP6rcZ" name="SourceNodeEditor.h" compile="0" resource="0"
@@ -164,8 +176,6 @@
           <FILE id="Nw6Lpmq" name="AudioEditor.cpp" compile="1" resource="0"
                 file="Source/Processors/Editors/AudioEditor.cpp"/>
           <FILE id="atkKPmM" name="AudioEditor.h" compile="0" resource="0" file="Source/Processors/Editors/AudioEditor.h"/>
-          <FILE id="uUxETyg" name="Visualizer.cpp" compile="1" resource="0" file="Source/Processors/Editors/Visualizer.cpp"/>
-          <FILE id="5gfidy" name="Visualizer.h" compile="0" resource="0" file="Source/Processors/Editors/Visualizer.h"/>
           <FILE id="4sHjKNc" name="FilterEditor.cpp" compile="1" resource="0"
                 file="Source/Processors/Editors/FilterEditor.cpp"/>
           <FILE id="A2OQdsN" name="FilterEditor.h" compile="0" resource="0" file="Source/Processors/Editors/FilterEditor.h"/>
@@ -207,9 +217,6 @@
               file="Source/Processors/ResamplingNode.cpp"/>
         <FILE id="G3kmYa" name="ResamplingNode.h" compile="0" resource="0"
               file="Source/Processors/ResamplingNode.h"/>
-        <FILE id="y77wOVa" name="DisplayNode.cpp" compile="1" resource="0"
-              file="Source/Processors/DisplayNode.cpp"/>
-        <FILE id="RmcrIXf" name="DisplayNode.h" compile="0" resource="0" file="Source/Processors/DisplayNode.h"/>
         <FILE id="8KOCQ0m" name="FilterNode.cpp" compile="1" resource="0" file="Source/Processors/FilterNode.cpp"/>
         <FILE id="BLwO4vF" name="FilterNode.h" compile="0" resource="0" file="Source/Processors/FilterNode.h"/>
         <FILE id="OakAxjJ" name="SourceNode.cpp" compile="1" resource="0" file="Source/Processors/SourceNode.cpp"/>

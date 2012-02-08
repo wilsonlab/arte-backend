@@ -26,7 +26,7 @@ public:
 
 private:
 
-	Array<int> tabArray;
+	Array<int>* tabArray;
 
 	void paint(Graphics& g);
 

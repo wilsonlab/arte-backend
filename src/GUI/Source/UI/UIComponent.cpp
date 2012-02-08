@@ -16,6 +16,8 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 
 {	
 
+	processorGraph->setUIComponent(this);
+
 	dataViewport = new DataViewport ();
 	addChildComponent(dataViewport);
 	dataViewport->addTabToDataViewport("Info",new InfoLabel());
@@ -57,6 +59,8 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 	std::cout << "Component height = " << getHeight() << std::endl;
 
 	std::cout << "Finished UI stuff." << std::endl;
+
+	std::cout << "UI component data viewport: " << dataViewport << std::endl;
 
 	processorGraph->loadState();
 

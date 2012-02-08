@@ -146,7 +146,8 @@ public:
 	Configuration* getConfiguration() {return config;}
 
 	void setFilterViewport(FilterViewport* vp) {viewport = vp;}
-	void setDataViewport(DataViewport* dv) {dataViewport = dv;}
+	void setDataViewport(DataViewport* dv);
+	DataViewport* getDataViewport() {return dataViewport;}
 
 	void checkForMidiEvents(MidiBuffer& mb);
 	void addMidiEvent(MidiBuffer& mb, int a);
