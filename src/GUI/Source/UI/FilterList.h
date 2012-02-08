@@ -58,8 +58,6 @@ private:
     const String name;
     const String parentName;
 
-    int totalH
-
 };
 
 
