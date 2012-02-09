@@ -18,10 +18,10 @@ DataWindow::DataWindow(Button* cButton)
 	  controlButton(cButton)
 
 {
-	centreWithSize(300,200);
+	centreWithSize(500,500);
 	setUsingNativeTitleBar(true);
 	setResizable(true,false);
-	setTitleBarHeight(40);
+	//setTitleBarHeight(40);
 }
 
 DataWindow::~DataWindow()

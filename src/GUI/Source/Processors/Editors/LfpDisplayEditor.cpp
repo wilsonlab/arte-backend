@@ -118,7 +118,7 @@ void LfpDisplayEditor::buttonClicked(Button* button)
 			//Component* p = (Component*) getProcessor();
 
 			dataWindow->setContentNonOwned((LfpDisplayNode*) getProcessor(), false);
-
+			//getProcessor()->parentComponentChanged();
 			dataWindow->setVisible(true);
 			
 		} else {
@@ -131,6 +131,7 @@ void LfpDisplayEditor::buttonClicked(Button* button)
 			}
 
 			dataWindow->setVisible(windowSelector->getToggleState());
+			//getProcessor()->parentComponentChanged();
 		}
 
 	} else if (button == tabSelector)

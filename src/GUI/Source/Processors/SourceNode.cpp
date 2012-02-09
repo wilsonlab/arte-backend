@@ -35,7 +35,10 @@ SourceNode::SourceNode(const String& name_)
 
 }
 
-SourceNode::~SourceNode() {}
+SourceNode::~SourceNode() 
+{
+	config->removeDataSource(this);	
+}
 
 float SourceNode::getSampleRate()
 {
@@ -61,22 +64,22 @@ void SourceNode::setConfiguration(Configuration* cf)
 {
 	config = cf;
 
-  //   DataSource* d = new DataSource(this, config);
+     DataSource* d = new DataSource(this, config);
 
   //   // add tetrodes -- should really be doing this dynamically
-  //   d->addTrode(4, "TT1");
-  //   d->addTrode(4, "TT2");
-  //   d->addTrode(4, "TT3");
-  //   d->addTrode(4, "TT4");
+     d->addTrode(4, "TT1");
+     d->addTrode(4, "TT2");
+     d->addTrode(4, "TT3");
+     d->addTrode(4, "TT4");
 
-  //   for (int n = 0; n < d->numTetrodes(); n++)
-  //    {
-  //         std::cout << d->getTetrode(n)->getName();
-  //    }
-  //    std::cout << std::endl;
+     for (int n = 0; n < d->numTetrodes(); n++)
+      {
+           std::cout << d->getTetrode(n)->getName();
+      }
+      std::cout << std::endl;
 
 	 // // add a new data source to this configuration
-  //   config->addDataSource(d);
+     config->addDataSource(d);
 
 }
 

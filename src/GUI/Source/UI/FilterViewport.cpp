@@ -427,29 +427,36 @@ void FilterViewport::updateVisibleEditors(GenericEditor* activeEditor, int actio
          GenericProcessor* source = (GenericProcessor*) editorArray[0]->getProcessor();
          if (source->isSource())
             editorArray[0]->setEnabledState(true);
-        else
+         else
             editorArray[0]->setEnabledState(false);
 
     } else {
 
+        //bool sourceIsInChain = true;
 
+        for (int n = 0; n < editorArray.size()-1; n++)
+        {
+            GenericProcessor* source = (GenericProcessor*) editorArray[n]->getProcessor();
+            GenericProcessor* dest = (GenericProcessor*) editorArray[n+1]->getProcessor();
 
-    for (int n = 0; n < editorArray.size()-1; n++)
-    {
-        GenericProcessor* source = (GenericProcessor*) editorArray[n]->getProcessor();
-        GenericProcessor* dest = (GenericProcessor*) editorArray[n+1]->getProcessor();
+            if (n == 0 && !source->isSource())
+                enable = false;
 
-        if (n == 0 && !source->isSource())
-            enable = false;
-        
-        editorArray[n]->setEnabledState(enable);
+            editorArray[n]->setEnabledState(enable);
+            
+            if (source->canSendSignalTo(dest) && source->enabledState())
+                enable = true;
+            else 
+                enable = false;
 
-        if (!source->canSendSignalTo(dest))
-            enable = false;
-        
-        editorArray[n+1]->setEnabledState(enable);
+            if (enable)
+                std::cout << "Enabling node." << std::endl;
+            else
+                std::cout << "Not enabling node." << std::endl;
+            
+            editorArray[n+1]->setEnabledState(enable);
 
-    }
+        }
     }
 
     // Step 6: inform the tabs that something has changed

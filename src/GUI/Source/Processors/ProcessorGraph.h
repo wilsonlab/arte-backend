@@ -45,6 +45,7 @@ public:
 	void setUIComponent(UIComponent* ui);
 	void setFilterViewport(FilterViewport *fv);
 	void setMessageCenter(MessageCenter* mc);
+	void setConfiguration(Configuration* config);
 
 	void updateConnections(Array<SignalChainTabButton*, CriticalSection>);
 
@@ -71,7 +72,7 @@ private:
 	const int RESAMPLING_NODE_ID;
 
 	void createDefaultNodes();
-	void clearNodes();
+	void clearConnections();
 
 	UIComponent* UI;
 	FilterViewport* filterViewport;

@@ -50,6 +50,7 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 	std::cout << "Created message center." << std::endl;
 
 	config = new Configuration();
+	processorGraph->setConfiguration(config);
 
 	std::cout << "Created configuration object." << std::endl;
 

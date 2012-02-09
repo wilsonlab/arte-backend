@@ -35,7 +35,7 @@ void InfoLabel::newOpenGLContextCreated()
 
 void InfoLabel::renderOpenGL()
 {
-	makeCurrentContextActive();
+	//makeCurrentContextActive();
 
 	glClear(GL_COLOR_BUFFER_BIT); // clear buffers to preset values
 
@@ -43,7 +43,7 @@ void InfoLabel::renderOpenGL()
 
 	drawScrollBars();
 
-	makeCurrentContextInactive();
+	//makeCurrentContextInactive();
 }
 
 

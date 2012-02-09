@@ -127,29 +127,57 @@ void* ProcessorGraph::createNewProcessor(String& description)//,
 
 }
 
-void ProcessorGraph::clearNodes()
+void ProcessorGraph::clearConnections()
 {
-	for (int i = 0; i < getNumNodes(); i++)
+
+	for (int i = 0; i < getNumConnections(); i++)
 	{
-		Node* node = getNode(i);
+		const Connection* connection = getConnection(i);
 
-		int id = node->nodeId;
-
-		if (!(id == RECORD_NODE_ID || id == AUDIO_NODE_ID ||
-		      id == OUTPUT_NODE_ID || id == RESAMPLING_NODE_ID))
-		   {removeNode(id);}
-
+		if (connection->destNodeId == RESAMPLING_NODE_ID ||
+		    connection->destNodeId == OUTPUT_NODE_ID)
+		 {
+		 	; // leave it   	
+		 } else {
+		 	removeConnection(i);
+		 }
 	}
+
+	// std::cout << "Clearing nodes..." << std::endl;
+
+	// for (int i = 0; i < getNumNodes(); i++)
+	// {
+	// 	Node* node = getNode(i);
+
+	// 	int id = node->nodeId;
+
+	// 	if (!(id == RECORD_NODE_ID || id == AUDIO_NODE_ID ||
+	// 	      id == OUTPUT_NODE_ID || id == RESAMPLING_NODE_ID))
+	// 	{
+	// 		   removeNode(id);
+	// 	}
+
+	// }
+
+	// std::cout << "Remaining nodes: " << std::endl;
+	// for (int i = 0; i < getNumNodes(); i++)
+	// {
+	// 	Node* node = getNode(i);
+	// 	std::cout << "  " << node->getProcessor()->getName() << std::endl;
+	// }
+
+	// std::cout << std::endl;
 }
 
 void ProcessorGraph::updateConnections(Array<SignalChainTabButton*, CriticalSection> tabs)
 {
-	clearNodes(); // clear processor graph
+	clearConnections(); // clear processor graph
 	//createDefaultNodes(); // add audio and record nodes
+	std::cout << "Updating connections:" << std::endl;
 
-	for (int n = 0; n < tabs.size(); n++)
+ 	for (int n = 0; n < tabs.size(); n++)
 	{
-
+		std::cout << "Signal chain " << n << std::endl;
 		//if (tabs[n]->hasNewConnections())
 		//{
 
@@ -158,71 +186,90 @@ void ProcessorGraph::updateConnections(Array<SignalChainTabButton*, CriticalSect
 
 		while (source != 0)// && destEditor->isEnabled())
 		{
-
+			std::cout << "Source node: " << source->getName() << ", ";
 			GenericProcessor* dest = (GenericProcessor*) source->getDestNode();
+			if (dest != 0)
+			{
+				std::cout << "Dest node: " << dest->getName() << std::endl;
+			} else {
+				std::cout << "no dest node." << std::endl;
+			}
 
 			if (source->enabledState())
 			{
 
-			// add the source to the graph if it doesn't already exist
-			Node* node = getNodeForId(source->getNodeId());
-			if (node == 0)
-				addNode(source, source->getNodeId());
+				// add the source to the graph if it doesn't already exist
+				Node* node = getNodeForId(source->getNodeId());
+				if (node == 0)
+					addNode(source, source->getNodeId());
 
-			// add the connections to audio and record nodes if necessary
-			if (!(source->isSink() || source->isSource() ||
-			      source->isSplitter() || source->isMerger()))
-			{
-				std::cout << "   Connecting to audio and record nodes." << std::endl;
-
-				for (int chan = 0; chan < source->getNumOutputs(); chan++) {
-
-					addConnection(source->getNodeId(), // sourceNodeID
-					  	chan, // sourceNodeChannelIndex
-					   	AUDIO_NODE_ID, // destNodeID
-					  	getNextFreeAudioChannel()); // destNodeChannelIndex
-
-					addConnection(source->getNodeId(), // sourceNodeID
-					  	chan, // sourceNodeChannelIndex
-					   	RECORD_NODE_ID, // destNodeID
-					  	getNextFreeRecordChannel()); // destNodeChannelIndex
-				}
-			}
-
-			if (dest != 0) {
-
-				if (dest->enabledState())
+				// add the connections to audio and record nodes if necessary
+				if (!(source->isSink() || source->isSource() ||
+				      source->isSplitter() || source->isMerger()))
 				{
+					std::cout << "   Connecting to audio and record nodes." << std::endl;
 
-					// add dest node to graph if it doesn't already exist
-					node = getNodeForId(dest->getNodeId());
-					if (node == 0)
-						addNode(dest, dest->getNodeId());
+					for (int chan = 0; chan < source->getNumOutputs(); chan++) {
 
-					for (int chan = 0; chan < source->getNumOutputs(); chan++) 
-					{
-
-						// eventually need to account for splitter and mergers
-						//std::cout << "1";
 						addConnection(source->getNodeId(), // sourceNodeID
 						  	chan, // sourceNodeChannelIndex
-						   	dest->getNodeId(), // destNodeID
-						  	chan); // destNodeChannelIndex
-						}
+						   	AUDIO_NODE_ID, // destNodeID
+						  	getNextFreeAudioChannel()); // destNodeChannelIndex
 
-						// connect event channel
 						addConnection(source->getNodeId(), // sourceNodeID
-						  	midiChannelIndex, // sourceNodeChannelIndex
-						   	dest->getNodeId(), // destNodeID
-						  	midiChannelIndex); // destNodeChannelIndex
+						  	chan, // sourceNodeChannelIndex
+						   	RECORD_NODE_ID, // destNodeID
+						  	getNextFreeRecordChannel()); // destNodeChannelIndex
 					}
+				}
+
+				if (dest != 0) {
+
+					if (dest->enabledState())
+						std::cout << "OK." << std::endl;
+					else
+						std::cout << "Not OK." << std::endl;
+
+					if (dest->enabledState())
+					{
+
+						// add dest node to graph if it doesn't already exist
+						node = getNodeForId(dest->getNodeId());
+						if (node == 0)
+							addNode(dest, dest->getNodeId());
+
+						for (int chan = 0; chan < source->getNumOutputs(); chan++) 
+						{
+
+							// eventually need to account for splitter and mergers
+							std::cout << "     Connecting " << source->getName() <<
+							           " channel " << chan << " to " <<
+							           dest->getName() << std::endl;
+
+							addConnection(source->getNodeId(), // sourceNodeID
+							  	chan, // sourceNodeChannelIndex
+							   	dest->getNodeId(), // destNodeID
+							  	chan); // destNodeChannelIndex
+						}
+							
+							std::cout << "     Connecting " << source->getName() <<
+							           " event channel to " <<
+							           dest->getName() << std::endl;
+							// connect event channel
+							addConnection(source->getNodeId(), // sourceNodeID
+							  	midiChannelIndex, // sourceNodeChannelIndex
+							   	dest->getNodeId(), // destNodeID
+							  	midiChannelIndex); // destNodeChannelIndex
+
+					}
+
 				}
 			}	
 			
 			source = dest; // switch source and dest
-		}
-	}
-}
+		} // end while source != 0
+	} // end "tabs" for loop
+} // end method
 
 int ProcessorGraph::getNextFreeAudioChannel()
 {
@@ -310,7 +357,7 @@ void ProcessorGraph::removeProcessor(GenericProcessor* processor) {
 	// std::cout << "  Source " << source << std::endl;
 	// std::cout << "  Dest " << dest << std::endl;
 
-	//removeNode(processor->getNodeId());
+	removeNode(processor->getNodeId());
 
 	// eliminate connections for now
 	/*if (dest !=0 && source !=0) {
@@ -339,7 +386,7 @@ void ProcessorGraph::removeProcessor(GenericProcessor* processor) {
 void ProcessorGraph::setUIComponent(UIComponent* ui)
 {
 	UI = ui;
-	config = ui->getConfiguration();
+	//config = ui->getConfiguration();
 }
 
 void ProcessorGraph::setFilterViewport(FilterViewport* fv)
@@ -352,6 +399,12 @@ void ProcessorGraph::setMessageCenter(MessageCenter* mc)
 	messageCenter = mc;
 }
 
+void ProcessorGraph::setConfiguration(Configuration* c)
+{
+	config = c;
+}
+
+
 bool ProcessorGraph::enableSourceNodes() {
 
 	updateConnections(filterViewport->requestSignalChain());
@@ -361,9 +414,13 @@ bool ProcessorGraph::enableSourceNodes() {
 	for (int n = 0; n < config->numDataSources(); n++) 
 	{
 		GenericProcessor* sn = getSourceNode(config->getSource(n)->id);
-		if (sn != 0)
+		if (sn != 0) {
+			std::cout << "Source name: " << sn->getName() << std::endl;
 			sn->enable();
+		}
 	}
+
+	prepareToPlay(44100.0, 2048);
 
 	filterViewport->signalChainCanBeEdited(false);
 
@@ -403,8 +460,11 @@ RecordNode* ProcessorGraph::getRecordNode() {
 
 GenericProcessor* ProcessorGraph::getSourceNode(int snID) {
 
-	if (snID != 0) {
-		Node* node = getNodeForId(snID);
+	std::cout << "Requested ID: " << snID << std::endl;
+	//if (snID != 0) {
+	Node* node = getNodeForId(snID);
+
+	if (node != 0) {
 		return (GenericProcessor*) node->getProcessor();
 	} else {
 		return 0;

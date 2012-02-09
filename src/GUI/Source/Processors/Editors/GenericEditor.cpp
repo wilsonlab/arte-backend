@@ -12,7 +12,7 @@
 
 GenericEditor::GenericEditor (GenericProcessor* owner, FilterViewport* vp) 
 	: AudioProcessorEditor (owner), isSelected(false), viewport(vp),
-	  desiredWidth(150), tNum(-1)
+	  desiredWidth(150), tNum(-1), isEnabled(true)
 
 {
 	name = getAudioProcessor()->getName();
@@ -113,6 +113,8 @@ bool GenericEditor::getEnabledState()
 void GenericEditor::setEnabledState(bool t)
 {
 	isEnabled = t;
+	GenericProcessor* p = (GenericProcessor*) getProcessor();
+	p->enabledState(isEnabled);
 }
 
 void GenericEditor::paint (Graphics& g)

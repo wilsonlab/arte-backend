@@ -39,6 +39,8 @@ DataSource::DataSource(GenericProcessor* p, Configuration* c)
 
 void Configuration::removeDataSource(GenericProcessor* p)
 {
+	std::cout << "Removing data source from configuration!" << std::endl;
+
 	for (int n = 0; n < numDataSources(); n++) 
 	{
 		GenericProcessor* gp = (GenericProcessor*) getSource(n)->getProcessor();

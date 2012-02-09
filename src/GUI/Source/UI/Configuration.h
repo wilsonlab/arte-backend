@@ -196,6 +196,7 @@ public:
 
 	void addDataSource(DataSource* d)
 	{
+		std::cout << "New data source added." << std::endl;
 		dataSources.add(d);
 	}
 

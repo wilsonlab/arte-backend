@@ -15,7 +15,7 @@ RecordNode::RecordNode()
 {
 
 	// need to update this:
-	setPlayConfigDetails(1024,0,44100.0,128);
+	setPlayConfigDetails(64,0,44100.0,128);
 
 	outputFile = File("./data"); // create output file
 	outputStream = 0;
