@@ -18,9 +18,11 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 
 	processorGraph->setUIComponent(this);
 
+	infoLabel = new InfoLabel();
+
 	dataViewport = new DataViewport ();
 	addChildComponent(dataViewport);
-	dataViewport->addTabToDataViewport("Info",new InfoLabel());
+	dataViewport->addTabToDataViewport("Info",infoLabel);
 
 	std::cout << "Created data viewport." << std::endl;
 
@@ -69,6 +71,7 @@ UIComponent::~UIComponent()
 	deleteAllChildren();
 
 	deleteAndZero(config);
+	deleteAndZero(infoLabel);
 
 	processorGraph = 0;
 	audio = 0;

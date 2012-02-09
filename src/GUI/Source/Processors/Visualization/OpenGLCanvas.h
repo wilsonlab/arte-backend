@@ -53,6 +53,13 @@ public:
 	void mouseUpInCanvas(const MouseEvent& e);
 	void mouseWheelMoveInCanvas(const MouseEvent&, float, float);
 
+	virtual void resized();
+	virtual void mouseDown(const MouseEvent& e);
+	virtual void mouseDrag(const MouseEvent& e);
+	virtual void mouseMove(const MouseEvent& e);
+	virtual void mouseUp(const MouseEvent& e);
+	virtual void mouseWheelMove(const MouseEvent&, float, float);
+
 	void canvasWasResized();
 
 	int getScrollAmount() {return scrollPix;};

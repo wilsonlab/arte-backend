@@ -109,6 +109,7 @@ void ResizableWindow::clearContentComponent()
     if (ownsContentComponent)
     {
         contentComponent.deleteAndZero();
+        //deleteAndZero(contentComponent);
     }
     else
     {
@@ -157,6 +158,7 @@ void ResizableWindow::setContentComponent (Component* const newContentComponent,
         if (deleteOldOne)
         {
             contentComponent.deleteAndZero();
+            //deleteAndZero(contentComponent);
         }
         else
         {

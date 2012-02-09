@@ -106,9 +106,22 @@ void LfpDisplayEditor::buttonClicked(Button* button)
 		if (dataWindow == 0) {
 			dataWindow = new DataWindow(windowSelector);
 
-			dataWindow->setContentComponent(new LfpDisplayCanvas(streamBuffer,eventBuffer,getConfiguration(), this));
+			//dataWindow->setContentComponent(new LfpDisplayCanvas(streamBuffer,eventBuffer,getConfiguration(), this));
+
+			if (tabSelector->getToggleState())
+			{
+				tabSelector->setToggleState(false, false);
+				dataViewport->removeTab(tabIndex);
+				tabIndex = -1;
+			}
+
+			//Component* p = (Component*) getProcessor();
+
+			dataWindow->setContentNonOwned((LfpDisplayNode*) getProcessor(), false);
 
 			dataWindow->setVisible(true);
+			
+		} else {
 
 			if (tabSelector->getToggleState())
 			{
@@ -116,15 +129,8 @@ void LfpDisplayEditor::buttonClicked(Button* button)
 				dataViewport->removeTab(tabIndex);
 				tabIndex = -1;
 			}
-			
-		} else {
+
 			dataWindow->setVisible(windowSelector->getToggleState());
-			if (tabSelector->getToggleState())
-			{
-				tabSelector->setToggleState(false, false);
-				dataViewport->removeTab(tabIndex);
-				tabIndex = -1;
-			}
 		}
 
 	} else if (button == tabSelector)
@@ -133,13 +139,18 @@ void LfpDisplayEditor::buttonClicked(Button* button)
 		{
 
 			//std::cout << "Editor data viewport: " << dataViewport << std::endl;
-			tabIndex = dataViewport->addTabToDataViewport("LFP",new LfpDisplayCanvas(streamBuffer,eventBuffer,getConfiguration(), this));
-
+			
 			if (windowSelector->getToggleState())
 			{
 				windowSelector->setToggleState(false, false);
 				dataWindow->setVisible(false);
 			}
+
+			//tabIndex = dataViewport->addTabToDataViewport("LFP",new LfpDisplayCanvas(streamBuffer,eventBuffer,getConfiguration(), this));
+			//Component* p = (Component*) getProcessor();
+
+
+			tabIndex = dataViewport->addTabToDataViewport("LFP",(LfpDisplayNode*) getProcessor());
 
 		} else if (!tabSelector->getToggleState() && tabIndex > -1)
 		{

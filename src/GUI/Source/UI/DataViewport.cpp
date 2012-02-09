@@ -38,7 +38,7 @@ DataViewport::~DataViewport()
  		setVisible(true);
 
      int tabIndex = getTabbedButtonBar().getNumTabs();
-     addTab(name, Colours::lightgrey, component, true, tabIndex);
+     addTab(name, Colours::lightgrey, component, false, tabIndex);
      getTabbedButtonBar().setCurrentTabIndex(tabIndex);
 
      setOutline(0);
@@ -53,6 +53,9 @@ DataViewport::~DataViewport()
         
      int newIndex = tabArray->indexOf(index);
      tabArray->remove(newIndex);
+
+     //Component* p = getTabContentComponent(newIndex);
+     //removeChildComponent(p);
 
      getTabbedButtonBar().removeTab(newIndex);
 

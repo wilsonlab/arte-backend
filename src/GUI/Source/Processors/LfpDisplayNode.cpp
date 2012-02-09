@@ -13,7 +13,7 @@
 
 LfpDisplayNode::LfpDisplayNode()
 	: GenericProcessor("LFP Viewer"),
-	  timebase(1000), displayGain(1), parameterChanged(true)
+	  timebase(1000), displayGain(1), parameterChanged(true), inWindow(false)
 
 {
 	//setSampleRate(25000.0);
@@ -32,6 +32,8 @@ LfpDisplayNode::~LfpDisplayNode()
 
 	deleteAndZero(eventBuffer);
 }
+
+
 
 AudioProcessorEditor* LfpDisplayNode::createEditor()
 {
@@ -112,4 +114,79 @@ void LfpDisplayNode::process(AudioSampleBuffer &buffer, MidiBuffer &midiMessages
 
 	// 3. if any parameters have changed, place more events in the eventBuffer
 	
+}
+
+
+void LfpDisplayNode::newOpenGLContextCreated()
+{
+
+	setUp2DCanvas();
+	activateAntiAliasing();
+
+	glClearColor (0.2, 0.1, 0.9, 1.0);
+	resized();
+
+}
+
+
+void LfpDisplayNode::renderOpenGL()
+{
+
+	//makeCurrentContextActive();
+	
+	glClear(GL_COLOR_BUFFER_BIT); // clear buffers to preset values
+
+	//drawTicks();
+
+	// updateScreenBuffer();
+
+	// for (int i = 0; i < nChans; i++)
+	// {
+	// 	bool isSelected = false;
+
+	// 	if (selectedChan == i)
+	// 		isSelected = true;
+
+	// 	if (checkBounds(i)) {
+	// 		setViewport(i);
+	// 		drawBorder(isSelected);
+	// 		drawChannelInfo(i,isSelected);
+	// 		//drawWaveform(i,isSelected);
+	// 	}	
+	// }
+	drawScrollBars();
+
+	//makeCurrentContextInactive();
+}
+
+int LfpDisplayNode::getTotalHeight() 
+{
+	return 800;
+}
+
+void LfpDisplayNode::resized()
+
+{
+
+	canvasWasResized();
+	// glClear(GL_COLOR_BUFFER_BIT);
+
+	// int h, w;
+
+	// if (inWindow)
+	// {
+	// 	h = getParentComponent()->getHeight();
+	// 	w = getParentComponent()->getWidth();
+	// } else {
+	// 	h = getHeight();
+	// 	w = getWidth();
+	// }
+
+	// if (getScrollAmount() + h > getTotalHeight() && getTotalHeight() > h)
+	// 	setScrollAmount(getTotalHeight() - h);
+	// else
+	// 	setScrollAmount(0);
+
+	// showScrollBars();
+
 }

@@ -196,7 +196,15 @@ void LfpDisplayCanvas::resized()
 {
 	//screenBuffer = new AudioSampleBuffer(nChans, getWidth());
 
+	// glClear(GL_COLOR_BUFFER_BIT);
 
+	// //int h = getParentComponent()->getHeight();
 
+	// if (scrollPix + getHeight() > getTotalHeight() && getTotalHeight() > getHeight())
+	// 	scrollPix = getTotalHeight() - getHeight();
+	// else
+	// 	scrollPix = 0;
+
+	// showScrollBars();
 	canvasWasResized();
 }

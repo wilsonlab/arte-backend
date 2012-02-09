@@ -369,3 +369,20 @@ void OpenGLCanvas::timerCallback()
 {
 	repaint();
 }
+
+
+
+void OpenGLCanvas::mouseDown(const MouseEvent& e) 
+{
+	mouseDownInCanvas(e);
+}
+
+void OpenGLCanvas::mouseDrag(const MouseEvent& e) {mouseDragInCanvas(e);}
+void OpenGLCanvas::mouseMove(const MouseEvent& e) {mouseMoveInCanvas(e);}
+void OpenGLCanvas::mouseUp(const MouseEvent& e) 	{mouseUpInCanvas(e);}
+void OpenGLCanvas::mouseWheelMove(const MouseEvent& e, float a, float b) {mouseWheelMoveInCanvas(e,a,b);}
+
+void OpenGLCanvas::resized()
+{
+	canvasWasResized();
+}

@@ -49,6 +49,7 @@ private:
 	ControlPanel* controlPanel;
 	MessageCenter* messageCenter;
 	Configuration* config;
+	InfoLabel* infoLabel;
 
 	ProcessorGraph* processorGraph;
 	AudioComponent* audio;

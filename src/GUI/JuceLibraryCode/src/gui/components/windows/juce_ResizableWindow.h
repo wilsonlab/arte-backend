@@ -367,6 +367,7 @@ protected:
 private:
     //==============================================================================
     Component::SafePointer <Component> contentComponent;
+    //Component* contentComponent;
     bool resizeToFitContent, fullscreen, ownsContentComponent;
     ComponentDragger dragger;
     Rectangle<int> lastNonFullScreenPos;

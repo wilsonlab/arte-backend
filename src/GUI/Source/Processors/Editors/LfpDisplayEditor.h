@@ -16,6 +16,7 @@
 #include "../../UI/UIComponent.h"
 #include "../../UI/DataViewport.h"
 #include "../Visualization/DataWindow.h"
+#include "../LfpDisplayNode.h"
 
 class FilterViewport;
 class DataViewport;

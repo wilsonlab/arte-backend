@@ -14,16 +14,22 @@
 #include "../../JuceLibraryCode/JuceHeader.h"
 #include "Editors/LfpDisplayEditor.h"
 #include "GenericProcessor.h"
+#include "Visualization/OpenGLCanvas.h"
 
 class DataViewport;
 
-class LfpDisplayNode : public GenericProcessor
+class LfpDisplayNode : public OpenGLCanvas,
+					   public GenericProcessor
 
 {
 public:
 
 	LfpDisplayNode();
 	~LfpDisplayNode();
+
+	void newOpenGLContextCreated();
+	void renderOpenGL();
+	int getTotalHeight();
 
 	AudioProcessorEditor* createEditor();
 
@@ -38,6 +44,8 @@ public:
 
 	void prepareToPlay(double, int);
 
+	bool inWindow;
+
 private:
 
 	DataViewport* dataViewport;
@@ -49,8 +57,10 @@ private:
 
 	bool parameterChanged;
 
+
 	void resizeBuffer();
 
+	void resized();
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LfpDisplayNode);
 
