@@ -77,20 +77,20 @@ ListItem::ListItem(const String name_, const String parentName_, bool containsSu
        addSubItem (new ListItem ("Sources",name,true));
        addSubItem (new ListItem ("Filters",name,true));
        addSubItem (new ListItem ("Sinks",name,true));
-       addSubItem (new ListItem ("Utilities",name,true));
+       //addSubItem (new ListItem ("Utilities",name,true));
     } else if (name.equalsIgnoreCase("Sources")) {
        addSubItem (new ListItem ("Intan Demo Board",name,false));
-       addSubItem (new ListItem ("Custom FPGA",name,false));
-       addSubItem (new ListItem ("Network Stream",name,false));
-       addSubItem (new ListItem ("Signal Generator",name,false));
-       addSubItem (new ListItem ("File Reader",name,false));
+       //addSubItem (new ListItem ("Custom FPGA",name,false));
+       //addSubItem (new ListItem ("Network Stream",name,false));
+       //addSubItem (new ListItem ("Signal Generator",name,false));
+      // addSubItem (new ListItem ("File Reader",name,false));
     } else if (name.equalsIgnoreCase("Filters")) {
        addSubItem (new ListItem ("Bandpass Filter",name,false));
-       addSubItem (new ListItem ("Resampler",name,false));
-       addSubItem (new ListItem ("Spike Detector",name,false));
+       //addSubItem (new ListItem ("Resampler",name,false));
+       //addSubItem (new ListItem ("Spike Detector",name,false));
     }  else if (name.equalsIgnoreCase("Sinks")) {
        addSubItem (new ListItem ("LFP Viewer",name,false));
-       addSubItem (new ListItem ("Spike Viewer",name,false));       
+       //addSubItem (new ListItem ("Spike Viewer",name,false));       
     }  else if (name.equalsIgnoreCase("Utilities")) {
        addSubItem (new ListItem ("Splitter",name,false));
        addSubItem (new ListItem ("Merger",name,false));

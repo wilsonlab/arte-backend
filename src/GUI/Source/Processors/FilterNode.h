@@ -40,9 +40,10 @@ public:
 	// void setDestNode(GenericProcessor* dn);
 	
 	void setNumInputs(int);
+	void setSampleRate(float);
 	
 private:
-	double sampleRate, lowCut, highCut;
+	double lowCut, highCut;
 	Dsp::Filter* filter;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilterNode);

@@ -29,7 +29,8 @@ class SelectorButton : public DrawableButton
 };
 
 class LfpDisplayEditor : public GenericEditor,
-				   	     public Button::Listener
+				   	     public Button::Listener,
+				   	     public Slider::Listener
 {
 public:
 	LfpDisplayEditor (GenericProcessor*, FilterViewport*, DataViewport*);
@@ -39,9 +40,14 @@ public:
 	void setBuffers (AudioSampleBuffer*, MidiBuffer*);
 	void setUIComponent (UIComponent* ui) {UI = ui;}
 
+	void sliderValueChanged (Slider* slider);
+
 private:	
-	//Slider* slider;
+	
 	ScopedPointer <DataWindow> dataWindow;
+
+	Slider* timebaseSlider;
+	Slider* displayGainSlider;
 
 	SelectorButton* windowSelector;
 	SelectorButton* tabSelector;

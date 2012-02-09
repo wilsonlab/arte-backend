@@ -52,6 +52,30 @@ void GenericProcessor::setParameter (int parameterIndex, float newValue)
 
 }
 
+GenericProcessor* GenericProcessor::getOriginalSourceNode()
+{
+	if (isSource())
+	{
+		return this;
+	} else {
+		
+		GenericProcessor* source = getSourceNode();
+
+		if (source != 0)
+		{
+			while (!source->isSource() && source != 0)
+			{
+				source = source->getSourceNode();
+			}
+
+			return source;
+
+		} else {
+			return 0;
+		}
+	}
+}
+
 // void GenericProcessor::setViewport(FilterViewport* vp) {
 	
 // 	viewport = vp;
@@ -150,7 +174,7 @@ void GenericProcessor::setSourceNode(GenericProcessor* sn)
 				if (sourceNode != sn) {
 					sourceNode = sn;
 					sn->setDestNode(this);
-					setNumInputs();
+					setNumInputs(sn->getNumOutputs());
 					setSampleRate(sn->getSampleRate());
 				}
 			} else {

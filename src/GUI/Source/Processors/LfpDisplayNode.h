@@ -31,11 +31,25 @@ public:
 
 	void process(AudioSampleBuffer &buffer, MidiBuffer &midiMessages, int& nSamples);
 
+	void setParameter(int, float);
+
+	void setNumInputs(int inputs);
+	void setSampleRate(float r);
+
+	void prepareToPlay(double, int);
+
 private:
 
 	DataViewport* dataViewport;
 	AudioSampleBuffer* displayBuffer;
 	MidiBuffer* eventBuffer;
+
+	float timebase; // ms
+	float displayGain; // 
+
+	bool parameterChanged;
+
+	void resizeBuffer();
 
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LfpDisplayNode);

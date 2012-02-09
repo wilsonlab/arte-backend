@@ -95,6 +95,8 @@ public:
 	int numInputs;
 	int numOutputs;
 
+	float sampleRate;
+
 	UIComponent* UI;
 
 	//void sendMessage(const String& msg);
@@ -116,6 +118,7 @@ public:
 	// get/set source node functions
 	GenericProcessor* getSourceNode() {return sourceNode;}
 	GenericProcessor* getDestNode() {return destNode;}
+	GenericProcessor* getOriginalSourceNode();
 
 	virtual void setSourceNode(GenericProcessor* sn);
 	virtual void setDestNode(GenericProcessor* dn);
@@ -156,7 +159,7 @@ private:
 
 	void processBlock (AudioSampleBuffer &buffer, MidiBuffer &midiMessages);
 
-	float sampleRate;
+	
 
 	bool isEnabled;
 	

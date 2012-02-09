@@ -14,10 +14,11 @@
 
 FilterNode::FilterNode()
 	: GenericProcessor("Bandpass Filter"), filter(0),
-	  sampleRate (25000.0), highCut(6000.0), lowCut(600.0)
+	  highCut(6000.0), lowCut(600.0)
 	
 {
-
+	setNumInputs(10);
+	setSampleRate(20000.0);
 	// set up default configuration
 	setPlayConfigDetails(16, 16, 44100.0, 128);
 
@@ -153,11 +154,17 @@ void FilterNode::setNumInputs(int inputs)
 //	return editor;
 //}
 
+void FilterNode::setSampleRate(float r)
+{
+	sampleRate = r;
+	setFilterParameters();
+}
+
 void FilterNode::setFilterParameters()
 {
 
 	Dsp::Params params;
-	params[0] = sampleRate; // sample rate
+	params[0] = getSampleRate(); // sample rate
 	params[1] = 4; // order
 	params[2] = (highCut + lowCut)/2; // center frequency
 	params[3] = highCut - lowCut; // bandwidth

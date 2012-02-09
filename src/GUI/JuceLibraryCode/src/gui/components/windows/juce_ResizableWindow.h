@@ -230,12 +230,12 @@ public:
     //==============================================================================
     /** Returns the current content component.
 
-        This will be the component set by setContentComponent(), or 0 if none
+        This will be the component set by setContentOwned() or setContentNonOwned, or 0 if none
         has yet been specified.
 
-        @see setContentComponent
+        @see setContentOwned, setContentNonOwned
     */
-    Component* getContentComponent() const throw()                  { return contentComponent; }
+    Component* getContentComponent() throw()                 { return contentComponent; }
 
     /** Changes the current content component.
 
@@ -245,21 +245,45 @@ public:
         You should never add components directly to a ResizableWindow (or any of its subclasses)
         with addChildComponent(). Instead, add them to the content component.
 
-        @param newContentComponent  the new component to use (or null to not use one) - this
-                                    component will be deleted either when replaced by another call
-                                    to this method, or when the ResizableWindow is deleted.
-                                    To remove a content component without deleting it, use
-                                    setContentComponent (0, false).
-        @param deleteOldOne         if true, the previous content component will be deleted; if
-                                    false, the previous component will just be removed without
-                                    deleting it.
-        @param resizeToFit          if true, the ResizableWindow will maintain its size such that
-                                    it always fits around the size of the content component. If false, the
-                                    new content will be resized to fit the current space available.
+        @param newContentComponent  the new component to use - this component will be deleted when it's
+                                    no longer needed (i.e. when the window is deleted or a new content
+                                    component is set for it). To set a component that this window will not
+                                    delete, call setContentNonOwned() instead.
+        @param resizeToFitWhenContentChangesSize  if true, then the ResizableWindow will maintain its size
+                                    such that it always fits around the size of the content component. If false,
+                                    the new content will be resized to fit the current space available.
     */
-    void setContentComponent (Component* newContentComponent,
-                              bool deleteOldOne = true,
-                              bool resizeToFit = false);
+    void setContentOwned (Component* newContentComponent,
+                          bool resizeToFitWhenContentChangesSize);
+
+    /** Changes the current content component.
+
+        This sets a component that will be placed in the centre of the ResizableWindow,
+        (leaving a space around the edge for the border).
+
+        You should never add components directly to a ResizableWindow (or any of its subclasses)
+        with addChildComponent(). Instead, add them to the content component.
+
+        @param newContentComponent  the new component to use - this component will NOT be deleted by this
+                                    component, so it's the caller's responsibility to manage its lifetime (it's
+                                    ok to delete it while this window is still using it). To set a content
+                                    component that the window will delete, call setContentOwned() instead.
+        @param resizeToFitWhenContentChangesSize  if true, then the ResizableWindow will maintain its size
+                                    such that it always fits around the size of the content component. If false,
+                                    the new content will be resized to fit the current space available.
+    */
+    void setContentNonOwned (Component* newContentComponent,
+                             bool resizeToFitWhenContentChangesSize);
+
+    void setContentComponent (Component* const newContentComponent,
+                       const bool deleteOldOne = true,
+                       const bool resizeToFitWhenContentChangesSize = false);
+
+    /** Removes the current content component.
+        If the previous content component was added with setContentOwned(), it will also be deleted. If
+        it was added with setContentNonOwned(), it will simply be removed from this component.
+    */
+    void clearContentComponent();
 
     /** Changes the window so that the content component ends up with the specified size.
 
@@ -267,6 +291,7 @@ public:
         so you can specify the content component's target size.
     */
     void setContentComponentSize (int width, int height);
+
 
     //==============================================================================
     /** A set of colour IDs to use to change the colour of various aspects of the window.
@@ -342,7 +367,7 @@ protected:
 private:
     //==============================================================================
     Component::SafePointer <Component> contentComponent;
-    bool resizeToFitContent, fullscreen;
+    bool resizeToFitContent, fullscreen, ownsContentComponent;
     ComponentDragger dragger;
     Rectangle<int> lastNonFullScreenPos;
     ComponentBoundsConstrainer defaultConstrainer;
@@ -350,6 +375,9 @@ private:
     #if JUCE_DEBUG
     bool hasBeenResized;
     #endif
+
+    void setContent (Component* newComp, bool takeOwnership, bool resizeToFit);
+
 
     void updateLastPos();
 

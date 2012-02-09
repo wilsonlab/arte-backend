@@ -37,6 +37,20 @@ SourceNode::SourceNode(const String& name_)
 
 SourceNode::~SourceNode() {}
 
+float SourceNode::getSampleRate()
+{
+	if (getName().equalsIgnoreCase("Intan Demo Board")) {
+		return 25000.0;
+	} else if (getName().equalsIgnoreCase("Custom FPGA")) {
+		return 25000.0;
+	} else if (getName().equalsIgnoreCase("File Reader")) {
+		return 40000.0;
+	} else {
+		return 44100.0;
+	}
+
+}
+
 // void SourceNode::setName(const String name_)
 // {
 // 	name = name_;

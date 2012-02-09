@@ -15,12 +15,13 @@
 #include "../../../JuceLibraryCode/JuceHeader.h"
 #include "OpenGLCanvas.h"
 #include "../../UI/Configuration.h"
+#include "../Editors/LfpDisplayEditor.h"
 
 class LfpDisplayCanvas : public OpenGLCanvas
 
 {
 public: 
-	LfpDisplayCanvas(AudioSampleBuffer* streamBuffer, MidiBuffer* eventBuffer, Configuration* config);
+	LfpDisplayCanvas(AudioSampleBuffer* streamBuffer, MidiBuffer* eventBuffer, Configuration* config, LfpDisplayEditor* editor);
 	~LfpDisplayCanvas();
 	void newOpenGLContextCreated();
 	void renderOpenGL();
@@ -29,7 +30,25 @@ private:
 
 	int xBuffer, yBuffer;
 
-	void drawLabel();
+	LfpDisplayEditor* editor;
+	AudioSampleBuffer* displayBuffer;
+	ScopedPointer<AudioSampleBuffer> screenBuffer;
+	MidiBuffer* eventBuffer;
+
+	void setViewport(int chan);
+	void drawBorder(bool isSelected);
+	void drawChannelInfo(int chan, bool isSelected);
+	void drawWaveform(int chan, bool isSelected);
+
+	void drawTicks();
+
+	bool checkBounds(int chan);
+
+	void updateScreenBuffer();
+	int screenBufferIndex;
+
+	int nChans, plotHeight, totalHeight;
+	int selectedChan;
 
 	int getTotalHeight();
 

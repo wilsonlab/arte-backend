@@ -26,7 +26,7 @@ DataWindow::DataWindow(Button* cButton)
 
 DataWindow::~DataWindow()
 {
-	setContentComponent (0);
+	//setContentComponent (0);
 }
 
 void DataWindow::closeButtonPressed()

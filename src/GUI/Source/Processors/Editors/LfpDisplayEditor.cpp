@@ -48,7 +48,19 @@ LfpDisplayEditor::LfpDisplayEditor (GenericProcessor* parentNode,
 	  streamBuffer(0), eventBuffer(0)
 
 {
-	desiredWidth = 210;
+	desiredWidth = 275;
+
+	timebaseSlider = new Slider (T("Time Base Slider"));
+	timebaseSlider->setBounds(60,20,200,40);
+	timebaseSlider->setRange(500,10000,500);
+	timebaseSlider->addListener(this);
+	addAndMakeVisible(timebaseSlider);
+
+	displayGainSlider = new Slider (T("Display Gain Slider"));
+	displayGainSlider->setBounds(60,65,200,40);
+	displayGainSlider->setRange(1,8,1);
+	displayGainSlider->addListener(this);
+	addAndMakeVisible(displayGainSlider);
 
 	windowSelector = new SelectorButton();
 	windowSelector->addListener(this);
@@ -59,8 +71,9 @@ LfpDisplayEditor::LfpDisplayEditor (GenericProcessor* parentNode,
 	tabSelector = new SelectorButton();
 	tabSelector->addListener(this);
 	tabSelector->setBounds(25,50,20,20);
-	tabSelector->setToggleState(false,false);
+	
 	addAndMakeVisible(tabSelector);
+	tabSelector->setToggleState(false,false);
 
 }
 
@@ -82,7 +95,6 @@ void LfpDisplayEditor::setBuffers(AudioSampleBuffer* asb, MidiBuffer* mb)
 	streamBuffer = asb;
 	eventBuffer = mb;
 
-
 	std::cout << streamBuffer << std::endl;
 	std::cout << eventBuffer << std::endl;
 }
@@ -94,12 +106,25 @@ void LfpDisplayEditor::buttonClicked(Button* button)
 		if (dataWindow == 0) {
 			dataWindow = new DataWindow(windowSelector);
 
-			dataWindow->setContentComponent(new LfpDisplayCanvas(streamBuffer,eventBuffer,getConfiguration()));
+			dataWindow->setContentComponent(new LfpDisplayCanvas(streamBuffer,eventBuffer,getConfiguration(), this));
 
 			dataWindow->setVisible(true);
+
+			if (tabSelector->getToggleState())
+			{
+				tabSelector->setToggleState(false, false);
+				dataViewport->removeTab(tabIndex);
+				tabIndex = -1;
+			}
 			
 		} else {
 			dataWindow->setVisible(windowSelector->getToggleState());
+			if (tabSelector->getToggleState())
+			{
+				tabSelector->setToggleState(false, false);
+				dataViewport->removeTab(tabIndex);
+				tabIndex = -1;
+			}
 		}
 
 	} else if (button == tabSelector)
@@ -107,8 +132,14 @@ void LfpDisplayEditor::buttonClicked(Button* button)
 		if (tabSelector->getToggleState() && tabIndex < 0)
 		{
 
-			std::cout << "Editor data viewport: " << dataViewport << std::endl;
-			tabIndex = dataViewport->addTabToDataViewport("LFP",new LfpDisplayCanvas(streamBuffer,eventBuffer,getConfiguration()));
+			//std::cout << "Editor data viewport: " << dataViewport << std::endl;
+			tabIndex = dataViewport->addTabToDataViewport("LFP",new LfpDisplayCanvas(streamBuffer,eventBuffer,getConfiguration(), this));
+
+			if (windowSelector->getToggleState())
+			{
+				windowSelector->setToggleState(false, false);
+				dataWindow->setVisible(false);
+			}
 
 		} else if (!tabSelector->getToggleState() && tabIndex > -1)
 		{
@@ -116,4 +147,14 @@ void LfpDisplayEditor::buttonClicked(Button* button)
 			tabIndex = -1;
 		}
 	}
+}
+
+void LfpDisplayEditor::sliderValueChanged (Slider* slider)
+{
+
+	if (slider == timebaseSlider)
+		getAudioProcessor()->setParameter(0,slider->getValue());
+	//else 
+	//	getAudioProcessor()->setParameter(1,slider->getValue());
+
 }

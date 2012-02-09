@@ -21,8 +21,6 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 	dataViewport = new DataViewport ();
 	addChildComponent(dataViewport);
 	dataViewport->addTabToDataViewport("Info",new InfoLabel());
-	//dataViewport->addTabToDataViewport("Spike Display",0);
-	//dataViewport->addTabToDataViewport("LFP Display",0);
 
 	std::cout << "Created data viewport." << std::endl;
 
@@ -63,9 +61,6 @@ UIComponent::UIComponent (ProcessorGraph* pgraph, AudioComponent* audio_)
 	std::cout << "UI component data viewport: " << dataViewport << std::endl;
 
 	processorGraph->loadState();
-
-	//File file = File("./savedState.xml");
-	//filterViewport->loadState(file);
 	
 }
 

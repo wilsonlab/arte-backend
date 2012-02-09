@@ -38,8 +38,6 @@ MainWindow::MainWindow()
     
     setContentComponent (new UIComponent(processorGraph, audioComponent), true, true);
 
-   // processorGraph->setUIComponent((UIComponent*) getContentComponent());
-
     loadWindowBounds();
     setVisible (true);
 
