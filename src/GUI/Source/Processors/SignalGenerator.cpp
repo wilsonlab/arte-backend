@@ -16,7 +16,7 @@
 SignalGenerator::SignalGenerator()
 	: GenericProcessor("Signal Generator"),
 
-	  frequency(25.0),
+	  frequency(10.0),
 	  sampleRate (44100.0),
 	  currentPhase (0.0),
 	  phasePerSample (0.0),
@@ -27,31 +27,49 @@ SignalGenerator::SignalGenerator()
 	setNumOutputs(16);
 	setNumInputs(0);
 
+
+	setPlayConfigDetails(getNumInputs(), getNumOutputs(), 44100.0, 128);
+
+
 }
 
 SignalGenerator::~SignalGenerator()
 {
+	config->removeDataSource(this);	
 }
 
 
-//AudioProcessorEditor* SignalGenerator::createEditor( )
-//{
-	//filterEditor = new FilterEditor(this);
-	
-//	std::cout << "Creating editor." << std::endl;
-//	sourceEditor = new SourceNodeEditor(this);
-//	return sourceEditor;
-//}
+void SignalGenerator::setConfiguration(Configuration* cf)
+{
+	config = cf;
 
-//AudioProcessorEditor* FilterNode::createEditor(AudioProcessorEditor* const editor)
-//{
+     DataSource* d = new DataSource(this, config);
+
+	 // add a new data source to this configuration
+     config->addDataSource(d);
+
+}
+
+AudioProcessorEditor* SignalGenerator::createEditor( )
+{
+	SignalGeneratorEditor* ed = new SignalGeneratorEditor(this, viewport);
+	setEditor(ed);
 	
-//	return editor;
-//}
+	std::cout << "Creating editor." << std::endl;
+	//filterEditor = new FilterEditor(this);
+	return ed;
+}
+
+
 void SignalGenerator::setParameter (int parameterIndex, float newValue)
 {
 	//std::cout << "Message received." << std::endl;
-	frequency = newValue;
+
+	if (parameterIndex == 0)
+		amplitude = newValue;
+	else
+		frequency = newValue;
+
 	phasePerSample = double_Pi * 2.0 / (sampleRate / frequency);
 
 }

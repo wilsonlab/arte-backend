@@ -14,12 +14,13 @@
 #include "../../JuceLibraryCode/JuceHeader.h"
 #include "Editors/LfpDisplayEditor.h"
 #include "GenericProcessor.h"
-#include "Visualization/OpenGLCanvas.h"
+//#include "Visualization/OpenGLCanvas.h"
 
 class DataViewport;
 
-class LfpDisplayNode : public OpenGLCanvas,
-					   public GenericProcessor
+class LfpDisplayNode :  public GenericProcessor
+						///public OpenGLCanvas,
+					  
 
 {
 public:
@@ -27,9 +28,9 @@ public:
 	LfpDisplayNode();
 	~LfpDisplayNode();
 
-	void newOpenGLContextCreated();
-	void renderOpenGL();
-	int getTotalHeight();
+	// void newOpenGLContextCreated();
+	// void renderOpenGL();
+	// int getTotalHeight();
 
 	AudioProcessorEditor* createEditor();
 
@@ -44,23 +45,34 @@ public:
 
 	void prepareToPlay(double, int);
 
-	bool inWindow;
+	AudioSampleBuffer* getDisplayBufferAddress() {return displayBuffer;}
+	int getDisplayBufferIndex() {return displayBufferIndex;}
+	ReadWriteLock* getLock() {return lock;}
 
-	void setViewport(int chan);
-	void drawBorder(bool isSelected);
-	void drawChannelInfo(int chan, bool isSelected);
-	void drawWaveform(int chan, bool isSelected);
+	bool isVisible;
 
-	void drawTicks();
-
-	bool checkBounds(int chan);
+	ReadWriteLock* lock;
 
 private:
 
 	DataViewport* dataViewport;
+
 	AudioSampleBuffer* displayBuffer;
+	AudioSampleBuffer* screenBuffer;
 	MidiBuffer* eventBuffer;
 
+	int displayBufferIndex, screenBufferIndex;
+
+	int repaintInterval, repaintCounter;
+
+	// void setViewport(int chan);
+	// void drawBorder(bool isSelected);
+	// void drawChannelInfo(int chan, bool isSelected);
+	// void drawWaveform(int chan, bool isSelected);
+
+	// void drawTicks();
+
+	// bool checkBounds(int chan);
 
 	int selectedChan;
 
@@ -70,7 +82,6 @@ private:
 	int xBuffer, yBuffer, plotHeight, totalHeight;
 
 	bool parameterChanged;
-
 
 	void resizeBuffer();
 

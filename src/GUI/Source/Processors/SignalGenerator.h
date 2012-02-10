@@ -14,6 +14,7 @@
 
 #include "../../JuceLibraryCode/JuceHeader.h"
 #include "GenericProcessor.h"
+#include "Editors/SignalGeneratorEditor.h"
 
 //class SourceNodeEditor;
 
@@ -32,7 +33,11 @@ public:
 
 	void setParameter (int parameterIndex, float newValue);
 
-	//AudioProcessorEditor* createEditor();
+	void setConfiguration(Configuration* cf);
+
+	float getSampleRate() {return 44100.0;}
+
+	AudioProcessorEditor* createEditor();
 	bool hasEditor() const {return true;}
 
 	void enable();

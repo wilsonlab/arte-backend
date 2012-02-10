@@ -10,16 +10,23 @@
 
 #include "LfpDisplayCanvas.h"
 
-LfpDisplayCanvas::LfpDisplayCanvas(AudioSampleBuffer* asb, MidiBuffer* mb, Configuration* config, LfpDisplayEditor* ed)
-	 : xBuffer(10), yBuffer(10), editor(ed), displayBuffer(asb), eventBuffer(mb),
-	    plotHeight(60), selectedChan(-1), screenBufferIndex(0)
+LfpDisplayCanvas::LfpDisplayCanvas(LfpDisplayNode* n) : processor(n),
+	 	xBuffer(10), yBuffer(10),
+	    plotHeight(60), selectedChan(-1), screenBufferIndex(0),
+	    timebase(1.0f), displayGain(5.0f), displayBufferIndex(0)
 {
 
-	GenericProcessor* gp = (GenericProcessor*) editor->getProcessor();
+	//GenericProcessor* gp = (GenericProcessor*) editor->getProcessor();
 
-	nChans = gp->getNumInputs();
+	nChans = processor->getNumInputs();
+	sampleRate = processor->getSampleRate();
 
-	screenBuffer = new AudioSampleBuffer(nChans, getWidth());
+	displayBuffer = processor->getDisplayBufferAddress();
+	displayBufferSize = displayBuffer->getNumSamples();
+
+	lock = processor->getLock();
+
+	//screenBuffer = new AudioSampleBuffer(nChans, 10000);
 
 	//setBounds(0,0,700,400);
 
@@ -41,12 +48,86 @@ void LfpDisplayCanvas::newOpenGLContextCreated()
 	glClearColor (0.667, 0.698, 0.9, 1.0);
 	resized();
 
+	screenBuffer = new AudioSampleBuffer(nChans, 10000);
+
+	//startTimer(50);
+
 }
 
 void LfpDisplayCanvas::updateScreenBuffer()
 {
 	// copy new samples from the displayBuffer into the screenBuffer
+	int maxSamples = getWidth();
 
+	int index = processor->getDisplayBufferIndex();
+
+	int nSamples = index - displayBufferIndex;
+
+	if (nSamples < 0)
+	{
+		nSamples = (displayBufferSize - displayBufferIndex) + index;
+	}
+
+	float ratio = sampleRate * timebase / float(getWidth());
+
+	int valuesNeeded = nSamples / int(ratio) - 1;
+
+	//lock->enterRead();
+
+	if (valuesNeeded > 0) {
+//
+		int sourceSampleNumber;
+		int destSampleNumber;
+
+		int valuesTaken = 0;
+
+		//float subSampleOffset = 0.0;
+
+	    for (int i = 0; i < valuesNeeded; i++)
+	    {
+
+	    	sourceSampleNumber = (displayBufferIndex + int(float(i)*ratio) ) % displayBufferSize;
+	    	destSampleNumber = (screenBufferIndex + i) % maxSamples;
+
+	    	if (sourceSampleNumber >= 0 && destSampleNumber >= 0 && destSampleNumber < displayBufferSize) {
+
+	    		valuesTaken++;
+
+	    		//std::cout << "    " << " " << sourceSampleNumber << " " <<
+	             //destSampleNumber << std::endl;
+
+		        for (int channel = 0; channel < displayBuffer->getNumChannels(); channel++) {
+
+
+		        	screenBuffer->copyFrom(channel, 		// destChannel
+		        						   destSampleNumber,  			// destSampleOffset
+		        						//*displayBuffer,
+		        						//channel,
+		        						//sourceSampleNumber,
+		        					//	1);
+		        						  displayBuffer->getSampleData(channel,sourceSampleNumber),				// source
+		        						  1,					// sourceChannel
+										  displayGain);		// number of samples
+		        	
+		        
+		       	}
+	       }
+		}
+
+		//std::cout << screenBufferIndex << " " << displayBufferIndex << " " <<
+	    //         valuesNeeded << " " << valuesTaken << " " << nSamples << " " << ratio << std::endl;
+
+		//if (sourceSampleNumber >= 0 && destSampleNumber >= 0) {
+		screenBufferIndex += valuesTaken;
+		screenBufferIndex %= maxSamples;
+
+		displayBufferIndex = index;
+
+	}
+	//}
+	//lock->exitRead();
+
+	//std::cout << n << std::endl;
 }
 
 void LfpDisplayCanvas::renderOpenGL()
@@ -69,7 +150,7 @@ void LfpDisplayCanvas::renderOpenGL()
 			setViewport(i);
 			drawBorder(isSelected);
 			drawChannelInfo(i,isSelected);
-			//drawWaveform(i,isSelected);
+			drawWaveform(i,isSelected);
 		}	
 	}
 	drawScrollBars();
@@ -78,6 +159,23 @@ void LfpDisplayCanvas::renderOpenGL()
 void LfpDisplayCanvas::drawWaveform(int chan, bool isSelected)
 {
 	// draw the screen buffer for a given channel
+
+	float w = float(getWidth());
+
+	glBegin(GL_LINE_STRIP);
+
+	for (float i = 0; i < float(getWidth()); i++)
+	{
+		glVertex2f(i/w,*screenBuffer->getSampleData(chan, int(i))+0.5);
+	}
+
+	glEnd();
+
+	glBegin(GL_LINE_STRIP);
+	glVertex2f(float(screenBufferIndex)/w,0);
+	glVertex2f(float(screenBufferIndex)/w,1);
+	glEnd();
+
 }
 
 
@@ -169,42 +267,42 @@ int LfpDisplayCanvas::getTotalHeight()
 }
 
 
-void LfpDisplayCanvas::mouseDown(const MouseEvent& e) 
-{
+// void LfpDisplayCanvas::mouseDown(const MouseEvent& e) 
+// {
 
-	Point<int> pos = e.getPosition();
-	int xcoord = pos.getX();
+// 	Point<int> pos = e.getPosition();
+// 	int xcoord = pos.getX();
 
-	if (xcoord < getWidth()-getScrollBarWidth())
-	{
-		int chan = (e.getMouseDownY() + getScrollAmount())/(yBuffer+plotHeight);
+// 	if (xcoord < getWidth()-getScrollBarWidth())
+// 	{
+// 		int chan = (e.getMouseDownY() + getScrollAmount())/(yBuffer+plotHeight);
 
-			selectedChan = chan;
+// 			selectedChan = chan;
 
-		repaint();
-	}
+// 		repaint();
+// 	}
 
-	mouseDownInCanvas(e);
-}
+// 	mouseDownInCanvas(e);
+// }
 
-void LfpDisplayCanvas::mouseDrag(const MouseEvent& e) {mouseDragInCanvas(e);}
-void LfpDisplayCanvas::mouseMove(const MouseEvent& e) {mouseMoveInCanvas(e);}
-void LfpDisplayCanvas::mouseUp(const MouseEvent& e) 	{mouseUpInCanvas(e);}
-void LfpDisplayCanvas::mouseWheelMove(const MouseEvent& e, float a, float b) {mouseWheelMoveInCanvas(e,a,b);}
+// void LfpDisplayCanvas::mouseDrag(const MouseEvent& e) {mouseDragInCanvas(e);}
+// void LfpDisplayCanvas::mouseMove(const MouseEvent& e) {mouseMoveInCanvas(e);}
+// void LfpDisplayCanvas::mouseUp(const MouseEvent& e) 	{mouseUpInCanvas(e);}
+// void LfpDisplayCanvas::mouseWheelMove(const MouseEvent& e, float a, float b) {mouseWheelMoveInCanvas(e,a,b);}
 
-void LfpDisplayCanvas::resized()
-{
-	//screenBuffer = new AudioSampleBuffer(nChans, getWidth());
+// void LfpDisplayCanvas::resized()
+// {
+// 	//screenBuffer = new AudioSampleBuffer(nChans, getWidth());
 
-	// glClear(GL_COLOR_BUFFER_BIT);
+// 	// glClear(GL_COLOR_BUFFER_BIT);
 
-	// //int h = getParentComponent()->getHeight();
+// 	// //int h = getParentComponent()->getHeight();
 
-	// if (scrollPix + getHeight() > getTotalHeight() && getTotalHeight() > getHeight())
-	// 	scrollPix = getTotalHeight() - getHeight();
-	// else
-	// 	scrollPix = 0;
+// 	// if (scrollPix + getHeight() > getTotalHeight() && getTotalHeight() > getHeight())
+// 	// 	scrollPix = getTotalHeight() - getHeight();
+// 	// else
+// 	// 	scrollPix = 0;
 
-	// showScrollBars();
-	canvasWasResized();
-}
+// 	// showScrollBars();
+// 	canvasWasResized();
+// }

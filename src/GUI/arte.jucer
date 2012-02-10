@@ -157,6 +157,10 @@
         <FILE id="hGnGAjh" name="EventNode.cpp" compile="1" resource="0" file="Source/Processors/EventNode.cpp"/>
         <FILE id="dUtRN6" name="EventNode.h" compile="0" resource="0" file="Source/Processors/EventNode.h"/>
         <GROUP id="AqvwO6w" name="Editors">
+          <FILE id="OJKuulJ" name="SignalGeneratorEditor.cpp" compile="1" resource="0"
+                file="Source/Processors/Editors/SignalGeneratorEditor.cpp"/>
+          <FILE id="JhVBo3n" name="SignalGeneratorEditor.h" compile="0" resource="0"
+                file="Source/Processors/Editors/SignalGeneratorEditor.h"/>
           <FILE id="cTebrMp" name="LfpDisplayEditor.cpp" compile="1" resource="0"
                 file="Source/Processors/Editors/LfpDisplayEditor.cpp"/>
           <FILE id="ru5zWWN" name="LfpDisplayEditor.h" compile="0" resource="0"

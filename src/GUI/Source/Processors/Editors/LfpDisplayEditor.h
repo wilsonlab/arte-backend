@@ -17,10 +17,12 @@
 #include "../../UI/DataViewport.h"
 #include "../Visualization/DataWindow.h"
 #include "../LfpDisplayNode.h"
+#include "../Visualization/LfpDisplayCanvas.h"
 
 class FilterViewport;
 class DataViewport;
 class DataWindow;
+class LfpDisplayCanvas;
 
 class SelectorButton : public DrawableButton
 {
@@ -52,6 +54,8 @@ private:
 
 	SelectorButton* windowSelector;
 	SelectorButton* tabSelector;
+
+	ScopedPointer <LfpDisplayCanvas> canvas;
 
 	AudioSampleBuffer* streamBuffer;
 	MidiBuffer* eventBuffer;

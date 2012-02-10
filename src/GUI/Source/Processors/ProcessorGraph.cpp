@@ -199,9 +199,9 @@ void ProcessorGraph::updateConnections(Array<SignalChainTabButton*, CriticalSect
 			{
 
 				// add the source to the graph if it doesn't already exist
-				Node* node = getNodeForId(source->getNodeId());
-				if (node == 0)
-					addNode(source, source->getNodeId());
+				//Node* node = getNodeForId(source->getNodeId());
+				//if (node == 0)
+				//	addNode(source, source->getNodeId());
 
 				// add the connections to audio and record nodes if necessary
 				if (!(source->isSink() || source->isSource() ||
@@ -234,23 +234,27 @@ void ProcessorGraph::updateConnections(Array<SignalChainTabButton*, CriticalSect
 					{
 
 						// add dest node to graph if it doesn't already exist
-						node = getNodeForId(dest->getNodeId());
-						if (node == 0)
-							addNode(dest, dest->getNodeId());
+						//node = getNodeForId(dest->getNodeId());
+						//if (node == 0)
+						//	addNode(dest, dest->getNodeId());
+
+						std::cout << "     Connecting " << source->getName() << " channel ";
 
 						for (int chan = 0; chan < source->getNumOutputs(); chan++) 
 						{
 
 							// eventually need to account for splitter and mergers
-							std::cout << "     Connecting " << source->getName() <<
-							           " channel " << chan << " to " <<
-							           dest->getName() << std::endl;
+							
+							           std::cout << chan << " ";
+							           
 
 							addConnection(source->getNodeId(), // sourceNodeID
 							  	chan, // sourceNodeChannelIndex
 							   	dest->getNodeId(), // destNodeID
 							  	chan); // destNodeChannelIndex
 						}
+
+						std::cout << " to " << dest->getName() << std::endl;
 							
 							std::cout << "     Connecting " << source->getName() <<
 							           " event channel to " <<
@@ -293,9 +297,18 @@ GenericProcessor* ProcessorGraph::createProcessorFromDescription(String& descrip
 
 	if (processorType.equalsIgnoreCase("Sources")) {
 
-		processor = new SourceNode(subProcessorType);
+		if (subProcessorType.equalsIgnoreCase("Intan Demo Board")) {
+			processor = new SourceNode(subProcessorType);
+			std::cout << "Creating a new data source." << std::endl;
+		} else if (subProcessorType.equalsIgnoreCase("Signal Generator"))
+		{
+			processor = new SignalGenerator();
+			std::cout << "Creating a new signal generator." << std::endl;
+		}
+
+		
 		sendActionMessage("New source node created.");
-		std::cout << "Creating a new data source." << std::endl;
+		
 
 	} else if (processorType.equalsIgnoreCase("Filters")) {
 

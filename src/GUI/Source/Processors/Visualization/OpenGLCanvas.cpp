@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <math.h>
 
-OpenGLCanvas::OpenGLCanvas() :
+OpenGLCanvas::OpenGLCanvas() : //OpenGLComponent(OpenGLComponent::OpenGLType::openGLDefault, true),
 	scrollPix(0), scrollTime(0), scrollDiff(0), originalScrollPix(0), 
 	scrollBarWidth(15), PI(3.1415926), showScrollTrack(true)
 {
@@ -120,7 +120,7 @@ void OpenGLCanvas::drawScrollBars()
 		drawScrollBar(scrollBarBottom, scrollBarTop, alpha*0.5f);
 
 	} else {
-		stopTimer(); showScrollTrack = false;
+		//stopTimer(); showScrollTrack = false;
 	}
 }
 
@@ -152,7 +152,7 @@ void OpenGLCanvas::drawScrollBar(float y1, float y2, float alpha)
 void OpenGLCanvas::showScrollBars()
 {
 	scrollTime = timer->getMillisecondCounter();
-	startTimer(50);
+	startTimer(60);
 }
 
 void OpenGLCanvas::drawRoundedRect(float x,

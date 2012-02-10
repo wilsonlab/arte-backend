@@ -15,22 +15,31 @@
 #include "../../../JuceLibraryCode/JuceHeader.h"
 #include "OpenGLCanvas.h"
 #include "../../UI/Configuration.h"
-#include "../Editors/LfpDisplayEditor.h"
+#include "../LfpDisplayNode.h"
+
+class LfpDisplayNode;
 
 class LfpDisplayCanvas : public OpenGLCanvas
 
 {
 public: 
-	LfpDisplayCanvas(AudioSampleBuffer* streamBuffer, MidiBuffer* eventBuffer, Configuration* config, LfpDisplayEditor* editor);
+	LfpDisplayCanvas(LfpDisplayNode* n);
 	~LfpDisplayCanvas();
 	void newOpenGLContextCreated();
 	void renderOpenGL();
 
 private:
 
+	ReadWriteLock* lock;
+
 	int xBuffer, yBuffer;
 
-	LfpDisplayEditor* editor;
+	float sampleRate;
+	float timebase;
+	float displayGain;
+	//float ratio;
+
+	LfpDisplayNode* processor;
 	AudioSampleBuffer* displayBuffer;
 	ScopedPointer<AudioSampleBuffer> screenBuffer;
 	MidiBuffer* eventBuffer;
@@ -46,18 +55,20 @@ private:
 
 	void updateScreenBuffer();
 	int screenBufferIndex;
+	int displayBufferIndex;
+	int displayBufferSize;
 
 	int nChans, plotHeight, totalHeight;
 	int selectedChan;
 
 	int getTotalHeight();
 
-	void resized();
-	void mouseDown(const MouseEvent& e);
-	void mouseDrag(const MouseEvent& e);
-	void mouseMove(const MouseEvent& e);
-	void mouseUp(const MouseEvent& e);
-	void mouseWheelMove(const MouseEvent&, float, float);
+	// void resized();
+	// void mouseDown(const MouseEvent& e);
+	// void mouseDrag(const MouseEvent& e);
+	// void mouseMove(const MouseEvent& e);
+	// void mouseUp(const MouseEvent& e);
+	// void mouseWheelMove(const MouseEvent&, float, float);
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LfpDisplayCanvas);
 	

@@ -82,7 +82,7 @@ ListItem::ListItem(const String name_, const String parentName_, bool containsSu
        addSubItem (new ListItem ("Intan Demo Board",name,false));
        //addSubItem (new ListItem ("Custom FPGA",name,false));
        //addSubItem (new ListItem ("Network Stream",name,false));
-       //addSubItem (new ListItem ("Signal Generator",name,false));
+       addSubItem (new ListItem ("Signal Generator",name,false));
       // addSubItem (new ListItem ("File Reader",name,false));
     } else if (name.equalsIgnoreCase("Filters")) {
        addSubItem (new ListItem ("Bandpass Filter",name,false));

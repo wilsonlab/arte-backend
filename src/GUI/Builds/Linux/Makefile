@@ -72,6 +72,7 @@ OBJECTS := \
   $(OBJDIR)/FileReader_18023b0e.o \
   $(OBJDIR)/AudioNode_94606ff3.o \
   $(OBJDIR)/EventNode_95c842b7.o \
+  $(OBJDIR)/SignalGeneratorEditor_3223ac0a.o \
   $(OBJDIR)/LfpDisplayEditor_99d75351.o \
   $(OBJDIR)/SourceNodeEditor_8d813122.o \
   $(OBJDIR)/SplitterEditor_c2199b6c.o \
@@ -268,6 +269,11 @@ $(OBJDIR)/AudioNode_94606ff3.o: ../../Source/Processors/AudioNode.cpp
 $(OBJDIR)/EventNode_95c842b7.o: ../../Source/Processors/EventNode.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling EventNode.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/SignalGeneratorEditor_3223ac0a.o: ../../Source/Processors/Editors/SignalGeneratorEditor.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling SignalGeneratorEditor.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/LfpDisplayEditor_99d75351.o: ../../Source/Processors/Editors/LfpDisplayEditor.cpp

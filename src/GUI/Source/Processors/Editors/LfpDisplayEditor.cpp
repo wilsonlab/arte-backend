@@ -45,7 +45,7 @@ LfpDisplayEditor::LfpDisplayEditor (GenericProcessor* parentNode,
 									DataViewport* dv) 
 	: GenericEditor(parentNode, vp), dataViewport(dv),
 	  tabIndex(-1), dataWindow(0),
-	  streamBuffer(0), eventBuffer(0)
+	  streamBuffer(0), eventBuffer(0), canvas(0)
 
 {
 	desiredWidth = 275;
@@ -75,6 +75,7 @@ LfpDisplayEditor::LfpDisplayEditor (GenericProcessor* parentNode,
 	addAndMakeVisible(tabSelector);
 	tabSelector->setToggleState(false,false);
 
+
 }
 
 LfpDisplayEditor::~LfpDisplayEditor()
@@ -101,10 +102,19 @@ void LfpDisplayEditor::setBuffers(AudioSampleBuffer* asb, MidiBuffer* mb)
 
 void LfpDisplayEditor::buttonClicked(Button* button)
 {
+
+	if (canvas == 0)
+		canvas = new LfpDisplayCanvas((LfpDisplayNode*) getProcessor());
+
+
 	if (button == windowSelector)
 	{
 		if (dataWindow == 0) {
+
 			dataWindow = new DataWindow(windowSelector);
+
+			//if (canvas == 0)
+			//	canvas = new LfpDisplayCanvas((LfpDisplayNode*) getProcessor());
 
 			//dataWindow->setContentComponent(new LfpDisplayCanvas(streamBuffer,eventBuffer,getConfiguration(), this));
 
@@ -115,9 +125,11 @@ void LfpDisplayEditor::buttonClicked(Button* button)
 				tabIndex = -1;
 			}
 
-			//Component* p = (Component*) getProcessor();
+			//LfpDisplayNode* p = (LfpDisplayNode*) getProcessor();
 
-			dataWindow->setContentNonOwned((LfpDisplayNode*) getProcessor(), false);
+			dataWindow->setContentNonOwned(canvas, false);
+			//p->isVisible = true;
+
 			//getProcessor()->parentComponentChanged();
 			dataWindow->setVisible(true);
 			
@@ -131,6 +143,9 @@ void LfpDisplayEditor::buttonClicked(Button* button)
 			}
 
 			dataWindow->setVisible(windowSelector->getToggleState());
+
+			//LfpDisplayNode* p = (LfpDisplayNode*) getProcessor();
+			//p->isVisible = windowSelector->getToggleState();
 			//getProcessor()->parentComponentChanged();
 		}
 
@@ -150,13 +165,16 @@ void LfpDisplayEditor::buttonClicked(Button* button)
 			//tabIndex = dataViewport->addTabToDataViewport("LFP",new LfpDisplayCanvas(streamBuffer,eventBuffer,getConfiguration(), this));
 			//Component* p = (Component*) getProcessor();
 
-
-			tabIndex = dataViewport->addTabToDataViewport("LFP",(LfpDisplayNode*) getProcessor());
+			//LfpDisplayNode* p = (LfpDisplayNode*) getProcessor();
+			tabIndex = dataViewport->addTabToDataViewport("LFP",canvas);
+			//p->isVisible = true;
 
 		} else if (!tabSelector->getToggleState() && tabIndex > -1)
 		{
 			dataViewport->removeTab(tabIndex);
 			tabIndex = -1;
+			//LfpDisplayNode* p = (LfpDisplayNode*) getProcessor();
+			//p->isVisible = false;
 		}
 	}
 }
