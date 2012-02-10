@@ -45,7 +45,8 @@ LfpDisplayEditor::LfpDisplayEditor (GenericProcessor* parentNode,
 									DataViewport* dv) 
 	: GenericEditor(parentNode, vp), dataViewport(dv),
 	  tabIndex(-1), dataWindow(0),
-	  streamBuffer(0), eventBuffer(0), canvas(0)
+	  streamBuffer(0), eventBuffer(0), canvas(0),
+	  isPlaying(false)
 
 {
 	desiredWidth = 275;
@@ -90,6 +91,34 @@ LfpDisplayEditor::~LfpDisplayEditor()
 
 }
 
+void LfpDisplayEditor::enable()
+{
+	if (canvas != 0)
+		canvas->beginAnimation();
+	
+	isPlaying = true;
+}
+
+void LfpDisplayEditor::disable()
+{
+	if (canvas != 0)
+		canvas->endAnimation();
+
+	isPlaying = false;
+}
+
+void LfpDisplayEditor::updateNumInputs(int n)
+{
+	if (canvas != 0)
+		canvas->updateNumInputs(n);
+}
+
+void LfpDisplayEditor::updateSampleRate(float r) 
+{
+	if (canvas != 0)
+		canvas->updateSampleRate(r);
+}
+
 void LfpDisplayEditor::setBuffers(AudioSampleBuffer* asb, MidiBuffer* mb)
 {
 	std::cout << "Buffers are set!" << std::endl;
@@ -103,9 +132,11 @@ void LfpDisplayEditor::setBuffers(AudioSampleBuffer* asb, MidiBuffer* mb)
 void LfpDisplayEditor::buttonClicked(Button* button)
 {
 
-	if (canvas == 0)
+	if (canvas == 0) {
 		canvas = new LfpDisplayCanvas((LfpDisplayNode*) getProcessor());
-
+		if (isPlaying)
+			canvas->beginAnimation();
+	}
 
 	if (button == windowSelector)
 	{
@@ -182,8 +213,15 @@ void LfpDisplayEditor::buttonClicked(Button* button)
 void LfpDisplayEditor::sliderValueChanged (Slider* slider)
 {
 
-	if (slider == timebaseSlider)
-		getAudioProcessor()->setParameter(0,slider->getValue());
+	if (canvas != 0)
+	{
+		if (slider == timebaseSlider)
+			canvas->setParameter(0,slider->getValue());
+		else
+			canvas->setParameter(1,slider->getValue());
+	}
+
+	
 	//else 
 	//	getAudioProcessor()->setParameter(1,slider->getValue());
 

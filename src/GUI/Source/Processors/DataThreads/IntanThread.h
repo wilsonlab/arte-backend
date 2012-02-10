@@ -22,6 +22,8 @@ class IntanThread : public DataThread
 public:
 	IntanThread();
 	~IntanThread();
+
+	bool threadStarted() {return isTransmitting;}
 	
 private:
 
@@ -29,6 +31,8 @@ private:
 	int vendorID, productID;
 	int baudrate;
 	bool isTransmitting;
+
+	bool initializeUSB();
 	
 	unsigned char startCode, stopCode;
 	unsigned char buffer[240]; // should be 5 samples per channel

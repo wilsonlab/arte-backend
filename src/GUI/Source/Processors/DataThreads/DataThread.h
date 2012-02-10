@@ -31,6 +31,8 @@ public:
 
 	DataBuffer* dataBuffer;
 
+	virtual bool threadStarted() {return true;}
+
 };
 
 

@@ -418,40 +418,62 @@ void ProcessorGraph::setConfiguration(Configuration* c)
 }
 
 
-bool ProcessorGraph::enableSourceNodes() {
+bool ProcessorGraph::enableProcessors() {
 
 	updateConnections(filterViewport->requestSignalChain());
 
-	std::cout << "Enabling source nodes..." << std::endl;
+	std::cout << "Enabling processors..." << std::endl;
 
-	for (int n = 0; n < config->numDataSources(); n++) 
+	bool allClear;
+
+	for (int i = 0; i < getNumNodes(); i++)
 	{
-		GenericProcessor* sn = getSourceNode(config->getSource(n)->id);
-		if (sn != 0) {
-			std::cout << "Source name: " << sn->getName() << std::endl;
-			sn->enable();
+
+		Node* node = getNode(i);
+
+		if (node->nodeId != OUTPUT_NODE_ID)
+		{
+			GenericProcessor* p = (GenericProcessor*) node->getProcessor();
+			allClear = p->enable();
+
+			if (!allClear) {
+				sendActionMessage("Could not initialize acquisition. Is the Intan Board plugged in?");
+				return false;
+			}
 		}
 	}
-
-	prepareToPlay(44100.0, 2048);
-
+	
 	filterViewport->signalChainCanBeEdited(false);
+
+	sendActionMessage("Acquisition started.");
 
 	return true;
 }
 
-bool ProcessorGraph::disableSourceNodes() {
+bool ProcessorGraph::disableProcessors() {
 
-	std::cout << "Disabling source nodes..." << std::endl;
+	std::cout << "Disabling processors..." << std::endl;
 
-	for (int n = 0; n < config->numDataSources(); n++) 
+	bool allClear;
+
+	for (int i = 0; i < getNumNodes(); i++)
 	{
-		GenericProcessor* sn = getSourceNode(config->getSource(n)->id);
-		if (sn != 0)
-			sn->disable();
+		Node* node = getNode(i);
+		if (node->nodeId != OUTPUT_NODE_ID)
+		{
+			GenericProcessor* p = (GenericProcessor*) node->getProcessor();
+			allClear = p->disable();
+
+			if (!allClear) {
+				sendActionMessage("Could not stop acquisition.");
+				return false;
+			}
+		}
 	}
 
 	filterViewport->signalChainCanBeEdited(true);
+
+	sendActionMessage("Acquisition ended.");
 
 	return true;
 }

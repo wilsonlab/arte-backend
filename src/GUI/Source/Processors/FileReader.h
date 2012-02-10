@@ -35,8 +35,8 @@ public:
 	//AudioProcessorEditor* createEditor();
 	bool hasEditor() const {return true;}
 
-	void enable();
-	void disable();
+	bool enable();
+	bool disable();
 
 	bool isSource() {return true;}
 

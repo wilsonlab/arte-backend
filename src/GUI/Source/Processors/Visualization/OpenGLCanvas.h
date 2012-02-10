@@ -60,6 +60,9 @@ public:
 	virtual void mouseUp(const MouseEvent& e);
 	virtual void mouseWheelMove(const MouseEvent&, float, float);
 
+	void startCallbacks();
+	void stopCallbacks();
+
 	void canvasWasResized();
 
 	int getScrollAmount() {return scrollPix;};
@@ -75,6 +78,10 @@ protected:
 	virtual int getTotalHeight() = 0;
 
 private:
+
+	bool animationIsActive;
+
+	int refreshMs;
 
 	void loadFonts();
 

@@ -28,6 +28,14 @@ public:
 	void newOpenGLContextCreated();
 	void renderOpenGL();
 
+	void beginAnimation();
+	void endAnimation();
+
+	void updateNumInputs(int);
+	void updateSampleRate(float);
+
+	void setParameter(int, float);
+
 private:
 
 	ReadWriteLock* lock;
@@ -52,6 +60,8 @@ private:
 	void drawTicks();
 
 	bool checkBounds(int chan);
+
+
 
 	void updateScreenBuffer();
 	int screenBufferIndex;

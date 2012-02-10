@@ -45,7 +45,15 @@ public:
 
 	void sliderValueChanged (Slider* slider);
 
+	void enable();
+	void disable();
+
+	void updateNumInputs(int);
+	void updateSampleRate(float);
+
 private:	
+
+	bool isPlaying;
 	
 	ScopedPointer <DataWindow> dataWindow;
 

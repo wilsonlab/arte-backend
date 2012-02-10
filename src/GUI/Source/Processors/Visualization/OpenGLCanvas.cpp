@@ -14,7 +14,8 @@
 
 OpenGLCanvas::OpenGLCanvas() : //OpenGLComponent(OpenGLComponent::OpenGLType::openGLDefault, true),
 	scrollPix(0), scrollTime(0), scrollDiff(0), originalScrollPix(0), 
-	scrollBarWidth(15), PI(3.1415926), showScrollTrack(true)
+	scrollBarWidth(15), PI(3.1415926), showScrollTrack(true),
+	animationIsActive(false), refreshMs(60)
 {
 
 	loadFonts();
@@ -94,6 +95,18 @@ FTPixmapFont* OpenGLCanvas::getFont(String fontName)
 
 }
 
+void OpenGLCanvas::startCallbacks()
+{
+	startTimer(refreshMs);
+	animationIsActive = true;
+}
+
+void OpenGLCanvas::stopCallbacks()
+{
+	stopTimer();
+	animationIsActive = false;
+}
+
 
 void OpenGLCanvas::drawScrollBars()
 {
@@ -120,7 +133,10 @@ void OpenGLCanvas::drawScrollBars()
 		drawScrollBar(scrollBarBottom, scrollBarTop, alpha*0.5f);
 
 	} else {
-		//stopTimer(); showScrollTrack = false;
+		if (!animationIsActive) {
+			stopTimer(); 
+		}
+		showScrollTrack = false;
 	}
 }
 
@@ -152,7 +168,7 @@ void OpenGLCanvas::drawScrollBar(float y1, float y2, float alpha)
 void OpenGLCanvas::showScrollBars()
 {
 	scrollTime = timer->getMillisecondCounter();
-	startTimer(60);
+	startTimer(refreshMs);
 }
 
 void OpenGLCanvas::drawRoundedRect(float x,

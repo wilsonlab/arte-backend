@@ -54,6 +54,44 @@ void LfpDisplayCanvas::newOpenGLContextCreated()
 
 }
 
+void LfpDisplayCanvas::beginAnimation()
+{
+	std::cout << "Beginning animation." << std::endl;
+
+	displayBufferIndex = 0;
+	screenBufferIndex = 0;
+	
+	startCallbacks();
+}
+
+void LfpDisplayCanvas::endAnimation()
+{
+	std::cout << "Ending animation." << std::endl;
+	stopCallbacks();
+}
+
+void LfpDisplayCanvas::updateNumInputs(int n)
+{
+	nChans = n;
+	//sampleRate = processor->getSampleRate();
+}
+
+void LfpDisplayCanvas::updateSampleRate(float r)
+{
+	sampleRate = r;
+	displayBufferSize = displayBuffer->getNumSamples();
+	std::cout << "Display canvas updating sample rate to " << r << std::endl;
+}
+
+void LfpDisplayCanvas::setParameter(int param, float val)
+{
+	if (param == 0)
+		timebase = val;
+	else
+		displayGain = val;
+	
+}
+
 void LfpDisplayCanvas::updateScreenBuffer()
 {
 	// copy new samples from the displayBuffer into the screenBuffer
@@ -70,6 +108,7 @@ void LfpDisplayCanvas::updateScreenBuffer()
 
 	float ratio = sampleRate * timebase / float(getWidth());
 
+	// this number is crucial: this method should be updated:
 	int valuesNeeded = nSamples / int(ratio) - 1;
 
 	//lock->enterRead();
@@ -171,6 +210,7 @@ void LfpDisplayCanvas::drawWaveform(int chan, bool isSelected)
 
 	glEnd();
 
+	glColor4f(1.0, 1.0, 0.1, 1.0);
 	glBegin(GL_LINE_STRIP);
 	glVertex2f(float(screenBufferIndex)/w,0);
 	glVertex2f(float(screenBufferIndex)/w,1);

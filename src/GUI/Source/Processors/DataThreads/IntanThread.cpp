@@ -20,37 +20,78 @@ IntanThread::IntanThread() : DataThread(),
 			isTransmitting(false)
 
 {
-	ftdi_init(&ftdic);
-   	ftdi_set_interface(&ftdic, INTERFACE_ANY);
-	ftdi_usb_open(&ftdic, vendorID, productID);
-	ftdi_set_baudrate(&ftdic, baudrate);
 
-	std::cout << "FTDI interface initialized." << std::endl;
+	 dataBuffer = new DataBuffer(16,4096);
 
-	ftdi_write_data(&ftdic, &startCode, 1);
+	if (initializeUSB())
+	{
+    	std::cout << "FTDI interface initialized." << std::endl;
+		ftdi_write_data(&ftdic, &startCode, 1);
+		startThread();
+		isTransmitting = true;
+	}
 
-	dataBuffer = new DataBuffer(16,4096);
-	//dataBuffer = new DataBuffer(16, 4096);
-
-	startThread();
-
-	isTransmitting = true;
+	
 }
 
 IntanThread::~IntanThread() {
 
 	stopThread(500);
 
-	ftdi_write_data(&ftdic, &stopCode, 1);
-	unsigned char buf[4097]; // has to be bigger than the on-chip buffer
-	ftdi_read_data(&ftdic, buf, sizeof(buf));
+	if (isTransmitting) {
+		ftdi_write_data(&ftdic, &stopCode, 1);
+		unsigned char buf[4097]; // has to be bigger than the on-chip buffer
+		ftdi_read_data(&ftdic, buf, sizeof(buf));
 
-	ftdi_usb_close(&ftdic);
-    ftdi_deinit(&ftdic);
-	std::cout << "FTDI interface destroyed." << std::endl;
+		ftdi_usb_close(&ftdic);
+	    ftdi_deinit(&ftdic);
+		std::cout << "FTDI interface destroyed." << std::endl;
+	}
 
-	delete dataBuffer;
-	dataBuffer = 0;
+	deleteAndZero(dataBuffer);
+}
+
+bool IntanThread::initializeUSB()
+{
+	int return_value;
+
+	 // Step 1: initialise the ftdi_context:
+	if (ftdi_init(&ftdic) < 0) {// -1 = couldn't allocate read buffer
+                               // -2 = couldn't allocate struct buffer
+        fprintf(stderr, "ftdi_init failed\n");
+        return false;
+    } else {
+        std::cout << "FTDI context initialized." << std::endl;
+    }
+
+	// Step 2: open USB device
+    // -3 = device not found
+    // -8 = wrong permissions
+   	if ((return_value = ftdi_usb_open(&ftdic, vendorID, productID)) < 0)
+    {
+        fprintf(stderr, "unable to open FTDI device: %d (%s)\n",
+                        return_value, 
+                        ftdi_get_error_string(&ftdic));
+        return false;
+    } else {
+        std::cout << "USB connection opened." << std::endl;
+    }
+
+	// Step 3: set the baud rate
+	if ((return_value = ftdi_set_baudrate(&ftdic, baudrate)) < 0)
+    {
+        fprintf(stderr, "unable to set baud rate: %d (%s)\n",
+                        return_value, 
+                        ftdi_get_error_string(&ftdic));
+        return false;
+    } else {
+        std::cout << "Baud rate set to 115200" << std::endl;
+    }
+
+
+
+	return true;
+
 }
 
 

@@ -43,6 +43,9 @@ public:
 	void setNumInputs(int inputs);
 	void setSampleRate(float r);
 
+	bool enable();
+	bool disable();
+
 	void prepareToPlay(double, int);
 
 	AudioSampleBuffer* getDisplayBufferAddress() {return displayBuffer;}
@@ -58,10 +61,10 @@ private:
 	DataViewport* dataViewport;
 
 	AudioSampleBuffer* displayBuffer;
-	AudioSampleBuffer* screenBuffer;
+	//AudioSampleBuffer* screenBuffer;
 	MidiBuffer* eventBuffer;
 
-	int displayBufferIndex, screenBufferIndex;
+	int displayBufferIndex;//, screenBufferIndex;
 
 	int repaintInterval, repaintCounter;
 

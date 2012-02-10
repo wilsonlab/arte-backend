@@ -57,7 +57,7 @@ void FileReader::prepareToPlay (double sampleRate_, int estimatedSamplesPerBlock
 	
 }
 
-void FileReader::enable () {
+bool FileReader::enable () {
 
 	File file = File("./data_stream_16ch");
 	input = file.createInputStream();
@@ -65,13 +65,17 @@ void FileReader::enable () {
 	
 	std::cout << "File Reader received enable signal." << std::endl;
 
+	return true;
+
 }
 
-void FileReader::disable() {
+bool FileReader::disable() {
 
 	deleteAndZero(input);
 	
 	std::cout << "File reader received disable signal." << std::endl;
+
+	return true;
 
 }
 

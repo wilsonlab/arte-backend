@@ -81,13 +81,13 @@ void SignalGenerator::prepareToPlay (double sampleRate_, int estimatedSamplesPer
 	//std::cout << "Prepare to play: " << std::endl;
 }
 
-void SignalGenerator::enable () {
+bool SignalGenerator::enable () {
 	
 	std::cout << "Signal generator received enable signal." << std::endl;
 
 }
 
-void SignalGenerator::disable() {
+bool SignalGenerator::disable() {
 	
 	std::cout << "Signal generator received disable signal." << std::endl;
 

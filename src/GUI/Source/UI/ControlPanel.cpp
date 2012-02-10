@@ -250,7 +250,7 @@ void ControlPanel::buttonClicked(Button* button)
 	{
 
 		if (!audio->callbacksAreActive()) {
-			if (graph->enableSourceNodes())
+			if (graph->enableProcessors())
 				audio->beginCallbacks();
 			else
 				playButton->setToggleState(false, false);
@@ -260,7 +260,7 @@ void ControlPanel::buttonClicked(Button* button)
 
 		if (audio->callbacksAreActive()) {
 			audio->endCallbacks();
-			graph->disableSourceNodes();
+			graph->disableProcessors();
 			cpuMeter->updateCPU(0.0f);
 		}
 

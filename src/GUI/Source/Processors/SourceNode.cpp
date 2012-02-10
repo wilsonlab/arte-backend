@@ -130,13 +130,21 @@ AudioProcessorEditor* SourceNode::createEditor()
 	
 //}
 
-void SourceNode::enable() {
+bool SourceNode::enable() {
 	
 	std::cout << "Source node received enable signal" << std::endl;
 
+	bool return_code = true;
+
 	if (getName().equalsIgnoreCase("Intan Demo Board")) {
+		
 		dataThread = new IntanThread();
 		inputBuffer = dataThread->getBufferAddress();
+		return_code = dataThread->threadStarted();
+
+		if (!return_code)
+			deleteAndZero(dataThread);
+
 	} else if (getName().equalsIgnoreCase("Custom FPGA")) {
 		dataThread = new FPGAThread();
 		inputBuffer = dataThread->getBufferAddress();
@@ -145,9 +153,11 @@ void SourceNode::enable() {
 		inputBuffer = dataThread->getBufferAddress();
 	}
 
+	return return_code;
+
 }
 
-void SourceNode::disable() {
+bool SourceNode::disable() {
 	
 	std::cout << "Source node received disable signal" << std::endl;
 
@@ -155,6 +165,8 @@ void SourceNode::disable() {
 		delete dataThread;
 		dataThread = 0;
 	}
+
+	return true;
 }
 
 

@@ -16,7 +16,7 @@ LfpDisplayNode::LfpDisplayNode()
 	  timebase(1000), displayGain(1), parameterChanged(true), isVisible(false),
 	  xBuffer(10), yBuffer(10), 
 	  plotHeight(60), selectedChan(-1),
-	  displayBufferIndex(0), screenBufferIndex(0),
+	  displayBufferIndex(0),// screenBufferIndex(0),
 	  repaintInterval(10), repaintCounter(0)
 
 {
@@ -25,7 +25,7 @@ LfpDisplayNode::LfpDisplayNode()
 	lock = new ReadWriteLock();
 
 	displayBuffer = 0;
-	screenBuffer = 0; //new AudioSampleBuffer(16, 10000);
+	//screenBuffer = 0; //new AudioSampleBuffer(16, 10000);
 
 	//setNumInputs(16);
 	//setSampleRate(10000.0);
@@ -39,8 +39,8 @@ LfpDisplayNode::~LfpDisplayNode()
 	if (displayBuffer != 0)
 		deleteAndZero(displayBuffer);
 	
-	if (screenBuffer != 0)
-		deleteAndZero(screenBuffer);
+	//if (screenBuffer != 0)
+	//	deleteAndZero(screenBuffer);
 
 	deleteAndZero(eventBuffer);
 	deleteAndZero(lock);
@@ -74,9 +74,12 @@ void LfpDisplayNode::setNumInputs(int inputs)
 	std::cout << "Setting inputs. Samples: " << nSamples << ", Inputs: " << nInputs << std::endl;
 
 	setPlayConfigDetails(getNumInputs(), 0, 44100.0, 128);
-	
+
 	if (nSamples > 0 && nInputs > 0)
 		resizeBuffer();
+
+	LfpDisplayEditor* editor = (LfpDisplayEditor*) getEditor();
+	editor->updateNumInputs(inputs);
 }
 
 void LfpDisplayNode::setSampleRate(float r)
@@ -87,6 +90,9 @@ void LfpDisplayNode::setSampleRate(float r)
 	std::cout << "Setting sample rate. Samples: " << nSamples << ", Inputs: " << nInputs << std::endl;
 
 	resizeBuffer();
+
+	LfpDisplayEditor* editor = (LfpDisplayEditor*) getEditor();
+	editor->updateSampleRate(r);
 }
 
 void LfpDisplayNode::resizeBuffer()
@@ -99,29 +105,43 @@ void LfpDisplayNode::resizeBuffer()
 	if (displayBuffer != 0)
 		deleteAndZero(displayBuffer);
 
-	if (screenBuffer != 0)
-		deleteAndZero(screenBuffer);
+	//if (screenBuffer != 0)
+		//deleteAndZero(screenBuffer);
 
 	displayBuffer = new AudioSampleBuffer(nInputs, nSamples);
-	screenBuffer = new AudioSampleBuffer(nInputs, 10000);
+	//screenBuffer = new AudioSampleBuffer(nInputs, 10000);
 
+}
+
+bool LfpDisplayNode::enable()
+{
+	LfpDisplayEditor* editor = (LfpDisplayEditor*) getEditor();
+	editor->enable();
+	return true;
+}
+
+bool LfpDisplayNode::disable()
+{
+	LfpDisplayEditor* editor = (LfpDisplayEditor*) getEditor();
+	editor->disable();
+	return true;
 }
 
 void LfpDisplayNode::setParameter (int parameterIndex, float newValue)
 {
 	//std::cout << "Message received." << std::endl;
 
-	if (parameterIndex == 0) {
-		timebase = newValue;
-		screenBuffer->clear();
-		screenBufferIndex = 0;
-	} else {
-		displayGain = newValue;
-		screenBuffer->clear();
-		screenBufferIndex = 0;
-	}
+	// if (parameterIndex == 0) {
+	// 	timebase = newValue;
+	// 	//screenBuffer->clear();
+	// 	//screenBufferIndex = 0;
+	// } else {
+	// 	displayGain = newValue;
+	// 	screenBuffer->clear();
+	// 	screenBufferIndex = 0;
+	// }
 
-	parameterChanged = true;
+	// parameterChanged = true;
 
 }
 

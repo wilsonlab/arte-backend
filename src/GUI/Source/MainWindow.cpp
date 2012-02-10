@@ -62,7 +62,7 @@ void MainWindow::closeButtonPressed()
 { 
     if (audioComponent->callbacksAreActive()) {
       audioComponent->endCallbacks();
-      processorGraph->disableSourceNodes();
+      processorGraph->disableProcessors();
     }
 
     JUCEApplication::getInstance()->systemRequestedQuit();

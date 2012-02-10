@@ -35,8 +35,8 @@ public:
 
 	void removeProcessor(GenericProcessor* processor);
 
-	bool enableSourceNodes();
-	bool disableSourceNodes();
+	bool enableProcessors();
+	bool disableProcessors();
 
 	RecordNode* getRecordNode();
 	GenericProcessor* getSourceNode(int snID);

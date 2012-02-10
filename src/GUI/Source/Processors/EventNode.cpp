@@ -51,16 +51,16 @@ void EventNode::prepareToPlay (double sampleRate_, int estimatedSamplesPerBlock)
 	//std::cout << "Filter node preparing." << std::endl;
 }
 
-void EventNode::enable() 
-{
+//void EventNode::enable() 
+//{
 	//prepareToPlay();
-}
+//}
 
 
-void EventNode::disable()
-{
+//void EventNode::disable()
+//{
 	//releaseResources();
-}
+//}
 
 void EventNode::releaseResources() 
 {	

@@ -195,12 +195,14 @@ void FilterViewport::addEditor (GenericEditor* editor)
 
 void FilterViewport::deleteNode (GenericEditor* editor) {
 
-    indexOfMovingComponent = editorArray.indexOf(editor);
-    editor->setVisible(false);
+    if (canEdit) {
+        indexOfMovingComponent = editorArray.indexOf(editor);
+        editor->setVisible(false);
    
-    updateVisibleEditors(editor, 3);
+        updateVisibleEditors(editor, 3);
     
-    graph->removeProcessor((GenericProcessor*) editor->getProcessor());
+        graph->removeProcessor((GenericProcessor*) editor->getProcessor());
+    }
 
 }
 
