@@ -104,7 +104,7 @@ class TetrodePlot{
 	int writeIdx;
 	uint32_t curSeqNum;
 	
-	static const int MAX_N_PROJ_POINTS = 5e4;
+	static const int MAX_N_PROJ_POINTS = 5e3;
 	int nProjPoints;
 	int newIdx;
 

@@ -2,13 +2,15 @@
 #define GLUT_WINDOW_H_
 
 #define GL_GLEXT_PROTOTYPES
-#include <glew.h> // Include the GLEW header file
+
 
 #if defined(__linux__)
+	#include <GL/glew.h> // Include the GLEW header file
 	#include <GL/glut.h>
 	#include <GL/glu.h>
 	#include <GL/glext.h>
 #else // assume OS X
+	#include <glew.h> // Include the GLEW header file		
 	#include <GLUT/glut.h>
 	#include <OpenGL/glu.h>
 	#include <OpenGL/glext.h>

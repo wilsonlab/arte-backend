@@ -4,6 +4,10 @@
 
 #if defined(__linux__)
 	#include <GL/glut.h>
+	#include <GL/glut.h>
+	#include <GL/glu.h>
+	#include <GL/glext.h>
+
 #else // assume OS X
 	#include <GLUT/glut.h>
 	#include <OpenGL/glu.h>
@@ -12,6 +16,7 @@
 
 #include <cstring>
 #include <iostream>
+#include <stdio.h>
 
 void checkGlError();
 void setViewportWithRange(int x,int y,int w, int h,int xMin,int xMax,int yMin,int yMax);
