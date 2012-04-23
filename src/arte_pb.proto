@@ -1,0 +1,19 @@
+// Main arte packet.  Since google protobufs isn't introspective
+// we wrap all possible packets (data and commands) into a main
+// packet type: Arte_pb
+//
+// Compile using: protoc arte_pb.proto --cpp_out=./
+
+message ArtePb{
+
+	optional uint64 timestamp = 1;
+	
+	optional ArteSpikePb        arte_spike_pb        = 2;
+	optional ArteLfpPb          arte_lfp_pb          = 3;
+	optional ArteCommand        arte_command_pb      = 4;
+	optional ArteEventStringPb  arte_event_string_pb = 5;
+
+	optional ArteRawBufferPb    arte_raw_buffer_pb   = 6;
+	optional ArtePosPb          arte_pos_pb          = 7;
+}
+
