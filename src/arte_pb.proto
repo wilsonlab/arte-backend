@@ -17,3 +17,6 @@ message ArtePb{
 	optional ArtePosPb          arte_pos_pb          = 7;
 }
 
+message ArteSpikePB{
+
+	optional 
