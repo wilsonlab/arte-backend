@@ -4,7 +4,7 @@
 //
 // Compile using: protoc arte_pb.proto --cpp_out=./
 
-import "src/arte_command.proto";
+import "arte_command.proto";
 
 
 message ArteSpikePb{

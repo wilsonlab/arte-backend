@@ -1,11 +1,12 @@
 // this will be the arte main loop
 #include "global_defs.h"
-#include <arte.h>
-#include <arteopt.h>
+#include "arte.h"
+#include "arteopt.h"
 #include <iostream>
 #include <boost/foreach.hpp>
 #include <util.h>
 #include <neural_daq.h>
+#include "arte_pb.pb.h"
 
 int main(int argc, char *argv[]){
 
