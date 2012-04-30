@@ -5,7 +5,6 @@
 #include <string>
 #include <boost/property_tree/ptree.hpp>
 #include "global_defs.h"
-#include "neural_daq.h"
 
 #ifndef CBUF
 #define CBUF(X,L) (L+X)%L // assumes X >= -L

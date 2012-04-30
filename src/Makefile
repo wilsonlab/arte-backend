@@ -12,7 +12,9 @@ BACKEND_SRC = $(SRCS)arte.cpp $(SRCS)filt.cpp $(SRCS)neural_daq.cpp $(SRCS)trode
 
 BACKEND_OBJ = $(SRCS)process_command.o $(SRCS)arteopt.o  $(SRCS)arte_pb.pb.o $(SRCS)arte_command.pb.o $(SRCS)filt.o $(SRCS)neural_daq.o $(SRCS)trode.o $(SRCS)util.o $(SRCS)lfp_bank.o $(SRCS)filtered_buffer.o $(SRCS)filter_fun.o $(SRCS)timer.o  $(SRCS)netcom.o $(SRCS)datapacket.o $(SRCS)arte.o
 
-CFLAGS = -pthread -I /usr/local/boost_1_45_0/ -I $(SRCS) -D__STDC_LIMIT_MACROS -O3
+# two paths to boost - seems following the directions can lead to installation in these two different places
+# but.. this does't seem to work, I'm getting errors
+CFLAGS = -pthread -include /usr/local/boost_1_45_0/ -include /usr/local/boost-trunk/ -I $(SRCS) -D__STDC_LIMIT_MACROS -O3
 
 OBJS = src/
 RM = rm
@@ -28,12 +30,12 @@ EXE = $(BUILD_DIR)arte_backend
 # reminder, < is the first item in the dependencies list
 #           and @ is the left side of  target:dep; ^ is the right side
 %.o : %.cpp
-	$(CC) $(CFLAGS) -I /usr/local/boost_1_45_0/ -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 %.o : %.c
-	$(CC) $(CFLAGS) -I /usr/local/boost_1_45_0/ -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 %.o : %.cc
-	$(CC) $(CFLAGS) -I /usr/local/boost_1_45_0/ -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 %.cc : %.proto
 	$protoc $< --cpp_out=$(SRCS)
