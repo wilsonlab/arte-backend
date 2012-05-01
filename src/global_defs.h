@@ -5,7 +5,6 @@
 #include <memory.h>
 #include <string>
 #include <iostream>
-//#include <NIDAQmx.h>
 #include <map>
 #include <stdint.h>
 

@@ -6,15 +6,15 @@ LD = $(CC)
 # this post (http://stackoverflow.com/questions/3910054/makefile-conditional-include)
 LDFLAGS = -ldl -lnidaqmx -lprotobuf
 BUILD_DIR = build/
-
+NIDAQMX_PATH = /usr/local/include/NIDAQmx.h
 SRCS = src/
 BACKEND_SRC = $(SRCS)arte.cpp $(SRCS)filt.cpp $(SRCS)neural_daq.cpp $(SRCS)trode.cpp $(SRCS)util.cpp $(SRCS)lfp_bank.cpp $(SRCS)filtered_buffer.cpp $(SRCS)filter_fun.cpp $(SRCS)timer.cpp $(SRCS)process_command.cpp $(SRCS)netcom.cpp $(SRCS)datapacket.cpp $(SRCS)arte_pb.pb.cc $(SRCS)arte_command.pb.cc $(SRCS)apteopt.cpp
 
 BACKEND_OBJ = $(SRCS)process_command.o $(SRCS)arteopt.o  $(SRCS)arte_pb.pb.o $(SRCS)arte_command.pb.o $(SRCS)filt.o $(SRCS)neural_daq.o $(SRCS)trode.o $(SRCS)util.o $(SRCS)lfp_bank.o $(SRCS)filtered_buffer.o $(SRCS)filter_fun.o $(SRCS)timer.o  $(SRCS)netcom.o $(SRCS)datapacket.o $(SRCS)arte.o
 
-# two paths to boost - seems following the directions can lead to installation in these two different places
-# but.. this does't seem to work, I'm getting errors
-CFLAGS = -pthread -include /usr/local/boost_1_45_0/ -include /usr/local/boost-trunk/ -I $(SRCS) -D__STDC_LIMIT_MACROS -O3
+# path to boost library added to 
+CFLAGS = -pthread -I $(SRCS) -D__STDC_LIMIT_MACROS -O3 -I /usr/local/include/ $(wildcard /usr/local/boost_1_45_0/) -I $(wildcard /usr/local/boost-trunk/)
+
 
 OBJS = src/
 RM = rm
@@ -26,9 +26,13 @@ EXE = $(BUILD_DIR)arte_backend
 # list only those we use
 .SUFFIXES: .o .c .cpp .cc .proto
 
-# define a suffix rule for .cpp -> .o, .cc -> .o, .proto -> .cc
-# reminder, < is the first item in the dependencies list
-#           and @ is the left side of  target:dep; ^ is the right side
+# conditionally pass the USE_NIDAQMX to the preprocessor if NADAQMX_PATH file exists, also include the library
+ifeq ($(wildcard $(NIDAQMX_PATH)),)
+	LDFLAGS := $(LDFLAGS) -lnidaqmx
+	CFLAGS := $(CFLAGS) -DUSE_NIDAQMX
+endif
+
+# < first item in dependencies list, @ target, ^ dependencies list
 %.o : %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
@@ -46,6 +50,8 @@ all : $(EXE)
 
 $(BUILD_DIR)arte_backend : $(BACKEND_OBJ)
 	$(LD)  -o $@  $(LDFLAGS) $(BACKEND_OBJ)
+
+
 
 .PHONY : clean
 
