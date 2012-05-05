@@ -8,6 +8,20 @@
 // -NIDAQmxTimer  counter or timer, using M-series multifunction National Instruments card
 // -PCI05Timer    counter or timer, using PCI-05 coutner card
 
+// clock source needs to be able to:
+//  - start/stop generating pulses
+//  - set/get pulse rate 
+//  - log system time when timer is started (maybe also at regular intervals)
+//
+// counter needs to be able to:
+//  - start/stop counting pulses (if hardware counter)
+//  - reset the count
+//  - have an offset? 
+//  - respond to requests for the current count
+//  - cache last count?
+//  - report count in raw units, or in seconds
+//  - know the pulse rate (real if hardware counter, imagined if sys clock)
+
 #include "arte_command.pb.h"
 
 enum timer_state_t {TIMER_UNINITIALIZED, TIMER_STOPPED, TIMER_ARMED, TIMER_RUNNING};
@@ -22,12 +36,11 @@ class aTimer {
   stop();
   int get_timer_id();
   set_timer_id(int newID);
-  uint32_t get_count();
-  uint32_t get_timestamp();
-  double get_timestamp_double();
+  virtual uint32_t get_count();
+  virtual uint32_t get_timestamp();
+  virtual double get_timestamp_double();
   double get_arte_time_to_secs_coeff();
   void   set_arte_time_to_secs_coeff(double new_coeff);
-  increment();
   reset_count();
   int tic();
   uint32_t toc();
