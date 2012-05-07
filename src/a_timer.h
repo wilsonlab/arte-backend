@@ -26,30 +26,35 @@
 
 enum timer_state_t {TIMER_UNINITIALIZED, TIMER_STOPPED, TIMER_ARMED, TIMER_RUNNING};
 
+
 class aTimer {
 
  public:
   aTimer();                                 // constructor
   virtual void init_as_clock_source() = 0;  // 
   virtual void init_as_counter() = 0;
-  start();
-  stop();
+  virtual void start_counting();
+  virtual void stop_counting();
+  virtual void reset_count();
+  virtual void start_emitting();
+  virtual void stop_emitting();
   int get_timer_id();
   set_timer_id(int newID);
   virtual uint32_t get_count();
-  virtual uint32_t get_timestamp();
-  virtual double get_timestamp_double();
+  virtual double get_timestamp_secs();
   double get_arte_time_to_secs_coeff();
   void   set_arte_time_to_secs_coeff(double new_coeff);
-  reset_count();
+
   int tic();
   uint32_t toc();
+  double   toc_secs();
   int process_command(ArteCommand& the_command);
   
  private:
   int id;
   bool is_clock_source, is_counter;
-  timer_state_t timer_state;
+  timer_state_t emitter_state;
+  timer_state_t counter_state;
   uint32_t last_retrieved_count;
   uint32_t tic_time;
   double arte_time_to_secs_coeff;
