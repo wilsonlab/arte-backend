@@ -1,0 +1,1 @@
+g++ test_system_timer.cpp ../system_clock_timer.cpp ../a_timer.cpp -I ../ -o test_system_timer

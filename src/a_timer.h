@@ -22,6 +22,9 @@
 //  - report count in raw units, or in seconds
 //  - know the pulse rate (real if hardware counter, imagined if sys clock)
 
+#ifndef A_TIMER_H_
+#define A_TIMER_H_
+
 #include "arte_command.pb.h"
 
 enum timer_state_t {TIMER_UNINITIALIZED, TIMER_STOPPED, TIMER_ARMED, TIMER_RUNNING};
@@ -31,26 +34,34 @@ class aTimer {
 
  public:
   aTimer();                                 // constructor
+  ~aTimer();
   virtual void init_as_clock_source() = 0;  // 
   virtual void init_as_counter() = 0;
-  virtual void start_counting();
-  virtual void stop_counting();
-  virtual void reset_count();
-  virtual void start_emitting();
-  virtual void stop_emitting();
+
+  virtual void start_counting() = 0;
+  virtual void stop_counting() = 0;
+  virtual void reset_count() = 0;
+  virtual void start_emitting() = 0;
+  virtual void stop_emitting() = 0; 
+
   int get_timer_id();
-  set_timer_id(int newID);
-  virtual uint32_t get_count();
-  virtual double get_timestamp_secs();
+  void set_timer_id(int newID);
+
+  virtual uint32_t get_count() = 0;
+  virtual double get_timestamp_secs() = 0;
+
+  void print_state();
+
   double get_arte_time_to_secs_coeff();
   void   set_arte_time_to_secs_coeff(double new_coeff);
 
-  int tic();
+  void tic();
   uint32_t toc();
   double   toc_secs();
+
   int process_command(ArteCommand& the_command);
   
- private:
+ protected:
   int id;
   bool is_clock_source, is_counter;
   timer_state_t emitter_state;
@@ -58,4 +69,7 @@ class aTimer {
   uint32_t last_retrieved_count;
   uint32_t tic_time;
   double arte_time_to_secs_coeff;
+
 };
+
+#endif
