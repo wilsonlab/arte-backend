@@ -6,7 +6,7 @@ label_list = []
 list_end = len(sys.argv) - 1
 beg_label_index = len(sys.argv)
 label_list_end = len(sys.argv) - 1
-trode_label_prefix = "tt"
+trode_label_prefix = ""
 
 for i in range(len(sys.argv)):
    if sys.argv[i] == '-trodenames':
@@ -25,7 +25,15 @@ for i in range(len(sys.argv)):
 for i in range(len(sys.argv)):
    if sys.argv[i] == "-trodelabelprefix":
       trode_label_prefix = sys.argv[i+1]
+   else:
+      trode_label_prefix = ""
 
+for i in range(len(sys.argv)):
+   print(sys.argv[i])
+   if sys.argv[i] == "-i":
+      input_filename = sys.argv[i+1]
+#   else:
+#      input_filename = "artedate.data"
 
 for i in range(beg_index, list_end):
    num_list.append(int(sys.argv[i]))
@@ -53,7 +61,7 @@ for i in dir_list:
 
 for i in range(len(num_list)):
     cmd_path = "~/programming/arte-ephys/src/extract/arte_to_mwl"
-    final_cmd = cmd_path + " -i raw/artedate.data -o ./" + (dir_list[i]) + "/" + (dir_list[i]) + ".tt -trodename " + str(num_list[i])
+    final_cmd = cmd_path + " -i " + input_filename + " -o ./" + (dir_list[i]) + "/" + (dir_list[i]) + ".tt -trodename " + str(num_list[i])
     spikeparms_cmd = "spikeparms2 ./" +  (dir_list[i]) + "/" + (dir_list[i]) + ".tt -tetrode -binary -parms t_px,t_py,t_pa,t_pb,t_maxwd,t_maxht,time -pos *.p -o " + (dir_list[i]) + "/" + (dir_list[i]) + ".pxyabw"
     os.system(final_cmd)
     os.system(spikeparms_cmd)

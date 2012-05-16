@@ -4,12 +4,12 @@
 // isToy option makes this a dummy counter for testing of other arte classes
 #define ISTOY true
 
-#include <NIDAQmx.h>
 #include <stdint.h>
 #include <string>
 #include "netcom.h"
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/property_tree/exceptions.hpp>
+#include <NIDAQmx.h>
 
 class Timer {
 
@@ -22,11 +22,6 @@ class Timer {
   int initDAQCounterTask();
   int initDAQSyncTask();
   int armCounterTask();
- 
-  //naming syntax required for the  NIDaqMx signalChange
-//  int32 CVICALLBACK digitalChangeCallback(TaskHandle taskHandle, int32 signalID, void *callbackData);
-
- //Variables
 
   char niDev[256];
   char niCtr[256];
