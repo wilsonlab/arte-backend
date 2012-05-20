@@ -21,12 +21,29 @@ void DoOpenDevices()
     exit(2);
   }
 
-  strcpy(str, "/de/ctr05/ctr0_01");
+  // input counter
+  strcpy(str, "/dev/ctr05/ctr0_01");
   if ((fdctr_1 = open(str, CTR05_COUNTER)) < 0) {
     perror(str);
     printf("ctr05_timer error:\n");
     printf("error opening device %s\n",str);
     exit(2);
+  }
+
+  // 
+  strcpy(str, "/dev/ctr05/ctr0_02");
+  if ((fdctr_2 = open(str, CTR05_COUNTER)) < 0) {
+    perror(str);
+    printf("ctr05_timer_error:\n");
+    printf("error opening device %s",str);
+  }
+
+  // frequency generator
+  strcpy(str, "/dev/ctr05/ctr0_03");
+  if ((fdctr_3 = open(str, CTR05_FREQUENCY)) < 0) {
+    perror(str);
+    perror(str);
+    printf("error opening device %s\n", str);
   }
 
 }
