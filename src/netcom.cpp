@@ -1,6 +1,11 @@
 #include "netcom.h"
 #include "datapacket.h"
 
+NetCom::NetCom(){
+  // initialize tmp_buffer_string, move allocation time to NetCom construction
+  tmp_buffer_string.assign(BUFFSIZE - 1, 'u');
+}
+
 NetComDat NetCom::initUdpTx(char host[], int port){
 
 	int sockfd; 
@@ -215,6 +220,36 @@ void NetCom::rxBuff(NetComDat net, char *buff, int *buff_len){
   }
 
   *buff_len = numbytes;
+
+}
+
+void NetCom::txArtePb(NetComDat net, ArtePb& _arte_pb_to_write_from){
+
+  int pb_size = _arte_pb_to_write_from.ByteSize();
+  std::string buffer_string;
+  _arte_pb_to_write_from.SerializeToString( &buffer_string );
+
+  sendto( net.sockfd, buffer_string.c_str(), pb_size, 0,  
+	  (sockaddr*) &net.addr_in, sizeof( net.addr_in ) );
+
+}
+
+void NetCom::rxArtePb(NetComDat net, ArtePb& _arte_pb_to_write_to) {
+  
+  char buff[BUFFSIZE-1];
+  if ( (numbytes = recvfrom(net.sockfd, 
+			    &tmp_buffer_char[0], 
+			    BUFFSIZE-1, 
+			    0, 
+			    (SA*)&their_addr, 
+			    &addr_len          )) == -1){	
+    printf("recvfrom error from rxArtePb.\n");
+
+  }
+
+  tmp_buffer_string.assign(tmp_buffer_char, numbytes);
+
+  _arte_pb_to_write_to.ParseFromString( &tmp_buffer_string );
 
 }
 

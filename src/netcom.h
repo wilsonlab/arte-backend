@@ -15,6 +15,8 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include "datapacket.h"
+#include "arte_pb.pb.h"
+#include "arte_command.pb.h"
 #include "unp.h"
 
 struct NetComDat{
@@ -25,6 +27,9 @@ struct NetComDat{
 
 class NetCom{
  public:
+
+  NetCom::NetCom();
+
   static NetComDat initUdpTx(char host[], int port);
   static NetComDat initUdpRx(char host[], char * port);
 
@@ -42,6 +47,13 @@ class NetCom{
 
   static void txBuff(NetComDat net, char * buff, int buff_len);
   static void rxBuff(NetComDat net, char * buff, int *buff_len);
+
+  static void txArtePb(NetComDat net, ArtePb& _arte_pb_to_write_from);
+  static void rxArtePb(NetComDat net, ArtePb& _arte_pb_to_write_to);
+
+  char        tmp_buffer_char[BUFFSIZE];
+  std::string tmp_buffer_string;
+
 };
 
 void *get_in_addr(struct sockaddr *sa);
