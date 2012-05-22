@@ -1,4 +1,4 @@
-o# this file gets included by the one in the main project directory,
+# this file gets included by the one in the main project directory,
 # so act as though we are there, not in src/
 CC = gcc
 LD = $(CC)
