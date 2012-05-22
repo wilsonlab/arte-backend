@@ -70,8 +70,6 @@ int iGlom::pb_read(ArtePb& _pb_to_read_into){
 
   // read from ascii file
   if (mode == 'a'){
-    std::cout << "ascii read" << std::endl;
-    //file->getline( reinterpret_cast<char*>(&next_buff_size), sizeof(uint32_t) );
     
     (*file) >> next_buff_size;
     file->get();
@@ -87,8 +85,6 @@ int iGlom::pb_read(ArtePb& _pb_to_read_into){
       pthread_mutex_unlock( &glom_mutex );
       return -1;
     }
-
-    std::cout << "buffer length: " << next_buff_size << std::endl;
 
     char_buffer.reserve(next_buff_size);
     file->get( &char_buffer[0], next_buff_size );
@@ -110,7 +106,7 @@ int iGlom::pb_read(ArtePb& _pb_to_read_into){
     }
     
     pthread_mutex_unlock( &glom_mutex );
-    std::cout << "iGlom about to return 1" << std::endl;
+
     return 1;
     
   }
@@ -153,7 +149,6 @@ oGlom::oGlom(const char *_file_name, char _mode){
   // Add _new to filename until we make a unique file (prevent overwrites)
   while( !got_empty_file ){
     file = new std::fstream ( filename.c_str(), ios_mode );
-    //file->open( filename.c_str(), ios_mode );
     if(!file->is_open()){
       std::cerr << "oGlom failed to open file " << filename << std::endl;
     } else {
@@ -172,7 +167,6 @@ oGlom::oGlom(const char *_file_name, char _mode){
       }
     }
   }
-  std::cout << "output filename: " << filename << std::endl;
   
   pthread_mutex_init( &glom_mutex, NULL );
 
@@ -193,7 +187,7 @@ bool oGlom::pb_write(ArtePb &_pb_to_write){
 
 
   if( mode == 'b' ){
-    std::cout << "BINARY WRITE MODE\n";
+
     buffer_size = _pb_to_write.ByteSize();    
     pthread_mutex_lock( &glom_mutex );
     rc = 0;
@@ -220,7 +214,7 @@ bool oGlom::pb_write(ArtePb &_pb_to_write){
   }
     
   if( mode == 'a' ){
-    std::cout << "ASCII WRITE MODE\n";
+
     pthread_mutex_lock( &glom_mutex );
     serialize_success = 
       google::protobuf::TextFormat::PrintToString(_pb_to_write,
