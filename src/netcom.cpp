@@ -235,7 +235,11 @@ void NetCom::txArtePb(NetComDat net, ArtePb& _arte_pb_to_write_from){
 }
 
 void NetCom::rxArtePb(NetComDat net, ArtePb& _arte_pb_to_write_to) {
-  
+
+  int numbytes;
+  sockaddr_storage their_addr = net.their_addr;
+  socklen_t addr_len = sizeof(their_addr);
+
   char buff[BUFFSIZE-1];
   if ( (numbytes = recvfrom(net.sockfd, 
 			    &tmp_buffer_char[0], 
