@@ -28,7 +28,7 @@ struct NetComDat{
 class NetCom{
  public:
 
-  NetCom::NetCom();
+  NetCom();
 
   static NetComDat initUdpTx(char host[], int port);
   static NetComDat initUdpRx(char host[], char * port);
@@ -48,8 +48,8 @@ class NetCom{
   static void txBuff(NetComDat net, char * buff, int buff_len);
   static void rxBuff(NetComDat net, char * buff, int *buff_len);
 
-  static void txArtePb(NetComDat net, ArtePb& _arte_pb_to_write_from);
-  static void rxArtePb(NetComDat net, ArtePb& _arte_pb_to_write_to);
+  void txArtePb(NetComDat net, ArtePb& _arte_pb_to_write_from);
+  void rxArtePb(NetComDat net, ArtePb& _arte_pb_to_write_to);
 
   char        tmp_buffer_char[BUFFSIZE];
   std::string tmp_buffer_string;

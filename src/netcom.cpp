@@ -253,7 +253,7 @@ void NetCom::rxArtePb(NetComDat net, ArtePb& _arte_pb_to_write_to) {
 
   tmp_buffer_string.assign(tmp_buffer_char, numbytes);
 
-  _arte_pb_to_write_to.ParseFromString( &tmp_buffer_string );
+  _arte_pb_to_write_to.ParseFromString( tmp_buffer_string );
 
 }
 

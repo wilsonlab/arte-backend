@@ -13,7 +13,7 @@ BACKEND_SRC = $(SRCS)arte.cpp $(SRCS)filt.cpp $(SRCS)neural_daq.cpp $(SRCS)trode
 BACKEND_OBJ = $(SRCS)process_command.o $(SRCS)arteopt.o  $(SRCS)arte_pb.pb.o $(SRCS)arte_command.pb.o $(SRCS)filt.o $(SRCS)neural_daq.o $(SRCS)trode.o $(SRCS)util.o $(SRCS)lfp_bank.o $(SRCS)filtered_buffer.o $(SRCS)filter_fun.o $(SRCS)timer.o  $(SRCS)netcom.o $(SRCS)datapacket.o $(SRCS)arte.o
 
 # path to boost library added to 
-CFLAGS = -pthread -I $(SRCS) -D__STDC_LIMIT_MACROS -O3 -I /usr/local/include/ $(wildcard /usr/local/boost_1_45_0/) -I $(wildcard /usr/local/boost-trunk/)
+CFLAGS = -pthread -I $(SRCS) -D__STDC_LIMIT_MACROS -O3 -I /usr/local/include/ -I $(wildcard /usr/local/boost_1_45_0) -I $(wildcard /usr/local/boost-trunk) -I $(wildcard /usr/local/boost_1_45_0/boost/property_tree)
 
 
 OBJS = src/
