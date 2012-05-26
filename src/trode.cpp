@@ -22,6 +22,9 @@ Trode::Trode(){
   //std::cout << "In a trode constructor" << std::endl;
 }
 
+Trode::Trode( ArteSessionOptPb &session_pb ){
+  Trode::Trode();
+}
 
 Trode::~Trode(){
   // if (has_sockfd)

@@ -1,51 +1,146 @@
 // Main arte packet.  Since google protobufs isn't introspective
-// we wrap all possible packets (data and commands) into a main
-// packet type: Arte_pb
+// we wrap all possible packets (data and commands and config)
+// with a  into a main packet type: Arte_pb
 //
-// Compile using: protoc arte_pb.proto --cpp_out=./
+// Standalone compile using: protoc arte_pb.proto --cpp_out=./
+//   but this is handled automatically by make for most arte applications
 
 import "arte_command.proto";
 
+message ArteVoltageTimeseries{
+	repeated float                         voltage  = 1;
+}
 
 message ArteSpikePb{
-
-	optional int32              source_trode          = 1;
-
+	optional uint32                   source_trode  = 1;
+	repeated ArteVoltageTimeseries       chan_data  = 2;   
+	optional uint32              trode_opt_version  = 3;
 }
 
 message ArteLfpPb{
-
-	optional int32              source_lfpbank        = 1;
-
+	optional uint32                 source_lfpbank  = 1;
+	repeated ArteVoltageTimeseries       chan_data  = 2;
+	optional uint32                lfp_opt_version  = 3;
 }
 
 message ArteEventStringPb{
-
-	optional string             eventstring_data      = 1;
-
+	optional string               eventstring_data  = 1;
 }
 
 message ArteRawBufferPb{
-
-	optional string             device_label          = 1;
-
+	optional string                   device_label  = 1;
+	repeated ArteVoltageTimeseries       chan_data  = 2;
 }
 
 message ArtePosPb{
+	optional float                           x_pos  = 1;
+	optional float                           y_pos  = 2; 
+	optional float                      head_angle  = 3;
+        optional string               behavioral_state  = 4;
+}
 
-	optional float               x_pos                = 1;
+message ArteFilterOptPb{
+	optional string                   filter_name  = 1;
+	repeated float                     numerators  = 2;
+	repeated float                   denominators  = 3;
+        optional float                        low_cut  = 4;
+	optional float                       high_cut  = 5;
+	optional uint32                         order  = 6;
+}
 
+
+
+message ArteChanOptPb{
+	optional float                            gain  = 1;
+        optional float                       threshold  = 2;
+	optional uint32                       daq_chan  = 3;
+	optional uint32                   source_trode  = 4;
+}
+
+message ArteTrodeOptPb{
+	optional uint32                   source_trode  = 1;
+	optional uint32              trode_opt_version  = 2;
+	repeated ArteChanOptPb                   chans  = 3;
+	optional uint32              samps_before_trig  = 4;
+	optional uint32               samps_after_trig  = 5;
+	optional uint32        refractory_period_samps  = 6;
+	optional string                           port  = 7;
+	optional string                        host_ip  = 8;
+	optional ArteFilterOptPb                filter  = 9;
+	optional uint32                         daq_id  = 10;
+	optional bool                             disk  = 11;
+	optional bool                          network  = 12;
+}
+
+message ArteLfpOptPb{
+	optional uint32                 source_lfpbank  = 1;
+	optional uint32                lfp_opt_version  = 2;
+	optional ArteChanOptPb                   chans  = 3;
+	optional uint32                keep_nth_sample  = 4;
+        optional string                           port  = 5;
+	optional string                        host_ip  = 6;
+	optional ArteFilterOptPb                filter  = 7;
+	optional uint32                         daq_id  = 8;
+	optional bool                             disk  = 9;
+	optional bool                          network  = 10; 
+}
+
+message ArteTimerOptPb{
+	optional string                   clock_source  = 1;
+	optional string                       dev_name  = 2;
+        optional string                       ctr_name  = 3;
+	optional string                     timer_role  = 4;
+        optional uint32                     timer_freq  = 5;
+}
+
+message ArteCommandPortOptPb{
+	optional string                   command_host  = 1;
+	optional string                           port  = 2;
+	optional string                 secondary_port  = 3;
+}
+
+message ArteHostOptPb{
+	optional string                           host  = 1;
+	optional string                        ip_addy  = 2;
+}
+
+message ArteNeuralDaqOptPb{
+	optional string                       daq_type  = 1;
+	optional string                       dev_name  = 2;
+	optional uint32                             id  = 3;
+	optional string                    in_filename  = 4;
+	optional string                   out_filename  = 5;
+	optional uint32              buffer_time_samps  = 6;
+	optional uint32                 buffer_n_chans  = 7;
+	optional bool                        is_master  = 8;
+}
+
+message ArteSetupOptPb{
+	repeated ArteNeuralDaqOptPb               daqs  = 1;
+	optional ArteCommandPortOptPb     command_port  = 2;
+	repeated ArteHostOptPb               host_list  = 3;
+	repeated ArteFilterOptPb               filters  = 4;
+}
+
+message ArteSessionOptPb{
+	optional string                  main_filename  = 1;
+	optional ArteTrodeOptPb          default_trode  = 2;
+	repeated ArteTrodeOptPb                 trodes  = 3;
+	optional ArteLfpOptPb          default_lfpbank  = 4;
+	repeated ArteLfpOptPb                 lfpbanks  = 5;
 }
 
 message ArtePb{
-
-	optional uint64 timestamp = 1;
+	optional uint64                      timestamp  = 1;
 	
-	optional ArteSpikePb        arte_spike_pb        = 2;
-	optional ArteLfpPb          arte_lfp_pb          = 3;
-	optional ArteCommand        arte_command_pb      = 4;
-	optional ArteEventStringPb  arte_event_string_pb = 5;
+	optional ArteSpikePb                arte_spike  = 2;
+	optional ArteLfpPb                    arte_lfp  = 3;
+	optional ArteCommand              arte_command  = 4;
+	optional ArteEventStringPb   arte_event_string  = 5;
 
-	optional ArteRawBufferPb    arte_raw_buffer_pb   = 6;
-	optional ArtePosPb          arte_pos_pb          = 7;
+	optional ArteRawBufferPb       arte_raw_buffer  = 6;
+	optional ArtePosPb                    arte_pos  = 7;
+
+	optional ArteSetupOptPb             arte_setup  = 8;
+	optional ArteSessionOptPb         arte_session  = 9;
 }

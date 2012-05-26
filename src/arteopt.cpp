@@ -5,6 +5,7 @@
 #include <assert.h>
 #include "global_defs.h"
 #include <iostream>
+#include <exception>
 #include "util.h"
 #include "timer.h"
 #include "filtered_buffer.h"
@@ -80,8 +81,9 @@ void arte_init(int argc, char *argv[], const std::string &setup_fn, const std::s
     read_xml(setup_config_filename,   setup_pt,   boost::property_tree::xml_parser::trim_whitespace); // check where this flag actually lives
     read_xml(session_config_filename, session_pt, boost::property_tree::xml_parser::trim_whitespace); // can/should put 2 possible fails in one try block?
   }
-  catch(...){  // find out where the xml_parse_error lives, & how to handle it
+  catch(std::exception &e){  // find out where the xml_parse_error lives, & how to handle it
     std::cout << "XML read error was thrown - from arteopt.cpp" << std::endl;
+    std::cout << e.what() << std::endl;
     exit(1);
   }
 

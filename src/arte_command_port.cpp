@@ -104,6 +104,7 @@
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/property_tree/exceptions.hpp>
 #include <boost/foreach.hpp>
+#include "arte_pb.pb.h"
 #include "arte_command_port.h"
 
 
@@ -114,6 +115,17 @@ Arte_command_port::Arte_command_port()
   basic_init();
 }
 
+Arte_command_port::Arte_command_port( ArteSetupOptPb &setup_pb, 
+				      CALLBACK_FN cb_func, void *cb_arg,
+				      bool auto_start = true)
+{
+  basic_init();
+  _auto_start = auto_start;
+  do_pb_settings(setup_pb);
+  set_callback_fn( cb_func, cb_arg );
+  if(_auto_start)
+    start();
+}
 
 Arte_command_port::Arte_command_port(boost::property_tree::ptree pt,
 				     CALLBACK_FN cb_func, void *cb_arg,
@@ -188,6 +200,29 @@ void Arte_command_port::do_pt_settings()
     in_list.push_back(this_in);
   }
 
+  set_addy_str( in_list, out_m, out_s, in_secondary );
+}
+
+void Arte_command_port::do_pb_settings(ArteSetupOptPb& setup_pb)
+{
+  primary_port.assign   ( setup_pb.command_port().port() );
+  secondary_port.assign ( setup_pb.command_port().secondary_port() );
+  std::string out_m("tcp://*:");
+  out_m.append( primary_port );
+  std::string out_s("tmp://localhost:");
+  out_s.append( secondary_port );
+  std::string in_secondary("tcp://*:");
+  in_secondary.append( secondary_port );
+
+  std::vector<std::string> in_list;
+  for(int n = 0; n < setup_pb.host_list_size(); n++){
+    std::string this_in( "tcp://" );
+    this_in.append ( setup_pb.host_list(n).host() );
+    this_in.append( ":" );
+    this_in.append( primary_port );
+    in_list.push_back(this_in);
+  }
+  
   set_addy_str( in_list, out_m, out_s, in_secondary );
 }
 

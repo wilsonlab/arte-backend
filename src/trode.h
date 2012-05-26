@@ -8,9 +8,10 @@
 #include <map>
 #include <vector>
 #include <stdint.h>
-#include "filtered_buffer.h"
 
+#include "filtered_buffer.h"
 #include "netcom.h"
+#include "arte_pb.pb.h"
 
 extern neural_daq      * neural_daq_array;
 extern Filtered_buffer * filtered_buffer_array;
@@ -21,6 +22,7 @@ class Trode{
 
  public:
   Trode();
+  Trode( ArteSessionOptPb &session_pb );
   virtual ~Trode();
   
   uint16_t name;

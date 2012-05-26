@@ -31,14 +31,110 @@ void  protobuf_AddDesc_arte_5fpb_2eproto();
 void protobuf_AssignDesc_arte_5fpb_2eproto();
 void protobuf_ShutdownFile_arte_5fpb_2eproto();
 
+class ArteVoltageTimeseries;
 class ArteSpikePb;
 class ArteLfpPb;
 class ArteEventStringPb;
 class ArteRawBufferPb;
 class ArtePosPb;
+class ArteFilterOptPb;
+class ArteChanOptPb;
+class ArteTrodeOptPb;
+class ArteLfpOptPb;
+class ArteTimerOptPb;
+class ArteCommandPortOptPb;
+class ArteHostOptPb;
+class ArteNeuralDaqOptPb;
+class ArteSetupOptPb;
+class ArteSessionOptPb;
 class ArtePb;
 
 // ===================================================================
+
+class ArteVoltageTimeseries : public ::google::protobuf::Message {
+ public:
+  ArteVoltageTimeseries();
+  virtual ~ArteVoltageTimeseries();
+  
+  ArteVoltageTimeseries(const ArteVoltageTimeseries& from);
+  
+  inline ArteVoltageTimeseries& operator=(const ArteVoltageTimeseries& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ArteVoltageTimeseries& default_instance();
+  
+  void Swap(ArteVoltageTimeseries* other);
+  
+  // implements Message ----------------------------------------------
+  
+  ArteVoltageTimeseries* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const ArteVoltageTimeseries& from);
+  void MergeFrom(const ArteVoltageTimeseries& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // repeated float voltage = 1;
+  inline int voltage_size() const;
+  inline void clear_voltage();
+  static const int kVoltageFieldNumber = 1;
+  inline float voltage(int index) const;
+  inline void set_voltage(int index, float value);
+  inline void add_voltage(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
+      voltage() const;
+  inline ::google::protobuf::RepeatedField< float >*
+      mutable_voltage();
+  
+  // @@protoc_insertion_point(class_scope:ArteVoltageTimeseries)
+ private:
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::google::protobuf::RepeatedField< float > voltage_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_arte_5fpb_2eproto();
+  friend void protobuf_AssignDesc_arte_5fpb_2eproto();
+  friend void protobuf_ShutdownFile_arte_5fpb_2eproto();
+  
+  void InitAsDefaultInstance();
+  static ArteVoltageTimeseries* default_instance_;
+};
+// -------------------------------------------------------------------
 
 class ArteSpikePb : public ::google::protobuf::Message {
  public:
@@ -94,24 +190,47 @@ class ArteSpikePb : public ::google::protobuf::Message {
   
   // accessors -------------------------------------------------------
   
-  // optional int32 source_trode = 1;
+  // optional uint32 source_trode = 1;
   inline bool has_source_trode() const;
   inline void clear_source_trode();
   static const int kSourceTrodeFieldNumber = 1;
-  inline ::google::protobuf::int32 source_trode() const;
-  inline void set_source_trode(::google::protobuf::int32 value);
+  inline ::google::protobuf::uint32 source_trode() const;
+  inline void set_source_trode(::google::protobuf::uint32 value);
+  
+  // repeated .ArteVoltageTimeseries chan_data = 2;
+  inline int chan_data_size() const;
+  inline void clear_chan_data();
+  static const int kChanDataFieldNumber = 2;
+  inline const ::ArteVoltageTimeseries& chan_data(int index) const;
+  inline ::ArteVoltageTimeseries* mutable_chan_data(int index);
+  inline ::ArteVoltageTimeseries* add_chan_data();
+  inline const ::google::protobuf::RepeatedPtrField< ::ArteVoltageTimeseries >&
+      chan_data() const;
+  inline ::google::protobuf::RepeatedPtrField< ::ArteVoltageTimeseries >*
+      mutable_chan_data();
+  
+  // optional uint32 trode_opt_version = 3;
+  inline bool has_trode_opt_version() const;
+  inline void clear_trode_opt_version();
+  static const int kTrodeOptVersionFieldNumber = 3;
+  inline ::google::protobuf::uint32 trode_opt_version() const;
+  inline void set_trode_opt_version(::google::protobuf::uint32 value);
   
   // @@protoc_insertion_point(class_scope:ArteSpikePb)
  private:
   inline void set_has_source_trode();
   inline void clear_has_source_trode();
+  inline void set_has_trode_opt_version();
+  inline void clear_has_trode_opt_version();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
-  ::google::protobuf::int32 source_trode_;
+  ::google::protobuf::RepeatedPtrField< ::ArteVoltageTimeseries > chan_data_;
+  ::google::protobuf::uint32 source_trode_;
+  ::google::protobuf::uint32 trode_opt_version_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
   
   friend void  protobuf_AddDesc_arte_5fpb_2eproto();
   friend void protobuf_AssignDesc_arte_5fpb_2eproto();
@@ -176,24 +295,47 @@ class ArteLfpPb : public ::google::protobuf::Message {
   
   // accessors -------------------------------------------------------
   
-  // optional int32 source_lfpbank = 1;
+  // optional uint32 source_lfpbank = 1;
   inline bool has_source_lfpbank() const;
   inline void clear_source_lfpbank();
   static const int kSourceLfpbankFieldNumber = 1;
-  inline ::google::protobuf::int32 source_lfpbank() const;
-  inline void set_source_lfpbank(::google::protobuf::int32 value);
+  inline ::google::protobuf::uint32 source_lfpbank() const;
+  inline void set_source_lfpbank(::google::protobuf::uint32 value);
+  
+  // repeated .ArteVoltageTimeseries chan_data = 2;
+  inline int chan_data_size() const;
+  inline void clear_chan_data();
+  static const int kChanDataFieldNumber = 2;
+  inline const ::ArteVoltageTimeseries& chan_data(int index) const;
+  inline ::ArteVoltageTimeseries* mutable_chan_data(int index);
+  inline ::ArteVoltageTimeseries* add_chan_data();
+  inline const ::google::protobuf::RepeatedPtrField< ::ArteVoltageTimeseries >&
+      chan_data() const;
+  inline ::google::protobuf::RepeatedPtrField< ::ArteVoltageTimeseries >*
+      mutable_chan_data();
+  
+  // optional uint32 lfp_opt_version = 3;
+  inline bool has_lfp_opt_version() const;
+  inline void clear_lfp_opt_version();
+  static const int kLfpOptVersionFieldNumber = 3;
+  inline ::google::protobuf::uint32 lfp_opt_version() const;
+  inline void set_lfp_opt_version(::google::protobuf::uint32 value);
   
   // @@protoc_insertion_point(class_scope:ArteLfpPb)
  private:
   inline void set_has_source_lfpbank();
   inline void clear_has_source_lfpbank();
+  inline void set_has_lfp_opt_version();
+  inline void clear_has_lfp_opt_version();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
-  ::google::protobuf::int32 source_lfpbank_;
+  ::google::protobuf::RepeatedPtrField< ::ArteVoltageTimeseries > chan_data_;
+  ::google::protobuf::uint32 source_lfpbank_;
+  ::google::protobuf::uint32 lfp_opt_version_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
   
   friend void  protobuf_AddDesc_arte_5fpb_2eproto();
   friend void protobuf_AssignDesc_arte_5fpb_2eproto();
@@ -355,6 +497,18 @@ class ArteRawBufferPb : public ::google::protobuf::Message {
   inline ::std::string* mutable_device_label();
   inline ::std::string* release_device_label();
   
+  // repeated .ArteVoltageTimeseries chan_data = 2;
+  inline int chan_data_size() const;
+  inline void clear_chan_data();
+  static const int kChanDataFieldNumber = 2;
+  inline const ::ArteVoltageTimeseries& chan_data(int index) const;
+  inline ::ArteVoltageTimeseries* mutable_chan_data(int index);
+  inline ::ArteVoltageTimeseries* add_chan_data();
+  inline const ::google::protobuf::RepeatedPtrField< ::ArteVoltageTimeseries >&
+      chan_data() const;
+  inline ::google::protobuf::RepeatedPtrField< ::ArteVoltageTimeseries >*
+      mutable_chan_data();
+  
   // @@protoc_insertion_point(class_scope:ArteRawBufferPb)
  private:
   inline void set_has_device_label();
@@ -363,9 +517,10 @@ class ArteRawBufferPb : public ::google::protobuf::Message {
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::std::string* device_label_;
+  ::google::protobuf::RepeatedPtrField< ::ArteVoltageTimeseries > chan_data_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
   
   friend void  protobuf_AddDesc_arte_5fpb_2eproto();
   friend void protobuf_AssignDesc_arte_5fpb_2eproto();
@@ -437,17 +592,51 @@ class ArtePosPb : public ::google::protobuf::Message {
   inline float x_pos() const;
   inline void set_x_pos(float value);
   
+  // optional float y_pos = 2;
+  inline bool has_y_pos() const;
+  inline void clear_y_pos();
+  static const int kYPosFieldNumber = 2;
+  inline float y_pos() const;
+  inline void set_y_pos(float value);
+  
+  // optional float head_angle = 3;
+  inline bool has_head_angle() const;
+  inline void clear_head_angle();
+  static const int kHeadAngleFieldNumber = 3;
+  inline float head_angle() const;
+  inline void set_head_angle(float value);
+  
+  // optional string behavioral_state = 4;
+  inline bool has_behavioral_state() const;
+  inline void clear_behavioral_state();
+  static const int kBehavioralStateFieldNumber = 4;
+  inline const ::std::string& behavioral_state() const;
+  inline void set_behavioral_state(const ::std::string& value);
+  inline void set_behavioral_state(const char* value);
+  inline void set_behavioral_state(const char* value, size_t size);
+  inline ::std::string* mutable_behavioral_state();
+  inline ::std::string* release_behavioral_state();
+  
   // @@protoc_insertion_point(class_scope:ArtePosPb)
  private:
   inline void set_has_x_pos();
   inline void clear_has_x_pos();
+  inline void set_has_y_pos();
+  inline void clear_has_y_pos();
+  inline void set_has_head_angle();
+  inline void clear_has_head_angle();
+  inline void set_has_behavioral_state();
+  inline void clear_has_behavioral_state();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   float x_pos_;
+  float y_pos_;
+  ::std::string* behavioral_state_;
+  float head_angle_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
   
   friend void  protobuf_AddDesc_arte_5fpb_2eproto();
   friend void protobuf_AssignDesc_arte_5fpb_2eproto();
@@ -455,6 +644,1422 @@ class ArtePosPb : public ::google::protobuf::Message {
   
   void InitAsDefaultInstance();
   static ArtePosPb* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class ArteFilterOptPb : public ::google::protobuf::Message {
+ public:
+  ArteFilterOptPb();
+  virtual ~ArteFilterOptPb();
+  
+  ArteFilterOptPb(const ArteFilterOptPb& from);
+  
+  inline ArteFilterOptPb& operator=(const ArteFilterOptPb& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ArteFilterOptPb& default_instance();
+  
+  void Swap(ArteFilterOptPb* other);
+  
+  // implements Message ----------------------------------------------
+  
+  ArteFilterOptPb* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const ArteFilterOptPb& from);
+  void MergeFrom(const ArteFilterOptPb& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // optional string filter_name = 1;
+  inline bool has_filter_name() const;
+  inline void clear_filter_name();
+  static const int kFilterNameFieldNumber = 1;
+  inline const ::std::string& filter_name() const;
+  inline void set_filter_name(const ::std::string& value);
+  inline void set_filter_name(const char* value);
+  inline void set_filter_name(const char* value, size_t size);
+  inline ::std::string* mutable_filter_name();
+  inline ::std::string* release_filter_name();
+  
+  // repeated float numerators = 2;
+  inline int numerators_size() const;
+  inline void clear_numerators();
+  static const int kNumeratorsFieldNumber = 2;
+  inline float numerators(int index) const;
+  inline void set_numerators(int index, float value);
+  inline void add_numerators(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
+      numerators() const;
+  inline ::google::protobuf::RepeatedField< float >*
+      mutable_numerators();
+  
+  // repeated float denominators = 3;
+  inline int denominators_size() const;
+  inline void clear_denominators();
+  static const int kDenominatorsFieldNumber = 3;
+  inline float denominators(int index) const;
+  inline void set_denominators(int index, float value);
+  inline void add_denominators(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
+      denominators() const;
+  inline ::google::protobuf::RepeatedField< float >*
+      mutable_denominators();
+  
+  // optional float low_cut = 4;
+  inline bool has_low_cut() const;
+  inline void clear_low_cut();
+  static const int kLowCutFieldNumber = 4;
+  inline float low_cut() const;
+  inline void set_low_cut(float value);
+  
+  // optional float high_cut = 5;
+  inline bool has_high_cut() const;
+  inline void clear_high_cut();
+  static const int kHighCutFieldNumber = 5;
+  inline float high_cut() const;
+  inline void set_high_cut(float value);
+  
+  // optional uint32 order = 6;
+  inline bool has_order() const;
+  inline void clear_order();
+  static const int kOrderFieldNumber = 6;
+  inline ::google::protobuf::uint32 order() const;
+  inline void set_order(::google::protobuf::uint32 value);
+  
+  // @@protoc_insertion_point(class_scope:ArteFilterOptPb)
+ private:
+  inline void set_has_filter_name();
+  inline void clear_has_filter_name();
+  inline void set_has_low_cut();
+  inline void clear_has_low_cut();
+  inline void set_has_high_cut();
+  inline void clear_has_high_cut();
+  inline void set_has_order();
+  inline void clear_has_order();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::std::string* filter_name_;
+  ::google::protobuf::RepeatedField< float > numerators_;
+  ::google::protobuf::RepeatedField< float > denominators_;
+  float low_cut_;
+  float high_cut_;
+  ::google::protobuf::uint32 order_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(6 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_arte_5fpb_2eproto();
+  friend void protobuf_AssignDesc_arte_5fpb_2eproto();
+  friend void protobuf_ShutdownFile_arte_5fpb_2eproto();
+  
+  void InitAsDefaultInstance();
+  static ArteFilterOptPb* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class ArteChanOptPb : public ::google::protobuf::Message {
+ public:
+  ArteChanOptPb();
+  virtual ~ArteChanOptPb();
+  
+  ArteChanOptPb(const ArteChanOptPb& from);
+  
+  inline ArteChanOptPb& operator=(const ArteChanOptPb& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ArteChanOptPb& default_instance();
+  
+  void Swap(ArteChanOptPb* other);
+  
+  // implements Message ----------------------------------------------
+  
+  ArteChanOptPb* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const ArteChanOptPb& from);
+  void MergeFrom(const ArteChanOptPb& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // optional float gain = 1;
+  inline bool has_gain() const;
+  inline void clear_gain();
+  static const int kGainFieldNumber = 1;
+  inline float gain() const;
+  inline void set_gain(float value);
+  
+  // optional float threshold = 2;
+  inline bool has_threshold() const;
+  inline void clear_threshold();
+  static const int kThresholdFieldNumber = 2;
+  inline float threshold() const;
+  inline void set_threshold(float value);
+  
+  // optional uint32 daq_chan = 3;
+  inline bool has_daq_chan() const;
+  inline void clear_daq_chan();
+  static const int kDaqChanFieldNumber = 3;
+  inline ::google::protobuf::uint32 daq_chan() const;
+  inline void set_daq_chan(::google::protobuf::uint32 value);
+  
+  // optional uint32 source_trode = 4;
+  inline bool has_source_trode() const;
+  inline void clear_source_trode();
+  static const int kSourceTrodeFieldNumber = 4;
+  inline ::google::protobuf::uint32 source_trode() const;
+  inline void set_source_trode(::google::protobuf::uint32 value);
+  
+  // @@protoc_insertion_point(class_scope:ArteChanOptPb)
+ private:
+  inline void set_has_gain();
+  inline void clear_has_gain();
+  inline void set_has_threshold();
+  inline void clear_has_threshold();
+  inline void set_has_daq_chan();
+  inline void clear_has_daq_chan();
+  inline void set_has_source_trode();
+  inline void clear_has_source_trode();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  float gain_;
+  float threshold_;
+  ::google::protobuf::uint32 daq_chan_;
+  ::google::protobuf::uint32 source_trode_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_arte_5fpb_2eproto();
+  friend void protobuf_AssignDesc_arte_5fpb_2eproto();
+  friend void protobuf_ShutdownFile_arte_5fpb_2eproto();
+  
+  void InitAsDefaultInstance();
+  static ArteChanOptPb* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class ArteTrodeOptPb : public ::google::protobuf::Message {
+ public:
+  ArteTrodeOptPb();
+  virtual ~ArteTrodeOptPb();
+  
+  ArteTrodeOptPb(const ArteTrodeOptPb& from);
+  
+  inline ArteTrodeOptPb& operator=(const ArteTrodeOptPb& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ArteTrodeOptPb& default_instance();
+  
+  void Swap(ArteTrodeOptPb* other);
+  
+  // implements Message ----------------------------------------------
+  
+  ArteTrodeOptPb* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const ArteTrodeOptPb& from);
+  void MergeFrom(const ArteTrodeOptPb& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // optional uint32 source_trode = 1;
+  inline bool has_source_trode() const;
+  inline void clear_source_trode();
+  static const int kSourceTrodeFieldNumber = 1;
+  inline ::google::protobuf::uint32 source_trode() const;
+  inline void set_source_trode(::google::protobuf::uint32 value);
+  
+  // optional uint32 trode_opt_version = 2;
+  inline bool has_trode_opt_version() const;
+  inline void clear_trode_opt_version();
+  static const int kTrodeOptVersionFieldNumber = 2;
+  inline ::google::protobuf::uint32 trode_opt_version() const;
+  inline void set_trode_opt_version(::google::protobuf::uint32 value);
+  
+  // repeated .ArteChanOptPb chans = 3;
+  inline int chans_size() const;
+  inline void clear_chans();
+  static const int kChansFieldNumber = 3;
+  inline const ::ArteChanOptPb& chans(int index) const;
+  inline ::ArteChanOptPb* mutable_chans(int index);
+  inline ::ArteChanOptPb* add_chans();
+  inline const ::google::protobuf::RepeatedPtrField< ::ArteChanOptPb >&
+      chans() const;
+  inline ::google::protobuf::RepeatedPtrField< ::ArteChanOptPb >*
+      mutable_chans();
+  
+  // optional uint32 samps_before_trig = 4;
+  inline bool has_samps_before_trig() const;
+  inline void clear_samps_before_trig();
+  static const int kSampsBeforeTrigFieldNumber = 4;
+  inline ::google::protobuf::uint32 samps_before_trig() const;
+  inline void set_samps_before_trig(::google::protobuf::uint32 value);
+  
+  // optional uint32 samps_after_trig = 5;
+  inline bool has_samps_after_trig() const;
+  inline void clear_samps_after_trig();
+  static const int kSampsAfterTrigFieldNumber = 5;
+  inline ::google::protobuf::uint32 samps_after_trig() const;
+  inline void set_samps_after_trig(::google::protobuf::uint32 value);
+  
+  // optional uint32 refractory_period_samps = 6;
+  inline bool has_refractory_period_samps() const;
+  inline void clear_refractory_period_samps();
+  static const int kRefractoryPeriodSampsFieldNumber = 6;
+  inline ::google::protobuf::uint32 refractory_period_samps() const;
+  inline void set_refractory_period_samps(::google::protobuf::uint32 value);
+  
+  // optional string port = 7;
+  inline bool has_port() const;
+  inline void clear_port();
+  static const int kPortFieldNumber = 7;
+  inline const ::std::string& port() const;
+  inline void set_port(const ::std::string& value);
+  inline void set_port(const char* value);
+  inline void set_port(const char* value, size_t size);
+  inline ::std::string* mutable_port();
+  inline ::std::string* release_port();
+  
+  // optional string host_ip = 8;
+  inline bool has_host_ip() const;
+  inline void clear_host_ip();
+  static const int kHostIpFieldNumber = 8;
+  inline const ::std::string& host_ip() const;
+  inline void set_host_ip(const ::std::string& value);
+  inline void set_host_ip(const char* value);
+  inline void set_host_ip(const char* value, size_t size);
+  inline ::std::string* mutable_host_ip();
+  inline ::std::string* release_host_ip();
+  
+  // optional .ArteFilterOptPb filter = 9;
+  inline bool has_filter() const;
+  inline void clear_filter();
+  static const int kFilterFieldNumber = 9;
+  inline const ::ArteFilterOptPb& filter() const;
+  inline ::ArteFilterOptPb* mutable_filter();
+  inline ::ArteFilterOptPb* release_filter();
+  
+  // optional uint32 daq_id = 10;
+  inline bool has_daq_id() const;
+  inline void clear_daq_id();
+  static const int kDaqIdFieldNumber = 10;
+  inline ::google::protobuf::uint32 daq_id() const;
+  inline void set_daq_id(::google::protobuf::uint32 value);
+  
+  // optional bool disk = 11;
+  inline bool has_disk() const;
+  inline void clear_disk();
+  static const int kDiskFieldNumber = 11;
+  inline bool disk() const;
+  inline void set_disk(bool value);
+  
+  // optional bool network = 12;
+  inline bool has_network() const;
+  inline void clear_network();
+  static const int kNetworkFieldNumber = 12;
+  inline bool network() const;
+  inline void set_network(bool value);
+  
+  // @@protoc_insertion_point(class_scope:ArteTrodeOptPb)
+ private:
+  inline void set_has_source_trode();
+  inline void clear_has_source_trode();
+  inline void set_has_trode_opt_version();
+  inline void clear_has_trode_opt_version();
+  inline void set_has_samps_before_trig();
+  inline void clear_has_samps_before_trig();
+  inline void set_has_samps_after_trig();
+  inline void clear_has_samps_after_trig();
+  inline void set_has_refractory_period_samps();
+  inline void clear_has_refractory_period_samps();
+  inline void set_has_port();
+  inline void clear_has_port();
+  inline void set_has_host_ip();
+  inline void clear_has_host_ip();
+  inline void set_has_filter();
+  inline void clear_has_filter();
+  inline void set_has_daq_id();
+  inline void clear_has_daq_id();
+  inline void set_has_disk();
+  inline void clear_has_disk();
+  inline void set_has_network();
+  inline void clear_has_network();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::google::protobuf::uint32 source_trode_;
+  ::google::protobuf::uint32 trode_opt_version_;
+  ::google::protobuf::RepeatedPtrField< ::ArteChanOptPb > chans_;
+  ::google::protobuf::uint32 samps_before_trig_;
+  ::google::protobuf::uint32 samps_after_trig_;
+  ::std::string* port_;
+  ::std::string* host_ip_;
+  ::google::protobuf::uint32 refractory_period_samps_;
+  ::google::protobuf::uint32 daq_id_;
+  ::ArteFilterOptPb* filter_;
+  bool disk_;
+  bool network_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(12 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_arte_5fpb_2eproto();
+  friend void protobuf_AssignDesc_arte_5fpb_2eproto();
+  friend void protobuf_ShutdownFile_arte_5fpb_2eproto();
+  
+  void InitAsDefaultInstance();
+  static ArteTrodeOptPb* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class ArteLfpOptPb : public ::google::protobuf::Message {
+ public:
+  ArteLfpOptPb();
+  virtual ~ArteLfpOptPb();
+  
+  ArteLfpOptPb(const ArteLfpOptPb& from);
+  
+  inline ArteLfpOptPb& operator=(const ArteLfpOptPb& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ArteLfpOptPb& default_instance();
+  
+  void Swap(ArteLfpOptPb* other);
+  
+  // implements Message ----------------------------------------------
+  
+  ArteLfpOptPb* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const ArteLfpOptPb& from);
+  void MergeFrom(const ArteLfpOptPb& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // optional uint32 source_lfpbank = 1;
+  inline bool has_source_lfpbank() const;
+  inline void clear_source_lfpbank();
+  static const int kSourceLfpbankFieldNumber = 1;
+  inline ::google::protobuf::uint32 source_lfpbank() const;
+  inline void set_source_lfpbank(::google::protobuf::uint32 value);
+  
+  // optional uint32 lfp_opt_version = 2;
+  inline bool has_lfp_opt_version() const;
+  inline void clear_lfp_opt_version();
+  static const int kLfpOptVersionFieldNumber = 2;
+  inline ::google::protobuf::uint32 lfp_opt_version() const;
+  inline void set_lfp_opt_version(::google::protobuf::uint32 value);
+  
+  // optional .ArteChanOptPb chans = 3;
+  inline bool has_chans() const;
+  inline void clear_chans();
+  static const int kChansFieldNumber = 3;
+  inline const ::ArteChanOptPb& chans() const;
+  inline ::ArteChanOptPb* mutable_chans();
+  inline ::ArteChanOptPb* release_chans();
+  
+  // optional uint32 keep_nth_sample = 4;
+  inline bool has_keep_nth_sample() const;
+  inline void clear_keep_nth_sample();
+  static const int kKeepNthSampleFieldNumber = 4;
+  inline ::google::protobuf::uint32 keep_nth_sample() const;
+  inline void set_keep_nth_sample(::google::protobuf::uint32 value);
+  
+  // optional string port = 5;
+  inline bool has_port() const;
+  inline void clear_port();
+  static const int kPortFieldNumber = 5;
+  inline const ::std::string& port() const;
+  inline void set_port(const ::std::string& value);
+  inline void set_port(const char* value);
+  inline void set_port(const char* value, size_t size);
+  inline ::std::string* mutable_port();
+  inline ::std::string* release_port();
+  
+  // optional string host_ip = 6;
+  inline bool has_host_ip() const;
+  inline void clear_host_ip();
+  static const int kHostIpFieldNumber = 6;
+  inline const ::std::string& host_ip() const;
+  inline void set_host_ip(const ::std::string& value);
+  inline void set_host_ip(const char* value);
+  inline void set_host_ip(const char* value, size_t size);
+  inline ::std::string* mutable_host_ip();
+  inline ::std::string* release_host_ip();
+  
+  // optional .ArteFilterOptPb filter = 7;
+  inline bool has_filter() const;
+  inline void clear_filter();
+  static const int kFilterFieldNumber = 7;
+  inline const ::ArteFilterOptPb& filter() const;
+  inline ::ArteFilterOptPb* mutable_filter();
+  inline ::ArteFilterOptPb* release_filter();
+  
+  // optional uint32 daq_id = 8;
+  inline bool has_daq_id() const;
+  inline void clear_daq_id();
+  static const int kDaqIdFieldNumber = 8;
+  inline ::google::protobuf::uint32 daq_id() const;
+  inline void set_daq_id(::google::protobuf::uint32 value);
+  
+  // optional bool disk = 9;
+  inline bool has_disk() const;
+  inline void clear_disk();
+  static const int kDiskFieldNumber = 9;
+  inline bool disk() const;
+  inline void set_disk(bool value);
+  
+  // optional bool network = 10;
+  inline bool has_network() const;
+  inline void clear_network();
+  static const int kNetworkFieldNumber = 10;
+  inline bool network() const;
+  inline void set_network(bool value);
+  
+  // @@protoc_insertion_point(class_scope:ArteLfpOptPb)
+ private:
+  inline void set_has_source_lfpbank();
+  inline void clear_has_source_lfpbank();
+  inline void set_has_lfp_opt_version();
+  inline void clear_has_lfp_opt_version();
+  inline void set_has_chans();
+  inline void clear_has_chans();
+  inline void set_has_keep_nth_sample();
+  inline void clear_has_keep_nth_sample();
+  inline void set_has_port();
+  inline void clear_has_port();
+  inline void set_has_host_ip();
+  inline void clear_has_host_ip();
+  inline void set_has_filter();
+  inline void clear_has_filter();
+  inline void set_has_daq_id();
+  inline void clear_has_daq_id();
+  inline void set_has_disk();
+  inline void clear_has_disk();
+  inline void set_has_network();
+  inline void clear_has_network();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::google::protobuf::uint32 source_lfpbank_;
+  ::google::protobuf::uint32 lfp_opt_version_;
+  ::ArteChanOptPb* chans_;
+  ::std::string* port_;
+  ::std::string* host_ip_;
+  ::google::protobuf::uint32 keep_nth_sample_;
+  ::google::protobuf::uint32 daq_id_;
+  ::ArteFilterOptPb* filter_;
+  bool disk_;
+  bool network_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(10 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_arte_5fpb_2eproto();
+  friend void protobuf_AssignDesc_arte_5fpb_2eproto();
+  friend void protobuf_ShutdownFile_arte_5fpb_2eproto();
+  
+  void InitAsDefaultInstance();
+  static ArteLfpOptPb* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class ArteTimerOptPb : public ::google::protobuf::Message {
+ public:
+  ArteTimerOptPb();
+  virtual ~ArteTimerOptPb();
+  
+  ArteTimerOptPb(const ArteTimerOptPb& from);
+  
+  inline ArteTimerOptPb& operator=(const ArteTimerOptPb& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ArteTimerOptPb& default_instance();
+  
+  void Swap(ArteTimerOptPb* other);
+  
+  // implements Message ----------------------------------------------
+  
+  ArteTimerOptPb* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const ArteTimerOptPb& from);
+  void MergeFrom(const ArteTimerOptPb& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // optional string clock_source = 1;
+  inline bool has_clock_source() const;
+  inline void clear_clock_source();
+  static const int kClockSourceFieldNumber = 1;
+  inline const ::std::string& clock_source() const;
+  inline void set_clock_source(const ::std::string& value);
+  inline void set_clock_source(const char* value);
+  inline void set_clock_source(const char* value, size_t size);
+  inline ::std::string* mutable_clock_source();
+  inline ::std::string* release_clock_source();
+  
+  // optional string dev_name = 2;
+  inline bool has_dev_name() const;
+  inline void clear_dev_name();
+  static const int kDevNameFieldNumber = 2;
+  inline const ::std::string& dev_name() const;
+  inline void set_dev_name(const ::std::string& value);
+  inline void set_dev_name(const char* value);
+  inline void set_dev_name(const char* value, size_t size);
+  inline ::std::string* mutable_dev_name();
+  inline ::std::string* release_dev_name();
+  
+  // optional string ctr_name = 3;
+  inline bool has_ctr_name() const;
+  inline void clear_ctr_name();
+  static const int kCtrNameFieldNumber = 3;
+  inline const ::std::string& ctr_name() const;
+  inline void set_ctr_name(const ::std::string& value);
+  inline void set_ctr_name(const char* value);
+  inline void set_ctr_name(const char* value, size_t size);
+  inline ::std::string* mutable_ctr_name();
+  inline ::std::string* release_ctr_name();
+  
+  // optional string timer_role = 4;
+  inline bool has_timer_role() const;
+  inline void clear_timer_role();
+  static const int kTimerRoleFieldNumber = 4;
+  inline const ::std::string& timer_role() const;
+  inline void set_timer_role(const ::std::string& value);
+  inline void set_timer_role(const char* value);
+  inline void set_timer_role(const char* value, size_t size);
+  inline ::std::string* mutable_timer_role();
+  inline ::std::string* release_timer_role();
+  
+  // optional uint32 timer_freq = 5;
+  inline bool has_timer_freq() const;
+  inline void clear_timer_freq();
+  static const int kTimerFreqFieldNumber = 5;
+  inline ::google::protobuf::uint32 timer_freq() const;
+  inline void set_timer_freq(::google::protobuf::uint32 value);
+  
+  // @@protoc_insertion_point(class_scope:ArteTimerOptPb)
+ private:
+  inline void set_has_clock_source();
+  inline void clear_has_clock_source();
+  inline void set_has_dev_name();
+  inline void clear_has_dev_name();
+  inline void set_has_ctr_name();
+  inline void clear_has_ctr_name();
+  inline void set_has_timer_role();
+  inline void clear_has_timer_role();
+  inline void set_has_timer_freq();
+  inline void clear_has_timer_freq();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::std::string* clock_source_;
+  ::std::string* dev_name_;
+  ::std::string* ctr_name_;
+  ::std::string* timer_role_;
+  ::google::protobuf::uint32 timer_freq_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_arte_5fpb_2eproto();
+  friend void protobuf_AssignDesc_arte_5fpb_2eproto();
+  friend void protobuf_ShutdownFile_arte_5fpb_2eproto();
+  
+  void InitAsDefaultInstance();
+  static ArteTimerOptPb* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class ArteCommandPortOptPb : public ::google::protobuf::Message {
+ public:
+  ArteCommandPortOptPb();
+  virtual ~ArteCommandPortOptPb();
+  
+  ArteCommandPortOptPb(const ArteCommandPortOptPb& from);
+  
+  inline ArteCommandPortOptPb& operator=(const ArteCommandPortOptPb& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ArteCommandPortOptPb& default_instance();
+  
+  void Swap(ArteCommandPortOptPb* other);
+  
+  // implements Message ----------------------------------------------
+  
+  ArteCommandPortOptPb* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const ArteCommandPortOptPb& from);
+  void MergeFrom(const ArteCommandPortOptPb& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // optional string command_host = 1;
+  inline bool has_command_host() const;
+  inline void clear_command_host();
+  static const int kCommandHostFieldNumber = 1;
+  inline const ::std::string& command_host() const;
+  inline void set_command_host(const ::std::string& value);
+  inline void set_command_host(const char* value);
+  inline void set_command_host(const char* value, size_t size);
+  inline ::std::string* mutable_command_host();
+  inline ::std::string* release_command_host();
+  
+  // optional string port = 2;
+  inline bool has_port() const;
+  inline void clear_port();
+  static const int kPortFieldNumber = 2;
+  inline const ::std::string& port() const;
+  inline void set_port(const ::std::string& value);
+  inline void set_port(const char* value);
+  inline void set_port(const char* value, size_t size);
+  inline ::std::string* mutable_port();
+  inline ::std::string* release_port();
+  
+  // optional string secondary_port = 3;
+  inline bool has_secondary_port() const;
+  inline void clear_secondary_port();
+  static const int kSecondaryPortFieldNumber = 3;
+  inline const ::std::string& secondary_port() const;
+  inline void set_secondary_port(const ::std::string& value);
+  inline void set_secondary_port(const char* value);
+  inline void set_secondary_port(const char* value, size_t size);
+  inline ::std::string* mutable_secondary_port();
+  inline ::std::string* release_secondary_port();
+  
+  // @@protoc_insertion_point(class_scope:ArteCommandPortOptPb)
+ private:
+  inline void set_has_command_host();
+  inline void clear_has_command_host();
+  inline void set_has_port();
+  inline void clear_has_port();
+  inline void set_has_secondary_port();
+  inline void clear_has_secondary_port();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::std::string* command_host_;
+  ::std::string* port_;
+  ::std::string* secondary_port_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_arte_5fpb_2eproto();
+  friend void protobuf_AssignDesc_arte_5fpb_2eproto();
+  friend void protobuf_ShutdownFile_arte_5fpb_2eproto();
+  
+  void InitAsDefaultInstance();
+  static ArteCommandPortOptPb* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class ArteHostOptPb : public ::google::protobuf::Message {
+ public:
+  ArteHostOptPb();
+  virtual ~ArteHostOptPb();
+  
+  ArteHostOptPb(const ArteHostOptPb& from);
+  
+  inline ArteHostOptPb& operator=(const ArteHostOptPb& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ArteHostOptPb& default_instance();
+  
+  void Swap(ArteHostOptPb* other);
+  
+  // implements Message ----------------------------------------------
+  
+  ArteHostOptPb* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const ArteHostOptPb& from);
+  void MergeFrom(const ArteHostOptPb& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // optional string host = 1;
+  inline bool has_host() const;
+  inline void clear_host();
+  static const int kHostFieldNumber = 1;
+  inline const ::std::string& host() const;
+  inline void set_host(const ::std::string& value);
+  inline void set_host(const char* value);
+  inline void set_host(const char* value, size_t size);
+  inline ::std::string* mutable_host();
+  inline ::std::string* release_host();
+  
+  // optional string ip_addy = 2;
+  inline bool has_ip_addy() const;
+  inline void clear_ip_addy();
+  static const int kIpAddyFieldNumber = 2;
+  inline const ::std::string& ip_addy() const;
+  inline void set_ip_addy(const ::std::string& value);
+  inline void set_ip_addy(const char* value);
+  inline void set_ip_addy(const char* value, size_t size);
+  inline ::std::string* mutable_ip_addy();
+  inline ::std::string* release_ip_addy();
+  
+  // @@protoc_insertion_point(class_scope:ArteHostOptPb)
+ private:
+  inline void set_has_host();
+  inline void clear_has_host();
+  inline void set_has_ip_addy();
+  inline void clear_has_ip_addy();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::std::string* host_;
+  ::std::string* ip_addy_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_arte_5fpb_2eproto();
+  friend void protobuf_AssignDesc_arte_5fpb_2eproto();
+  friend void protobuf_ShutdownFile_arte_5fpb_2eproto();
+  
+  void InitAsDefaultInstance();
+  static ArteHostOptPb* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class ArteNeuralDaqOptPb : public ::google::protobuf::Message {
+ public:
+  ArteNeuralDaqOptPb();
+  virtual ~ArteNeuralDaqOptPb();
+  
+  ArteNeuralDaqOptPb(const ArteNeuralDaqOptPb& from);
+  
+  inline ArteNeuralDaqOptPb& operator=(const ArteNeuralDaqOptPb& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ArteNeuralDaqOptPb& default_instance();
+  
+  void Swap(ArteNeuralDaqOptPb* other);
+  
+  // implements Message ----------------------------------------------
+  
+  ArteNeuralDaqOptPb* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const ArteNeuralDaqOptPb& from);
+  void MergeFrom(const ArteNeuralDaqOptPb& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // optional string daq_type = 1;
+  inline bool has_daq_type() const;
+  inline void clear_daq_type();
+  static const int kDaqTypeFieldNumber = 1;
+  inline const ::std::string& daq_type() const;
+  inline void set_daq_type(const ::std::string& value);
+  inline void set_daq_type(const char* value);
+  inline void set_daq_type(const char* value, size_t size);
+  inline ::std::string* mutable_daq_type();
+  inline ::std::string* release_daq_type();
+  
+  // optional string dev_name = 2;
+  inline bool has_dev_name() const;
+  inline void clear_dev_name();
+  static const int kDevNameFieldNumber = 2;
+  inline const ::std::string& dev_name() const;
+  inline void set_dev_name(const ::std::string& value);
+  inline void set_dev_name(const char* value);
+  inline void set_dev_name(const char* value, size_t size);
+  inline ::std::string* mutable_dev_name();
+  inline ::std::string* release_dev_name();
+  
+  // optional uint32 id = 3;
+  inline bool has_id() const;
+  inline void clear_id();
+  static const int kIdFieldNumber = 3;
+  inline ::google::protobuf::uint32 id() const;
+  inline void set_id(::google::protobuf::uint32 value);
+  
+  // optional string in_filename = 4;
+  inline bool has_in_filename() const;
+  inline void clear_in_filename();
+  static const int kInFilenameFieldNumber = 4;
+  inline const ::std::string& in_filename() const;
+  inline void set_in_filename(const ::std::string& value);
+  inline void set_in_filename(const char* value);
+  inline void set_in_filename(const char* value, size_t size);
+  inline ::std::string* mutable_in_filename();
+  inline ::std::string* release_in_filename();
+  
+  // optional string out_filename = 5;
+  inline bool has_out_filename() const;
+  inline void clear_out_filename();
+  static const int kOutFilenameFieldNumber = 5;
+  inline const ::std::string& out_filename() const;
+  inline void set_out_filename(const ::std::string& value);
+  inline void set_out_filename(const char* value);
+  inline void set_out_filename(const char* value, size_t size);
+  inline ::std::string* mutable_out_filename();
+  inline ::std::string* release_out_filename();
+  
+  // optional uint32 buffer_time_samps = 6;
+  inline bool has_buffer_time_samps() const;
+  inline void clear_buffer_time_samps();
+  static const int kBufferTimeSampsFieldNumber = 6;
+  inline ::google::protobuf::uint32 buffer_time_samps() const;
+  inline void set_buffer_time_samps(::google::protobuf::uint32 value);
+  
+  // optional uint32 buffer_n_chans = 7;
+  inline bool has_buffer_n_chans() const;
+  inline void clear_buffer_n_chans();
+  static const int kBufferNChansFieldNumber = 7;
+  inline ::google::protobuf::uint32 buffer_n_chans() const;
+  inline void set_buffer_n_chans(::google::protobuf::uint32 value);
+  
+  // optional bool is_master = 8;
+  inline bool has_is_master() const;
+  inline void clear_is_master();
+  static const int kIsMasterFieldNumber = 8;
+  inline bool is_master() const;
+  inline void set_is_master(bool value);
+  
+  // @@protoc_insertion_point(class_scope:ArteNeuralDaqOptPb)
+ private:
+  inline void set_has_daq_type();
+  inline void clear_has_daq_type();
+  inline void set_has_dev_name();
+  inline void clear_has_dev_name();
+  inline void set_has_id();
+  inline void clear_has_id();
+  inline void set_has_in_filename();
+  inline void clear_has_in_filename();
+  inline void set_has_out_filename();
+  inline void clear_has_out_filename();
+  inline void set_has_buffer_time_samps();
+  inline void clear_has_buffer_time_samps();
+  inline void set_has_buffer_n_chans();
+  inline void clear_has_buffer_n_chans();
+  inline void set_has_is_master();
+  inline void clear_has_is_master();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::std::string* daq_type_;
+  ::std::string* dev_name_;
+  ::std::string* in_filename_;
+  ::google::protobuf::uint32 id_;
+  ::google::protobuf::uint32 buffer_time_samps_;
+  ::std::string* out_filename_;
+  ::google::protobuf::uint32 buffer_n_chans_;
+  bool is_master_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(8 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_arte_5fpb_2eproto();
+  friend void protobuf_AssignDesc_arte_5fpb_2eproto();
+  friend void protobuf_ShutdownFile_arte_5fpb_2eproto();
+  
+  void InitAsDefaultInstance();
+  static ArteNeuralDaqOptPb* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class ArteSetupOptPb : public ::google::protobuf::Message {
+ public:
+  ArteSetupOptPb();
+  virtual ~ArteSetupOptPb();
+  
+  ArteSetupOptPb(const ArteSetupOptPb& from);
+  
+  inline ArteSetupOptPb& operator=(const ArteSetupOptPb& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ArteSetupOptPb& default_instance();
+  
+  void Swap(ArteSetupOptPb* other);
+  
+  // implements Message ----------------------------------------------
+  
+  ArteSetupOptPb* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const ArteSetupOptPb& from);
+  void MergeFrom(const ArteSetupOptPb& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // repeated .ArteNeuralDaqOptPb daqs = 1;
+  inline int daqs_size() const;
+  inline void clear_daqs();
+  static const int kDaqsFieldNumber = 1;
+  inline const ::ArteNeuralDaqOptPb& daqs(int index) const;
+  inline ::ArteNeuralDaqOptPb* mutable_daqs(int index);
+  inline ::ArteNeuralDaqOptPb* add_daqs();
+  inline const ::google::protobuf::RepeatedPtrField< ::ArteNeuralDaqOptPb >&
+      daqs() const;
+  inline ::google::protobuf::RepeatedPtrField< ::ArteNeuralDaqOptPb >*
+      mutable_daqs();
+  
+  // optional .ArteCommandPortOptPb command_port = 2;
+  inline bool has_command_port() const;
+  inline void clear_command_port();
+  static const int kCommandPortFieldNumber = 2;
+  inline const ::ArteCommandPortOptPb& command_port() const;
+  inline ::ArteCommandPortOptPb* mutable_command_port();
+  inline ::ArteCommandPortOptPb* release_command_port();
+  
+  // repeated .ArteHostOptPb host_list = 3;
+  inline int host_list_size() const;
+  inline void clear_host_list();
+  static const int kHostListFieldNumber = 3;
+  inline const ::ArteHostOptPb& host_list(int index) const;
+  inline ::ArteHostOptPb* mutable_host_list(int index);
+  inline ::ArteHostOptPb* add_host_list();
+  inline const ::google::protobuf::RepeatedPtrField< ::ArteHostOptPb >&
+      host_list() const;
+  inline ::google::protobuf::RepeatedPtrField< ::ArteHostOptPb >*
+      mutable_host_list();
+  
+  // repeated .ArteFilterOptPb filters = 4;
+  inline int filters_size() const;
+  inline void clear_filters();
+  static const int kFiltersFieldNumber = 4;
+  inline const ::ArteFilterOptPb& filters(int index) const;
+  inline ::ArteFilterOptPb* mutable_filters(int index);
+  inline ::ArteFilterOptPb* add_filters();
+  inline const ::google::protobuf::RepeatedPtrField< ::ArteFilterOptPb >&
+      filters() const;
+  inline ::google::protobuf::RepeatedPtrField< ::ArteFilterOptPb >*
+      mutable_filters();
+  
+  // @@protoc_insertion_point(class_scope:ArteSetupOptPb)
+ private:
+  inline void set_has_command_port();
+  inline void clear_has_command_port();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::google::protobuf::RepeatedPtrField< ::ArteNeuralDaqOptPb > daqs_;
+  ::ArteCommandPortOptPb* command_port_;
+  ::google::protobuf::RepeatedPtrField< ::ArteHostOptPb > host_list_;
+  ::google::protobuf::RepeatedPtrField< ::ArteFilterOptPb > filters_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_arte_5fpb_2eproto();
+  friend void protobuf_AssignDesc_arte_5fpb_2eproto();
+  friend void protobuf_ShutdownFile_arte_5fpb_2eproto();
+  
+  void InitAsDefaultInstance();
+  static ArteSetupOptPb* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class ArteSessionOptPb : public ::google::protobuf::Message {
+ public:
+  ArteSessionOptPb();
+  virtual ~ArteSessionOptPb();
+  
+  ArteSessionOptPb(const ArteSessionOptPb& from);
+  
+  inline ArteSessionOptPb& operator=(const ArteSessionOptPb& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ArteSessionOptPb& default_instance();
+  
+  void Swap(ArteSessionOptPb* other);
+  
+  // implements Message ----------------------------------------------
+  
+  ArteSessionOptPb* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const ArteSessionOptPb& from);
+  void MergeFrom(const ArteSessionOptPb& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // optional string main_filename = 1;
+  inline bool has_main_filename() const;
+  inline void clear_main_filename();
+  static const int kMainFilenameFieldNumber = 1;
+  inline const ::std::string& main_filename() const;
+  inline void set_main_filename(const ::std::string& value);
+  inline void set_main_filename(const char* value);
+  inline void set_main_filename(const char* value, size_t size);
+  inline ::std::string* mutable_main_filename();
+  inline ::std::string* release_main_filename();
+  
+  // optional .ArteTrodeOptPb default_trode = 2;
+  inline bool has_default_trode() const;
+  inline void clear_default_trode();
+  static const int kDefaultTrodeFieldNumber = 2;
+  inline const ::ArteTrodeOptPb& default_trode() const;
+  inline ::ArteTrodeOptPb* mutable_default_trode();
+  inline ::ArteTrodeOptPb* release_default_trode();
+  
+  // repeated .ArteTrodeOptPb trodes = 3;
+  inline int trodes_size() const;
+  inline void clear_trodes();
+  static const int kTrodesFieldNumber = 3;
+  inline const ::ArteTrodeOptPb& trodes(int index) const;
+  inline ::ArteTrodeOptPb* mutable_trodes(int index);
+  inline ::ArteTrodeOptPb* add_trodes();
+  inline const ::google::protobuf::RepeatedPtrField< ::ArteTrodeOptPb >&
+      trodes() const;
+  inline ::google::protobuf::RepeatedPtrField< ::ArteTrodeOptPb >*
+      mutable_trodes();
+  
+  // optional .ArteLfpOptPb default_lfpbank = 4;
+  inline bool has_default_lfpbank() const;
+  inline void clear_default_lfpbank();
+  static const int kDefaultLfpbankFieldNumber = 4;
+  inline const ::ArteLfpOptPb& default_lfpbank() const;
+  inline ::ArteLfpOptPb* mutable_default_lfpbank();
+  inline ::ArteLfpOptPb* release_default_lfpbank();
+  
+  // repeated .ArteLfpOptPb lfpbanks = 5;
+  inline int lfpbanks_size() const;
+  inline void clear_lfpbanks();
+  static const int kLfpbanksFieldNumber = 5;
+  inline const ::ArteLfpOptPb& lfpbanks(int index) const;
+  inline ::ArteLfpOptPb* mutable_lfpbanks(int index);
+  inline ::ArteLfpOptPb* add_lfpbanks();
+  inline const ::google::protobuf::RepeatedPtrField< ::ArteLfpOptPb >&
+      lfpbanks() const;
+  inline ::google::protobuf::RepeatedPtrField< ::ArteLfpOptPb >*
+      mutable_lfpbanks();
+  
+  // @@protoc_insertion_point(class_scope:ArteSessionOptPb)
+ private:
+  inline void set_has_main_filename();
+  inline void clear_has_main_filename();
+  inline void set_has_default_trode();
+  inline void clear_has_default_trode();
+  inline void set_has_default_lfpbank();
+  inline void clear_has_default_lfpbank();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::std::string* main_filename_;
+  ::ArteTrodeOptPb* default_trode_;
+  ::google::protobuf::RepeatedPtrField< ::ArteTrodeOptPb > trodes_;
+  ::ArteLfpOptPb* default_lfpbank_;
+  ::google::protobuf::RepeatedPtrField< ::ArteLfpOptPb > lfpbanks_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_arte_5fpb_2eproto();
+  friend void protobuf_AssignDesc_arte_5fpb_2eproto();
+  friend void protobuf_ShutdownFile_arte_5fpb_2eproto();
+  
+  void InitAsDefaultInstance();
+  static ArteSessionOptPb* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -519,83 +2124,105 @@ class ArtePb : public ::google::protobuf::Message {
   inline ::google::protobuf::uint64 timestamp() const;
   inline void set_timestamp(::google::protobuf::uint64 value);
   
-  // optional .ArteSpikePb arte_spike_pb = 2;
-  inline bool has_arte_spike_pb() const;
-  inline void clear_arte_spike_pb();
-  static const int kArteSpikePbFieldNumber = 2;
-  inline const ::ArteSpikePb& arte_spike_pb() const;
-  inline ::ArteSpikePb* mutable_arte_spike_pb();
-  inline ::ArteSpikePb* release_arte_spike_pb();
+  // optional .ArteSpikePb arte_spike = 2;
+  inline bool has_arte_spike() const;
+  inline void clear_arte_spike();
+  static const int kArteSpikeFieldNumber = 2;
+  inline const ::ArteSpikePb& arte_spike() const;
+  inline ::ArteSpikePb* mutable_arte_spike();
+  inline ::ArteSpikePb* release_arte_spike();
   
-  // optional .ArteLfpPb arte_lfp_pb = 3;
-  inline bool has_arte_lfp_pb() const;
-  inline void clear_arte_lfp_pb();
-  static const int kArteLfpPbFieldNumber = 3;
-  inline const ::ArteLfpPb& arte_lfp_pb() const;
-  inline ::ArteLfpPb* mutable_arte_lfp_pb();
-  inline ::ArteLfpPb* release_arte_lfp_pb();
+  // optional .ArteLfpPb arte_lfp = 3;
+  inline bool has_arte_lfp() const;
+  inline void clear_arte_lfp();
+  static const int kArteLfpFieldNumber = 3;
+  inline const ::ArteLfpPb& arte_lfp() const;
+  inline ::ArteLfpPb* mutable_arte_lfp();
+  inline ::ArteLfpPb* release_arte_lfp();
   
-  // optional .ArteCommand arte_command_pb = 4;
-  inline bool has_arte_command_pb() const;
-  inline void clear_arte_command_pb();
-  static const int kArteCommandPbFieldNumber = 4;
-  inline const ::ArteCommand& arte_command_pb() const;
-  inline ::ArteCommand* mutable_arte_command_pb();
-  inline ::ArteCommand* release_arte_command_pb();
+  // optional .ArteCommand arte_command = 4;
+  inline bool has_arte_command() const;
+  inline void clear_arte_command();
+  static const int kArteCommandFieldNumber = 4;
+  inline const ::ArteCommand& arte_command() const;
+  inline ::ArteCommand* mutable_arte_command();
+  inline ::ArteCommand* release_arte_command();
   
-  // optional .ArteEventStringPb arte_event_string_pb = 5;
-  inline bool has_arte_event_string_pb() const;
-  inline void clear_arte_event_string_pb();
-  static const int kArteEventStringPbFieldNumber = 5;
-  inline const ::ArteEventStringPb& arte_event_string_pb() const;
-  inline ::ArteEventStringPb* mutable_arte_event_string_pb();
-  inline ::ArteEventStringPb* release_arte_event_string_pb();
+  // optional .ArteEventStringPb arte_event_string = 5;
+  inline bool has_arte_event_string() const;
+  inline void clear_arte_event_string();
+  static const int kArteEventStringFieldNumber = 5;
+  inline const ::ArteEventStringPb& arte_event_string() const;
+  inline ::ArteEventStringPb* mutable_arte_event_string();
+  inline ::ArteEventStringPb* release_arte_event_string();
   
-  // optional .ArteRawBufferPb arte_raw_buffer_pb = 6;
-  inline bool has_arte_raw_buffer_pb() const;
-  inline void clear_arte_raw_buffer_pb();
-  static const int kArteRawBufferPbFieldNumber = 6;
-  inline const ::ArteRawBufferPb& arte_raw_buffer_pb() const;
-  inline ::ArteRawBufferPb* mutable_arte_raw_buffer_pb();
-  inline ::ArteRawBufferPb* release_arte_raw_buffer_pb();
+  // optional .ArteRawBufferPb arte_raw_buffer = 6;
+  inline bool has_arte_raw_buffer() const;
+  inline void clear_arte_raw_buffer();
+  static const int kArteRawBufferFieldNumber = 6;
+  inline const ::ArteRawBufferPb& arte_raw_buffer() const;
+  inline ::ArteRawBufferPb* mutable_arte_raw_buffer();
+  inline ::ArteRawBufferPb* release_arte_raw_buffer();
   
-  // optional .ArtePosPb arte_pos_pb = 7;
-  inline bool has_arte_pos_pb() const;
-  inline void clear_arte_pos_pb();
-  static const int kArtePosPbFieldNumber = 7;
-  inline const ::ArtePosPb& arte_pos_pb() const;
-  inline ::ArtePosPb* mutable_arte_pos_pb();
-  inline ::ArtePosPb* release_arte_pos_pb();
+  // optional .ArtePosPb arte_pos = 7;
+  inline bool has_arte_pos() const;
+  inline void clear_arte_pos();
+  static const int kArtePosFieldNumber = 7;
+  inline const ::ArtePosPb& arte_pos() const;
+  inline ::ArtePosPb* mutable_arte_pos();
+  inline ::ArtePosPb* release_arte_pos();
+  
+  // optional .ArteSetupOptPb arte_setup = 8;
+  inline bool has_arte_setup() const;
+  inline void clear_arte_setup();
+  static const int kArteSetupFieldNumber = 8;
+  inline const ::ArteSetupOptPb& arte_setup() const;
+  inline ::ArteSetupOptPb* mutable_arte_setup();
+  inline ::ArteSetupOptPb* release_arte_setup();
+  
+  // optional .ArteSessionOptPb arte_session = 9;
+  inline bool has_arte_session() const;
+  inline void clear_arte_session();
+  static const int kArteSessionFieldNumber = 9;
+  inline const ::ArteSessionOptPb& arte_session() const;
+  inline ::ArteSessionOptPb* mutable_arte_session();
+  inline ::ArteSessionOptPb* release_arte_session();
   
   // @@protoc_insertion_point(class_scope:ArtePb)
  private:
   inline void set_has_timestamp();
   inline void clear_has_timestamp();
-  inline void set_has_arte_spike_pb();
-  inline void clear_has_arte_spike_pb();
-  inline void set_has_arte_lfp_pb();
-  inline void clear_has_arte_lfp_pb();
-  inline void set_has_arte_command_pb();
-  inline void clear_has_arte_command_pb();
-  inline void set_has_arte_event_string_pb();
-  inline void clear_has_arte_event_string_pb();
-  inline void set_has_arte_raw_buffer_pb();
-  inline void clear_has_arte_raw_buffer_pb();
-  inline void set_has_arte_pos_pb();
-  inline void clear_has_arte_pos_pb();
+  inline void set_has_arte_spike();
+  inline void clear_has_arte_spike();
+  inline void set_has_arte_lfp();
+  inline void clear_has_arte_lfp();
+  inline void set_has_arte_command();
+  inline void clear_has_arte_command();
+  inline void set_has_arte_event_string();
+  inline void clear_has_arte_event_string();
+  inline void set_has_arte_raw_buffer();
+  inline void clear_has_arte_raw_buffer();
+  inline void set_has_arte_pos();
+  inline void clear_has_arte_pos();
+  inline void set_has_arte_setup();
+  inline void clear_has_arte_setup();
+  inline void set_has_arte_session();
+  inline void clear_has_arte_session();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::google::protobuf::uint64 timestamp_;
-  ::ArteSpikePb* arte_spike_pb_;
-  ::ArteLfpPb* arte_lfp_pb_;
-  ::ArteCommand* arte_command_pb_;
-  ::ArteEventStringPb* arte_event_string_pb_;
-  ::ArteRawBufferPb* arte_raw_buffer_pb_;
-  ::ArtePosPb* arte_pos_pb_;
+  ::ArteSpikePb* arte_spike_;
+  ::ArteLfpPb* arte_lfp_;
+  ::ArteCommand* arte_command_;
+  ::ArteEventStringPb* arte_event_string_;
+  ::ArteRawBufferPb* arte_raw_buffer_;
+  ::ArtePosPb* arte_pos_;
+  ::ArteSetupOptPb* arte_setup_;
+  ::ArteSessionOptPb* arte_session_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(7 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(9 + 31) / 32];
   
   friend void  protobuf_AddDesc_arte_5fpb_2eproto();
   friend void protobuf_AssignDesc_arte_5fpb_2eproto();
@@ -609,9 +2236,38 @@ class ArtePb : public ::google::protobuf::Message {
 
 // ===================================================================
 
+// ArteVoltageTimeseries
+
+// repeated float voltage = 1;
+inline int ArteVoltageTimeseries::voltage_size() const {
+  return voltage_.size();
+}
+inline void ArteVoltageTimeseries::clear_voltage() {
+  voltage_.Clear();
+}
+inline float ArteVoltageTimeseries::voltage(int index) const {
+  return voltage_.Get(index);
+}
+inline void ArteVoltageTimeseries::set_voltage(int index, float value) {
+  voltage_.Set(index, value);
+}
+inline void ArteVoltageTimeseries::add_voltage(float value) {
+  voltage_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< float >&
+ArteVoltageTimeseries::voltage() const {
+  return voltage_;
+}
+inline ::google::protobuf::RepeatedField< float >*
+ArteVoltageTimeseries::mutable_voltage() {
+  return &voltage_;
+}
+
+// -------------------------------------------------------------------
+
 // ArteSpikePb
 
-// optional int32 source_trode = 1;
+// optional uint32 source_trode = 1;
 inline bool ArteSpikePb::has_source_trode() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -622,22 +2278,69 @@ inline void ArteSpikePb::clear_has_source_trode() {
   _has_bits_[0] &= ~0x00000001u;
 }
 inline void ArteSpikePb::clear_source_trode() {
-  source_trode_ = 0;
+  source_trode_ = 0u;
   clear_has_source_trode();
 }
-inline ::google::protobuf::int32 ArteSpikePb::source_trode() const {
+inline ::google::protobuf::uint32 ArteSpikePb::source_trode() const {
   return source_trode_;
 }
-inline void ArteSpikePb::set_source_trode(::google::protobuf::int32 value) {
+inline void ArteSpikePb::set_source_trode(::google::protobuf::uint32 value) {
   set_has_source_trode();
   source_trode_ = value;
+}
+
+// repeated .ArteVoltageTimeseries chan_data = 2;
+inline int ArteSpikePb::chan_data_size() const {
+  return chan_data_.size();
+}
+inline void ArteSpikePb::clear_chan_data() {
+  chan_data_.Clear();
+}
+inline const ::ArteVoltageTimeseries& ArteSpikePb::chan_data(int index) const {
+  return chan_data_.Get(index);
+}
+inline ::ArteVoltageTimeseries* ArteSpikePb::mutable_chan_data(int index) {
+  return chan_data_.Mutable(index);
+}
+inline ::ArteVoltageTimeseries* ArteSpikePb::add_chan_data() {
+  return chan_data_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::ArteVoltageTimeseries >&
+ArteSpikePb::chan_data() const {
+  return chan_data_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::ArteVoltageTimeseries >*
+ArteSpikePb::mutable_chan_data() {
+  return &chan_data_;
+}
+
+// optional uint32 trode_opt_version = 3;
+inline bool ArteSpikePb::has_trode_opt_version() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void ArteSpikePb::set_has_trode_opt_version() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void ArteSpikePb::clear_has_trode_opt_version() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void ArteSpikePb::clear_trode_opt_version() {
+  trode_opt_version_ = 0u;
+  clear_has_trode_opt_version();
+}
+inline ::google::protobuf::uint32 ArteSpikePb::trode_opt_version() const {
+  return trode_opt_version_;
+}
+inline void ArteSpikePb::set_trode_opt_version(::google::protobuf::uint32 value) {
+  set_has_trode_opt_version();
+  trode_opt_version_ = value;
 }
 
 // -------------------------------------------------------------------
 
 // ArteLfpPb
 
-// optional int32 source_lfpbank = 1;
+// optional uint32 source_lfpbank = 1;
 inline bool ArteLfpPb::has_source_lfpbank() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -648,15 +2351,62 @@ inline void ArteLfpPb::clear_has_source_lfpbank() {
   _has_bits_[0] &= ~0x00000001u;
 }
 inline void ArteLfpPb::clear_source_lfpbank() {
-  source_lfpbank_ = 0;
+  source_lfpbank_ = 0u;
   clear_has_source_lfpbank();
 }
-inline ::google::protobuf::int32 ArteLfpPb::source_lfpbank() const {
+inline ::google::protobuf::uint32 ArteLfpPb::source_lfpbank() const {
   return source_lfpbank_;
 }
-inline void ArteLfpPb::set_source_lfpbank(::google::protobuf::int32 value) {
+inline void ArteLfpPb::set_source_lfpbank(::google::protobuf::uint32 value) {
   set_has_source_lfpbank();
   source_lfpbank_ = value;
+}
+
+// repeated .ArteVoltageTimeseries chan_data = 2;
+inline int ArteLfpPb::chan_data_size() const {
+  return chan_data_.size();
+}
+inline void ArteLfpPb::clear_chan_data() {
+  chan_data_.Clear();
+}
+inline const ::ArteVoltageTimeseries& ArteLfpPb::chan_data(int index) const {
+  return chan_data_.Get(index);
+}
+inline ::ArteVoltageTimeseries* ArteLfpPb::mutable_chan_data(int index) {
+  return chan_data_.Mutable(index);
+}
+inline ::ArteVoltageTimeseries* ArteLfpPb::add_chan_data() {
+  return chan_data_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::ArteVoltageTimeseries >&
+ArteLfpPb::chan_data() const {
+  return chan_data_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::ArteVoltageTimeseries >*
+ArteLfpPb::mutable_chan_data() {
+  return &chan_data_;
+}
+
+// optional uint32 lfp_opt_version = 3;
+inline bool ArteLfpPb::has_lfp_opt_version() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void ArteLfpPb::set_has_lfp_opt_version() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void ArteLfpPb::clear_has_lfp_opt_version() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void ArteLfpPb::clear_lfp_opt_version() {
+  lfp_opt_version_ = 0u;
+  clear_has_lfp_opt_version();
+}
+inline ::google::protobuf::uint32 ArteLfpPb::lfp_opt_version() const {
+  return lfp_opt_version_;
+}
+inline void ArteLfpPb::set_lfp_opt_version(::google::protobuf::uint32 value) {
+  set_has_lfp_opt_version();
+  lfp_opt_version_ = value;
 }
 
 // -------------------------------------------------------------------
@@ -783,6 +2533,31 @@ inline ::std::string* ArteRawBufferPb::release_device_label() {
   }
 }
 
+// repeated .ArteVoltageTimeseries chan_data = 2;
+inline int ArteRawBufferPb::chan_data_size() const {
+  return chan_data_.size();
+}
+inline void ArteRawBufferPb::clear_chan_data() {
+  chan_data_.Clear();
+}
+inline const ::ArteVoltageTimeseries& ArteRawBufferPb::chan_data(int index) const {
+  return chan_data_.Get(index);
+}
+inline ::ArteVoltageTimeseries* ArteRawBufferPb::mutable_chan_data(int index) {
+  return chan_data_.Mutable(index);
+}
+inline ::ArteVoltageTimeseries* ArteRawBufferPb::add_chan_data() {
+  return chan_data_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::ArteVoltageTimeseries >&
+ArteRawBufferPb::chan_data() const {
+  return chan_data_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::ArteVoltageTimeseries >*
+ArteRawBufferPb::mutable_chan_data() {
+  return &chan_data_;
+}
+
 // -------------------------------------------------------------------
 
 // ArtePosPb
@@ -807,6 +2582,2196 @@ inline float ArtePosPb::x_pos() const {
 inline void ArtePosPb::set_x_pos(float value) {
   set_has_x_pos();
   x_pos_ = value;
+}
+
+// optional float y_pos = 2;
+inline bool ArtePosPb::has_y_pos() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void ArtePosPb::set_has_y_pos() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void ArtePosPb::clear_has_y_pos() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void ArtePosPb::clear_y_pos() {
+  y_pos_ = 0;
+  clear_has_y_pos();
+}
+inline float ArtePosPb::y_pos() const {
+  return y_pos_;
+}
+inline void ArtePosPb::set_y_pos(float value) {
+  set_has_y_pos();
+  y_pos_ = value;
+}
+
+// optional float head_angle = 3;
+inline bool ArtePosPb::has_head_angle() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void ArtePosPb::set_has_head_angle() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void ArtePosPb::clear_has_head_angle() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void ArtePosPb::clear_head_angle() {
+  head_angle_ = 0;
+  clear_has_head_angle();
+}
+inline float ArtePosPb::head_angle() const {
+  return head_angle_;
+}
+inline void ArtePosPb::set_head_angle(float value) {
+  set_has_head_angle();
+  head_angle_ = value;
+}
+
+// optional string behavioral_state = 4;
+inline bool ArtePosPb::has_behavioral_state() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void ArtePosPb::set_has_behavioral_state() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void ArtePosPb::clear_has_behavioral_state() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void ArtePosPb::clear_behavioral_state() {
+  if (behavioral_state_ != &::google::protobuf::internal::kEmptyString) {
+    behavioral_state_->clear();
+  }
+  clear_has_behavioral_state();
+}
+inline const ::std::string& ArtePosPb::behavioral_state() const {
+  return *behavioral_state_;
+}
+inline void ArtePosPb::set_behavioral_state(const ::std::string& value) {
+  set_has_behavioral_state();
+  if (behavioral_state_ == &::google::protobuf::internal::kEmptyString) {
+    behavioral_state_ = new ::std::string;
+  }
+  behavioral_state_->assign(value);
+}
+inline void ArtePosPb::set_behavioral_state(const char* value) {
+  set_has_behavioral_state();
+  if (behavioral_state_ == &::google::protobuf::internal::kEmptyString) {
+    behavioral_state_ = new ::std::string;
+  }
+  behavioral_state_->assign(value);
+}
+inline void ArtePosPb::set_behavioral_state(const char* value, size_t size) {
+  set_has_behavioral_state();
+  if (behavioral_state_ == &::google::protobuf::internal::kEmptyString) {
+    behavioral_state_ = new ::std::string;
+  }
+  behavioral_state_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ArtePosPb::mutable_behavioral_state() {
+  set_has_behavioral_state();
+  if (behavioral_state_ == &::google::protobuf::internal::kEmptyString) {
+    behavioral_state_ = new ::std::string;
+  }
+  return behavioral_state_;
+}
+inline ::std::string* ArtePosPb::release_behavioral_state() {
+  clear_has_behavioral_state();
+  if (behavioral_state_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = behavioral_state_;
+    behavioral_state_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// -------------------------------------------------------------------
+
+// ArteFilterOptPb
+
+// optional string filter_name = 1;
+inline bool ArteFilterOptPb::has_filter_name() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void ArteFilterOptPb::set_has_filter_name() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void ArteFilterOptPb::clear_has_filter_name() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void ArteFilterOptPb::clear_filter_name() {
+  if (filter_name_ != &::google::protobuf::internal::kEmptyString) {
+    filter_name_->clear();
+  }
+  clear_has_filter_name();
+}
+inline const ::std::string& ArteFilterOptPb::filter_name() const {
+  return *filter_name_;
+}
+inline void ArteFilterOptPb::set_filter_name(const ::std::string& value) {
+  set_has_filter_name();
+  if (filter_name_ == &::google::protobuf::internal::kEmptyString) {
+    filter_name_ = new ::std::string;
+  }
+  filter_name_->assign(value);
+}
+inline void ArteFilterOptPb::set_filter_name(const char* value) {
+  set_has_filter_name();
+  if (filter_name_ == &::google::protobuf::internal::kEmptyString) {
+    filter_name_ = new ::std::string;
+  }
+  filter_name_->assign(value);
+}
+inline void ArteFilterOptPb::set_filter_name(const char* value, size_t size) {
+  set_has_filter_name();
+  if (filter_name_ == &::google::protobuf::internal::kEmptyString) {
+    filter_name_ = new ::std::string;
+  }
+  filter_name_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ArteFilterOptPb::mutable_filter_name() {
+  set_has_filter_name();
+  if (filter_name_ == &::google::protobuf::internal::kEmptyString) {
+    filter_name_ = new ::std::string;
+  }
+  return filter_name_;
+}
+inline ::std::string* ArteFilterOptPb::release_filter_name() {
+  clear_has_filter_name();
+  if (filter_name_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = filter_name_;
+    filter_name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// repeated float numerators = 2;
+inline int ArteFilterOptPb::numerators_size() const {
+  return numerators_.size();
+}
+inline void ArteFilterOptPb::clear_numerators() {
+  numerators_.Clear();
+}
+inline float ArteFilterOptPb::numerators(int index) const {
+  return numerators_.Get(index);
+}
+inline void ArteFilterOptPb::set_numerators(int index, float value) {
+  numerators_.Set(index, value);
+}
+inline void ArteFilterOptPb::add_numerators(float value) {
+  numerators_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< float >&
+ArteFilterOptPb::numerators() const {
+  return numerators_;
+}
+inline ::google::protobuf::RepeatedField< float >*
+ArteFilterOptPb::mutable_numerators() {
+  return &numerators_;
+}
+
+// repeated float denominators = 3;
+inline int ArteFilterOptPb::denominators_size() const {
+  return denominators_.size();
+}
+inline void ArteFilterOptPb::clear_denominators() {
+  denominators_.Clear();
+}
+inline float ArteFilterOptPb::denominators(int index) const {
+  return denominators_.Get(index);
+}
+inline void ArteFilterOptPb::set_denominators(int index, float value) {
+  denominators_.Set(index, value);
+}
+inline void ArteFilterOptPb::add_denominators(float value) {
+  denominators_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< float >&
+ArteFilterOptPb::denominators() const {
+  return denominators_;
+}
+inline ::google::protobuf::RepeatedField< float >*
+ArteFilterOptPb::mutable_denominators() {
+  return &denominators_;
+}
+
+// optional float low_cut = 4;
+inline bool ArteFilterOptPb::has_low_cut() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void ArteFilterOptPb::set_has_low_cut() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void ArteFilterOptPb::clear_has_low_cut() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void ArteFilterOptPb::clear_low_cut() {
+  low_cut_ = 0;
+  clear_has_low_cut();
+}
+inline float ArteFilterOptPb::low_cut() const {
+  return low_cut_;
+}
+inline void ArteFilterOptPb::set_low_cut(float value) {
+  set_has_low_cut();
+  low_cut_ = value;
+}
+
+// optional float high_cut = 5;
+inline bool ArteFilterOptPb::has_high_cut() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void ArteFilterOptPb::set_has_high_cut() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void ArteFilterOptPb::clear_has_high_cut() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void ArteFilterOptPb::clear_high_cut() {
+  high_cut_ = 0;
+  clear_has_high_cut();
+}
+inline float ArteFilterOptPb::high_cut() const {
+  return high_cut_;
+}
+inline void ArteFilterOptPb::set_high_cut(float value) {
+  set_has_high_cut();
+  high_cut_ = value;
+}
+
+// optional uint32 order = 6;
+inline bool ArteFilterOptPb::has_order() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void ArteFilterOptPb::set_has_order() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void ArteFilterOptPb::clear_has_order() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void ArteFilterOptPb::clear_order() {
+  order_ = 0u;
+  clear_has_order();
+}
+inline ::google::protobuf::uint32 ArteFilterOptPb::order() const {
+  return order_;
+}
+inline void ArteFilterOptPb::set_order(::google::protobuf::uint32 value) {
+  set_has_order();
+  order_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// ArteChanOptPb
+
+// optional float gain = 1;
+inline bool ArteChanOptPb::has_gain() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void ArteChanOptPb::set_has_gain() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void ArteChanOptPb::clear_has_gain() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void ArteChanOptPb::clear_gain() {
+  gain_ = 0;
+  clear_has_gain();
+}
+inline float ArteChanOptPb::gain() const {
+  return gain_;
+}
+inline void ArteChanOptPb::set_gain(float value) {
+  set_has_gain();
+  gain_ = value;
+}
+
+// optional float threshold = 2;
+inline bool ArteChanOptPb::has_threshold() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void ArteChanOptPb::set_has_threshold() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void ArteChanOptPb::clear_has_threshold() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void ArteChanOptPb::clear_threshold() {
+  threshold_ = 0;
+  clear_has_threshold();
+}
+inline float ArteChanOptPb::threshold() const {
+  return threshold_;
+}
+inline void ArteChanOptPb::set_threshold(float value) {
+  set_has_threshold();
+  threshold_ = value;
+}
+
+// optional uint32 daq_chan = 3;
+inline bool ArteChanOptPb::has_daq_chan() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void ArteChanOptPb::set_has_daq_chan() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void ArteChanOptPb::clear_has_daq_chan() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void ArteChanOptPb::clear_daq_chan() {
+  daq_chan_ = 0u;
+  clear_has_daq_chan();
+}
+inline ::google::protobuf::uint32 ArteChanOptPb::daq_chan() const {
+  return daq_chan_;
+}
+inline void ArteChanOptPb::set_daq_chan(::google::protobuf::uint32 value) {
+  set_has_daq_chan();
+  daq_chan_ = value;
+}
+
+// optional uint32 source_trode = 4;
+inline bool ArteChanOptPb::has_source_trode() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void ArteChanOptPb::set_has_source_trode() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void ArteChanOptPb::clear_has_source_trode() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void ArteChanOptPb::clear_source_trode() {
+  source_trode_ = 0u;
+  clear_has_source_trode();
+}
+inline ::google::protobuf::uint32 ArteChanOptPb::source_trode() const {
+  return source_trode_;
+}
+inline void ArteChanOptPb::set_source_trode(::google::protobuf::uint32 value) {
+  set_has_source_trode();
+  source_trode_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// ArteTrodeOptPb
+
+// optional uint32 source_trode = 1;
+inline bool ArteTrodeOptPb::has_source_trode() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void ArteTrodeOptPb::set_has_source_trode() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void ArteTrodeOptPb::clear_has_source_trode() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void ArteTrodeOptPb::clear_source_trode() {
+  source_trode_ = 0u;
+  clear_has_source_trode();
+}
+inline ::google::protobuf::uint32 ArteTrodeOptPb::source_trode() const {
+  return source_trode_;
+}
+inline void ArteTrodeOptPb::set_source_trode(::google::protobuf::uint32 value) {
+  set_has_source_trode();
+  source_trode_ = value;
+}
+
+// optional uint32 trode_opt_version = 2;
+inline bool ArteTrodeOptPb::has_trode_opt_version() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void ArteTrodeOptPb::set_has_trode_opt_version() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void ArteTrodeOptPb::clear_has_trode_opt_version() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void ArteTrodeOptPb::clear_trode_opt_version() {
+  trode_opt_version_ = 0u;
+  clear_has_trode_opt_version();
+}
+inline ::google::protobuf::uint32 ArteTrodeOptPb::trode_opt_version() const {
+  return trode_opt_version_;
+}
+inline void ArteTrodeOptPb::set_trode_opt_version(::google::protobuf::uint32 value) {
+  set_has_trode_opt_version();
+  trode_opt_version_ = value;
+}
+
+// repeated .ArteChanOptPb chans = 3;
+inline int ArteTrodeOptPb::chans_size() const {
+  return chans_.size();
+}
+inline void ArteTrodeOptPb::clear_chans() {
+  chans_.Clear();
+}
+inline const ::ArteChanOptPb& ArteTrodeOptPb::chans(int index) const {
+  return chans_.Get(index);
+}
+inline ::ArteChanOptPb* ArteTrodeOptPb::mutable_chans(int index) {
+  return chans_.Mutable(index);
+}
+inline ::ArteChanOptPb* ArteTrodeOptPb::add_chans() {
+  return chans_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::ArteChanOptPb >&
+ArteTrodeOptPb::chans() const {
+  return chans_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::ArteChanOptPb >*
+ArteTrodeOptPb::mutable_chans() {
+  return &chans_;
+}
+
+// optional uint32 samps_before_trig = 4;
+inline bool ArteTrodeOptPb::has_samps_before_trig() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void ArteTrodeOptPb::set_has_samps_before_trig() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void ArteTrodeOptPb::clear_has_samps_before_trig() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void ArteTrodeOptPb::clear_samps_before_trig() {
+  samps_before_trig_ = 0u;
+  clear_has_samps_before_trig();
+}
+inline ::google::protobuf::uint32 ArteTrodeOptPb::samps_before_trig() const {
+  return samps_before_trig_;
+}
+inline void ArteTrodeOptPb::set_samps_before_trig(::google::protobuf::uint32 value) {
+  set_has_samps_before_trig();
+  samps_before_trig_ = value;
+}
+
+// optional uint32 samps_after_trig = 5;
+inline bool ArteTrodeOptPb::has_samps_after_trig() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void ArteTrodeOptPb::set_has_samps_after_trig() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void ArteTrodeOptPb::clear_has_samps_after_trig() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void ArteTrodeOptPb::clear_samps_after_trig() {
+  samps_after_trig_ = 0u;
+  clear_has_samps_after_trig();
+}
+inline ::google::protobuf::uint32 ArteTrodeOptPb::samps_after_trig() const {
+  return samps_after_trig_;
+}
+inline void ArteTrodeOptPb::set_samps_after_trig(::google::protobuf::uint32 value) {
+  set_has_samps_after_trig();
+  samps_after_trig_ = value;
+}
+
+// optional uint32 refractory_period_samps = 6;
+inline bool ArteTrodeOptPb::has_refractory_period_samps() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void ArteTrodeOptPb::set_has_refractory_period_samps() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void ArteTrodeOptPb::clear_has_refractory_period_samps() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void ArteTrodeOptPb::clear_refractory_period_samps() {
+  refractory_period_samps_ = 0u;
+  clear_has_refractory_period_samps();
+}
+inline ::google::protobuf::uint32 ArteTrodeOptPb::refractory_period_samps() const {
+  return refractory_period_samps_;
+}
+inline void ArteTrodeOptPb::set_refractory_period_samps(::google::protobuf::uint32 value) {
+  set_has_refractory_period_samps();
+  refractory_period_samps_ = value;
+}
+
+// optional string port = 7;
+inline bool ArteTrodeOptPb::has_port() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+inline void ArteTrodeOptPb::set_has_port() {
+  _has_bits_[0] |= 0x00000040u;
+}
+inline void ArteTrodeOptPb::clear_has_port() {
+  _has_bits_[0] &= ~0x00000040u;
+}
+inline void ArteTrodeOptPb::clear_port() {
+  if (port_ != &::google::protobuf::internal::kEmptyString) {
+    port_->clear();
+  }
+  clear_has_port();
+}
+inline const ::std::string& ArteTrodeOptPb::port() const {
+  return *port_;
+}
+inline void ArteTrodeOptPb::set_port(const ::std::string& value) {
+  set_has_port();
+  if (port_ == &::google::protobuf::internal::kEmptyString) {
+    port_ = new ::std::string;
+  }
+  port_->assign(value);
+}
+inline void ArteTrodeOptPb::set_port(const char* value) {
+  set_has_port();
+  if (port_ == &::google::protobuf::internal::kEmptyString) {
+    port_ = new ::std::string;
+  }
+  port_->assign(value);
+}
+inline void ArteTrodeOptPb::set_port(const char* value, size_t size) {
+  set_has_port();
+  if (port_ == &::google::protobuf::internal::kEmptyString) {
+    port_ = new ::std::string;
+  }
+  port_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ArteTrodeOptPb::mutable_port() {
+  set_has_port();
+  if (port_ == &::google::protobuf::internal::kEmptyString) {
+    port_ = new ::std::string;
+  }
+  return port_;
+}
+inline ::std::string* ArteTrodeOptPb::release_port() {
+  clear_has_port();
+  if (port_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = port_;
+    port_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// optional string host_ip = 8;
+inline bool ArteTrodeOptPb::has_host_ip() const {
+  return (_has_bits_[0] & 0x00000080u) != 0;
+}
+inline void ArteTrodeOptPb::set_has_host_ip() {
+  _has_bits_[0] |= 0x00000080u;
+}
+inline void ArteTrodeOptPb::clear_has_host_ip() {
+  _has_bits_[0] &= ~0x00000080u;
+}
+inline void ArteTrodeOptPb::clear_host_ip() {
+  if (host_ip_ != &::google::protobuf::internal::kEmptyString) {
+    host_ip_->clear();
+  }
+  clear_has_host_ip();
+}
+inline const ::std::string& ArteTrodeOptPb::host_ip() const {
+  return *host_ip_;
+}
+inline void ArteTrodeOptPb::set_host_ip(const ::std::string& value) {
+  set_has_host_ip();
+  if (host_ip_ == &::google::protobuf::internal::kEmptyString) {
+    host_ip_ = new ::std::string;
+  }
+  host_ip_->assign(value);
+}
+inline void ArteTrodeOptPb::set_host_ip(const char* value) {
+  set_has_host_ip();
+  if (host_ip_ == &::google::protobuf::internal::kEmptyString) {
+    host_ip_ = new ::std::string;
+  }
+  host_ip_->assign(value);
+}
+inline void ArteTrodeOptPb::set_host_ip(const char* value, size_t size) {
+  set_has_host_ip();
+  if (host_ip_ == &::google::protobuf::internal::kEmptyString) {
+    host_ip_ = new ::std::string;
+  }
+  host_ip_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ArteTrodeOptPb::mutable_host_ip() {
+  set_has_host_ip();
+  if (host_ip_ == &::google::protobuf::internal::kEmptyString) {
+    host_ip_ = new ::std::string;
+  }
+  return host_ip_;
+}
+inline ::std::string* ArteTrodeOptPb::release_host_ip() {
+  clear_has_host_ip();
+  if (host_ip_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = host_ip_;
+    host_ip_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// optional .ArteFilterOptPb filter = 9;
+inline bool ArteTrodeOptPb::has_filter() const {
+  return (_has_bits_[0] & 0x00000100u) != 0;
+}
+inline void ArteTrodeOptPb::set_has_filter() {
+  _has_bits_[0] |= 0x00000100u;
+}
+inline void ArteTrodeOptPb::clear_has_filter() {
+  _has_bits_[0] &= ~0x00000100u;
+}
+inline void ArteTrodeOptPb::clear_filter() {
+  if (filter_ != NULL) filter_->::ArteFilterOptPb::Clear();
+  clear_has_filter();
+}
+inline const ::ArteFilterOptPb& ArteTrodeOptPb::filter() const {
+  return filter_ != NULL ? *filter_ : *default_instance_->filter_;
+}
+inline ::ArteFilterOptPb* ArteTrodeOptPb::mutable_filter() {
+  set_has_filter();
+  if (filter_ == NULL) filter_ = new ::ArteFilterOptPb;
+  return filter_;
+}
+inline ::ArteFilterOptPb* ArteTrodeOptPb::release_filter() {
+  clear_has_filter();
+  ::ArteFilterOptPb* temp = filter_;
+  filter_ = NULL;
+  return temp;
+}
+
+// optional uint32 daq_id = 10;
+inline bool ArteTrodeOptPb::has_daq_id() const {
+  return (_has_bits_[0] & 0x00000200u) != 0;
+}
+inline void ArteTrodeOptPb::set_has_daq_id() {
+  _has_bits_[0] |= 0x00000200u;
+}
+inline void ArteTrodeOptPb::clear_has_daq_id() {
+  _has_bits_[0] &= ~0x00000200u;
+}
+inline void ArteTrodeOptPb::clear_daq_id() {
+  daq_id_ = 0u;
+  clear_has_daq_id();
+}
+inline ::google::protobuf::uint32 ArteTrodeOptPb::daq_id() const {
+  return daq_id_;
+}
+inline void ArteTrodeOptPb::set_daq_id(::google::protobuf::uint32 value) {
+  set_has_daq_id();
+  daq_id_ = value;
+}
+
+// optional bool disk = 11;
+inline bool ArteTrodeOptPb::has_disk() const {
+  return (_has_bits_[0] & 0x00000400u) != 0;
+}
+inline void ArteTrodeOptPb::set_has_disk() {
+  _has_bits_[0] |= 0x00000400u;
+}
+inline void ArteTrodeOptPb::clear_has_disk() {
+  _has_bits_[0] &= ~0x00000400u;
+}
+inline void ArteTrodeOptPb::clear_disk() {
+  disk_ = false;
+  clear_has_disk();
+}
+inline bool ArteTrodeOptPb::disk() const {
+  return disk_;
+}
+inline void ArteTrodeOptPb::set_disk(bool value) {
+  set_has_disk();
+  disk_ = value;
+}
+
+// optional bool network = 12;
+inline bool ArteTrodeOptPb::has_network() const {
+  return (_has_bits_[0] & 0x00000800u) != 0;
+}
+inline void ArteTrodeOptPb::set_has_network() {
+  _has_bits_[0] |= 0x00000800u;
+}
+inline void ArteTrodeOptPb::clear_has_network() {
+  _has_bits_[0] &= ~0x00000800u;
+}
+inline void ArteTrodeOptPb::clear_network() {
+  network_ = false;
+  clear_has_network();
+}
+inline bool ArteTrodeOptPb::network() const {
+  return network_;
+}
+inline void ArteTrodeOptPb::set_network(bool value) {
+  set_has_network();
+  network_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// ArteLfpOptPb
+
+// optional uint32 source_lfpbank = 1;
+inline bool ArteLfpOptPb::has_source_lfpbank() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void ArteLfpOptPb::set_has_source_lfpbank() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void ArteLfpOptPb::clear_has_source_lfpbank() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void ArteLfpOptPb::clear_source_lfpbank() {
+  source_lfpbank_ = 0u;
+  clear_has_source_lfpbank();
+}
+inline ::google::protobuf::uint32 ArteLfpOptPb::source_lfpbank() const {
+  return source_lfpbank_;
+}
+inline void ArteLfpOptPb::set_source_lfpbank(::google::protobuf::uint32 value) {
+  set_has_source_lfpbank();
+  source_lfpbank_ = value;
+}
+
+// optional uint32 lfp_opt_version = 2;
+inline bool ArteLfpOptPb::has_lfp_opt_version() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void ArteLfpOptPb::set_has_lfp_opt_version() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void ArteLfpOptPb::clear_has_lfp_opt_version() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void ArteLfpOptPb::clear_lfp_opt_version() {
+  lfp_opt_version_ = 0u;
+  clear_has_lfp_opt_version();
+}
+inline ::google::protobuf::uint32 ArteLfpOptPb::lfp_opt_version() const {
+  return lfp_opt_version_;
+}
+inline void ArteLfpOptPb::set_lfp_opt_version(::google::protobuf::uint32 value) {
+  set_has_lfp_opt_version();
+  lfp_opt_version_ = value;
+}
+
+// optional .ArteChanOptPb chans = 3;
+inline bool ArteLfpOptPb::has_chans() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void ArteLfpOptPb::set_has_chans() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void ArteLfpOptPb::clear_has_chans() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void ArteLfpOptPb::clear_chans() {
+  if (chans_ != NULL) chans_->::ArteChanOptPb::Clear();
+  clear_has_chans();
+}
+inline const ::ArteChanOptPb& ArteLfpOptPb::chans() const {
+  return chans_ != NULL ? *chans_ : *default_instance_->chans_;
+}
+inline ::ArteChanOptPb* ArteLfpOptPb::mutable_chans() {
+  set_has_chans();
+  if (chans_ == NULL) chans_ = new ::ArteChanOptPb;
+  return chans_;
+}
+inline ::ArteChanOptPb* ArteLfpOptPb::release_chans() {
+  clear_has_chans();
+  ::ArteChanOptPb* temp = chans_;
+  chans_ = NULL;
+  return temp;
+}
+
+// optional uint32 keep_nth_sample = 4;
+inline bool ArteLfpOptPb::has_keep_nth_sample() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void ArteLfpOptPb::set_has_keep_nth_sample() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void ArteLfpOptPb::clear_has_keep_nth_sample() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void ArteLfpOptPb::clear_keep_nth_sample() {
+  keep_nth_sample_ = 0u;
+  clear_has_keep_nth_sample();
+}
+inline ::google::protobuf::uint32 ArteLfpOptPb::keep_nth_sample() const {
+  return keep_nth_sample_;
+}
+inline void ArteLfpOptPb::set_keep_nth_sample(::google::protobuf::uint32 value) {
+  set_has_keep_nth_sample();
+  keep_nth_sample_ = value;
+}
+
+// optional string port = 5;
+inline bool ArteLfpOptPb::has_port() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void ArteLfpOptPb::set_has_port() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void ArteLfpOptPb::clear_has_port() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void ArteLfpOptPb::clear_port() {
+  if (port_ != &::google::protobuf::internal::kEmptyString) {
+    port_->clear();
+  }
+  clear_has_port();
+}
+inline const ::std::string& ArteLfpOptPb::port() const {
+  return *port_;
+}
+inline void ArteLfpOptPb::set_port(const ::std::string& value) {
+  set_has_port();
+  if (port_ == &::google::protobuf::internal::kEmptyString) {
+    port_ = new ::std::string;
+  }
+  port_->assign(value);
+}
+inline void ArteLfpOptPb::set_port(const char* value) {
+  set_has_port();
+  if (port_ == &::google::protobuf::internal::kEmptyString) {
+    port_ = new ::std::string;
+  }
+  port_->assign(value);
+}
+inline void ArteLfpOptPb::set_port(const char* value, size_t size) {
+  set_has_port();
+  if (port_ == &::google::protobuf::internal::kEmptyString) {
+    port_ = new ::std::string;
+  }
+  port_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ArteLfpOptPb::mutable_port() {
+  set_has_port();
+  if (port_ == &::google::protobuf::internal::kEmptyString) {
+    port_ = new ::std::string;
+  }
+  return port_;
+}
+inline ::std::string* ArteLfpOptPb::release_port() {
+  clear_has_port();
+  if (port_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = port_;
+    port_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// optional string host_ip = 6;
+inline bool ArteLfpOptPb::has_host_ip() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void ArteLfpOptPb::set_has_host_ip() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void ArteLfpOptPb::clear_has_host_ip() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void ArteLfpOptPb::clear_host_ip() {
+  if (host_ip_ != &::google::protobuf::internal::kEmptyString) {
+    host_ip_->clear();
+  }
+  clear_has_host_ip();
+}
+inline const ::std::string& ArteLfpOptPb::host_ip() const {
+  return *host_ip_;
+}
+inline void ArteLfpOptPb::set_host_ip(const ::std::string& value) {
+  set_has_host_ip();
+  if (host_ip_ == &::google::protobuf::internal::kEmptyString) {
+    host_ip_ = new ::std::string;
+  }
+  host_ip_->assign(value);
+}
+inline void ArteLfpOptPb::set_host_ip(const char* value) {
+  set_has_host_ip();
+  if (host_ip_ == &::google::protobuf::internal::kEmptyString) {
+    host_ip_ = new ::std::string;
+  }
+  host_ip_->assign(value);
+}
+inline void ArteLfpOptPb::set_host_ip(const char* value, size_t size) {
+  set_has_host_ip();
+  if (host_ip_ == &::google::protobuf::internal::kEmptyString) {
+    host_ip_ = new ::std::string;
+  }
+  host_ip_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ArteLfpOptPb::mutable_host_ip() {
+  set_has_host_ip();
+  if (host_ip_ == &::google::protobuf::internal::kEmptyString) {
+    host_ip_ = new ::std::string;
+  }
+  return host_ip_;
+}
+inline ::std::string* ArteLfpOptPb::release_host_ip() {
+  clear_has_host_ip();
+  if (host_ip_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = host_ip_;
+    host_ip_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// optional .ArteFilterOptPb filter = 7;
+inline bool ArteLfpOptPb::has_filter() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+inline void ArteLfpOptPb::set_has_filter() {
+  _has_bits_[0] |= 0x00000040u;
+}
+inline void ArteLfpOptPb::clear_has_filter() {
+  _has_bits_[0] &= ~0x00000040u;
+}
+inline void ArteLfpOptPb::clear_filter() {
+  if (filter_ != NULL) filter_->::ArteFilterOptPb::Clear();
+  clear_has_filter();
+}
+inline const ::ArteFilterOptPb& ArteLfpOptPb::filter() const {
+  return filter_ != NULL ? *filter_ : *default_instance_->filter_;
+}
+inline ::ArteFilterOptPb* ArteLfpOptPb::mutable_filter() {
+  set_has_filter();
+  if (filter_ == NULL) filter_ = new ::ArteFilterOptPb;
+  return filter_;
+}
+inline ::ArteFilterOptPb* ArteLfpOptPb::release_filter() {
+  clear_has_filter();
+  ::ArteFilterOptPb* temp = filter_;
+  filter_ = NULL;
+  return temp;
+}
+
+// optional uint32 daq_id = 8;
+inline bool ArteLfpOptPb::has_daq_id() const {
+  return (_has_bits_[0] & 0x00000080u) != 0;
+}
+inline void ArteLfpOptPb::set_has_daq_id() {
+  _has_bits_[0] |= 0x00000080u;
+}
+inline void ArteLfpOptPb::clear_has_daq_id() {
+  _has_bits_[0] &= ~0x00000080u;
+}
+inline void ArteLfpOptPb::clear_daq_id() {
+  daq_id_ = 0u;
+  clear_has_daq_id();
+}
+inline ::google::protobuf::uint32 ArteLfpOptPb::daq_id() const {
+  return daq_id_;
+}
+inline void ArteLfpOptPb::set_daq_id(::google::protobuf::uint32 value) {
+  set_has_daq_id();
+  daq_id_ = value;
+}
+
+// optional bool disk = 9;
+inline bool ArteLfpOptPb::has_disk() const {
+  return (_has_bits_[0] & 0x00000100u) != 0;
+}
+inline void ArteLfpOptPb::set_has_disk() {
+  _has_bits_[0] |= 0x00000100u;
+}
+inline void ArteLfpOptPb::clear_has_disk() {
+  _has_bits_[0] &= ~0x00000100u;
+}
+inline void ArteLfpOptPb::clear_disk() {
+  disk_ = false;
+  clear_has_disk();
+}
+inline bool ArteLfpOptPb::disk() const {
+  return disk_;
+}
+inline void ArteLfpOptPb::set_disk(bool value) {
+  set_has_disk();
+  disk_ = value;
+}
+
+// optional bool network = 10;
+inline bool ArteLfpOptPb::has_network() const {
+  return (_has_bits_[0] & 0x00000200u) != 0;
+}
+inline void ArteLfpOptPb::set_has_network() {
+  _has_bits_[0] |= 0x00000200u;
+}
+inline void ArteLfpOptPb::clear_has_network() {
+  _has_bits_[0] &= ~0x00000200u;
+}
+inline void ArteLfpOptPb::clear_network() {
+  network_ = false;
+  clear_has_network();
+}
+inline bool ArteLfpOptPb::network() const {
+  return network_;
+}
+inline void ArteLfpOptPb::set_network(bool value) {
+  set_has_network();
+  network_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// ArteTimerOptPb
+
+// optional string clock_source = 1;
+inline bool ArteTimerOptPb::has_clock_source() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void ArteTimerOptPb::set_has_clock_source() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void ArteTimerOptPb::clear_has_clock_source() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void ArteTimerOptPb::clear_clock_source() {
+  if (clock_source_ != &::google::protobuf::internal::kEmptyString) {
+    clock_source_->clear();
+  }
+  clear_has_clock_source();
+}
+inline const ::std::string& ArteTimerOptPb::clock_source() const {
+  return *clock_source_;
+}
+inline void ArteTimerOptPb::set_clock_source(const ::std::string& value) {
+  set_has_clock_source();
+  if (clock_source_ == &::google::protobuf::internal::kEmptyString) {
+    clock_source_ = new ::std::string;
+  }
+  clock_source_->assign(value);
+}
+inline void ArteTimerOptPb::set_clock_source(const char* value) {
+  set_has_clock_source();
+  if (clock_source_ == &::google::protobuf::internal::kEmptyString) {
+    clock_source_ = new ::std::string;
+  }
+  clock_source_->assign(value);
+}
+inline void ArteTimerOptPb::set_clock_source(const char* value, size_t size) {
+  set_has_clock_source();
+  if (clock_source_ == &::google::protobuf::internal::kEmptyString) {
+    clock_source_ = new ::std::string;
+  }
+  clock_source_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ArteTimerOptPb::mutable_clock_source() {
+  set_has_clock_source();
+  if (clock_source_ == &::google::protobuf::internal::kEmptyString) {
+    clock_source_ = new ::std::string;
+  }
+  return clock_source_;
+}
+inline ::std::string* ArteTimerOptPb::release_clock_source() {
+  clear_has_clock_source();
+  if (clock_source_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = clock_source_;
+    clock_source_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// optional string dev_name = 2;
+inline bool ArteTimerOptPb::has_dev_name() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void ArteTimerOptPb::set_has_dev_name() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void ArteTimerOptPb::clear_has_dev_name() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void ArteTimerOptPb::clear_dev_name() {
+  if (dev_name_ != &::google::protobuf::internal::kEmptyString) {
+    dev_name_->clear();
+  }
+  clear_has_dev_name();
+}
+inline const ::std::string& ArteTimerOptPb::dev_name() const {
+  return *dev_name_;
+}
+inline void ArteTimerOptPb::set_dev_name(const ::std::string& value) {
+  set_has_dev_name();
+  if (dev_name_ == &::google::protobuf::internal::kEmptyString) {
+    dev_name_ = new ::std::string;
+  }
+  dev_name_->assign(value);
+}
+inline void ArteTimerOptPb::set_dev_name(const char* value) {
+  set_has_dev_name();
+  if (dev_name_ == &::google::protobuf::internal::kEmptyString) {
+    dev_name_ = new ::std::string;
+  }
+  dev_name_->assign(value);
+}
+inline void ArteTimerOptPb::set_dev_name(const char* value, size_t size) {
+  set_has_dev_name();
+  if (dev_name_ == &::google::protobuf::internal::kEmptyString) {
+    dev_name_ = new ::std::string;
+  }
+  dev_name_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ArteTimerOptPb::mutable_dev_name() {
+  set_has_dev_name();
+  if (dev_name_ == &::google::protobuf::internal::kEmptyString) {
+    dev_name_ = new ::std::string;
+  }
+  return dev_name_;
+}
+inline ::std::string* ArteTimerOptPb::release_dev_name() {
+  clear_has_dev_name();
+  if (dev_name_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = dev_name_;
+    dev_name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// optional string ctr_name = 3;
+inline bool ArteTimerOptPb::has_ctr_name() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void ArteTimerOptPb::set_has_ctr_name() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void ArteTimerOptPb::clear_has_ctr_name() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void ArteTimerOptPb::clear_ctr_name() {
+  if (ctr_name_ != &::google::protobuf::internal::kEmptyString) {
+    ctr_name_->clear();
+  }
+  clear_has_ctr_name();
+}
+inline const ::std::string& ArteTimerOptPb::ctr_name() const {
+  return *ctr_name_;
+}
+inline void ArteTimerOptPb::set_ctr_name(const ::std::string& value) {
+  set_has_ctr_name();
+  if (ctr_name_ == &::google::protobuf::internal::kEmptyString) {
+    ctr_name_ = new ::std::string;
+  }
+  ctr_name_->assign(value);
+}
+inline void ArteTimerOptPb::set_ctr_name(const char* value) {
+  set_has_ctr_name();
+  if (ctr_name_ == &::google::protobuf::internal::kEmptyString) {
+    ctr_name_ = new ::std::string;
+  }
+  ctr_name_->assign(value);
+}
+inline void ArteTimerOptPb::set_ctr_name(const char* value, size_t size) {
+  set_has_ctr_name();
+  if (ctr_name_ == &::google::protobuf::internal::kEmptyString) {
+    ctr_name_ = new ::std::string;
+  }
+  ctr_name_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ArteTimerOptPb::mutable_ctr_name() {
+  set_has_ctr_name();
+  if (ctr_name_ == &::google::protobuf::internal::kEmptyString) {
+    ctr_name_ = new ::std::string;
+  }
+  return ctr_name_;
+}
+inline ::std::string* ArteTimerOptPb::release_ctr_name() {
+  clear_has_ctr_name();
+  if (ctr_name_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = ctr_name_;
+    ctr_name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// optional string timer_role = 4;
+inline bool ArteTimerOptPb::has_timer_role() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void ArteTimerOptPb::set_has_timer_role() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void ArteTimerOptPb::clear_has_timer_role() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void ArteTimerOptPb::clear_timer_role() {
+  if (timer_role_ != &::google::protobuf::internal::kEmptyString) {
+    timer_role_->clear();
+  }
+  clear_has_timer_role();
+}
+inline const ::std::string& ArteTimerOptPb::timer_role() const {
+  return *timer_role_;
+}
+inline void ArteTimerOptPb::set_timer_role(const ::std::string& value) {
+  set_has_timer_role();
+  if (timer_role_ == &::google::protobuf::internal::kEmptyString) {
+    timer_role_ = new ::std::string;
+  }
+  timer_role_->assign(value);
+}
+inline void ArteTimerOptPb::set_timer_role(const char* value) {
+  set_has_timer_role();
+  if (timer_role_ == &::google::protobuf::internal::kEmptyString) {
+    timer_role_ = new ::std::string;
+  }
+  timer_role_->assign(value);
+}
+inline void ArteTimerOptPb::set_timer_role(const char* value, size_t size) {
+  set_has_timer_role();
+  if (timer_role_ == &::google::protobuf::internal::kEmptyString) {
+    timer_role_ = new ::std::string;
+  }
+  timer_role_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ArteTimerOptPb::mutable_timer_role() {
+  set_has_timer_role();
+  if (timer_role_ == &::google::protobuf::internal::kEmptyString) {
+    timer_role_ = new ::std::string;
+  }
+  return timer_role_;
+}
+inline ::std::string* ArteTimerOptPb::release_timer_role() {
+  clear_has_timer_role();
+  if (timer_role_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = timer_role_;
+    timer_role_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// optional uint32 timer_freq = 5;
+inline bool ArteTimerOptPb::has_timer_freq() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void ArteTimerOptPb::set_has_timer_freq() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void ArteTimerOptPb::clear_has_timer_freq() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void ArteTimerOptPb::clear_timer_freq() {
+  timer_freq_ = 0u;
+  clear_has_timer_freq();
+}
+inline ::google::protobuf::uint32 ArteTimerOptPb::timer_freq() const {
+  return timer_freq_;
+}
+inline void ArteTimerOptPb::set_timer_freq(::google::protobuf::uint32 value) {
+  set_has_timer_freq();
+  timer_freq_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// ArteCommandPortOptPb
+
+// optional string command_host = 1;
+inline bool ArteCommandPortOptPb::has_command_host() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void ArteCommandPortOptPb::set_has_command_host() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void ArteCommandPortOptPb::clear_has_command_host() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void ArteCommandPortOptPb::clear_command_host() {
+  if (command_host_ != &::google::protobuf::internal::kEmptyString) {
+    command_host_->clear();
+  }
+  clear_has_command_host();
+}
+inline const ::std::string& ArteCommandPortOptPb::command_host() const {
+  return *command_host_;
+}
+inline void ArteCommandPortOptPb::set_command_host(const ::std::string& value) {
+  set_has_command_host();
+  if (command_host_ == &::google::protobuf::internal::kEmptyString) {
+    command_host_ = new ::std::string;
+  }
+  command_host_->assign(value);
+}
+inline void ArteCommandPortOptPb::set_command_host(const char* value) {
+  set_has_command_host();
+  if (command_host_ == &::google::protobuf::internal::kEmptyString) {
+    command_host_ = new ::std::string;
+  }
+  command_host_->assign(value);
+}
+inline void ArteCommandPortOptPb::set_command_host(const char* value, size_t size) {
+  set_has_command_host();
+  if (command_host_ == &::google::protobuf::internal::kEmptyString) {
+    command_host_ = new ::std::string;
+  }
+  command_host_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ArteCommandPortOptPb::mutable_command_host() {
+  set_has_command_host();
+  if (command_host_ == &::google::protobuf::internal::kEmptyString) {
+    command_host_ = new ::std::string;
+  }
+  return command_host_;
+}
+inline ::std::string* ArteCommandPortOptPb::release_command_host() {
+  clear_has_command_host();
+  if (command_host_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = command_host_;
+    command_host_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// optional string port = 2;
+inline bool ArteCommandPortOptPb::has_port() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void ArteCommandPortOptPb::set_has_port() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void ArteCommandPortOptPb::clear_has_port() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void ArteCommandPortOptPb::clear_port() {
+  if (port_ != &::google::protobuf::internal::kEmptyString) {
+    port_->clear();
+  }
+  clear_has_port();
+}
+inline const ::std::string& ArteCommandPortOptPb::port() const {
+  return *port_;
+}
+inline void ArteCommandPortOptPb::set_port(const ::std::string& value) {
+  set_has_port();
+  if (port_ == &::google::protobuf::internal::kEmptyString) {
+    port_ = new ::std::string;
+  }
+  port_->assign(value);
+}
+inline void ArteCommandPortOptPb::set_port(const char* value) {
+  set_has_port();
+  if (port_ == &::google::protobuf::internal::kEmptyString) {
+    port_ = new ::std::string;
+  }
+  port_->assign(value);
+}
+inline void ArteCommandPortOptPb::set_port(const char* value, size_t size) {
+  set_has_port();
+  if (port_ == &::google::protobuf::internal::kEmptyString) {
+    port_ = new ::std::string;
+  }
+  port_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ArteCommandPortOptPb::mutable_port() {
+  set_has_port();
+  if (port_ == &::google::protobuf::internal::kEmptyString) {
+    port_ = new ::std::string;
+  }
+  return port_;
+}
+inline ::std::string* ArteCommandPortOptPb::release_port() {
+  clear_has_port();
+  if (port_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = port_;
+    port_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// optional string secondary_port = 3;
+inline bool ArteCommandPortOptPb::has_secondary_port() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void ArteCommandPortOptPb::set_has_secondary_port() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void ArteCommandPortOptPb::clear_has_secondary_port() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void ArteCommandPortOptPb::clear_secondary_port() {
+  if (secondary_port_ != &::google::protobuf::internal::kEmptyString) {
+    secondary_port_->clear();
+  }
+  clear_has_secondary_port();
+}
+inline const ::std::string& ArteCommandPortOptPb::secondary_port() const {
+  return *secondary_port_;
+}
+inline void ArteCommandPortOptPb::set_secondary_port(const ::std::string& value) {
+  set_has_secondary_port();
+  if (secondary_port_ == &::google::protobuf::internal::kEmptyString) {
+    secondary_port_ = new ::std::string;
+  }
+  secondary_port_->assign(value);
+}
+inline void ArteCommandPortOptPb::set_secondary_port(const char* value) {
+  set_has_secondary_port();
+  if (secondary_port_ == &::google::protobuf::internal::kEmptyString) {
+    secondary_port_ = new ::std::string;
+  }
+  secondary_port_->assign(value);
+}
+inline void ArteCommandPortOptPb::set_secondary_port(const char* value, size_t size) {
+  set_has_secondary_port();
+  if (secondary_port_ == &::google::protobuf::internal::kEmptyString) {
+    secondary_port_ = new ::std::string;
+  }
+  secondary_port_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ArteCommandPortOptPb::mutable_secondary_port() {
+  set_has_secondary_port();
+  if (secondary_port_ == &::google::protobuf::internal::kEmptyString) {
+    secondary_port_ = new ::std::string;
+  }
+  return secondary_port_;
+}
+inline ::std::string* ArteCommandPortOptPb::release_secondary_port() {
+  clear_has_secondary_port();
+  if (secondary_port_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = secondary_port_;
+    secondary_port_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// -------------------------------------------------------------------
+
+// ArteHostOptPb
+
+// optional string host = 1;
+inline bool ArteHostOptPb::has_host() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void ArteHostOptPb::set_has_host() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void ArteHostOptPb::clear_has_host() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void ArteHostOptPb::clear_host() {
+  if (host_ != &::google::protobuf::internal::kEmptyString) {
+    host_->clear();
+  }
+  clear_has_host();
+}
+inline const ::std::string& ArteHostOptPb::host() const {
+  return *host_;
+}
+inline void ArteHostOptPb::set_host(const ::std::string& value) {
+  set_has_host();
+  if (host_ == &::google::protobuf::internal::kEmptyString) {
+    host_ = new ::std::string;
+  }
+  host_->assign(value);
+}
+inline void ArteHostOptPb::set_host(const char* value) {
+  set_has_host();
+  if (host_ == &::google::protobuf::internal::kEmptyString) {
+    host_ = new ::std::string;
+  }
+  host_->assign(value);
+}
+inline void ArteHostOptPb::set_host(const char* value, size_t size) {
+  set_has_host();
+  if (host_ == &::google::protobuf::internal::kEmptyString) {
+    host_ = new ::std::string;
+  }
+  host_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ArteHostOptPb::mutable_host() {
+  set_has_host();
+  if (host_ == &::google::protobuf::internal::kEmptyString) {
+    host_ = new ::std::string;
+  }
+  return host_;
+}
+inline ::std::string* ArteHostOptPb::release_host() {
+  clear_has_host();
+  if (host_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = host_;
+    host_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// optional string ip_addy = 2;
+inline bool ArteHostOptPb::has_ip_addy() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void ArteHostOptPb::set_has_ip_addy() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void ArteHostOptPb::clear_has_ip_addy() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void ArteHostOptPb::clear_ip_addy() {
+  if (ip_addy_ != &::google::protobuf::internal::kEmptyString) {
+    ip_addy_->clear();
+  }
+  clear_has_ip_addy();
+}
+inline const ::std::string& ArteHostOptPb::ip_addy() const {
+  return *ip_addy_;
+}
+inline void ArteHostOptPb::set_ip_addy(const ::std::string& value) {
+  set_has_ip_addy();
+  if (ip_addy_ == &::google::protobuf::internal::kEmptyString) {
+    ip_addy_ = new ::std::string;
+  }
+  ip_addy_->assign(value);
+}
+inline void ArteHostOptPb::set_ip_addy(const char* value) {
+  set_has_ip_addy();
+  if (ip_addy_ == &::google::protobuf::internal::kEmptyString) {
+    ip_addy_ = new ::std::string;
+  }
+  ip_addy_->assign(value);
+}
+inline void ArteHostOptPb::set_ip_addy(const char* value, size_t size) {
+  set_has_ip_addy();
+  if (ip_addy_ == &::google::protobuf::internal::kEmptyString) {
+    ip_addy_ = new ::std::string;
+  }
+  ip_addy_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ArteHostOptPb::mutable_ip_addy() {
+  set_has_ip_addy();
+  if (ip_addy_ == &::google::protobuf::internal::kEmptyString) {
+    ip_addy_ = new ::std::string;
+  }
+  return ip_addy_;
+}
+inline ::std::string* ArteHostOptPb::release_ip_addy() {
+  clear_has_ip_addy();
+  if (ip_addy_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = ip_addy_;
+    ip_addy_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// -------------------------------------------------------------------
+
+// ArteNeuralDaqOptPb
+
+// optional string daq_type = 1;
+inline bool ArteNeuralDaqOptPb::has_daq_type() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void ArteNeuralDaqOptPb::set_has_daq_type() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void ArteNeuralDaqOptPb::clear_has_daq_type() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void ArteNeuralDaqOptPb::clear_daq_type() {
+  if (daq_type_ != &::google::protobuf::internal::kEmptyString) {
+    daq_type_->clear();
+  }
+  clear_has_daq_type();
+}
+inline const ::std::string& ArteNeuralDaqOptPb::daq_type() const {
+  return *daq_type_;
+}
+inline void ArteNeuralDaqOptPb::set_daq_type(const ::std::string& value) {
+  set_has_daq_type();
+  if (daq_type_ == &::google::protobuf::internal::kEmptyString) {
+    daq_type_ = new ::std::string;
+  }
+  daq_type_->assign(value);
+}
+inline void ArteNeuralDaqOptPb::set_daq_type(const char* value) {
+  set_has_daq_type();
+  if (daq_type_ == &::google::protobuf::internal::kEmptyString) {
+    daq_type_ = new ::std::string;
+  }
+  daq_type_->assign(value);
+}
+inline void ArteNeuralDaqOptPb::set_daq_type(const char* value, size_t size) {
+  set_has_daq_type();
+  if (daq_type_ == &::google::protobuf::internal::kEmptyString) {
+    daq_type_ = new ::std::string;
+  }
+  daq_type_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ArteNeuralDaqOptPb::mutable_daq_type() {
+  set_has_daq_type();
+  if (daq_type_ == &::google::protobuf::internal::kEmptyString) {
+    daq_type_ = new ::std::string;
+  }
+  return daq_type_;
+}
+inline ::std::string* ArteNeuralDaqOptPb::release_daq_type() {
+  clear_has_daq_type();
+  if (daq_type_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = daq_type_;
+    daq_type_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// optional string dev_name = 2;
+inline bool ArteNeuralDaqOptPb::has_dev_name() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void ArteNeuralDaqOptPb::set_has_dev_name() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void ArteNeuralDaqOptPb::clear_has_dev_name() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void ArteNeuralDaqOptPb::clear_dev_name() {
+  if (dev_name_ != &::google::protobuf::internal::kEmptyString) {
+    dev_name_->clear();
+  }
+  clear_has_dev_name();
+}
+inline const ::std::string& ArteNeuralDaqOptPb::dev_name() const {
+  return *dev_name_;
+}
+inline void ArteNeuralDaqOptPb::set_dev_name(const ::std::string& value) {
+  set_has_dev_name();
+  if (dev_name_ == &::google::protobuf::internal::kEmptyString) {
+    dev_name_ = new ::std::string;
+  }
+  dev_name_->assign(value);
+}
+inline void ArteNeuralDaqOptPb::set_dev_name(const char* value) {
+  set_has_dev_name();
+  if (dev_name_ == &::google::protobuf::internal::kEmptyString) {
+    dev_name_ = new ::std::string;
+  }
+  dev_name_->assign(value);
+}
+inline void ArteNeuralDaqOptPb::set_dev_name(const char* value, size_t size) {
+  set_has_dev_name();
+  if (dev_name_ == &::google::protobuf::internal::kEmptyString) {
+    dev_name_ = new ::std::string;
+  }
+  dev_name_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ArteNeuralDaqOptPb::mutable_dev_name() {
+  set_has_dev_name();
+  if (dev_name_ == &::google::protobuf::internal::kEmptyString) {
+    dev_name_ = new ::std::string;
+  }
+  return dev_name_;
+}
+inline ::std::string* ArteNeuralDaqOptPb::release_dev_name() {
+  clear_has_dev_name();
+  if (dev_name_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = dev_name_;
+    dev_name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// optional uint32 id = 3;
+inline bool ArteNeuralDaqOptPb::has_id() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void ArteNeuralDaqOptPb::set_has_id() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void ArteNeuralDaqOptPb::clear_has_id() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void ArteNeuralDaqOptPb::clear_id() {
+  id_ = 0u;
+  clear_has_id();
+}
+inline ::google::protobuf::uint32 ArteNeuralDaqOptPb::id() const {
+  return id_;
+}
+inline void ArteNeuralDaqOptPb::set_id(::google::protobuf::uint32 value) {
+  set_has_id();
+  id_ = value;
+}
+
+// optional string in_filename = 4;
+inline bool ArteNeuralDaqOptPb::has_in_filename() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void ArteNeuralDaqOptPb::set_has_in_filename() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void ArteNeuralDaqOptPb::clear_has_in_filename() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void ArteNeuralDaqOptPb::clear_in_filename() {
+  if (in_filename_ != &::google::protobuf::internal::kEmptyString) {
+    in_filename_->clear();
+  }
+  clear_has_in_filename();
+}
+inline const ::std::string& ArteNeuralDaqOptPb::in_filename() const {
+  return *in_filename_;
+}
+inline void ArteNeuralDaqOptPb::set_in_filename(const ::std::string& value) {
+  set_has_in_filename();
+  if (in_filename_ == &::google::protobuf::internal::kEmptyString) {
+    in_filename_ = new ::std::string;
+  }
+  in_filename_->assign(value);
+}
+inline void ArteNeuralDaqOptPb::set_in_filename(const char* value) {
+  set_has_in_filename();
+  if (in_filename_ == &::google::protobuf::internal::kEmptyString) {
+    in_filename_ = new ::std::string;
+  }
+  in_filename_->assign(value);
+}
+inline void ArteNeuralDaqOptPb::set_in_filename(const char* value, size_t size) {
+  set_has_in_filename();
+  if (in_filename_ == &::google::protobuf::internal::kEmptyString) {
+    in_filename_ = new ::std::string;
+  }
+  in_filename_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ArteNeuralDaqOptPb::mutable_in_filename() {
+  set_has_in_filename();
+  if (in_filename_ == &::google::protobuf::internal::kEmptyString) {
+    in_filename_ = new ::std::string;
+  }
+  return in_filename_;
+}
+inline ::std::string* ArteNeuralDaqOptPb::release_in_filename() {
+  clear_has_in_filename();
+  if (in_filename_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = in_filename_;
+    in_filename_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// optional string out_filename = 5;
+inline bool ArteNeuralDaqOptPb::has_out_filename() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void ArteNeuralDaqOptPb::set_has_out_filename() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void ArteNeuralDaqOptPb::clear_has_out_filename() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void ArteNeuralDaqOptPb::clear_out_filename() {
+  if (out_filename_ != &::google::protobuf::internal::kEmptyString) {
+    out_filename_->clear();
+  }
+  clear_has_out_filename();
+}
+inline const ::std::string& ArteNeuralDaqOptPb::out_filename() const {
+  return *out_filename_;
+}
+inline void ArteNeuralDaqOptPb::set_out_filename(const ::std::string& value) {
+  set_has_out_filename();
+  if (out_filename_ == &::google::protobuf::internal::kEmptyString) {
+    out_filename_ = new ::std::string;
+  }
+  out_filename_->assign(value);
+}
+inline void ArteNeuralDaqOptPb::set_out_filename(const char* value) {
+  set_has_out_filename();
+  if (out_filename_ == &::google::protobuf::internal::kEmptyString) {
+    out_filename_ = new ::std::string;
+  }
+  out_filename_->assign(value);
+}
+inline void ArteNeuralDaqOptPb::set_out_filename(const char* value, size_t size) {
+  set_has_out_filename();
+  if (out_filename_ == &::google::protobuf::internal::kEmptyString) {
+    out_filename_ = new ::std::string;
+  }
+  out_filename_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ArteNeuralDaqOptPb::mutable_out_filename() {
+  set_has_out_filename();
+  if (out_filename_ == &::google::protobuf::internal::kEmptyString) {
+    out_filename_ = new ::std::string;
+  }
+  return out_filename_;
+}
+inline ::std::string* ArteNeuralDaqOptPb::release_out_filename() {
+  clear_has_out_filename();
+  if (out_filename_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = out_filename_;
+    out_filename_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// optional uint32 buffer_time_samps = 6;
+inline bool ArteNeuralDaqOptPb::has_buffer_time_samps() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void ArteNeuralDaqOptPb::set_has_buffer_time_samps() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void ArteNeuralDaqOptPb::clear_has_buffer_time_samps() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void ArteNeuralDaqOptPb::clear_buffer_time_samps() {
+  buffer_time_samps_ = 0u;
+  clear_has_buffer_time_samps();
+}
+inline ::google::protobuf::uint32 ArteNeuralDaqOptPb::buffer_time_samps() const {
+  return buffer_time_samps_;
+}
+inline void ArteNeuralDaqOptPb::set_buffer_time_samps(::google::protobuf::uint32 value) {
+  set_has_buffer_time_samps();
+  buffer_time_samps_ = value;
+}
+
+// optional uint32 buffer_n_chans = 7;
+inline bool ArteNeuralDaqOptPb::has_buffer_n_chans() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+inline void ArteNeuralDaqOptPb::set_has_buffer_n_chans() {
+  _has_bits_[0] |= 0x00000040u;
+}
+inline void ArteNeuralDaqOptPb::clear_has_buffer_n_chans() {
+  _has_bits_[0] &= ~0x00000040u;
+}
+inline void ArteNeuralDaqOptPb::clear_buffer_n_chans() {
+  buffer_n_chans_ = 0u;
+  clear_has_buffer_n_chans();
+}
+inline ::google::protobuf::uint32 ArteNeuralDaqOptPb::buffer_n_chans() const {
+  return buffer_n_chans_;
+}
+inline void ArteNeuralDaqOptPb::set_buffer_n_chans(::google::protobuf::uint32 value) {
+  set_has_buffer_n_chans();
+  buffer_n_chans_ = value;
+}
+
+// optional bool is_master = 8;
+inline bool ArteNeuralDaqOptPb::has_is_master() const {
+  return (_has_bits_[0] & 0x00000080u) != 0;
+}
+inline void ArteNeuralDaqOptPb::set_has_is_master() {
+  _has_bits_[0] |= 0x00000080u;
+}
+inline void ArteNeuralDaqOptPb::clear_has_is_master() {
+  _has_bits_[0] &= ~0x00000080u;
+}
+inline void ArteNeuralDaqOptPb::clear_is_master() {
+  is_master_ = false;
+  clear_has_is_master();
+}
+inline bool ArteNeuralDaqOptPb::is_master() const {
+  return is_master_;
+}
+inline void ArteNeuralDaqOptPb::set_is_master(bool value) {
+  set_has_is_master();
+  is_master_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// ArteSetupOptPb
+
+// repeated .ArteNeuralDaqOptPb daqs = 1;
+inline int ArteSetupOptPb::daqs_size() const {
+  return daqs_.size();
+}
+inline void ArteSetupOptPb::clear_daqs() {
+  daqs_.Clear();
+}
+inline const ::ArteNeuralDaqOptPb& ArteSetupOptPb::daqs(int index) const {
+  return daqs_.Get(index);
+}
+inline ::ArteNeuralDaqOptPb* ArteSetupOptPb::mutable_daqs(int index) {
+  return daqs_.Mutable(index);
+}
+inline ::ArteNeuralDaqOptPb* ArteSetupOptPb::add_daqs() {
+  return daqs_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::ArteNeuralDaqOptPb >&
+ArteSetupOptPb::daqs() const {
+  return daqs_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::ArteNeuralDaqOptPb >*
+ArteSetupOptPb::mutable_daqs() {
+  return &daqs_;
+}
+
+// optional .ArteCommandPortOptPb command_port = 2;
+inline bool ArteSetupOptPb::has_command_port() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void ArteSetupOptPb::set_has_command_port() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void ArteSetupOptPb::clear_has_command_port() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void ArteSetupOptPb::clear_command_port() {
+  if (command_port_ != NULL) command_port_->::ArteCommandPortOptPb::Clear();
+  clear_has_command_port();
+}
+inline const ::ArteCommandPortOptPb& ArteSetupOptPb::command_port() const {
+  return command_port_ != NULL ? *command_port_ : *default_instance_->command_port_;
+}
+inline ::ArteCommandPortOptPb* ArteSetupOptPb::mutable_command_port() {
+  set_has_command_port();
+  if (command_port_ == NULL) command_port_ = new ::ArteCommandPortOptPb;
+  return command_port_;
+}
+inline ::ArteCommandPortOptPb* ArteSetupOptPb::release_command_port() {
+  clear_has_command_port();
+  ::ArteCommandPortOptPb* temp = command_port_;
+  command_port_ = NULL;
+  return temp;
+}
+
+// repeated .ArteHostOptPb host_list = 3;
+inline int ArteSetupOptPb::host_list_size() const {
+  return host_list_.size();
+}
+inline void ArteSetupOptPb::clear_host_list() {
+  host_list_.Clear();
+}
+inline const ::ArteHostOptPb& ArteSetupOptPb::host_list(int index) const {
+  return host_list_.Get(index);
+}
+inline ::ArteHostOptPb* ArteSetupOptPb::mutable_host_list(int index) {
+  return host_list_.Mutable(index);
+}
+inline ::ArteHostOptPb* ArteSetupOptPb::add_host_list() {
+  return host_list_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::ArteHostOptPb >&
+ArteSetupOptPb::host_list() const {
+  return host_list_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::ArteHostOptPb >*
+ArteSetupOptPb::mutable_host_list() {
+  return &host_list_;
+}
+
+// repeated .ArteFilterOptPb filters = 4;
+inline int ArteSetupOptPb::filters_size() const {
+  return filters_.size();
+}
+inline void ArteSetupOptPb::clear_filters() {
+  filters_.Clear();
+}
+inline const ::ArteFilterOptPb& ArteSetupOptPb::filters(int index) const {
+  return filters_.Get(index);
+}
+inline ::ArteFilterOptPb* ArteSetupOptPb::mutable_filters(int index) {
+  return filters_.Mutable(index);
+}
+inline ::ArteFilterOptPb* ArteSetupOptPb::add_filters() {
+  return filters_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::ArteFilterOptPb >&
+ArteSetupOptPb::filters() const {
+  return filters_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::ArteFilterOptPb >*
+ArteSetupOptPb::mutable_filters() {
+  return &filters_;
+}
+
+// -------------------------------------------------------------------
+
+// ArteSessionOptPb
+
+// optional string main_filename = 1;
+inline bool ArteSessionOptPb::has_main_filename() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void ArteSessionOptPb::set_has_main_filename() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void ArteSessionOptPb::clear_has_main_filename() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void ArteSessionOptPb::clear_main_filename() {
+  if (main_filename_ != &::google::protobuf::internal::kEmptyString) {
+    main_filename_->clear();
+  }
+  clear_has_main_filename();
+}
+inline const ::std::string& ArteSessionOptPb::main_filename() const {
+  return *main_filename_;
+}
+inline void ArteSessionOptPb::set_main_filename(const ::std::string& value) {
+  set_has_main_filename();
+  if (main_filename_ == &::google::protobuf::internal::kEmptyString) {
+    main_filename_ = new ::std::string;
+  }
+  main_filename_->assign(value);
+}
+inline void ArteSessionOptPb::set_main_filename(const char* value) {
+  set_has_main_filename();
+  if (main_filename_ == &::google::protobuf::internal::kEmptyString) {
+    main_filename_ = new ::std::string;
+  }
+  main_filename_->assign(value);
+}
+inline void ArteSessionOptPb::set_main_filename(const char* value, size_t size) {
+  set_has_main_filename();
+  if (main_filename_ == &::google::protobuf::internal::kEmptyString) {
+    main_filename_ = new ::std::string;
+  }
+  main_filename_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ArteSessionOptPb::mutable_main_filename() {
+  set_has_main_filename();
+  if (main_filename_ == &::google::protobuf::internal::kEmptyString) {
+    main_filename_ = new ::std::string;
+  }
+  return main_filename_;
+}
+inline ::std::string* ArteSessionOptPb::release_main_filename() {
+  clear_has_main_filename();
+  if (main_filename_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = main_filename_;
+    main_filename_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// optional .ArteTrodeOptPb default_trode = 2;
+inline bool ArteSessionOptPb::has_default_trode() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void ArteSessionOptPb::set_has_default_trode() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void ArteSessionOptPb::clear_has_default_trode() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void ArteSessionOptPb::clear_default_trode() {
+  if (default_trode_ != NULL) default_trode_->::ArteTrodeOptPb::Clear();
+  clear_has_default_trode();
+}
+inline const ::ArteTrodeOptPb& ArteSessionOptPb::default_trode() const {
+  return default_trode_ != NULL ? *default_trode_ : *default_instance_->default_trode_;
+}
+inline ::ArteTrodeOptPb* ArteSessionOptPb::mutable_default_trode() {
+  set_has_default_trode();
+  if (default_trode_ == NULL) default_trode_ = new ::ArteTrodeOptPb;
+  return default_trode_;
+}
+inline ::ArteTrodeOptPb* ArteSessionOptPb::release_default_trode() {
+  clear_has_default_trode();
+  ::ArteTrodeOptPb* temp = default_trode_;
+  default_trode_ = NULL;
+  return temp;
+}
+
+// repeated .ArteTrodeOptPb trodes = 3;
+inline int ArteSessionOptPb::trodes_size() const {
+  return trodes_.size();
+}
+inline void ArteSessionOptPb::clear_trodes() {
+  trodes_.Clear();
+}
+inline const ::ArteTrodeOptPb& ArteSessionOptPb::trodes(int index) const {
+  return trodes_.Get(index);
+}
+inline ::ArteTrodeOptPb* ArteSessionOptPb::mutable_trodes(int index) {
+  return trodes_.Mutable(index);
+}
+inline ::ArteTrodeOptPb* ArteSessionOptPb::add_trodes() {
+  return trodes_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::ArteTrodeOptPb >&
+ArteSessionOptPb::trodes() const {
+  return trodes_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::ArteTrodeOptPb >*
+ArteSessionOptPb::mutable_trodes() {
+  return &trodes_;
+}
+
+// optional .ArteLfpOptPb default_lfpbank = 4;
+inline bool ArteSessionOptPb::has_default_lfpbank() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void ArteSessionOptPb::set_has_default_lfpbank() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void ArteSessionOptPb::clear_has_default_lfpbank() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void ArteSessionOptPb::clear_default_lfpbank() {
+  if (default_lfpbank_ != NULL) default_lfpbank_->::ArteLfpOptPb::Clear();
+  clear_has_default_lfpbank();
+}
+inline const ::ArteLfpOptPb& ArteSessionOptPb::default_lfpbank() const {
+  return default_lfpbank_ != NULL ? *default_lfpbank_ : *default_instance_->default_lfpbank_;
+}
+inline ::ArteLfpOptPb* ArteSessionOptPb::mutable_default_lfpbank() {
+  set_has_default_lfpbank();
+  if (default_lfpbank_ == NULL) default_lfpbank_ = new ::ArteLfpOptPb;
+  return default_lfpbank_;
+}
+inline ::ArteLfpOptPb* ArteSessionOptPb::release_default_lfpbank() {
+  clear_has_default_lfpbank();
+  ::ArteLfpOptPb* temp = default_lfpbank_;
+  default_lfpbank_ = NULL;
+  return temp;
+}
+
+// repeated .ArteLfpOptPb lfpbanks = 5;
+inline int ArteSessionOptPb::lfpbanks_size() const {
+  return lfpbanks_.size();
+}
+inline void ArteSessionOptPb::clear_lfpbanks() {
+  lfpbanks_.Clear();
+}
+inline const ::ArteLfpOptPb& ArteSessionOptPb::lfpbanks(int index) const {
+  return lfpbanks_.Get(index);
+}
+inline ::ArteLfpOptPb* ArteSessionOptPb::mutable_lfpbanks(int index) {
+  return lfpbanks_.Mutable(index);
+}
+inline ::ArteLfpOptPb* ArteSessionOptPb::add_lfpbanks() {
+  return lfpbanks_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::ArteLfpOptPb >&
+ArteSessionOptPb::lfpbanks() const {
+  return lfpbanks_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::ArteLfpOptPb >*
+ArteSessionOptPb::mutable_lfpbanks() {
+  return &lfpbanks_;
 }
 
 // -------------------------------------------------------------------
@@ -835,177 +4800,235 @@ inline void ArtePb::set_timestamp(::google::protobuf::uint64 value) {
   timestamp_ = value;
 }
 
-// optional .ArteSpikePb arte_spike_pb = 2;
-inline bool ArtePb::has_arte_spike_pb() const {
+// optional .ArteSpikePb arte_spike = 2;
+inline bool ArtePb::has_arte_spike() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void ArtePb::set_has_arte_spike_pb() {
+inline void ArtePb::set_has_arte_spike() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void ArtePb::clear_has_arte_spike_pb() {
+inline void ArtePb::clear_has_arte_spike() {
   _has_bits_[0] &= ~0x00000002u;
 }
-inline void ArtePb::clear_arte_spike_pb() {
-  if (arte_spike_pb_ != NULL) arte_spike_pb_->::ArteSpikePb::Clear();
-  clear_has_arte_spike_pb();
+inline void ArtePb::clear_arte_spike() {
+  if (arte_spike_ != NULL) arte_spike_->::ArteSpikePb::Clear();
+  clear_has_arte_spike();
 }
-inline const ::ArteSpikePb& ArtePb::arte_spike_pb() const {
-  return arte_spike_pb_ != NULL ? *arte_spike_pb_ : *default_instance_->arte_spike_pb_;
+inline const ::ArteSpikePb& ArtePb::arte_spike() const {
+  return arte_spike_ != NULL ? *arte_spike_ : *default_instance_->arte_spike_;
 }
-inline ::ArteSpikePb* ArtePb::mutable_arte_spike_pb() {
-  set_has_arte_spike_pb();
-  if (arte_spike_pb_ == NULL) arte_spike_pb_ = new ::ArteSpikePb;
-  return arte_spike_pb_;
+inline ::ArteSpikePb* ArtePb::mutable_arte_spike() {
+  set_has_arte_spike();
+  if (arte_spike_ == NULL) arte_spike_ = new ::ArteSpikePb;
+  return arte_spike_;
 }
-inline ::ArteSpikePb* ArtePb::release_arte_spike_pb() {
-  clear_has_arte_spike_pb();
-  ::ArteSpikePb* temp = arte_spike_pb_;
-  arte_spike_pb_ = NULL;
+inline ::ArteSpikePb* ArtePb::release_arte_spike() {
+  clear_has_arte_spike();
+  ::ArteSpikePb* temp = arte_spike_;
+  arte_spike_ = NULL;
   return temp;
 }
 
-// optional .ArteLfpPb arte_lfp_pb = 3;
-inline bool ArtePb::has_arte_lfp_pb() const {
+// optional .ArteLfpPb arte_lfp = 3;
+inline bool ArtePb::has_arte_lfp() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
-inline void ArtePb::set_has_arte_lfp_pb() {
+inline void ArtePb::set_has_arte_lfp() {
   _has_bits_[0] |= 0x00000004u;
 }
-inline void ArtePb::clear_has_arte_lfp_pb() {
+inline void ArtePb::clear_has_arte_lfp() {
   _has_bits_[0] &= ~0x00000004u;
 }
-inline void ArtePb::clear_arte_lfp_pb() {
-  if (arte_lfp_pb_ != NULL) arte_lfp_pb_->::ArteLfpPb::Clear();
-  clear_has_arte_lfp_pb();
+inline void ArtePb::clear_arte_lfp() {
+  if (arte_lfp_ != NULL) arte_lfp_->::ArteLfpPb::Clear();
+  clear_has_arte_lfp();
 }
-inline const ::ArteLfpPb& ArtePb::arte_lfp_pb() const {
-  return arte_lfp_pb_ != NULL ? *arte_lfp_pb_ : *default_instance_->arte_lfp_pb_;
+inline const ::ArteLfpPb& ArtePb::arte_lfp() const {
+  return arte_lfp_ != NULL ? *arte_lfp_ : *default_instance_->arte_lfp_;
 }
-inline ::ArteLfpPb* ArtePb::mutable_arte_lfp_pb() {
-  set_has_arte_lfp_pb();
-  if (arte_lfp_pb_ == NULL) arte_lfp_pb_ = new ::ArteLfpPb;
-  return arte_lfp_pb_;
+inline ::ArteLfpPb* ArtePb::mutable_arte_lfp() {
+  set_has_arte_lfp();
+  if (arte_lfp_ == NULL) arte_lfp_ = new ::ArteLfpPb;
+  return arte_lfp_;
 }
-inline ::ArteLfpPb* ArtePb::release_arte_lfp_pb() {
-  clear_has_arte_lfp_pb();
-  ::ArteLfpPb* temp = arte_lfp_pb_;
-  arte_lfp_pb_ = NULL;
+inline ::ArteLfpPb* ArtePb::release_arte_lfp() {
+  clear_has_arte_lfp();
+  ::ArteLfpPb* temp = arte_lfp_;
+  arte_lfp_ = NULL;
   return temp;
 }
 
-// optional .ArteCommand arte_command_pb = 4;
-inline bool ArtePb::has_arte_command_pb() const {
+// optional .ArteCommand arte_command = 4;
+inline bool ArtePb::has_arte_command() const {
   return (_has_bits_[0] & 0x00000008u) != 0;
 }
-inline void ArtePb::set_has_arte_command_pb() {
+inline void ArtePb::set_has_arte_command() {
   _has_bits_[0] |= 0x00000008u;
 }
-inline void ArtePb::clear_has_arte_command_pb() {
+inline void ArtePb::clear_has_arte_command() {
   _has_bits_[0] &= ~0x00000008u;
 }
-inline void ArtePb::clear_arte_command_pb() {
-  if (arte_command_pb_ != NULL) arte_command_pb_->::ArteCommand::Clear();
-  clear_has_arte_command_pb();
+inline void ArtePb::clear_arte_command() {
+  if (arte_command_ != NULL) arte_command_->::ArteCommand::Clear();
+  clear_has_arte_command();
 }
-inline const ::ArteCommand& ArtePb::arte_command_pb() const {
-  return arte_command_pb_ != NULL ? *arte_command_pb_ : *default_instance_->arte_command_pb_;
+inline const ::ArteCommand& ArtePb::arte_command() const {
+  return arte_command_ != NULL ? *arte_command_ : *default_instance_->arte_command_;
 }
-inline ::ArteCommand* ArtePb::mutable_arte_command_pb() {
-  set_has_arte_command_pb();
-  if (arte_command_pb_ == NULL) arte_command_pb_ = new ::ArteCommand;
-  return arte_command_pb_;
+inline ::ArteCommand* ArtePb::mutable_arte_command() {
+  set_has_arte_command();
+  if (arte_command_ == NULL) arte_command_ = new ::ArteCommand;
+  return arte_command_;
 }
-inline ::ArteCommand* ArtePb::release_arte_command_pb() {
-  clear_has_arte_command_pb();
-  ::ArteCommand* temp = arte_command_pb_;
-  arte_command_pb_ = NULL;
+inline ::ArteCommand* ArtePb::release_arte_command() {
+  clear_has_arte_command();
+  ::ArteCommand* temp = arte_command_;
+  arte_command_ = NULL;
   return temp;
 }
 
-// optional .ArteEventStringPb arte_event_string_pb = 5;
-inline bool ArtePb::has_arte_event_string_pb() const {
+// optional .ArteEventStringPb arte_event_string = 5;
+inline bool ArtePb::has_arte_event_string() const {
   return (_has_bits_[0] & 0x00000010u) != 0;
 }
-inline void ArtePb::set_has_arte_event_string_pb() {
+inline void ArtePb::set_has_arte_event_string() {
   _has_bits_[0] |= 0x00000010u;
 }
-inline void ArtePb::clear_has_arte_event_string_pb() {
+inline void ArtePb::clear_has_arte_event_string() {
   _has_bits_[0] &= ~0x00000010u;
 }
-inline void ArtePb::clear_arte_event_string_pb() {
-  if (arte_event_string_pb_ != NULL) arte_event_string_pb_->::ArteEventStringPb::Clear();
-  clear_has_arte_event_string_pb();
+inline void ArtePb::clear_arte_event_string() {
+  if (arte_event_string_ != NULL) arte_event_string_->::ArteEventStringPb::Clear();
+  clear_has_arte_event_string();
 }
-inline const ::ArteEventStringPb& ArtePb::arte_event_string_pb() const {
-  return arte_event_string_pb_ != NULL ? *arte_event_string_pb_ : *default_instance_->arte_event_string_pb_;
+inline const ::ArteEventStringPb& ArtePb::arte_event_string() const {
+  return arte_event_string_ != NULL ? *arte_event_string_ : *default_instance_->arte_event_string_;
 }
-inline ::ArteEventStringPb* ArtePb::mutable_arte_event_string_pb() {
-  set_has_arte_event_string_pb();
-  if (arte_event_string_pb_ == NULL) arte_event_string_pb_ = new ::ArteEventStringPb;
-  return arte_event_string_pb_;
+inline ::ArteEventStringPb* ArtePb::mutable_arte_event_string() {
+  set_has_arte_event_string();
+  if (arte_event_string_ == NULL) arte_event_string_ = new ::ArteEventStringPb;
+  return arte_event_string_;
 }
-inline ::ArteEventStringPb* ArtePb::release_arte_event_string_pb() {
-  clear_has_arte_event_string_pb();
-  ::ArteEventStringPb* temp = arte_event_string_pb_;
-  arte_event_string_pb_ = NULL;
+inline ::ArteEventStringPb* ArtePb::release_arte_event_string() {
+  clear_has_arte_event_string();
+  ::ArteEventStringPb* temp = arte_event_string_;
+  arte_event_string_ = NULL;
   return temp;
 }
 
-// optional .ArteRawBufferPb arte_raw_buffer_pb = 6;
-inline bool ArtePb::has_arte_raw_buffer_pb() const {
+// optional .ArteRawBufferPb arte_raw_buffer = 6;
+inline bool ArtePb::has_arte_raw_buffer() const {
   return (_has_bits_[0] & 0x00000020u) != 0;
 }
-inline void ArtePb::set_has_arte_raw_buffer_pb() {
+inline void ArtePb::set_has_arte_raw_buffer() {
   _has_bits_[0] |= 0x00000020u;
 }
-inline void ArtePb::clear_has_arte_raw_buffer_pb() {
+inline void ArtePb::clear_has_arte_raw_buffer() {
   _has_bits_[0] &= ~0x00000020u;
 }
-inline void ArtePb::clear_arte_raw_buffer_pb() {
-  if (arte_raw_buffer_pb_ != NULL) arte_raw_buffer_pb_->::ArteRawBufferPb::Clear();
-  clear_has_arte_raw_buffer_pb();
+inline void ArtePb::clear_arte_raw_buffer() {
+  if (arte_raw_buffer_ != NULL) arte_raw_buffer_->::ArteRawBufferPb::Clear();
+  clear_has_arte_raw_buffer();
 }
-inline const ::ArteRawBufferPb& ArtePb::arte_raw_buffer_pb() const {
-  return arte_raw_buffer_pb_ != NULL ? *arte_raw_buffer_pb_ : *default_instance_->arte_raw_buffer_pb_;
+inline const ::ArteRawBufferPb& ArtePb::arte_raw_buffer() const {
+  return arte_raw_buffer_ != NULL ? *arte_raw_buffer_ : *default_instance_->arte_raw_buffer_;
 }
-inline ::ArteRawBufferPb* ArtePb::mutable_arte_raw_buffer_pb() {
-  set_has_arte_raw_buffer_pb();
-  if (arte_raw_buffer_pb_ == NULL) arte_raw_buffer_pb_ = new ::ArteRawBufferPb;
-  return arte_raw_buffer_pb_;
+inline ::ArteRawBufferPb* ArtePb::mutable_arte_raw_buffer() {
+  set_has_arte_raw_buffer();
+  if (arte_raw_buffer_ == NULL) arte_raw_buffer_ = new ::ArteRawBufferPb;
+  return arte_raw_buffer_;
 }
-inline ::ArteRawBufferPb* ArtePb::release_arte_raw_buffer_pb() {
-  clear_has_arte_raw_buffer_pb();
-  ::ArteRawBufferPb* temp = arte_raw_buffer_pb_;
-  arte_raw_buffer_pb_ = NULL;
+inline ::ArteRawBufferPb* ArtePb::release_arte_raw_buffer() {
+  clear_has_arte_raw_buffer();
+  ::ArteRawBufferPb* temp = arte_raw_buffer_;
+  arte_raw_buffer_ = NULL;
   return temp;
 }
 
-// optional .ArtePosPb arte_pos_pb = 7;
-inline bool ArtePb::has_arte_pos_pb() const {
+// optional .ArtePosPb arte_pos = 7;
+inline bool ArtePb::has_arte_pos() const {
   return (_has_bits_[0] & 0x00000040u) != 0;
 }
-inline void ArtePb::set_has_arte_pos_pb() {
+inline void ArtePb::set_has_arte_pos() {
   _has_bits_[0] |= 0x00000040u;
 }
-inline void ArtePb::clear_has_arte_pos_pb() {
+inline void ArtePb::clear_has_arte_pos() {
   _has_bits_[0] &= ~0x00000040u;
 }
-inline void ArtePb::clear_arte_pos_pb() {
-  if (arte_pos_pb_ != NULL) arte_pos_pb_->::ArtePosPb::Clear();
-  clear_has_arte_pos_pb();
+inline void ArtePb::clear_arte_pos() {
+  if (arte_pos_ != NULL) arte_pos_->::ArtePosPb::Clear();
+  clear_has_arte_pos();
 }
-inline const ::ArtePosPb& ArtePb::arte_pos_pb() const {
-  return arte_pos_pb_ != NULL ? *arte_pos_pb_ : *default_instance_->arte_pos_pb_;
+inline const ::ArtePosPb& ArtePb::arte_pos() const {
+  return arte_pos_ != NULL ? *arte_pos_ : *default_instance_->arte_pos_;
 }
-inline ::ArtePosPb* ArtePb::mutable_arte_pos_pb() {
-  set_has_arte_pos_pb();
-  if (arte_pos_pb_ == NULL) arte_pos_pb_ = new ::ArtePosPb;
-  return arte_pos_pb_;
+inline ::ArtePosPb* ArtePb::mutable_arte_pos() {
+  set_has_arte_pos();
+  if (arte_pos_ == NULL) arte_pos_ = new ::ArtePosPb;
+  return arte_pos_;
 }
-inline ::ArtePosPb* ArtePb::release_arte_pos_pb() {
-  clear_has_arte_pos_pb();
-  ::ArtePosPb* temp = arte_pos_pb_;
-  arte_pos_pb_ = NULL;
+inline ::ArtePosPb* ArtePb::release_arte_pos() {
+  clear_has_arte_pos();
+  ::ArtePosPb* temp = arte_pos_;
+  arte_pos_ = NULL;
+  return temp;
+}
+
+// optional .ArteSetupOptPb arte_setup = 8;
+inline bool ArtePb::has_arte_setup() const {
+  return (_has_bits_[0] & 0x00000080u) != 0;
+}
+inline void ArtePb::set_has_arte_setup() {
+  _has_bits_[0] |= 0x00000080u;
+}
+inline void ArtePb::clear_has_arte_setup() {
+  _has_bits_[0] &= ~0x00000080u;
+}
+inline void ArtePb::clear_arte_setup() {
+  if (arte_setup_ != NULL) arte_setup_->::ArteSetupOptPb::Clear();
+  clear_has_arte_setup();
+}
+inline const ::ArteSetupOptPb& ArtePb::arte_setup() const {
+  return arte_setup_ != NULL ? *arte_setup_ : *default_instance_->arte_setup_;
+}
+inline ::ArteSetupOptPb* ArtePb::mutable_arte_setup() {
+  set_has_arte_setup();
+  if (arte_setup_ == NULL) arte_setup_ = new ::ArteSetupOptPb;
+  return arte_setup_;
+}
+inline ::ArteSetupOptPb* ArtePb::release_arte_setup() {
+  clear_has_arte_setup();
+  ::ArteSetupOptPb* temp = arte_setup_;
+  arte_setup_ = NULL;
+  return temp;
+}
+
+// optional .ArteSessionOptPb arte_session = 9;
+inline bool ArtePb::has_arte_session() const {
+  return (_has_bits_[0] & 0x00000100u) != 0;
+}
+inline void ArtePb::set_has_arte_session() {
+  _has_bits_[0] |= 0x00000100u;
+}
+inline void ArtePb::clear_has_arte_session() {
+  _has_bits_[0] &= ~0x00000100u;
+}
+inline void ArtePb::clear_arte_session() {
+  if (arte_session_ != NULL) arte_session_->::ArteSessionOptPb::Clear();
+  clear_has_arte_session();
+}
+inline const ::ArteSessionOptPb& ArtePb::arte_session() const {
+  return arte_session_ != NULL ? *arte_session_ : *default_instance_->arte_session_;
+}
+inline ::ArteSessionOptPb* ArtePb::mutable_arte_session() {
+  set_has_arte_session();
+  if (arte_session_ == NULL) arte_session_ = new ::ArteSessionOptPb;
+  return arte_session_;
+}
+inline ::ArteSessionOptPb* ArtePb::release_arte_session() {
+  clear_has_arte_session();
+  ::ArteSessionOptPb* temp = arte_session_;
+  arte_session_ = NULL;
   return temp;
 }
 
