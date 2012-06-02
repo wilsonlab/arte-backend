@@ -4,14 +4,21 @@
 #ifndef CTR05_TIMER_H_
 #define CTR05_TIMER_H
 
-#include <pthread.h>
+#include <thread>
+#include <mutex>
+#include <string>
+#include <boost/thread/thread.hpp>
+#include <boost/thread/mutex.hpp>
 #include "a_timer.h"
 #include "pci-ctr05.h"
+
+typedef void (*CALLBACK_FN)(void *);
 
 class Ctr05Timer : public aTimer{
 
  public:
-  Ctr05Timer();
+  Ctr05Timer(std::string &timer_mode);
+  ~Ctr05Timer();
 
   void start_counting();
   void stop_counting();
@@ -22,31 +29,39 @@ class Ctr05Timer : public aTimer{
   uint32_t get_count();
   double get_timestamp_secs();
 
-  void init_as_clock_source();
-  void init_as_counter();
  
   void print_state();
 
   bool is_counting();
 
  private:
-  void DoOpenDevices();
-  char *DevName = "/dev/ctr05/ctr0_01";
-  int Mode = CTR05_COUNTER;
-  int Status;
-  int Print = 1;
+
+  //char DevName[30];
+  int Mode;
+  //int Status;
+  //int Print;
   int fdDIOA;
   int fdctr_1;
   int fdctr_2;
+  int freq;
+  // TODO replace uint32_t with timestamp_t
   uint32_t total_count, total_count_max;
-  uint64_t big_internal_count, last_start, accumulated_finished_blocks;
-  unsigned short small_counter_max, this_small_counter_val, previous_small_counter_val;
-  pthread_t poll_thread;
-  pthread_mutex_t get_count_mutex;
+  unsigned short small_counter_max, this_small_counter_val;
 
-  static (void *)touch_count( (void *)data );
+  //std::thread touch_thread;
+  std::mutex get_count_mutex;
+  
+  void init_as_clock_source();
+  void init_as_counter();
+ 
+  void touch_count();
   
 };
-
-
+/*
+struct CountTouch{
+  CountTouch( Ctr05Timer *timer );
+  Ctr05Timer *my_timer;
+  void operator()();
+}
+*/
 #endif

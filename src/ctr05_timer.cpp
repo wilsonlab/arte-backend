@@ -1,89 +1,121 @@
+#include <stdio.h>
+#include <algorithm>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include <iostream>
 #include <sys/ioctl.h>
+#include <fcntl.h>
 #include "ctr05_timer.h"
+#include "pci-ctr05.h"
 
+#define CTR2_BIT    0x2
 
-Ctr05Timer::Ctr05Timer(){
-  set_arte_time_to_secs_coeff( 1.0 / 10000.0 );
+Ctr05Timer::Ctr05Timer(std::string &timer_mode){
+  freq = 10000;
+  set_arte_time_to_secs_coeff( 1.0 / freq );
+  //strcpy( &DevName[0], "/dev/ctr05/ctr0_01" );
+  Mode = CTR05_COUNTER;
+  //Print = 1;
+  if( !(timer_mode.find("e") == std::string::npos) )
+    init_as_clock_source();
+  if( !(timer_mode.find("c") == std::string::npos) )
+    init_as_counter();
+  total_count_max = UINT32_MAX;
 }
 
 
 void Ctr05Timer::init_as_clock_source(){
   char str[] = "/dev/ctr05/ctr0_02";
-  if ((fdctr_2 = open(str, CTR05_COUNTER)) < 0){
+  if ((fdctr_2 = open(str, Mode)) < 0){
     perror(str);
     printf("ctr05_timer error:\n");
     printf("error opening device %s",str);
   } else{
     emitter_state = TIMER_STOPPED;
+    printf("Done init as clock source.\n");
   }
 }
 
 
 void Ctr05Timer::init_as_counter(){
   char str[] = "/dev/ctr05/ctr0_01";
-  if ((fdctr_1 = open(str, CTR05_COUNTER)) < 0){
+  if ((fdctr_1 = open(str, Mode)) < 0){
     perror(str);
     printf("ctr05_timer error:\n");
     printf("error opening device %s",str);
   } else {
+    unsigned short source = SRC1;
+    write(fdctr_1, &source, 2);
     counter_state = TIMER_STOPPED;
     total_count = 0;
-    this_counter_val = 0;
-    previous_counter_val = 0;
-    big_internal_count = 0;
-    uint16_max = 0xFFFF;
-    pthread_mutex_init( &get_count_mutex, NULL );
-    int rc = pthread_create( &poll_thread, NULL, touch_count, (void*)this );
+    this_small_counter_val = 0;
+    printf("Done init as counter.\n");
   }
 }
 
-void * Ctr05Timer::touch_count( void* data ){
-  while (this->is_counting()){
-    printf("in touch_count()\n");
-    data->get_count();
+void Ctr05Timer::touch_count(){
+  while ( is_counting() ){
+    //printf("in the thread\n");
+    get_count();
     sleep(1);
   }
 }
 
 void Ctr05Timer::start_counting(){
   if( counter_state == TIMER_STOPPED ){
-    last_start = get_count();
+    counter_state = TIMER_RUNNING;
+    std::cout << " about to start thread" << std::endl; fflush(stdout);
+    std::thread t(&Ctr05Timer::touch_count, this);
+    //touch_thread.swap(t);
+    //t.destroy();
+    //std::thread t2( std::move(t) );
+    //touch_thread.detach();
+    //touch_thread(&Ctr05Timer::touch_count, this);
+    t.detach();
+    std::cout << "finished starting thread" << std::endl; fflush(stdout);
   }
-  counter_state = TIMER_RUNNING;
 }
 
 void Ctr05Timer::stop_counting(){
   if( counter_state == TIMER_RUNNING ){
-    accumulated_finished_blocks += (get_count() - last_start);
+    // touch the count once before stopping, to bring current count into the total
+    get_count();
   }
   counter_state == TIMER_STOPPED;
 }
 
 uint32_t Ctr05Timer::get_count(){
-  pthread_mutex_lock( &get_count_mutex );
-  previous_small_counter_val = this_small_counter_val;
-  read(fdctr_1, &this_small_counter_val, 1);
-  if (this_small_counter_val < previous_small_counter_val){
-    printf("Added to big_internal_count\n");
-    big_internal_count += small_counter_max;
+
+  if (counter_state == TIMER_RUNNING){
+    std::lock_guard <std::mutex> lk ( get_count_mutex );
+    
+    read(fdctr_1, &this_small_counter_val, 1);
+    unsigned short source = SRC1;
+    write(fdctr_1, &source, 2);
+    
+    total_count += this_small_counter_val;
+    
+    if ( (total_count + this_small_counter_val) > total_count_max){
+      std::cerr << "Ctr05Timer Error: Counter uint32_t overflow, " 
+		<< "please restart system or reset all counters.\n" 
+		<< std::endl
+		<< "(total) = " << (total_count)
+		<< "  total_count_max = " << total_count_max << std::endl
+		<< "   small = " << this_small_counter_val << std::endl;
+    }
   }
-  if ( (total_count + this_small_counter_val) > total_count_max){
-    std::err << "Ctr05Timer Error: Counter uint32_t overflow, " 
-	     << "please restart system or reset all counters.\n" 
-	     << std::endl;
-  }
-  return (big_internal_count + this_small_counter_val);
-  pthread_mutex_unlock( &get_count_mutex );
+  return total_count;
 }
 
-bool Ctr05::Timer::is_counting(){
+bool Ctr05Timer::is_counting(){
   return counter_state == TIMER_RUNNING;
 }
 
 void Ctr05Timer::start_emitting(){
   if( emitter_state == TIMER_STOPPED ){
-    ioctl(fdctr_2, SET_SQUARE_FREQ, int(1.0/ arte_time_to_secs_coeff));
+    ioctl(fdctr_2, SET_SQUARE_FREQ, freq);
+    emitter_state = TIMER_RUNNING;
   }
   if ( emitter_state == TIMER_UNINITIALIZED ){
     std::cerr << "Ctr05Timer error: tried to start emitting when uninitialized"
@@ -91,41 +123,51 @@ void Ctr05Timer::start_emitting(){
   }
 }
     
-void DoOpenDevices()
-{
-  char str[80];
-
-  strcpy(str, "/dev/ctr05/dio0_0A");
-  if ((fdDIOA = open(str, Mode)) <0) {
-    perror(str);
-    printf("ctr05_timer error:\n");
-    printf("error opening device %s\n", str);
-    exit(2);
+void Ctr05Timer::stop_emitting(){
+  if( emitter_state == TIMER_RUNNING ){
+    ioctl(fdctr_2, LOAD_CMD_REG, DISARM | CTR2_BIT);
+    emitter_state = TIMER_STOPPED;
   }
-
-  // input counter
-  strcpy(str, "/dev/ctr05/ctr0_01");
-  if ((fdctr_1 = open(str, CTR05_COUNTER)) < 0) {
-    perror(str);
-    printf("ctr05_timer error:\n");
-    printf("error opening device %s\n",str);
-    exit(2);
-  }
-
-  // 
-  strcpy(str, "/dev/ctr05/ctr0_02");
-  if ((fdctr_2 = open(str, CTR05_COUNTER)) < 0) {
-    perror(str);
-    printf("ctr05_timer_error:\n");
-    printf("error opening device %s",str);
-  }
-
-  // frequency generator
-  strcpy(str, "/dev/ctr05/ctr0_03");
-  if ((fdctr_3 = open(str, CTR05_FREQUENCY)) < 0) {
-    perror(str);
-    perror(str);
-    printf("error opening device %s\n", str);
-  }
-
 }
+
+double Ctr05Timer::get_timestamp_secs(){
+  return 10.0;
+}
+
+void Ctr05Timer::reset_count(){
+  // reset the hardware counter
+  unsigned short source = SRC1;
+  write(fdctr_1, &source, 2);
+  // and reset the cumulative count
+  total_count = 0;
+}
+
+void Ctr05Timer::print_state(){
+  std::string emitter_string, counter_string;
+  (counter_state == TIMER_RUNNING) ? counter_string.assign("counter counting")
+    : counter_string.assign("counter not counting");
+  (emitter_state == TIMER_RUNNING) ? emitter_string.assign("emitter emitting")
+    : emitter_string.assign("emitter not emitting");
+  std::cout << emitter_string << std::endl << counter_string << std::endl
+	    << "is_couning(): " << is_counting() << std::endl;
+}
+
+Ctr05Timer::~Ctr05Timer(){
+  
+  printf("about to close files\n");
+  close(fdctr_1);
+  close(fdctr_2);
+}
+
+/*
+CountTouch::CountTouch( Ctr05Timer *timer )
+  : my_timer( timer );
+{ }
+
+CountTouch::operator()(){
+  while ( timer->is_counting() ){
+    timer->get_count();
+    sleep(1);
+  }
+}
+*/

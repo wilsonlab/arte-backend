@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <fstream>
 #include "a_timer.h"
 
 aTimer::aTimer(){
