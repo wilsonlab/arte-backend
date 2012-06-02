@@ -12,7 +12,7 @@
 #include "a_timer.h"
 #include "pci-ctr05.h"
 
-typedef void (*CALLBACK_FN)(void *);
+//typedef void (*CALLBACK_FN)(void *);
 
 class Ctr05Timer : public aTimer{
 
@@ -47,9 +47,6 @@ class Ctr05Timer : public aTimer{
   // TODO replace uint32_t with timestamp_t
   uint32_t total_count, total_count_max;
   unsigned short small_counter_max, this_small_counter_val;
-
-  //std::thread touch_thread;
-  std::mutex get_count_mutex;
   
   void init_as_clock_source();
   void init_as_counter();

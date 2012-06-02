@@ -33,7 +33,6 @@ void Ctr05Timer::init_as_clock_source(){
     printf("error opening device %s",str);
   } else{
     emitter_state = TIMER_STOPPED;
-    printf("Done init as clock source.\n");
   }
 }
 
@@ -50,7 +49,6 @@ void Ctr05Timer::init_as_counter(){
     counter_state = TIMER_STOPPED;
     total_count = 0;
     this_small_counter_val = 0;
-    printf("Done init as counter.\n");
   }
 }
 
@@ -131,7 +129,7 @@ void Ctr05Timer::stop_emitting(){
 }
 
 double Ctr05Timer::get_timestamp_secs(){
-  return 10.0;
+  return (get_count() * arte_time_to_secs_coeff);
 }
 
 void Ctr05Timer::reset_count(){

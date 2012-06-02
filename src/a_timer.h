@@ -70,6 +70,9 @@ class aTimer {
   uint32_t tic_time;
   double arte_time_to_secs_coeff;
 
+  std::mutex get_count_mutex;
+
+
 };
 
 #endif
