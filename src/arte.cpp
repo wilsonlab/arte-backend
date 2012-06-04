@@ -28,6 +28,15 @@ int main(int argc, char *argv[]){
   try_fclose( main_file );
 
   std::cout << "After call to neural_daq_stop_all()" << std::endl;
+
+  /*  //This will be the new way of doing it:
+      std::map<int, Trode> trodes;
+      std::map<int, NeuralDaq> neural_daqs;
+      NeuralDaq::init_daqs( neural_daqs, ArteSetupOptPb &arte_setup );
+      Trode::init_trodes( trodes, neural_daqs, ArteSessionOptPb &arte_session );
+      LfpBank::init_lfp_banks( lfp_banks, neural_daqs ArteSessionOptPb &arte_session );
+
+  */
  
   return 0;
 }

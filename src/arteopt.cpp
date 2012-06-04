@@ -2,6 +2,10 @@
 #include <boost/foreach.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/property_tree/exceptions.hpp>
+#include <boost/random.hpp>
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_int_distribution.hpp>
+#include <sstream>
 #include <assert.h>
 #include "global_defs.h"
 #include <iostream>
@@ -161,11 +165,17 @@ void arte_session_init(int argc, char *argv[]){
   char filename[MAX_NAME_STRING_LEN];
   std::string tmp_filename;
   assign_property<std::string>("options.session.main_filename",&tmp_filename, session_pt, session_pt, 1);
-  strcpy( filename, tmp_filename.c_str());
+  std::ostringstream my_oss (tmp_filename, std::ostringstream::out | std::ostringstream::app);
+  boost::mt19937 rng;
+  boost::random::uniform_int_distribution <> my_rand(1, 10000);
+  int my_draw = my_rand(rng);
+  my_oss << my_draw;
+  strcpy( filename, my_oss.str().c_str());
   if( (strcmp(filename, "none")) != 0 ){
     main_file = try_fopen( filename, "wb" );
   } else{
     main_file = NULL;
+    printf("FILE OPEN ERROR\n");
   }
   arte_disk_on = false;
 

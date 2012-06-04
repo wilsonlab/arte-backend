@@ -113,6 +113,7 @@ message ArteNeuralDaqOptPb{
 	optional uint32              buffer_time_samps  = 6;
 	optional uint32                 buffer_n_chans  = 7;
 	optional bool                        is_master  = 8;
+	optional bool                  is_multiplexing  = 9;
 }
 
 message ArteSetupOptPb{
