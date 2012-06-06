@@ -4,26 +4,48 @@
 #include <NIDAQmx.h>
 #include <string>
 #include <boost/property_tree/ptree.hpp>
+#include <boost/multi_array.hpp>
+#include <memory> //std::shared_ptr
+#include "arte_pb.pb.h"
 #include "global_defs.h"
 #include "neural_daq.h"
+#include "a_data_source.h"
 
 #ifndef CBUF
 #define CBUF(X,L) (L+X)%L // assumes X >= -L
 #endif
 
+class Filt;
+typedef std::shared_ptr <Filt> FiltPtr;
+typedef std::map <std::string, FiltPtr> FiltList;
+
 class Filt{
 
  public:
   Filt();
+  Filt( ArteFilterOptPb& filt_opt ) ;
+
   virtual ~Filt();
 
   void init(boost::property_tree::ptree &filt_pt);
 
+  //  attach_buffers( NeuralVoltageCircBuffer in_buffer, NeuralVoltageCircBuffer out_buffer );
+
+  
   std::string filt_name;
   name_string_t filt_type;               // iir or fir.  Determines how to interpret long lists of numerators and denominators
                                   // (iir case, they're treated as second-order sections.  fir case, one long kernel).
   double num_coefs [MAX_FILT_COEFS];                     // numerators.
   double denom_coefs [MAX_FILT_COEFS];                     // denominators. We don't calculate these.  I get them from matlab filter design tool.
+
+  // Coef array rows are sections, columns are coefficients for that section
+  // one SOS has three numerator coefs, three denominator coeffs
+  typedef boost::multi_array <double, 2> CoefArray;
+  typedef CoefArray::index coeff_array_index;
+  CoefArray num_coefs_new;
+  CoefArray denom_coefs_new;
+  std::vector < double > multipliers;  
+
 
   int order;                      // order of iir, or tap count of fir
   double input_gains [MAX_FILT_COEFS];           // must multiply feedforward samples by this to get unity outupt gain in passband (djargonz!)
@@ -41,6 +63,13 @@ class Filt{
   int data_cursor;                
   int out_buf_size_bytes;
   int count;
+
+  static FiltList filt_list;
+  static void build_filt_list( ArteSetupOptPb & setup_opt );
+
+ private:
+  NeuralVoltageCircBuffer *in_buffer, *out_buffer;
+
 };
 
 int rel_pt(int pos, int curs, int buf_len);

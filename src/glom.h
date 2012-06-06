@@ -31,7 +31,7 @@ class iGlom{
   // Constructor takes a filename and a mode char:  'a' for ascii, 'b' for binary
   // Glom respects existing files, and will change the filename to one
   // that doesn't conflict with existing ones if a conflict is found
-  iGlom(const char* _file_name, char _mode);
+  iGlom(const char* _file_name, const char _mode);
   ~iGlom();
 
   // read from file into an ArtePb
@@ -57,7 +57,7 @@ class iGlom{
 class oGlom{
 
  public:
-  oGlom(const char* _file_name, char _mode);
+  oGlom(const char* _file_name, const char _mode);
   ~oGlom();
 
   bool pb_write(ArtePb& _pb_to_write);

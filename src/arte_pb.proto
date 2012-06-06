@@ -43,9 +43,11 @@ message ArteFilterOptPb{
 	optional string                   filter_name  = 1;
 	repeated float                     numerators  = 2;
 	repeated float                   denominators  = 3;
-        optional float                        low_cut  = 4;
-	optional float                       high_cut  = 5;
-	optional uint32                         order  = 6;
+	repeated float                     multiplier  = 4;
+        optional float                        low_cut  = 5;
+	optional float                       high_cut  = 6;
+	optional uint32                         order  = 7;
+	optional int32                delay_direction  = 8;
 }
 
 
@@ -53,8 +55,9 @@ message ArteFilterOptPb{
 message ArteChanOptPb{
 	optional float                            gain  = 1;
         optional float                       threshold  = 2;
-	optional uint32                       daq_chan  = 3;
-	optional uint32                   source_trode  = 4;
+	optional string                         daq_id  = 3;
+	optional uint32                       daq_chan  = 4;
+	optional uint32                   source_trode  = 5;
 }
 
 message ArteTrodeOptPb{
@@ -110,10 +113,11 @@ message ArteNeuralDaqOptPb{
 	optional uint32                             id  = 3;
 	optional string                    in_filename  = 4;
 	optional string                   out_filename  = 5;
-	optional uint32              buffer_time_samps  = 6;
-	optional uint32                 buffer_n_chans  = 7;
-	optional bool                        is_master  = 8;
-	optional bool                  is_multiplexing  = 9;
+	repeated ArteChanOptPb                   chans  = 6;
+	optional uint32              buffer_time_samps  = 7;
+	optional uint32                 buffer_n_chans  = 8;
+	optional bool                        is_master  = 9;
+	optional bool                  is_multiplexing  = 10;
 }
 
 message ArteSetupOptPb{

@@ -736,26 +736,45 @@ class ArteFilterOptPb : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedField< float >*
       mutable_denominators();
   
-  // optional float low_cut = 4;
+  // repeated float multiplier = 4;
+  inline int multiplier_size() const;
+  inline void clear_multiplier();
+  static const int kMultiplierFieldNumber = 4;
+  inline float multiplier(int index) const;
+  inline void set_multiplier(int index, float value);
+  inline void add_multiplier(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
+      multiplier() const;
+  inline ::google::protobuf::RepeatedField< float >*
+      mutable_multiplier();
+  
+  // optional float low_cut = 5;
   inline bool has_low_cut() const;
   inline void clear_low_cut();
-  static const int kLowCutFieldNumber = 4;
+  static const int kLowCutFieldNumber = 5;
   inline float low_cut() const;
   inline void set_low_cut(float value);
   
-  // optional float high_cut = 5;
+  // optional float high_cut = 6;
   inline bool has_high_cut() const;
   inline void clear_high_cut();
-  static const int kHighCutFieldNumber = 5;
+  static const int kHighCutFieldNumber = 6;
   inline float high_cut() const;
   inline void set_high_cut(float value);
   
-  // optional uint32 order = 6;
+  // optional uint32 order = 7;
   inline bool has_order() const;
   inline void clear_order();
-  static const int kOrderFieldNumber = 6;
+  static const int kOrderFieldNumber = 7;
   inline ::google::protobuf::uint32 order() const;
   inline void set_order(::google::protobuf::uint32 value);
+  
+  // optional int32 delay_direction = 8;
+  inline bool has_delay_direction() const;
+  inline void clear_delay_direction();
+  static const int kDelayDirectionFieldNumber = 8;
+  inline ::google::protobuf::int32 delay_direction() const;
+  inline void set_delay_direction(::google::protobuf::int32 value);
   
   // @@protoc_insertion_point(class_scope:ArteFilterOptPb)
  private:
@@ -767,18 +786,22 @@ class ArteFilterOptPb : public ::google::protobuf::Message {
   inline void clear_has_high_cut();
   inline void set_has_order();
   inline void clear_has_order();
+  inline void set_has_delay_direction();
+  inline void clear_has_delay_direction();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::std::string* filter_name_;
   ::google::protobuf::RepeatedField< float > numerators_;
   ::google::protobuf::RepeatedField< float > denominators_;
+  ::google::protobuf::RepeatedField< float > multiplier_;
   float low_cut_;
   float high_cut_;
   ::google::protobuf::uint32 order_;
+  ::google::protobuf::int32 delay_direction_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(6 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(8 + 31) / 32];
   
   friend void  protobuf_AddDesc_arte_5fpb_2eproto();
   friend void protobuf_AssignDesc_arte_5fpb_2eproto();
@@ -857,17 +880,28 @@ class ArteChanOptPb : public ::google::protobuf::Message {
   inline float threshold() const;
   inline void set_threshold(float value);
   
-  // optional uint32 daq_chan = 3;
+  // optional string daq_id = 3;
+  inline bool has_daq_id() const;
+  inline void clear_daq_id();
+  static const int kDaqIdFieldNumber = 3;
+  inline const ::std::string& daq_id() const;
+  inline void set_daq_id(const ::std::string& value);
+  inline void set_daq_id(const char* value);
+  inline void set_daq_id(const char* value, size_t size);
+  inline ::std::string* mutable_daq_id();
+  inline ::std::string* release_daq_id();
+  
+  // optional uint32 daq_chan = 4;
   inline bool has_daq_chan() const;
   inline void clear_daq_chan();
-  static const int kDaqChanFieldNumber = 3;
+  static const int kDaqChanFieldNumber = 4;
   inline ::google::protobuf::uint32 daq_chan() const;
   inline void set_daq_chan(::google::protobuf::uint32 value);
   
-  // optional uint32 source_trode = 4;
+  // optional uint32 source_trode = 5;
   inline bool has_source_trode() const;
   inline void clear_source_trode();
-  static const int kSourceTrodeFieldNumber = 4;
+  static const int kSourceTrodeFieldNumber = 5;
   inline ::google::protobuf::uint32 source_trode() const;
   inline void set_source_trode(::google::protobuf::uint32 value);
   
@@ -877,6 +911,8 @@ class ArteChanOptPb : public ::google::protobuf::Message {
   inline void clear_has_gain();
   inline void set_has_threshold();
   inline void clear_has_threshold();
+  inline void set_has_daq_id();
+  inline void clear_has_daq_id();
   inline void set_has_daq_chan();
   inline void clear_has_daq_chan();
   inline void set_has_source_trode();
@@ -886,11 +922,12 @@ class ArteChanOptPb : public ::google::protobuf::Message {
   
   float gain_;
   float threshold_;
+  ::std::string* daq_id_;
   ::google::protobuf::uint32 daq_chan_;
   ::google::protobuf::uint32 source_trode_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
   
   friend void  protobuf_AddDesc_arte_5fpb_2eproto();
   friend void protobuf_AssignDesc_arte_5fpb_2eproto();
@@ -1744,26 +1781,45 @@ class ArteNeuralDaqOptPb : public ::google::protobuf::Message {
   inline ::std::string* mutable_out_filename();
   inline ::std::string* release_out_filename();
   
-  // optional uint32 buffer_time_samps = 6;
+  // repeated .ArteChanOptPb chans = 6;
+  inline int chans_size() const;
+  inline void clear_chans();
+  static const int kChansFieldNumber = 6;
+  inline const ::ArteChanOptPb& chans(int index) const;
+  inline ::ArteChanOptPb* mutable_chans(int index);
+  inline ::ArteChanOptPb* add_chans();
+  inline const ::google::protobuf::RepeatedPtrField< ::ArteChanOptPb >&
+      chans() const;
+  inline ::google::protobuf::RepeatedPtrField< ::ArteChanOptPb >*
+      mutable_chans();
+  
+  // optional uint32 buffer_time_samps = 7;
   inline bool has_buffer_time_samps() const;
   inline void clear_buffer_time_samps();
-  static const int kBufferTimeSampsFieldNumber = 6;
+  static const int kBufferTimeSampsFieldNumber = 7;
   inline ::google::protobuf::uint32 buffer_time_samps() const;
   inline void set_buffer_time_samps(::google::protobuf::uint32 value);
   
-  // optional uint32 buffer_n_chans = 7;
+  // optional uint32 buffer_n_chans = 8;
   inline bool has_buffer_n_chans() const;
   inline void clear_buffer_n_chans();
-  static const int kBufferNChansFieldNumber = 7;
+  static const int kBufferNChansFieldNumber = 8;
   inline ::google::protobuf::uint32 buffer_n_chans() const;
   inline void set_buffer_n_chans(::google::protobuf::uint32 value);
   
-  // optional bool is_master = 8;
+  // optional bool is_master = 9;
   inline bool has_is_master() const;
   inline void clear_is_master();
-  static const int kIsMasterFieldNumber = 8;
+  static const int kIsMasterFieldNumber = 9;
   inline bool is_master() const;
   inline void set_is_master(bool value);
+  
+  // optional bool is_multiplexing = 10;
+  inline bool has_is_multiplexing() const;
+  inline void clear_is_multiplexing();
+  static const int kIsMultiplexingFieldNumber = 10;
+  inline bool is_multiplexing() const;
+  inline void set_is_multiplexing(bool value);
   
   // @@protoc_insertion_point(class_scope:ArteNeuralDaqOptPb)
  private:
@@ -1783,20 +1839,24 @@ class ArteNeuralDaqOptPb : public ::google::protobuf::Message {
   inline void clear_has_buffer_n_chans();
   inline void set_has_is_master();
   inline void clear_has_is_master();
+  inline void set_has_is_multiplexing();
+  inline void clear_has_is_multiplexing();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::std::string* daq_type_;
   ::std::string* dev_name_;
   ::std::string* in_filename_;
+  ::std::string* out_filename_;
   ::google::protobuf::uint32 id_;
   ::google::protobuf::uint32 buffer_time_samps_;
-  ::std::string* out_filename_;
+  ::google::protobuf::RepeatedPtrField< ::ArteChanOptPb > chans_;
   ::google::protobuf::uint32 buffer_n_chans_;
   bool is_master_;
+  bool is_multiplexing_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(8 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(10 + 31) / 32];
   
   friend void  protobuf_AddDesc_arte_5fpb_2eproto();
   friend void protobuf_AssignDesc_arte_5fpb_2eproto();
@@ -2798,15 +2858,40 @@ ArteFilterOptPb::mutable_denominators() {
   return &denominators_;
 }
 
-// optional float low_cut = 4;
+// repeated float multiplier = 4;
+inline int ArteFilterOptPb::multiplier_size() const {
+  return multiplier_.size();
+}
+inline void ArteFilterOptPb::clear_multiplier() {
+  multiplier_.Clear();
+}
+inline float ArteFilterOptPb::multiplier(int index) const {
+  return multiplier_.Get(index);
+}
+inline void ArteFilterOptPb::set_multiplier(int index, float value) {
+  multiplier_.Set(index, value);
+}
+inline void ArteFilterOptPb::add_multiplier(float value) {
+  multiplier_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< float >&
+ArteFilterOptPb::multiplier() const {
+  return multiplier_;
+}
+inline ::google::protobuf::RepeatedField< float >*
+ArteFilterOptPb::mutable_multiplier() {
+  return &multiplier_;
+}
+
+// optional float low_cut = 5;
 inline bool ArteFilterOptPb::has_low_cut() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
+  return (_has_bits_[0] & 0x00000010u) != 0;
 }
 inline void ArteFilterOptPb::set_has_low_cut() {
-  _has_bits_[0] |= 0x00000008u;
+  _has_bits_[0] |= 0x00000010u;
 }
 inline void ArteFilterOptPb::clear_has_low_cut() {
-  _has_bits_[0] &= ~0x00000008u;
+  _has_bits_[0] &= ~0x00000010u;
 }
 inline void ArteFilterOptPb::clear_low_cut() {
   low_cut_ = 0;
@@ -2820,15 +2905,15 @@ inline void ArteFilterOptPb::set_low_cut(float value) {
   low_cut_ = value;
 }
 
-// optional float high_cut = 5;
+// optional float high_cut = 6;
 inline bool ArteFilterOptPb::has_high_cut() const {
-  return (_has_bits_[0] & 0x00000010u) != 0;
+  return (_has_bits_[0] & 0x00000020u) != 0;
 }
 inline void ArteFilterOptPb::set_has_high_cut() {
-  _has_bits_[0] |= 0x00000010u;
+  _has_bits_[0] |= 0x00000020u;
 }
 inline void ArteFilterOptPb::clear_has_high_cut() {
-  _has_bits_[0] &= ~0x00000010u;
+  _has_bits_[0] &= ~0x00000020u;
 }
 inline void ArteFilterOptPb::clear_high_cut() {
   high_cut_ = 0;
@@ -2842,15 +2927,15 @@ inline void ArteFilterOptPb::set_high_cut(float value) {
   high_cut_ = value;
 }
 
-// optional uint32 order = 6;
+// optional uint32 order = 7;
 inline bool ArteFilterOptPb::has_order() const {
-  return (_has_bits_[0] & 0x00000020u) != 0;
+  return (_has_bits_[0] & 0x00000040u) != 0;
 }
 inline void ArteFilterOptPb::set_has_order() {
-  _has_bits_[0] |= 0x00000020u;
+  _has_bits_[0] |= 0x00000040u;
 }
 inline void ArteFilterOptPb::clear_has_order() {
-  _has_bits_[0] &= ~0x00000020u;
+  _has_bits_[0] &= ~0x00000040u;
 }
 inline void ArteFilterOptPb::clear_order() {
   order_ = 0u;
@@ -2862,6 +2947,28 @@ inline ::google::protobuf::uint32 ArteFilterOptPb::order() const {
 inline void ArteFilterOptPb::set_order(::google::protobuf::uint32 value) {
   set_has_order();
   order_ = value;
+}
+
+// optional int32 delay_direction = 8;
+inline bool ArteFilterOptPb::has_delay_direction() const {
+  return (_has_bits_[0] & 0x00000080u) != 0;
+}
+inline void ArteFilterOptPb::set_has_delay_direction() {
+  _has_bits_[0] |= 0x00000080u;
+}
+inline void ArteFilterOptPb::clear_has_delay_direction() {
+  _has_bits_[0] &= ~0x00000080u;
+}
+inline void ArteFilterOptPb::clear_delay_direction() {
+  delay_direction_ = 0;
+  clear_has_delay_direction();
+}
+inline ::google::protobuf::int32 ArteFilterOptPb::delay_direction() const {
+  return delay_direction_;
+}
+inline void ArteFilterOptPb::set_delay_direction(::google::protobuf::int32 value) {
+  set_has_delay_direction();
+  delay_direction_ = value;
 }
 
 // -------------------------------------------------------------------
@@ -2912,15 +3019,73 @@ inline void ArteChanOptPb::set_threshold(float value) {
   threshold_ = value;
 }
 
-// optional uint32 daq_chan = 3;
-inline bool ArteChanOptPb::has_daq_chan() const {
+// optional string daq_id = 3;
+inline bool ArteChanOptPb::has_daq_id() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
-inline void ArteChanOptPb::set_has_daq_chan() {
+inline void ArteChanOptPb::set_has_daq_id() {
   _has_bits_[0] |= 0x00000004u;
 }
-inline void ArteChanOptPb::clear_has_daq_chan() {
+inline void ArteChanOptPb::clear_has_daq_id() {
   _has_bits_[0] &= ~0x00000004u;
+}
+inline void ArteChanOptPb::clear_daq_id() {
+  if (daq_id_ != &::google::protobuf::internal::kEmptyString) {
+    daq_id_->clear();
+  }
+  clear_has_daq_id();
+}
+inline const ::std::string& ArteChanOptPb::daq_id() const {
+  return *daq_id_;
+}
+inline void ArteChanOptPb::set_daq_id(const ::std::string& value) {
+  set_has_daq_id();
+  if (daq_id_ == &::google::protobuf::internal::kEmptyString) {
+    daq_id_ = new ::std::string;
+  }
+  daq_id_->assign(value);
+}
+inline void ArteChanOptPb::set_daq_id(const char* value) {
+  set_has_daq_id();
+  if (daq_id_ == &::google::protobuf::internal::kEmptyString) {
+    daq_id_ = new ::std::string;
+  }
+  daq_id_->assign(value);
+}
+inline void ArteChanOptPb::set_daq_id(const char* value, size_t size) {
+  set_has_daq_id();
+  if (daq_id_ == &::google::protobuf::internal::kEmptyString) {
+    daq_id_ = new ::std::string;
+  }
+  daq_id_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ArteChanOptPb::mutable_daq_id() {
+  set_has_daq_id();
+  if (daq_id_ == &::google::protobuf::internal::kEmptyString) {
+    daq_id_ = new ::std::string;
+  }
+  return daq_id_;
+}
+inline ::std::string* ArteChanOptPb::release_daq_id() {
+  clear_has_daq_id();
+  if (daq_id_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = daq_id_;
+    daq_id_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// optional uint32 daq_chan = 4;
+inline bool ArteChanOptPb::has_daq_chan() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void ArteChanOptPb::set_has_daq_chan() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void ArteChanOptPb::clear_has_daq_chan() {
+  _has_bits_[0] &= ~0x00000008u;
 }
 inline void ArteChanOptPb::clear_daq_chan() {
   daq_chan_ = 0u;
@@ -2934,15 +3099,15 @@ inline void ArteChanOptPb::set_daq_chan(::google::protobuf::uint32 value) {
   daq_chan_ = value;
 }
 
-// optional uint32 source_trode = 4;
+// optional uint32 source_trode = 5;
 inline bool ArteChanOptPb::has_source_trode() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
+  return (_has_bits_[0] & 0x00000010u) != 0;
 }
 inline void ArteChanOptPb::set_has_source_trode() {
-  _has_bits_[0] |= 0x00000008u;
+  _has_bits_[0] |= 0x00000010u;
 }
 inline void ArteChanOptPb::clear_has_source_trode() {
-  _has_bits_[0] &= ~0x00000008u;
+  _has_bits_[0] &= ~0x00000010u;
 }
 inline void ArteChanOptPb::clear_source_trode() {
   source_trode_ = 0u;
@@ -4430,15 +4595,40 @@ inline ::std::string* ArteNeuralDaqOptPb::release_out_filename() {
   }
 }
 
-// optional uint32 buffer_time_samps = 6;
+// repeated .ArteChanOptPb chans = 6;
+inline int ArteNeuralDaqOptPb::chans_size() const {
+  return chans_.size();
+}
+inline void ArteNeuralDaqOptPb::clear_chans() {
+  chans_.Clear();
+}
+inline const ::ArteChanOptPb& ArteNeuralDaqOptPb::chans(int index) const {
+  return chans_.Get(index);
+}
+inline ::ArteChanOptPb* ArteNeuralDaqOptPb::mutable_chans(int index) {
+  return chans_.Mutable(index);
+}
+inline ::ArteChanOptPb* ArteNeuralDaqOptPb::add_chans() {
+  return chans_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::ArteChanOptPb >&
+ArteNeuralDaqOptPb::chans() const {
+  return chans_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::ArteChanOptPb >*
+ArteNeuralDaqOptPb::mutable_chans() {
+  return &chans_;
+}
+
+// optional uint32 buffer_time_samps = 7;
 inline bool ArteNeuralDaqOptPb::has_buffer_time_samps() const {
-  return (_has_bits_[0] & 0x00000020u) != 0;
+  return (_has_bits_[0] & 0x00000040u) != 0;
 }
 inline void ArteNeuralDaqOptPb::set_has_buffer_time_samps() {
-  _has_bits_[0] |= 0x00000020u;
+  _has_bits_[0] |= 0x00000040u;
 }
 inline void ArteNeuralDaqOptPb::clear_has_buffer_time_samps() {
-  _has_bits_[0] &= ~0x00000020u;
+  _has_bits_[0] &= ~0x00000040u;
 }
 inline void ArteNeuralDaqOptPb::clear_buffer_time_samps() {
   buffer_time_samps_ = 0u;
@@ -4452,15 +4642,15 @@ inline void ArteNeuralDaqOptPb::set_buffer_time_samps(::google::protobuf::uint32
   buffer_time_samps_ = value;
 }
 
-// optional uint32 buffer_n_chans = 7;
+// optional uint32 buffer_n_chans = 8;
 inline bool ArteNeuralDaqOptPb::has_buffer_n_chans() const {
-  return (_has_bits_[0] & 0x00000040u) != 0;
+  return (_has_bits_[0] & 0x00000080u) != 0;
 }
 inline void ArteNeuralDaqOptPb::set_has_buffer_n_chans() {
-  _has_bits_[0] |= 0x00000040u;
+  _has_bits_[0] |= 0x00000080u;
 }
 inline void ArteNeuralDaqOptPb::clear_has_buffer_n_chans() {
-  _has_bits_[0] &= ~0x00000040u;
+  _has_bits_[0] &= ~0x00000080u;
 }
 inline void ArteNeuralDaqOptPb::clear_buffer_n_chans() {
   buffer_n_chans_ = 0u;
@@ -4474,15 +4664,15 @@ inline void ArteNeuralDaqOptPb::set_buffer_n_chans(::google::protobuf::uint32 va
   buffer_n_chans_ = value;
 }
 
-// optional bool is_master = 8;
+// optional bool is_master = 9;
 inline bool ArteNeuralDaqOptPb::has_is_master() const {
-  return (_has_bits_[0] & 0x00000080u) != 0;
+  return (_has_bits_[0] & 0x00000100u) != 0;
 }
 inline void ArteNeuralDaqOptPb::set_has_is_master() {
-  _has_bits_[0] |= 0x00000080u;
+  _has_bits_[0] |= 0x00000100u;
 }
 inline void ArteNeuralDaqOptPb::clear_has_is_master() {
-  _has_bits_[0] &= ~0x00000080u;
+  _has_bits_[0] &= ~0x00000100u;
 }
 inline void ArteNeuralDaqOptPb::clear_is_master() {
   is_master_ = false;
@@ -4494,6 +4684,28 @@ inline bool ArteNeuralDaqOptPb::is_master() const {
 inline void ArteNeuralDaqOptPb::set_is_master(bool value) {
   set_has_is_master();
   is_master_ = value;
+}
+
+// optional bool is_multiplexing = 10;
+inline bool ArteNeuralDaqOptPb::has_is_multiplexing() const {
+  return (_has_bits_[0] & 0x00000200u) != 0;
+}
+inline void ArteNeuralDaqOptPb::set_has_is_multiplexing() {
+  _has_bits_[0] |= 0x00000200u;
+}
+inline void ArteNeuralDaqOptPb::clear_has_is_multiplexing() {
+  _has_bits_[0] &= ~0x00000200u;
+}
+inline void ArteNeuralDaqOptPb::clear_is_multiplexing() {
+  is_multiplexing_ = false;
+  clear_has_is_multiplexing();
+}
+inline bool ArteNeuralDaqOptPb::is_multiplexing() const {
+  return is_multiplexing_;
+}
+inline void ArteNeuralDaqOptPb::set_is_multiplexing(bool value) {
+  set_has_is_multiplexing();
+  is_multiplexing_ = value;
 }
 
 // -------------------------------------------------------------------

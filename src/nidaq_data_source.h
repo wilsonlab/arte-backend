@@ -7,35 +7,36 @@
 
 #include <boost/multi_array.hpp>
 #include <memory> // std::shared_ptr <>
-#include <nidaqmx.h>
+#include <NIDAQmx.h>
+#include <map>
+#include "a_data_source.h"
+#include "arte_pb.pb.h"
 #include "global_defs.h"
+#include "glom.h"  
 
-typedef boost::multi_array <rdata_t,2> raw_voltage_array;
-typedef raw_voltage_array::index index;
 
-// If we ever get a card other than nidaq, then we need
-// to move this data type out into a header that other
-// data_source's can use
-struct neural_voltage_buffer{
-  timestamp_t       buffer_timestamp;
-  raw_voltage_array buffer_voltage;
-}
+//class NidaqDataSource;
+//typedef std::shared_ptr <NidaqDataSource> NidaqSourcePtr;
+//typedef std::map <int, NidaqSourcePtr> DaqList;
 
-class NidaqDataSource : ADataSource <neural_voltage_buffer> {
-
-  typedef std::shared_ptr<NidaqDataSource> NidaqSourcePtr;
-  typedef std::map <int, NidaqSourcePtr> DaqList;
+class NidaqDataSource : public ADataSource <NeuralVoltageBuffer> {
 
  public:
+typedef std::shared_ptr <NidaqDataSource> NidaqSourcePtr;
+typedef std::map <int, NidaqSourcePtr> DaqList;
 
-  
-  NidaqDataSource( ArteNeuralDaqOptPb &daq_opt_pb,
+ NidaqDataSource ();
+ NidaqDataSource( ArteNeuralDaqOptPb &daq_opt_pb,
 		   std::shared_ptr <aTimer> timer );
   // Destructor checks that destruction is safe, complains if not
   ~NidaqDataSource();
 
   void start();
   void stop();
+
+
+  timestamp_t buffer_delay;
+
   
   void print_state();
   bool get_is_master();
@@ -45,22 +46,22 @@ class NidaqDataSource : ADataSource <neural_voltage_buffer> {
   // Because nidaq cards are coordinated within one machine,
   // we need helper functions that process daqs in the right order
   
-  int NidaqDataSource::get_master_daq_key();
-  NidaqSourcePtr NidaqDataSource::get_master_daq();
+  static int get_master_daq_key();
+  static NidaqSourcePtr get_master_daq();
   
-  void NidaqDataSource::start_all_daqs();
-  void NidaqDataSource::stop_all_daqs (); 
+  static void start_all_daqs();
+  static void stop_all_daqs (); 
+
+  const ArteNeuralDaqOptPb * get_daq_settings();
+  static void get_all_daqs_settings( ArteSetupOptPb &setup_opt );
 
  private:
-   
-  neural_voltage_buffer data;
-  neural_voltage_buffer scratch_data;
 
   int id;
   bool is_master;
+  bool is_multiplexing;
 
-  std::shared_ptr <aTimer> timer;
-  timestamp_t buffer_delay;
+  ArteNeuralDaqOptPb daq_opt;
 
   static bool destruction_is_safe;
 
@@ -71,11 +72,11 @@ class NidaqDataSource : ADataSource <neural_voltage_buffer> {
   int n_chans;
 
   // nidaqmx-style callbacks for when cards produce data or stop
-  int32 CVICALLBACK EveryNCallback(TaskHandle task_handle, 
+  static int32 CVICALLBACK EveryNCallback(TaskHandle task_handle, 
 				   int32 everyNSamplesEventType,
 				   uInt32 nSamples,
 				   void *callbackData);
-  int32 CVICALLBACK DoneCallback(TaskHandle task_handle, 
+  static int32 CVICALLBACK DoneCallback(TaskHandle task_handle, 
 				 int32 status,
 				 void *callbackData);
   
@@ -83,7 +84,8 @@ class NidaqDataSource : ADataSource <neural_voltage_buffer> {
   // in support of MockedNidaqDataSource, which will 
   // read buffer data from an iGlom
   bool write_to_disk;
-  static std::shared_ptr <oGlom> daq_o_glom;
+  std::string out_filename;
+  std::shared_ptr <oGlom> daq_o_glom;
 
   // members for nidaqmx
   TaskHandle task_handle;
@@ -93,4 +95,22 @@ class NidaqDataSource : ADataSource <neural_voltage_buffer> {
   static float64 clkRate;
   static char trig_name[256];
 
+  // Copied from util.h, util.cpp; these should be here b/c
+  // they're nidaqmx specific (eventually will remove from util.h
+  // and util.cpp so that those can build w/out nidaq headers)
+  static  void nidaq_err_check( int32 error );
+  static void nidaq_err_check( int32 error, TaskHandle *task_handle_array, 
+			       int n_tasks );
+  static int32 GetTerminalNameWithDevPrefix(TaskHandle taskHandle, 
+					    const char terminalName[], 
+					    char triggerName[]);
+
+
 };
+
+typedef std::shared_ptr <NidaqDataSource> NidaqSourcePtr;
+typedef std::map <int, NidaqSourcePtr> DaqList;
+
+//float64 NidaqDataSource::clkRate = 0;
+
+#endif

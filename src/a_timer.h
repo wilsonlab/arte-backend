@@ -25,6 +25,7 @@
 #ifndef A_TIMER_H_
 #define A_TIMER_H_
 
+#include <mutex>
 #include "arte_command.pb.h"
 
 enum timer_state_t {TIMER_UNINITIALIZED, TIMER_STOPPED, TIMER_ARMED, TIMER_RUNNING};

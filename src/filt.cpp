@@ -14,6 +14,24 @@ int rel_pt(int pos, int curs, int buf_len){
   return r;
 }
 
+FiltList Filt::filt_list;
+
+void Filt::build_filt_list( ArteSetupOptPb & setup_opt ){
+  for(int i = 0; i < setup_opt.filters_size(); i++){
+    ArteFilterOptPb this_filt_opt = setup_opt.filters(i);
+    Filt::filt_list.insert( std::pair <std::string, FiltPtr> (this_filt_opt.filter_name(),
+							      FiltPtr( new Filt (this_filt_opt))) );
+  }
+}
+
+
+Filt::Filt( ArteFilterOptPb & filt_opt ){
+  std::cout << "Called constructor for filt, still need to implement this.\n";
+}
+
+//Filt::attach_buffers( NeuralVoltageCircBuffer _in_buffer, NeuralVoltageCircBuffer _out_buffer ){
+  
+
 // BIG NOTE: this functinon will now be defined in filtered_buffer.cpp
 // This way, it will know what a Filtered_buffer is and can access its
 // public members.  This drastically shortens the argument lis.t

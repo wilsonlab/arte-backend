@@ -5,7 +5,7 @@
 #include "glom.h"
 
 
-iGlom::iGlom(const char *_file_name, char _mode){
+iGlom::iGlom(const char *_file_name, const char _mode){
 
   fflush(stdout);
   filename.assign( _file_name );
@@ -121,7 +121,7 @@ int iGlom::pb_read(ArtePb& _pb_to_read_into){
 
 
 
-oGlom::oGlom(const char *_file_name, char _mode){
+oGlom::oGlom(const char *_file_name, const char _mode){
   
   bool got_empty_file = false;
   filename.assign( _file_name );

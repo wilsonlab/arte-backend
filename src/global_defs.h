@@ -7,6 +7,7 @@
 #include <iostream>
 #include <map>
 #include <stdint.h>
+#include <limits.h>
 #include <boost/thread/thread.hpp>
 #include <boost/thread/mutex.hpp>
 
@@ -19,6 +20,7 @@
 // std::mutex print_mutex;
 
 typedef int16_t rdata_t;
+// Don't know why these are giving not-declared errors
 const rdata_t RDATA_MIN = INT16_MIN;
 const rdata_t RDATA_MAX = INT16_MAX;
 

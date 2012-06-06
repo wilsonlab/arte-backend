@@ -1,3 +1,6 @@
+#ifndef ARTE_H_
+#define ARTE_H_
+
 // this will be the header file atop the main loop
 // global variables declared here
 #include <string>
@@ -25,3 +28,5 @@ extern int n_lfp_banks;
 
 extern FILE *main_file;
 extern pthread_mutex_t main_file_mutex;
+
+#endif
