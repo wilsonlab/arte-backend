@@ -6,8 +6,8 @@
 #include <string>
 #include <iostream>
 #include <map>
-#include <stdint.h>
 #include <limits.h>
+#include <stdint.h>
 #include <boost/thread/thread.hpp>
 #include <boost/thread/mutex.hpp>
 

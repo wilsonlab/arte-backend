@@ -38,6 +38,7 @@ struct NeuralVoltageCircBuffer{
 enum data_source_state_t  {DATA_SOURCE_INVALID, 
 			   DATA_SOURCE_STOPPED, 
 			   DATA_SOURCE_RUNNING};
+typedef int ListenerKey;
 
 template <class DataType>
 class ADataSource{
@@ -53,6 +54,11 @@ class ADataSource{
   DataType & get_data();
   timestamp_t get_data_timestamp();
   static std::shared_ptr <aTimer> timer_p;
+
+  
+  vector <ListenerKey> listeners;
+  vector <ListenerKey> dirty_list;
+
 
   DataType data;
   DataType scratch_data;
@@ -100,9 +106,20 @@ template <class DataType>
 void ADataSource<DataType>::set_data(DataType &new_data){
   
   boost::mutex::scoped_lock ( data_mutex );
+
+  // right now we touch the data using DataType copy constructor
+  // TODO: make virtual function for other methods of touching the data
+  // (e.g. - probably faster to have a double-buffer kind of strategy,
+  //         where setting the data just means swapping the pointers)
+  // default a_data_source can do it as double-buffer, subclasses may override
   data = new_data;
   data_is_valid = true;
   update_count++;
+
+  // Mark all listeners as dirty by adding their labels to dirty-list
+  assert( dirty_list.empty() );
+  dirt_list.push_back( listeners.begin(), listeners.end() );
+
   data_ready_cond.notify_all();
 
 }

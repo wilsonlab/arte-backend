@@ -15,15 +15,14 @@
 #include "glom.h"  
 
 
-//class NidaqDataSource;
-//typedef std::shared_ptr <NidaqDataSource> NidaqSourcePtr;
-//typedef std::map <int, NidaqSourcePtr> DaqList;
+class NidaqDataSource;
+typedef std::shared_ptr <NidaqDataSource> NidaqSourcePtr;
+typedef std::map <int, NidaqSourcePtr> DaqList;
+typedef int ListenerKey;
 
 class NidaqDataSource : public ADataSource <NeuralVoltageBuffer> {
 
  public:
-typedef std::shared_ptr <NidaqDataSource> NidaqSourcePtr;
-typedef std::map <int, NidaqSourcePtr> DaqList;
 
  NidaqDataSource ();
  NidaqDataSource( ArteNeuralDaqOptPb &daq_opt_pb,
@@ -33,7 +32,9 @@ typedef std::map <int, NidaqSourcePtr> DaqList;
 
   void start();
   void stop();
-
+  
+  vector <ListenerKey> listeners;
+  vector <ListenerKey> dirty_list;
 
   timestamp_t buffer_delay;
 

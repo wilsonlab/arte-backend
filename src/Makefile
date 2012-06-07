@@ -24,7 +24,7 @@ BACKEND_OBJ += $(SRCS)arte_command_port.o $(SRCS)nidaq_data_source.o $(SRCS)a_da
 BACKEND_OBJ += $(SRCS)a_timer.o $(SRCS)global_state.o
 
 # path to boost library added to 
-CFLAGS = -pthread -std=c++0x -D__STDC_LIMIT_MACROS -O3 -I /usr/local/include/ -I $(wildcard /usr/local/boost_1_45_0) -I $(wildcard /usr/local/boost-trunk) -I $(wildcard /usr/local/boost_1_45_0/boost/property_tree) -I $(SRCS)
+CFLAGS = -D__STDC_LIMIT_MACROS -pthread -std=c++0x -O3 -I /usr/local/include/ -I $(wildcard /usr/local/boost_1_45_0) -I $(wildcard /usr/local/boost-trunk) -I $(wildcard /usr/local/boost_1_45_0/boost/property_tree) -I $(SRCS)
 
 
 OBJS = src/
