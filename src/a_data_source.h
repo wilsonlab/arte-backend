@@ -72,7 +72,7 @@ class ADataSource{
   std::condition_variable data_ready_cond;
 
  private:
-  
+
 };
 
 
