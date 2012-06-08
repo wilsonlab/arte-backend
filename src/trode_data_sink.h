@@ -27,7 +27,7 @@ class TrodeDataSink : public ADataSink<NeuralVoltageBuffer,NeuralVoltageCircBuff
   ArteSpikePb spike_pb;
   ArteVoltageTimeseries voltages_pb;
 
-  static TrodeDataSink default_trode;
+  static ADataSinkPtr default_trode;
 
   Filter filter;
 
