@@ -31,7 +31,8 @@ class DataSinkWorker{
   // There is some controversy about references as member data
   // TODO: consider replacing them with pointers or smartpointers
   DataSinkList             &data_sink_list;
-  std::mutex               &data_source_mutex;
+  std::mutex               &data_mutex;
+  //  std::mutex               &data_registry_mutex;
   std::condition_variable  &data_ready_cond;
   std::stack <ListenerKey> &dirty_list;
 

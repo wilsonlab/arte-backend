@@ -55,9 +55,8 @@ message ArteFilterOptPb{
 message ArteChanOptPb{
 	optional float                            gain  = 1;
         optional float                       threshold  = 2;
-	optional string                         daq_id  = 3;
-	optional uint32                       daq_chan  = 4;
-	optional uint32                   source_trode  = 5;
+	optional uint32                       daq_chan  = 3;
+	optional uint32                   source_trode  = 4;
 }
 
 message ArteTrodeOptPb{

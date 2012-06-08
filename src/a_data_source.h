@@ -55,83 +55,82 @@ class ADataSource{
   timestamp_t get_data_timestamp();
   static std::shared_ptr <aTimer> timer_p;
 
+  void register_listener( ListenerKey );
   
-  vector <ListenerKey> listeners;
-  vector <ListenerKey> dirty_list;
+  std::stack <ListenerKey> listeners;
+  std::stack <ListenerKey> dirty_list;
 
 
   DataType data;
   DataType scratch_data;
   bool data_is_valid;
+  // Note: timestamp should be a property of DataType itself,
+  // I don't think we should use this extra member for timestamp
   timestamp_t data_timestamp;
 
 
   void set_data( DataType &new_data );
-  void get_data( DataType &data );
+  DataType &  get_data();
   uint64_t update_count;
 
   data_source_state_t state;
 
   std::shared_ptr <ArteGlobalState> global_state_p;
 
-  std::mutex data_mutex;
-  std::condition_variable data_ready_cond;
+  //std::mutex                registry_mutex;
+  std::mutex                    data_mutex;
+  std::condition_variable  data_ready_cond;
 
  private:
 
 };
 
 
-// defined here rather than .cpp because relies on template param
-// Many reader threads may request data.  They each share a mutex
-// and wait for the data_ready condition variable
 template <class DataType>
-void ADataSource<DataType>::get_data(DataType & return_data){
-  
-  std::unique_lock<std::mutex> lk ( data_mutex );
-  data_ready_cond.wait( lk );
-  // condition variable indicates data is ready
-  // take the shared_lock again while copying the member
-  // data back to the caller
-  { 
-    std::lock_guard<std::mutex> lk ( data_mutex );
-    return_data = data;
-  }
+DataType & ADataSource<DataType>::get_data(){ 
+  return data;
 }
 
-// a single writer thread (the one owning this instance of ADataSource
-// competes with all readers for the data_lock, notifies them all
-// after new_data is copied into the data member
+
 template <class DataType>
 void ADataSource<DataType>::set_data(DataType &new_data){
   
-  boost::mutex::scoped_lock ( data_mutex );
+  {
+    //   std::unique_lock <std::mutex> reg_lk  (registry_mutex);
+    std::unique_lock <std::mutex> data_lk (data_mutex);
 
-  // right now we touch the data using DataType copy constructor
-  // TODO: make virtual function for other methods of touching the data
-  // (e.g. - probably faster to have a double-buffer kind of strategy,
-  //         where setting the data just means swapping the pointers)
-  // default a_data_source can do it as double-buffer, subclasses may override
-  data = new_data;
-  data_is_valid = true;
-  update_count++;
-
-  // Mark all listeners as dirty by adding their labels to dirty-list
-  assert( dirty_list.empty() );
-  dirt_list.push_back( listeners.begin(), listeners.end() );
-
-  data_ready_cond.notify_all();
-
+    // right now we update the data using DataType copy constructor
+    // TODO: make virtual function for other methods of touching the data
+    // (e.g. - probably faster to have a double-buffer kind of strategy,
+    //         where setting the data just means swapping the pointers)
+    // default a_data_source can do it as double-buffer, subclasses may override
+    data = new_data;
+    data_is_valid = true;
+    update_count++;
+    
+    // Assert that all listeners have finished copying the prior data
+    // Mark all listeners as dirty by adding their labels to dirty-list
+    assert( dirty_list.empty() );
+    dirt_list.push_back( listeners.begin(), listeners.end() );
+    
+    data_ready_cond.notify_all();
+  }
 }
 
 
 template <class DataType>
 void ADataSource<DataType>::stop(){
 
-  std::lock_guard <std::mutex> lk (data_mutex);
+  std::unique_lock <std::mutex> lk (data_mutex);
   data_is_valid = false;
   data_ready_cond.notify_all();
 
+}
+
+template <class DataType>
+void ADataSource<DataType>::register_listener (ListenerKey the_key){
+  unique_lock <std::mutex> lk (data_mutex);
+  listeners.push( the_key );
 }
 
 template <class DataType>

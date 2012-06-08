@@ -18,7 +18,6 @@
 class NidaqDataSource;
 typedef std::shared_ptr <NidaqDataSource> NidaqSourcePtr;
 typedef std::map <int, NidaqSourcePtr> DaqList;
-typedef int ListenerKey;
 
 class NidaqDataSource : public ADataSource <NeuralVoltageBuffer> {
 
@@ -32,9 +31,6 @@ class NidaqDataSource : public ADataSource <NeuralVoltageBuffer> {
 
   void start();
   void stop();
-  
-  vector <ListenerKey> listeners;
-  vector <ListenerKey> dirty_list;
 
   timestamp_t buffer_delay;
 
