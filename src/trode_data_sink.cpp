@@ -13,9 +13,17 @@ TrodeDataSink::assign_from_pb( ArteTrodeOptPb &t_o,
   id                      = t_o.source_trode();
   trode_opt_version       = t_o.t_o_version();
   daq_id                  = t_o.has_daq_id() ? t_o.daq_id() : d_o.daq_id();
-  samps_before_trig       = t_o.has_samps_before_trig() ? t_o.samps_before_trig() : d_o.samps_before_trig();
-  samps_after_trig        = t_o.has_samps_after_trig() ? t_o.samps_after_trig() : d_o.samps_after_trig();
-  refractory_period_samps = t_o.has_refractory_period_samps() ? t_o.refractory_period_samps() : d_o.refractory_period_samps();
+
+  samps_before_trig       = 
+    t_o.has_samps_before_trig() ? t_o.samps_before_trig() : d_o.samps_before_trig();
+
+  samps_after_trig        = 
+    t_o.has_samps_after_trig() ? t_o.samps_after_trig() : d_o.samps_after_trig();
+
+  refractory_period_samps = 
+    t_o.has_refractory_period_samps() ? 
+    t_o.refractory_period_samps() : d_o.refractory_period_samps();
+
   port                    = t_o.has_port() ? t_o.port() : d_o.port();
   host_ip                 = t_o.has_host_ip() ? t_o.host_ip() : d_o.host_ip();
   disk                    = t_o.has_disk() ? t_o.disk() : d_o.disk();

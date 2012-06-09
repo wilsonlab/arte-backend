@@ -29,7 +29,7 @@ class Filt{
 
   void init(boost::property_tree::ptree &filt_pt);
 
-  //  attach_buffers( NeuralVoltageCircBuffer in_buffer, NeuralVoltageCircBuffer out_buffer );
+  attach_buffers( NeuralVoltageCircBuffer in_buffer, NeuralVoltageCircBuffer out_buffer );
 
   
   std::string filt_name;
@@ -42,8 +42,8 @@ class Filt{
   // one SOS has three numerator coefs, three denominator coeffs
   typedef boost::multi_array <double, 2> CoefArray;
   typedef CoefArray::index coeff_array_index;
-  CoefArray num_coefs_new;
-  CoefArray denom_coefs_new;
+  CoefArray numerator_coefs;
+  CoefArray denominator_coefs;
   std::vector < double > multipliers;  
 
 

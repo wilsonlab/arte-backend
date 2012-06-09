@@ -12,10 +12,12 @@
 #include <thread> // std::thread std::mutex std::condition  TODO: clean this list up
 #include <mutex>
 #include <memory> // std::shared_ptr <>
+#include <stack>
 //#include <boost/thread/shared_mutex.hpp>
 //#include <boost/thread/condition_variable.hpp>
 #include <boost/multi_array.hpp>
 #include <boost/circular_buffer.hpp>
+#include <boost/variant.hpp>
 #include "global_state.h"
 #include "global_defs.h"
 #include "a_timer.h"
@@ -51,8 +53,6 @@ class ADataSource{
   virtual void start() = 0;
   virtual void stop()  = 0;
 
-  DataType & get_data();
-  timestamp_t get_data_timestamp();
   static std::shared_ptr <aTimer> timer_p;
 
   void register_listener( ListenerKey );
@@ -111,7 +111,7 @@ void ADataSource<DataType>::set_data(DataType &new_data){
     // Assert that all listeners have finished copying the prior data
     // Mark all listeners as dirty by adding their labels to dirty-list
     assert( dirty_list.empty() );
-    dirt_list.push_back( listeners.begin(), listeners.end() );
+    dirty_list (listeners);
     
     data_ready_cond.notify_all();
   }
@@ -129,17 +129,21 @@ void ADataSource<DataType>::stop(){
 
 template <class DataType>
 void ADataSource<DataType>::register_listener (ListenerKey the_key){
-  unique_lock <std::mutex> lk (data_mutex);
+  std::unique_lock <std::mutex> lk (data_mutex);
   listeners.push( the_key );
-}
-
-template <class DataType>
-timestamp_t ADataSource<DataType>::get_data_timestamp(){
-  return timer_p->get_count();
 }
 
 template <class DataType>
 std::shared_ptr <aTimer> ADataSource <DataType>::timer_p;
 
+typedef std::shared_ptr < ADataSource <NeuralVoltageBuffer> > NeuralVoltageSourcePtr;
+
+class NidaqDataSource;
+typedef std::shared_ptr <NidaqDataSource> NidaqDataSourcePtr;
+class MockDataSource;
+typedef std::shared_ptr <MockDataSource> MockDataSourcePtr;
+
+typedef boost::variant < NidaqDataSourcePtr, MockDataSourcePtr > AnyDataSource;
+typedef std::vector <AnyDataSource> data_source_list;
 
 #endif

@@ -1,27 +1,34 @@
 #ifndef A_DATA_SINK_H_
 #define A_DATA_SINK_H_
 
-#include "a_data_source.h"  //ListenerKey typedef
 #include <memory> // shared_ptr
+#include <boost/variant.hpp>
+#include <boost/bind.hpp>
+#include "a_data_source.h"  //ListenerKey typedef
+
 
 // ListenerKey typedef is in a_data_source.h
 
 class BoolDefaultsFalse{
  public:
-  BoolDefautsFalse{
+  BoolDefaultsFalse(){
     my_state = false;
   }
   BoolDefaultsFalse(bool input_bool){
     my_state = input_bool;
   }
-  bool operator()(){ return my_state };
+  bool operator()(){ return my_state; }
  private:
-  my_state;
-}
+  bool my_state;
+};
 
-class ADataSink;
-typedef shared_ptr <ADataSink> DataSinkPtr;
-typedef vector < DataSinkPtr > DataSinkList;
+class TrodeDataSink;
+typedef std::shared_ptr <TrodeDataSink> TrodeDataSinkPtr;
+class LfpbankDataSink;
+typedef std::shared_ptr <LfpbankDataSink> LfpbankDataSinkPtr;
+typedef boost::variant <TrodeDataSinkPtr, LfpbankDataSinkPtr> AnyDataSink;
+typedef std::vector <AnyDataSink> DataSinkList;
+
 
 template < class DataSourceType, class DataStoreType >
 class ADataSink{
@@ -33,16 +40,14 @@ class ADataSink{
   // the data source and data_sink_worker) Just ask the data
   // source we own for data by data_source.get_data(&data);
   // then do whatever with it
-  virtual operator()() = 0;
+  virtual void operator()() = 0;
   
   DataSourceType *source_buffer;
   DataStoreType   data;
 
-  static DataSinkList data_sink_list;
-
  protected:
   
-  ADataSourcePtr my_data_source;
+  AnyDataSource my_data_source;
 
   void get_data_from_source();
 
@@ -50,17 +55,28 @@ class ADataSink{
   ListenerKey my_key;
   BoolDefaultsFalse registration_done;
 
+  static DataSinkList data_sink_list;
+
 };
 
 
+class RegisterVisitor : boost::static_visitor<>{
+ public:
+  template <class T>
+    std::stack <ListenerKey> & operator()( T& this_data_sink, int the_key) const
+    {
+      this_data_sink->register_listener( the_key );
+    }
+};
+
 template < class DataSourceType, class DataStoreType >
-void ADataSink::register_sink(){
+  void ADataSink <DataSourceType, DataStoreType>::register_sink(){
 
   data_sink_list.push_back( DataSinkPtr(this) );
   
   my_key = data_sink_list.size();
-  
-  my_data_source -> register_listener( my_key );
+
+  boost::apply_visitor( boost::bind( RegisterVisitor(), _1, my_key ), my_data_source );
 
   registration_done(true);
 
@@ -68,6 +84,7 @@ void ADataSink::register_sink(){
 
 
 // define the sink list
-DataSinkList ADataSink::data_sink_list;
+template <class DataSourceType, class DataStoreType>
+  DataSinkList ADataSink<DataSourceType, DataStoreType>::data_sink_list;
 
 #endif
