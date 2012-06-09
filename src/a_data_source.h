@@ -50,8 +50,8 @@ class ADataSource{
   // start should produce data, and only be called after
   // all worker threads have been spawned and begun waiting
   // for data
-  virtual void start() = 0;
-  virtual void stop()  = 0;
+  virtual void start();
+  virtual void stop();
 
   static std::shared_ptr <aTimer> timer_p;
 
@@ -77,10 +77,6 @@ class ADataSource{
 
   std::shared_ptr <ArteGlobalState> global_state_p;
 
-  //std::mutex                registry_mutex;
-  std::mutex                    data_mutex;
-  std::condition_variable  data_ready_cond;
-
  private:
 
 };
@@ -97,8 +93,9 @@ void ADataSource<DataType>::set_data(DataType &new_data){
   
   {
     //   std::unique_lock <std::mutex> reg_lk  (registry_mutex);
-    std::unique_lock <std::mutex> data_lk (data_mutex);
-
+    std::cout << "Source about to lock mutex.\n";
+    std::unique_lock <std::mutex> data_lk (global_state_p->data_mutex);
+    std::cout << "Source got mutex\n";
     // right now we update the data using DataType copy constructor
     // TODO: make virtual function for other methods of touching the data
     // (e.g. - probably faster to have a double-buffer kind of strategy,
@@ -111,32 +108,38 @@ void ADataSource<DataType>::set_data(DataType &new_data){
     // Assert that all listeners have finished copying the prior data
     // Mark all listeners as dirty by adding their labels to dirty-list
     assert( dirty_list.empty() );
-    dirty_list (listeners);
-    
-    data_ready_cond.notify_all();
+    dirty_list = listeners;
+    std::cout << "source about to notify_all()\n";
+    global_state_p->data_ready_cond.notify_all();
+    std::cout << "source did notify_all()\n";
   }
+  std::cout << "source left unique_lock scope\n";
 }
+
+
+template <class DataType>
+void ADataSource<DataType>::start(){
+  std::cout << "start() called on abstract data source.\n";
+};
 
 
 template <class DataType>
 void ADataSource<DataType>::stop(){
 
-  std::unique_lock <std::mutex> lk (data_mutex);
+  std::unique_lock <std::mutex> lk (global_state_p->data_mutex);
   data_is_valid = false;
-  data_ready_cond.notify_all();
+  global_state_p->data_ready_cond.notify_all();
 
 }
 
 template <class DataType>
 void ADataSource<DataType>::register_listener (ListenerKey the_key){
-  std::unique_lock <std::mutex> lk (data_mutex);
+  std::unique_lock <std::mutex> lk (global_state_p->data_mutex);
   listeners.push( the_key );
 }
 
 template <class DataType>
 std::shared_ptr <aTimer> ADataSource <DataType>::timer_p;
-
-typedef std::shared_ptr < ADataSource <NeuralVoltageBuffer> > NeuralVoltageSourcePtr;
 
 class NidaqDataSource;
 typedef std::shared_ptr <NidaqDataSource> NidaqDataSourcePtr;

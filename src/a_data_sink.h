@@ -5,6 +5,7 @@
 #include <boost/variant.hpp>
 #include <boost/bind.hpp>
 #include "a_data_source.h"  //ListenerKey typedef
+#include "nidaq_data_source.h"
 
 
 // ListenerKey typedef is in a_data_source.h
@@ -14,7 +15,7 @@ class BoolDefaultsFalse{
   BoolDefaultsFalse(){
     my_state = false;
   }
-  BoolDefaultsFalse(bool input_bool){
+  void operator()(bool input_bool){
     my_state = input_bool;
   }
   bool operator()(){ return my_state; }
@@ -26,7 +27,10 @@ class TrodeDataSink;
 typedef std::shared_ptr <TrodeDataSink> TrodeDataSinkPtr;
 class LfpbankDataSink;
 typedef std::shared_ptr <LfpbankDataSink> LfpbankDataSinkPtr;
-typedef boost::variant <TrodeDataSinkPtr, LfpbankDataSinkPtr> AnyDataSink;
+class MockDataSink;
+typedef std::shared_ptr <MockDataSink> MockDataSinkPtr;
+
+typedef boost::variant <TrodeDataSinkPtr, LfpbankDataSinkPtr, MockDataSinkPtr> AnyDataSink;
 typedef std::vector <AnyDataSink> DataSinkList;
 
 
@@ -40,18 +44,18 @@ class ADataSink{
   // the data source and data_sink_worker) Just ask the data
   // source we own for data by data_source.get_data(&data);
   // then do whatever with it
-  virtual void operator()() = 0;
+  virtual void operator()();
   
   DataSourceType *source_buffer;
   DataStoreType   data;
 
  protected:
   
-  AnyDataSource my_data_source;
+  ADataSource<DataSourceType> my_data_source;
 
   void get_data_from_source();
 
-  void register_sink();
+  void register_self( AnyDataSink this_wrapped );
   ListenerKey my_key;
   BoolDefaultsFalse registration_done;
 
@@ -65,14 +69,19 @@ class RegisterVisitor : boost::static_visitor<>{
   template <class T>
     std::stack <ListenerKey> & operator()( T& this_data_sink, int the_key) const
     {
+      // TODO: figure out - why am I allowed to do this with nidaq_data_source.h
+      // included, and not without?  Isn't MockDataSource also declaced but
+      // not defined, at this point?  The problem seems to be that nidaq_data_source
+      // is forward declared only?
       this_data_sink->register_listener( the_key );
     }
 };
 
 template < class DataSourceType, class DataStoreType >
-  void ADataSink <DataSourceType, DataStoreType>::register_sink(){
-
-  data_sink_list.push_back( DataSinkPtr(this) );
+  void ADataSink <DataSourceType, DataStoreType>::register_self( AnyDataSink wrapped_this ){
+  
+  
+  data_sink_list.push_back( wrapped_this );
   
   my_key = data_sink_list.size();
 
@@ -80,7 +89,7 @@ template < class DataSourceType, class DataStoreType >
 
   registration_done(true);
 
-}
+};
 
 
 // define the sink list

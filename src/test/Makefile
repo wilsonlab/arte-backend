@@ -6,16 +6,13 @@ CFLAGS = -pthread -std=c++0x -I ../ -I /usr/local/include/ -I /usr/local/ -I /us
 
 GLOM_OBJ = ../glom.o test_glom.o ../arte_pb.pb.o ../arte_command.pb.o
 CTR05TIMER_OBJ = ./test_ctr05_timer.o ../a_timer.o ../ctr05_timer.o ../arte_pb.pb.o ../arte_command.pb.o
-SINKSOURCE_OBJ = ../a_data_sink.o ../a_data_source.o test_source_sink.o ../arte_pb.pb.o ../nidaq_data_source.o
+SINKSOURCE_OBJ = ../a_data_sink.o ../a_data_source.o test_source_sink.o ../arte_pb.pb.o ../arte_command.pb.o ../glom.o ../global_state.o
 
 .SUFFIXES:
 # list only those we use
 .SUFFIXES: .o .c .cpp .cc .proto
 
 %.o : %.cpp
-	$(CC) $(CFLAGS) -c $< -o $@
-
-%.o : %.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 %.o : %.cc
@@ -28,7 +25,7 @@ test_ctr05_timer : $(CTR05TIMER_OBJ)
 	$(LD) $(CTR05TIMER_OBJ) $(LDFLAGS) -o $@
 
 test_sink_source : $(SINKSOURCE_OBJ)
-	$(LD) $(SINKSOURCE_OBJ) $(LDFLAGS) -o $@
+	$(LD) $(SINKSOURCE_OBJ) -lnidaqmx $(LDFLAGS) -o $@
 
 .PHONY : clean
 

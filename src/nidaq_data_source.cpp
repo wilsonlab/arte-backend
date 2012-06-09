@@ -14,7 +14,7 @@ NidaqDataSource::NidaqDataSource()
 // Constructor: initialize and call NiDAQmx setup functions
 NidaqDataSource::NidaqDataSource(ArteNeuralDaqOptPb &daq_opt_pb, std::shared_ptr <aTimer> timer)
 {
-
+  
   // Copy option fields
   dev_name = daq_opt_pb.dev_name();
   id = daq_opt_pb.id();
