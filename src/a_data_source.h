@@ -9,18 +9,26 @@
 #define A_DATA_SOURCE_H_
 
 #include <stdint.h>
-#include <thread> // std::thread std::mutex std::condition  TODO: clean this list up
+#include <thread> // std::thread std::condition
 #include <mutex>
 #include <memory> // std::shared_ptr <>
 #include <stack>
-//#include <boost/thread/shared_mutex.hpp>
-//#include <boost/thread/condition_variable.hpp>
 #include <boost/multi_array.hpp>
 #include <boost/circular_buffer.hpp>
 #include <boost/variant.hpp>
 #include "global_state.h"
 #include "global_defs.h"
 #include "a_timer.h"
+
+// helpful utility - where should it go?  Probably not in this file
+// From post at wonderful GotW blog: http://www.gotw.ca/gotw/079.htm
+template <class T>
+struct PtrTo{
+  typedef std::shared_ptr <T> Type;
+  typedef std::vector < std::shared_ptr <T> > ListType;
+};
+
+
 
 // define some types of data
 typedef boost::multi_array <rdata_t,2> raw_voltage_array;
@@ -45,8 +53,11 @@ typedef int ListenerKey;
 template <class DataType>
 class ADataSource{
 
+
  public:
 
+  typedef typename PtrTo<ADataSource <DataType> >::Type SourcePtr;
+  typedef typename PtrTo<ADataSource <DataType> >::ListType SourceList;
   // start should produce data, and only be called after
   // all worker threads have been spawned and begun waiting
   // for data
@@ -75,7 +86,7 @@ class ADataSource{
 
   data_source_state_t state;
 
-  std::shared_ptr <ArteGlobalState> global_state_p;
+  ArteGlobalState *global_state_p;
 
  private:
 
@@ -93,9 +104,10 @@ void ADataSource<DataType>::set_data(DataType &new_data){
   
   {
     //   std::unique_lock <std::mutex> reg_lk  (registry_mutex);
-    std::cout << "Source about to lock mutex.\n";
+    //    std::cout << "Source about to lock mutex.\n";
     std::unique_lock <std::mutex> data_lk (global_state_p->data_mutex);
     std::cout << "Source got mutex\n";
+
     // right now we update the data using DataType copy constructor
     // TODO: make virtual function for other methods of touching the data
     // (e.g. - probably faster to have a double-buffer kind of strategy,
@@ -136,6 +148,7 @@ template <class DataType>
 void ADataSource<DataType>::register_listener (ListenerKey the_key){
   std::unique_lock <std::mutex> lk (global_state_p->data_mutex);
   listeners.push( the_key );
+  std::cout << "Listeners added key: " << the_key << std::endl;
 }
 
 template <class DataType>
