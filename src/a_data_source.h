@@ -12,6 +12,7 @@
 #include <thread> // std::thread std::condition
 #include <mutex>
 #include <memory> // std::shared_ptr <>
+#include <vector>
 #include <stack>
 #include <boost/multi_array.hpp>
 #include <boost/circular_buffer.hpp>
@@ -48,7 +49,7 @@ struct NeuralVoltageCircBuffer{
 enum data_source_state_t  {DATA_SOURCE_INVALID, 
 			   DATA_SOURCE_STOPPED, 
 			   DATA_SOURCE_RUNNING};
-typedef int ListenerKey;
+//typedef int ListenerKey;
 
 template <class DataType>
 class ADataSource{
@@ -66,10 +67,12 @@ class ADataSource{
 
   static std::shared_ptr <aTimer> timer_p;
 
-  void register_listener( ListenerKey );
+  void register_listener( bool *smudge_ptr );
+  void unregister_listener( bool *smudge_ptr );
   
-  std::stack <ListenerKey> listeners;
-  std::stack <ListenerKey> dirty_list;
+  std::set <bool *> smudge_set;
+  //std::stack <ListenerKey> listeners;
+  //std::stack <ListenerKey> dirty_list;
 
 
   DataType data;
@@ -95,6 +98,7 @@ class ADataSource{
 
 template <class DataType>
 DataType & ADataSource<DataType>::get_data(){ 
+  std::cout << "Source asked for data: it's: " << data << std::endl;
   return data;
 }
 
@@ -117,10 +121,21 @@ void ADataSource<DataType>::set_data(DataType &new_data){
     data_is_valid = true;
     update_count++;
     
+    std::cout << "Source asked to set data.  Data is now: " << data << std::endl;
+
     // Assert that all listeners have finished copying the prior data
     // Mark all listeners as dirty by adding their labels to dirty-list
+
+    for (auto it = smudge_set.begin(); it != smudge_set.end(); it++){
+      //assert( ! ( **it) ); // assert that this listener has already processed
+      (**it) = true; // Mark the listener's data as dirty (needs processing)
+    }
+      
+    /* old way
     assert( dirty_list.empty() );
     dirty_list = listeners;
+    */
+
     std::cout << "source about to notify_all()\n";
     global_state_p->data_ready_cond.notify_all();
     std::cout << "source did notify_all()\n";
@@ -132,7 +147,7 @@ void ADataSource<DataType>::set_data(DataType &new_data){
 template <class DataType>
 void ADataSource<DataType>::start(){
   std::cout << "start() called on abstract data source.\n";
-};
+}
 
 
 template <class DataType>
@@ -145,10 +160,38 @@ void ADataSource<DataType>::stop(){
 }
 
 template <class DataType>
-void ADataSource<DataType>::register_listener (ListenerKey the_key){
+void ADataSource<DataType>::register_listener ( bool *smudge_ptr ){
+
+  std::cout << "waiting for lock.  global_state addy is: " << global_state_p << std::endl;
+  std::cout << "waiting for lock. mutex addy is: " << &(global_state_p->data_mutex) << std::endl;
   std::unique_lock <std::mutex> lk (global_state_p->data_mutex);
+  std::cout << "got lock\n";
+  smudge_set.insert( smudge_ptr );
+  std::cout << "Smudge addy added: " << smudge_ptr << std::endl;  
+
+  /*  The old way
   listeners.push( the_key );
   std::cout << "Listeners added key: " << the_key << std::endl;
+  */
+}
+
+template <class DataType>
+void ADataSource<DataType>::unregister_listener( bool *smudge_ptr ){
+
+  std::unique_lock <std::mutex> lk (global_state_p->data_mutex);
+
+  smudge_set.erase( smudge_ptr );
+
+  /* This is the old way
+  std::stack <ListenerKey>new_listeners;
+  while ( !listeners.empty() ){
+    ListenerKey this_key = listeners.top();
+    if ( this_key != the_key )
+      new_listeners.push( this_key );
+    listeners.pop();
+  }
+  listeners = new_listeners;
+  */
 }
 
 template <class DataType>

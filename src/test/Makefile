@@ -10,7 +10,7 @@ SINKSOURCE_OBJ = test_source_sink.o ../a_data_sink.o ../a_data_source.o ../arte_
 
 .SUFFIXES:
 # list only those we use
-.SUFFIXES: .o .c .cpp .cc .proto
+.SUFFIXES: .o .c .cpp .cc .proto .h
 
 %.o : %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -24,7 +24,7 @@ test_glom : $(GLOM_OBJ)
 test_ctr05_timer : $(CTR05TIMER_OBJ)
 	$(LD) $(CTR05TIMER_OBJ) $(LDFLAGS) -o $@
 
-test_source_sink : $(SINKSOURCE_OBJ) ../data_sink_worker.h
+test_source_sink : $(SINKSOURCE_OBJ) ../data_sink_worker.h ../a_data_source.h ../a_data_sink.h
 	$(LD) $(SINKSOURCE_OBJ) -lnidaqmx $(LDFLAGS) -o $@
 
 .PHONY : clean
@@ -34,3 +34,5 @@ clean :
 	rm ../ctr05_timer.o
 	rm ../system_clock_timer.o
 	rm ./test_ctr05_timer.o
+	rm ./test_source_sink.o ../*.o
+	rm ./test_source_sink
