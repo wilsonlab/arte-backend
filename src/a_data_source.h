@@ -14,6 +14,7 @@
 #include <memory> // std::shared_ptr <>
 #include <vector>
 #include <stack>
+#include <set>
 #include <boost/multi_array.hpp>
 #include <boost/circular_buffer.hpp>
 #include <boost/variant.hpp>
@@ -67,10 +68,17 @@ class ADataSource{
 
   static std::shared_ptr <aTimer> timer_p;
 
+  void register_listener( bool *smudge_ptr, 
+			  std::condition_variable cond_var );
   void register_listener( bool *smudge_ptr );
+  void unregister_listener( bool *smudge_ptr,
+			    std::condition_variable cond_var );
   void unregister_listener( bool *smudge_ptr );
-  
+
   std::set <bool *> smudge_set;
+  std::set <std::condition_variable> data_ready_cond_var_list;
+
+  void print_smudge_set();
   //std::stack <ListenerKey> listeners;
   //std::stack <ListenerKey> dirty_list;
 
@@ -91,6 +99,7 @@ class ADataSource{
 
   ArteGlobalState *global_state_p;
 
+
  private:
 
 };
@@ -98,7 +107,6 @@ class ADataSource{
 
 template <class DataType>
 DataType & ADataSource<DataType>::get_data(){ 
-  std::cout << "Source asked for data: it's: " << data << std::endl;
   return data;
 }
 
@@ -107,10 +115,8 @@ template <class DataType>
 void ADataSource<DataType>::set_data(DataType &new_data){
   
   {
-    //   std::unique_lock <std::mutex> reg_lk  (registry_mutex);
-    //    std::cout << "Source about to lock mutex.\n";
     std::unique_lock <std::mutex> data_lk (global_state_p->data_mutex);
-    std::cout << "Source got mutex\n";
+    //std::cout << "Source got mutex\n";
 
     // right now we update the data using DataType copy constructor
     // TODO: make virtual function for other methods of touching the data
@@ -120,27 +126,20 @@ void ADataSource<DataType>::set_data(DataType &new_data){
     data = new_data;
     data_is_valid = true;
     update_count++;
-    
-    std::cout << "Source asked to set data.  Data is now: " << data << std::endl;
 
     // Assert that all listeners have finished copying the prior data
     // Mark all listeners as dirty by adding their labels to dirty-list
-
+    system("clear");
+    std::cout << "SOURCE About to update data\n";
     for (auto it = smudge_set.begin(); it != smudge_set.end(); it++){
       //assert( ! ( **it) ); // assert that this listener has already processed
       (**it) = true; // Mark the listener's data as dirty (needs processing)
     }
-      
-    /* old way
-    assert( dirty_list.empty() );
-    dirty_list = listeners;
-    */
 
-    std::cout << "source about to notify_all()\n";
+    print_smudge_set();
+    std::cout << "SOURCE about to notify_all\n";
     global_state_p->data_ready_cond.notify_all();
-    std::cout << "source did notify_all()\n";
   }
-  std::cout << "source left unique_lock scope\n";
 }
 
 
@@ -160,49 +159,56 @@ void ADataSource<DataType>::stop(){
 }
 
 template <class DataType>
-void ADataSource<DataType>::register_listener ( bool *smudge_ptr ){
+void ADataSource<DataType>::register_listener ( bool *smudge_ptr,
+						std::condition_variable cond_var ){
 
-  std::cout << "waiting for lock.  global_state addy is: " << global_state_p << std::endl;
-  std::cout << "waiting for lock. mutex addy is: " << &(global_state_p->data_mutex) << std::endl;
   std::unique_lock <std::mutex> lk (global_state_p->data_mutex);
-  std::cout << "got lock\n";
   smudge_set.insert( smudge_ptr );
-  std::cout << "Smudge addy added: " << smudge_ptr << std::endl;  
+  data_ready_cond_var_list.insert( cond_var );
+  print_smudge_set();
 
-  /*  The old way
-  listeners.push( the_key );
-  std::cout << "Listeners added key: " << the_key << std::endl;
-  */
+}
+
+template <class DataType>
+void ADataSource<DataType>::register_listener ( bool *smudge_ptr ){
+  std::unique_lock <std::mutex> lk (global_state_p->data_mutex);
+  smudge_set.insert( smudge_ptr );
+  print_smudge_set();
+}
+
+template <class DataType>
+void ADataSource<DataType>::unregister_listener( bool *smudge_ptr,
+						 std::condition_variable cond_var ){
+
+  std::unique_lock <std::mutex> lk (global_state_p->data_mutex);
+  smudge_set.erase( smudge_ptr );
+  data_ready_cond_var_list.erase( cond_var );
+
 }
 
 template <class DataType>
 void ADataSource<DataType>::unregister_listener( bool *smudge_ptr ){
-
   std::unique_lock <std::mutex> lk (global_state_p->data_mutex);
-
   smudge_set.erase( smudge_ptr );
-
-  /* This is the old way
-  std::stack <ListenerKey>new_listeners;
-  while ( !listeners.empty() ){
-    ListenerKey this_key = listeners.top();
-    if ( this_key != the_key )
-      new_listeners.push( this_key );
-    listeners.pop();
-  }
-  listeners = new_listeners;
-  */
 }
 
 template <class DataType>
+void ADataSource<DataType>::print_smudge_set(){
+  std::string list_string ("SOURCE: Smudge_set: ");
+  char buff[20];
+
+  for(auto it = smudge_set.begin(); it != smudge_set.end(); it++){
+    sprintf(buff, "%x |", *it);
+    list_string += buff;
+  }
+      //  std::cout << *it << " | ";
+  list_string += '\n';
+  std::cout << list_string;
+}
+      
+
+
+template <class DataType>
 std::shared_ptr <aTimer> ADataSource <DataType>::timer_p;
-
-class NidaqDataSource;
-typedef std::shared_ptr <NidaqDataSource> NidaqDataSourcePtr;
-class MockDataSource;
-typedef std::shared_ptr <MockDataSource> MockDataSourcePtr;
-
-typedef boost::variant < NidaqDataSourcePtr, MockDataSourcePtr > AnyDataSource;
-typedef std::vector <AnyDataSource> data_source_list;
 
 #endif

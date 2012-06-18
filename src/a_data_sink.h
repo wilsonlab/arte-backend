@@ -47,9 +47,14 @@ class ADataSink{
 
   typename ADataSource<SourceDataType>::SourcePtr my_data_source;
 
-  void get_data_from_source();
+  virtual void get_data_from_source();
   bool read_smudge(){ return smudge; };
-  void set_smudge(bool new_smudge) {smudge = new_smudge;};
+  void set_smudge(bool new_smudge) {
+    printf("Setting smudge at %p (from sink at %p) to %d\n", &smudge, this, new_smudge);
+    //    std::cout << "Setting smudge at " << &smudge 
+    //	      << " to " << new_smudge << std::endl;
+    smudge = new_smudge;
+  };
 
  protected:
   
@@ -77,10 +82,9 @@ template <class SourceDataType, class SinkDataType>
     :my_data_source (the_source)
     ,global_state_p (gs)
 {
-  // New the bool to be shared with the data source marking dirty data, and then pass it to the data source
-  std::cout << "In CONSTRUCTOR for abstract sink\n"; fflush(stdout);
-
-  std::cout << "smudge_ptr is " << &smudge << std::endl;
+  std::cout << "In abstract datasink constructor with 2 args smudge_addy is " 
+	    << &smudge << std::endl;
+  smudge = false;
   register_self();
 }
 						     
@@ -108,16 +112,8 @@ template < class SourceDataType, class SinkDataType >
 
 template < class SourceDataType, class SinkDataType >
 void ADataSink <SourceDataType, SinkDataType>::register_self(){
-  std::cout << "about to assign &smudge = " << &smudge << std::endl;;
-  std::cout << "my_data_source addy is " << my_data_source << std::endl;
-  my_data_source->register_listener( &smudge );
-  std::cout << "finished assign\n";
-  /* old way
-  my_key = data_sink_list.size();
-  data_sink_list.push_back( SinkPtr (this) );
-  my_data_source->register_listener( my_key );
-  */
 
+  my_data_source->register_listener( &smudge );
   registration_done(true);
 
 };
