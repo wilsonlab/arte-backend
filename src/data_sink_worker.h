@@ -23,6 +23,7 @@ class DataSinkWorker{
   DataSinkWorker( std::stack <typename Sink::SinkPtr>      &shared_dirty_list,
 		  std::mutex                               &data_mutex,
 		  std::condition_variable                  &data_cond,
+		  bool                                     *pool_smudge_addy,
 		  bool                                     *acquiring );
 
 
@@ -41,6 +42,7 @@ class DataSinkWorker{
   std::mutex               &pool_list_mutex;
   std::condition_variable  &data_ready_cond_var;
   bool                     *acquiring;
+  bool                     *pool_smudge_addy;
 
 };
 
@@ -97,7 +99,7 @@ template <class Source, class Sink>
     source_set.insert( (*it) -> my_data_source );
 
   for (auto it = source_set.begin(); it != source_set.end(); it++)
-    (*it) -> register_listener ( pool_smudge_addy, data_ready_cond_var );
+    (*it) -> register_listener ( pool_smudge_addy, &data_ready_cond_var );
   
 }
 
@@ -115,7 +117,7 @@ void  WorkerPool <Source, Sink>::run()
     //thread_list.push_back( std::thread ( &DataSinkWorker<Source,Sink>::operator(), &this_worker ) );
 
     
-    worker_list.push_back( typename DataSinkWorker<Source,Sink>::WorkerPtr( new DataSinkWorker<Source,Sink> (dirty_list, pool_list_mutex, data_ready_cond_var, &acquiring)));
+    worker_list.push_back( typename DataSinkWorker<Source,Sink>::WorkerPtr( new DataSinkWorker<Source,Sink> (dirty_list, pool_list_mutex, data_ready_cond_var, pool_smudge_addy, &acquiring)));
     // worker_list.push_back( typename DataSinkWorker<Source,Sink>::WorkerPtr( new DataSinkWorker<Source,Sink> (dirty_list, pool_mutex, workers_cond, &acquiring)));
     thread_list.push_back( std::thread ( &DataSinkWorker<Source,Sink>::operator(), (worker_list[i]) ) );
     worker_list[i]->id = i;
@@ -131,55 +133,14 @@ void  WorkerPool <Source, Sink>::run()
       std::unique_lock <std::mutex> list_lock (pool_list_mutex);
       while( !pool_smudge ){
 	data_ready_cond_var.wait(list_lock);
+	std::cout << "POOL waited for data_ready_cond_var and got through.\n";
       }
-      std::cout << "POOL: Got past data_ready_cond_var, refreshing dirty_list\n";
+      //      std::cout << "POOL: Got past data_ready_cond_var, refreshing dirty_list\n";
       refresh_dirty_list();
     }
 
+  }
 
-
-  /* OLD WAY
-  //  std::cout << "POOL About to get to While loop and gs->acquiring is: " << global_state_p->is_acquiring() << std::endl;
-  printf("POOL About to get to while loop and gs->acquiring is: %d\n", global_state_p->is_acquiring());
-
-  while ( global_state_p -> is_acquiring() ){
-    // update local copy of acquiring for the workers to read
-    acquiring = global_state_p -> is_acquiring();
-    std::unique_lock <std::mutex> pool_lk (pool_mutex);
-    refresh_dirty_list();
-    print_dirty_list();
-    { // sub scope for worker mutex
-
-      std::unique_lock <std::mutex> workers_lk ( workers_mutex );
-      std::cout << "POOL about to encounter while loop and ";
-      refresh_dirty_list();
-      while( dirty_list.empty() ){
-	std::cout << "POOL in while( list.empty() ): ";
-	refresh_dirty_list();
-	pool_ready_cond.wait( pool_lk );
-	std::cout << "POOL got past cond variable\n";
-      }
-
-      //refresh_dirty_list();
-      acquiring = global_state_p -> is_acquiring();
-      std::cout << "POOL trying to get lock on workers_mutex\n";
-
-      //std::cout << "POOL calling notify_all()\n";
-      //      workers_cond.notify_all();
-	
-      
-      while( !dirty_list.empty() ){
-	std::cout << "POOL waiting for dirty_list to empty.";
-	std::unique_lock
-	workers_cond.notify_one();
-
-
-    } // end sub scope for worker mutex
-  } // end while block
-
-  std::cout << "POOL got past while loop\n";
-  */ 
-  // Done acquiring, so collect up the worker threads
   for (auto it = thread_list.begin(); it != thread_list.end(); it++)
     it->join();
 
@@ -199,7 +160,7 @@ void  WorkerPool<Source, Sink>::refresh_dirty_list()
   }
 
   //  std::cout << "POOL: Refreshed Dirty List to: ";
-    print_dirty_list();
+  //    print_dirty_list();
   
 }
 
@@ -239,34 +200,41 @@ template <class Source, class Sink>
   DataSinkWorker<Source,Sink>::DataSinkWorker( std::stack <typename Sink::SinkPtr>      &shared_dirty_list,
 					       std::mutex                               &pool_list_mutex,
 					       std::condition_variable                  &data_ready_cond_var,
+					       bool                                     *pool_smudge_addy,
 					       bool                                     *acquiring )
     : shared_dirty_list    (shared_dirty_list)
     , pool_list_mutex      (pool_list_mutex)
     , data_ready_cond_var  (data_ready_cond_var)
+    , pool_smudge_addy     (pool_smudge_addy)
     , acquiring            (acquiring)
 {};
 
 template <class Source, class Sink>
   void  DataSinkWorker<Source,Sink>::operator()(){
+  bool new_data;
   while ( *acquiring ){
 
     { // smaller scope for data-copy mutex
+      
+      new_data = false;
+      
       std::unique_lock <std::mutex> lk (pool_list_mutex);
-      while( ! (*data_smudge_addy) ){
+      while( ! (*pool_smudge_addy) ){
 	data_ready_cond_var.wait(lk);
       }
-
-      printf("WORKER %d About to test shared_smudge_list empty\n", id);
-      if( ! shared_smudge_list.empty() ){
+      
+      //      printf("WORKER %d About to test shared_smudge_list empty\n", id);
+      if( ! shared_dirty_list.empty() ){
 	printf("WORKER %d Got into smudge list while loop\n", id);
 	
-	std::unique_lock <std::mutex> data_lk (data_mutex);
+	//	std::unique_lock <std::mutex> data_lk (data_mutex);
 	this_sink = shared_dirty_list.top();
 	printf("WORKER %d about to process sink addy %p\n", id, &(*this_sink));
 	shared_dirty_list.pop();
 	this_sink->get_data_from_source();
 	this_sink->set_smudge(false);  // <-- should this be done by get_data_from_source?
-	
+	new_data = true;
+
 	if ( shared_dirty_list.empty() ){
 	  printf("WORKER %d took the last data and is de-smudging the pool.\n", id);
 	  *pool_smudge_addy = false;
@@ -274,35 +242,10 @@ template <class Source, class Sink>
 
       } // done copying data, release the data lock, do processing
 
-      (*this_sink)();
-
     }
 
-    /* OLD WAY
-    { // smaller scope to hold data lock
-      std::unique_lock <std::mutex> data_lk (data_mutex);
-      while( shared_dirty_list.empty() ){
-	std::cout << "WORKER waiting for data cond variable\n";
-	data_ready_cond.wait (data_lk);      
-      } 
-      printf("WORKER %d got past cond var and sees dirty_list: ", id);
-      print_dirty_list();
-      printf("WORKER %d about to process sink addy %p\n", id, &(*(shared_dirty_list.top())));
-      //      std::cout << "WORKER about to process sink addy:" << shared_dirty_list.top() << std::endl;
-      
-      this_sink = shared_dirty_list.top();
-      shared_dirty_list.pop();
-      //std::cout << "WORKER about to tell sink to get_data_from_source();\n";
-      this_sink->get_data_from_source();
-      this_sink->set_smudge(false);
-      
-    }// ending lock_guard scope unlocks data_mutex
-    //std::cout << "WORKER About to call Sink()\n";
-    (*this_sink) ();
-    
-    //    (*data_sink_list[this_key]) ();
-    */
-
+      if(new_data)
+	(*this_sink)();
 
   }
   std::cout << "WORKER fell through while loop\n";

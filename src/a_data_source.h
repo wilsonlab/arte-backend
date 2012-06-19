@@ -69,14 +69,14 @@ class ADataSource{
   static std::shared_ptr <aTimer> timer_p;
 
   void register_listener( bool *smudge_ptr, 
-			  std::condition_variable cond_var );
+			  std::condition_variable *cond_var );
   void register_listener( bool *smudge_ptr );
   void unregister_listener( bool *smudge_ptr,
-			    std::condition_variable cond_var );
+			    std::condition_variable *cond_var );
   void unregister_listener( bool *smudge_ptr );
 
   std::set <bool *> smudge_set;
-  std::set <std::condition_variable> data_ready_cond_var_list;
+  std::set <std::condition_variable*> data_ready_cond_var_list;
 
   void print_smudge_set();
   //std::stack <ListenerKey> listeners;
@@ -130,15 +130,21 @@ void ADataSource<DataType>::set_data(DataType &new_data){
     // Assert that all listeners have finished copying the prior data
     // Mark all listeners as dirty by adding their labels to dirty-list
     system("clear");
-    std::cout << "SOURCE About to update data\n";
+    std::cout << "SOURCE About to update data: ";
+    std::cout << new_data << std::endl;
     for (auto it = smudge_set.begin(); it != smudge_set.end(); it++){
       //assert( ! ( **it) ); // assert that this listener has already processed
       (**it) = true; // Mark the listener's data as dirty (needs processing)
     }
-
-    print_smudge_set();
-    std::cout << "SOURCE about to notify_all\n";
-    global_state_p->data_ready_cond.notify_all();
+    std::cout << "SOURCE about to notify_all()\n";
+    for (auto it = data_ready_cond_var_list.begin(); 
+	 it != data_ready_cond_var_list.end(); it++){
+      (*it)->notify_all();
+    }
+    
+    //    print_smudge_set();
+    //    std::cout << "SOURCE about to notify_all\n";
+    //    global_state_p->data_ready_cond.notify_all();
   }
 }
 
@@ -160,7 +166,7 @@ void ADataSource<DataType>::stop(){
 
 template <class DataType>
 void ADataSource<DataType>::register_listener ( bool *smudge_ptr,
-						std::condition_variable cond_var ){
+						std::condition_variable *cond_var ){
 
   std::unique_lock <std::mutex> lk (global_state_p->data_mutex);
   smudge_set.insert( smudge_ptr );
@@ -178,7 +184,7 @@ void ADataSource<DataType>::register_listener ( bool *smudge_ptr ){
 
 template <class DataType>
 void ADataSource<DataType>::unregister_listener( bool *smudge_ptr,
-						 std::condition_variable cond_var ){
+						 std::condition_variable *cond_var ){
 
   std::unique_lock <std::mutex> lk (global_state_p->data_mutex);
   smudge_set.erase( smudge_ptr );
