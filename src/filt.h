@@ -6,6 +6,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/multi_array.hpp>
 #include <memory> //std::shared_ptr
+#include "datapacket.h"
 #include "arte_pb.pb.h"
 #include "global_defs.h"
 #include "neural_daq.h"
@@ -15,24 +16,55 @@
 #define CBUF(X,L) (L+X)%L // assumes X >= -L
 #endif
 
-class Filt;
-typedef std::shared_ptr <Filt> FiltPtr;
-typedef std::map <std::string, FiltPtr> FiltList;
+//typedef boost::multi_array <double, 2> CoefArray;
+//typedef CoeffArray::index coef_array_index;
+
+typedef std::vector <double> CoefArray;
+
+//class Filt;
+
+class Section{
+ public:
+  Section( CoefArray::iterator num_coef_first,    CoefArray::iterator num_coef_last,
+	   CoefArray::iterator  denom_coef_first, CoefArray::iterator denom_coef_last,
+	   double multiplier, bool forward_direction)
+    : numerator_coefs   (num_coef_first, num_coef_last)
+    , denominator_coefs (denom_coef_first, denom_coef_last)
+    , multiplier        (multiplier)
+    , forward_direction (forward_direction)
+    {}
+  void operator()();
+  friend class Filt;
+ private:
+ 
+  CoefArray numerator_coefs, denominator_coefs;
+  double multiplier;
+  bool forward_direction;
+  raw_voltage_circular_buffer *input_buffer;
+  raw_voltage_circular_buffer *output_buffer;
+};
 
 class Filt{
 
  public:
   Filt();
-  Filt( ArteFilterOptPb& filt_opt ) ;
+  Filt( ArteFilterOptPb &filt_opt, int n_samps_per_source_chan );
+
+  typedef std::map <std::string, Filt> FiltList;
 
   virtual ~Filt();
 
   void init(boost::property_tree::ptree &filt_pt);
 
-  attach_buffers( NeuralVoltageCircBuffer in_buffer, NeuralVoltageCircBuffer out_buffer );
+  // do the filtering (new way)
+  void operator()();
+
+  raw_voltage_circular_buffer *attach_buffers( raw_voltage_circular_buffer *in_buffer );
 
   
   std::string filt_name;
+
+  // Only for backwards compatibility.  filt_type isn't relevant in new way that filt class works
   name_string_t filt_type;               // iir or fir.  Determines how to interpret long lists of numerators and denominators
                                   // (iir case, they're treated as second-order sections.  fir case, one long kernel).
   double num_coefs [MAX_FILT_COEFS];                     // numerators.
@@ -40,11 +72,6 @@ class Filt{
 
   // Coef array rows are sections, columns are coefficients for that section
   // one SOS has three numerator coefs, three denominator coeffs
-  typedef boost::multi_array <double, 2> CoefArray;
-  typedef CoefArray::index coeff_array_index;
-  CoefArray numerator_coefs;
-  CoefArray denominator_coefs;
-  std::vector < double > multipliers;  
 
 
   int order;                      // order of iir, or tap count of fir
@@ -64,11 +91,28 @@ class Filt{
   int out_buf_size_bytes;
   int count;
 
-  static FiltList filt_list;
-  static void build_filt_list( ArteSetupOptPb & setup_opt );
+  CoefArray numerator_coefs;
+  CoefArray denominator_coefs;
+  std::vector < double > multipliers;  
+  int delay_direction; // 1: filt  0: filtfilt  -1:all backwards
+  bool make_sos;
+  int filtfilt_invalid_samps;
+  int my_minimum_samps;
+
+  int n_sections;
+  std::vector <Section> sections;
+
+  void generate_coefs ( ArteFilterOptPb &filt_opt );
+
+  //  static FiltList filt_list;
+  static FiltList build_filt_list( ArteSetupOptPb & setup_opt, int n_samps_per_source_chan );
 
  private:
-  NeuralVoltageCircBuffer *in_buffer, *out_buffer;
+  raw_voltage_circular_buffer *input_buffer;
+  raw_voltage_circular_buffer output_buffer;
+  std::vector <raw_voltage_circular_buffer> intermediate_buffers;
+  void init_raw_voltage_circular_buffer (raw_voltage_circular_buffer &buffer,
+					 int n_chans, int n_samps);
 
 };
 

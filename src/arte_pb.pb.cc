@@ -175,7 +175,7 @@ void protobuf_AssignDesc_arte_5fpb_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ArtePosPb));
   ArteFilterOptPb_descriptor_ = file->message_type(6);
-  static const int ArteFilterOptPb_offsets_[8] = {
+  static const int ArteFilterOptPb_offsets_[11] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteFilterOptPb, filter_name_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteFilterOptPb, numerators_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteFilterOptPb, denominators_),
@@ -184,6 +184,9 @@ void protobuf_AssignDesc_arte_5fpb_2eproto() {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteFilterOptPb, high_cut_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteFilterOptPb, order_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteFilterOptPb, delay_direction_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteFilterOptPb, make_sos_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteFilterOptPb, filtfilt_invalid_samps_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteFilterOptPb, regenerate_coefs_),
   };
   ArteFilterOptPb_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -197,10 +200,9 @@ void protobuf_AssignDesc_arte_5fpb_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ArteFilterOptPb));
   ArteChanOptPb_descriptor_ = file->message_type(7);
-  static const int ArteChanOptPb_offsets_[5] = {
+  static const int ArteChanOptPb_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteChanOptPb, gain_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteChanOptPb, threshold_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteChanOptPb, daq_id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteChanOptPb, daq_chan_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteChanOptPb, source_trode_),
   };
@@ -508,14 +510,16 @@ void protobuf_AddDesc_arte_5fpb_2eproto() {
     "evice_label\030\001 \001(\t\022)\n\tchan_data\030\002 \003(\0132\026.A"
     "rteVoltageTimeseries\"W\n\tArtePosPb\022\r\n\005x_p"
     "os\030\001 \001(\002\022\r\n\005y_pos\030\002 \001(\002\022\022\n\nhead_angle\030\003 "
-    "\001(\002\022\030\n\020behavioral_state\030\004 \001(\t\"\257\001\n\017ArteFi"
+    "\001(\002\022\030\n\020behavioral_state\030\004 \001(\t\"\217\002\n\017ArteFi"
     "lterOptPb\022\023\n\013filter_name\030\001 \001(\t\022\022\n\nnumera"
     "tors\030\002 \003(\002\022\024\n\014denominators\030\003 \003(\002\022\022\n\nmult"
     "iplier\030\004 \003(\002\022\017\n\007low_cut\030\005 \001(\002\022\020\n\010high_cu"
-    "t\030\006 \001(\002\022\r\n\005order\030\007 \001(\r\022\027\n\017delay_directio"
-    "n\030\010 \001(\005\"h\n\rArteChanOptPb\022\014\n\004gain\030\001 \001(\002\022\021"
-    "\n\tthreshold\030\002 \001(\002\022\016\n\006daq_id\030\003 \001(\t\022\020\n\010daq"
-    "_chan\030\004 \001(\r\022\024\n\014source_trode\030\005 \001(\r\"\246\002\n\016Ar"
+    "t\030\006 \001(\002\022\r\n\005order\030\007 \001(\r\022\032\n\017delay_directio"
+    "n\030\010 \001(\005:\0011\022\026\n\010make_sos\030\t \001(\010:\004true\022\"\n\026fi"
+    "ltfilt_invalid_samps\030\n \001(\005:\00232\022\037\n\020regene"
+    "rate_coefs\030\013 \001(\010:\005false\"X\n\rArteChanOptPb"
+    "\022\014\n\004gain\030\001 \001(\002\022\021\n\tthreshold\030\002 \001(\002\022\020\n\010daq"
+    "_chan\030\003 \001(\r\022\024\n\014source_trode\030\004 \001(\r\"\246\002\n\016Ar"
     "teTrodeOptPb\022\024\n\014source_trode\030\001 \001(\r\022\031\n\021tr"
     "ode_opt_version\030\002 \001(\r\022\035\n\005chans\030\003 \003(\0132\016.A"
     "rteChanOptPb\022\031\n\021samps_before_trig\030\004 \001(\r\022"
@@ -558,7 +562,7 @@ void protobuf_AddDesc_arte_5fpb_2eproto() {
     "_buffer\030\006 \001(\0132\020.ArteRawBufferPb\022\034\n\010arte_"
     "pos\030\007 \001(\0132\n.ArtePosPb\022#\n\narte_setup\030\010 \001("
     "\0132\017.ArteSetupOptPb\022\'\n\014arte_session\030\t \001(\013"
-    "2\021.ArteSessionOptPb", 2499);
+    "2\021.ArteSessionOptPb", 2579);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "arte_pb.proto", &protobuf_RegisterTypes);
   ArteVoltageTimeseries::default_instance_ = new ArteVoltageTimeseries();
@@ -2224,6 +2228,9 @@ const int ArteFilterOptPb::kLowCutFieldNumber;
 const int ArteFilterOptPb::kHighCutFieldNumber;
 const int ArteFilterOptPb::kOrderFieldNumber;
 const int ArteFilterOptPb::kDelayDirectionFieldNumber;
+const int ArteFilterOptPb::kMakeSosFieldNumber;
+const int ArteFilterOptPb::kFiltfiltInvalidSampsFieldNumber;
+const int ArteFilterOptPb::kRegenerateCoefsFieldNumber;
 #endif  // !_MSC_VER
 
 ArteFilterOptPb::ArteFilterOptPb()
@@ -2246,7 +2253,10 @@ void ArteFilterOptPb::SharedCtor() {
   low_cut_ = 0;
   high_cut_ = 0;
   order_ = 0u;
-  delay_direction_ = 0;
+  delay_direction_ = 1;
+  make_sos_ = true;
+  filtfilt_invalid_samps_ = 32;
+  regenerate_coefs_ = false;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -2292,7 +2302,12 @@ void ArteFilterOptPb::Clear() {
     low_cut_ = 0;
     high_cut_ = 0;
     order_ = 0u;
-    delay_direction_ = 0;
+    delay_direction_ = 1;
+  }
+  if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    make_sos_ = true;
+    filtfilt_invalid_samps_ = 32;
+    regenerate_coefs_ = false;
   }
   numerators_.Clear();
   denominators_.Clear();
@@ -2437,7 +2452,7 @@ bool ArteFilterOptPb::MergePartialFromCodedStream(
         break;
       }
       
-      // optional int32 delay_direction = 8;
+      // optional int32 delay_direction = 8 [default = 1];
       case 8: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
@@ -2446,6 +2461,54 @@ bool ArteFilterOptPb::MergePartialFromCodedStream(
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
                  input, &delay_direction_)));
           set_has_delay_direction();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(72)) goto parse_make_sos;
+        break;
+      }
+      
+      // optional bool make_sos = 9 [default = true];
+      case 9: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_make_sos:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &make_sos_)));
+          set_has_make_sos();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(80)) goto parse_filtfilt_invalid_samps;
+        break;
+      }
+      
+      // optional int32 filtfilt_invalid_samps = 10 [default = 32];
+      case 10: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_filtfilt_invalid_samps:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &filtfilt_invalid_samps_)));
+          set_has_filtfilt_invalid_samps();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(88)) goto parse_regenerate_coefs;
+        break;
+      }
+      
+      // optional bool regenerate_coefs = 11 [default = false];
+      case 11: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_regenerate_coefs:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &regenerate_coefs_)));
+          set_has_regenerate_coefs();
         } else {
           goto handle_uninterpreted;
         }
@@ -2513,9 +2576,24 @@ void ArteFilterOptPb::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(7, this->order(), output);
   }
   
-  // optional int32 delay_direction = 8;
+  // optional int32 delay_direction = 8 [default = 1];
   if (has_delay_direction()) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(8, this->delay_direction(), output);
+  }
+  
+  // optional bool make_sos = 9 [default = true];
+  if (has_make_sos()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(9, this->make_sos(), output);
+  }
+  
+  // optional int32 filtfilt_invalid_samps = 10 [default = 32];
+  if (has_filtfilt_invalid_samps()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(10, this->filtfilt_invalid_samps(), output);
+  }
+  
+  // optional bool regenerate_coefs = 11 [default = false];
+  if (has_regenerate_coefs()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(11, this->regenerate_coefs(), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -2569,9 +2647,24 @@ void ArteFilterOptPb::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(7, this->order(), target);
   }
   
-  // optional int32 delay_direction = 8;
+  // optional int32 delay_direction = 8 [default = 1];
   if (has_delay_direction()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(8, this->delay_direction(), target);
+  }
+  
+  // optional bool make_sos = 9 [default = true];
+  if (has_make_sos()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(9, this->make_sos(), target);
+  }
+  
+  // optional int32 filtfilt_invalid_samps = 10 [default = 32];
+  if (has_filtfilt_invalid_samps()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(10, this->filtfilt_invalid_samps(), target);
+  }
+  
+  // optional bool regenerate_coefs = 11 [default = false];
+  if (has_regenerate_coefs()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(11, this->regenerate_coefs(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -2609,11 +2702,30 @@ int ArteFilterOptPb::ByteSize() const {
           this->order());
     }
     
-    // optional int32 delay_direction = 8;
+    // optional int32 delay_direction = 8 [default = 1];
     if (has_delay_direction()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
           this->delay_direction());
+    }
+    
+  }
+  if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    // optional bool make_sos = 9 [default = true];
+    if (has_make_sos()) {
+      total_size += 1 + 1;
+    }
+    
+    // optional int32 filtfilt_invalid_samps = 10 [default = 32];
+    if (has_filtfilt_invalid_samps()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->filtfilt_invalid_samps());
+    }
+    
+    // optional bool regenerate_coefs = 11 [default = false];
+    if (has_regenerate_coefs()) {
+      total_size += 1 + 1;
     }
     
   }
@@ -2683,6 +2795,17 @@ void ArteFilterOptPb::MergeFrom(const ArteFilterOptPb& from) {
       set_delay_direction(from.delay_direction());
     }
   }
+  if (from._has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    if (from.has_make_sos()) {
+      set_make_sos(from.make_sos());
+    }
+    if (from.has_filtfilt_invalid_samps()) {
+      set_filtfilt_invalid_samps(from.filtfilt_invalid_samps());
+    }
+    if (from.has_regenerate_coefs()) {
+      set_regenerate_coefs(from.regenerate_coefs());
+    }
+  }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
@@ -2713,6 +2836,9 @@ void ArteFilterOptPb::Swap(ArteFilterOptPb* other) {
     std::swap(high_cut_, other->high_cut_);
     std::swap(order_, other->order_);
     std::swap(delay_direction_, other->delay_direction_);
+    std::swap(make_sos_, other->make_sos_);
+    std::swap(filtfilt_invalid_samps_, other->filtfilt_invalid_samps_);
+    std::swap(regenerate_coefs_, other->regenerate_coefs_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
@@ -2733,7 +2859,6 @@ void ArteFilterOptPb::Swap(ArteFilterOptPb* other) {
 #ifndef _MSC_VER
 const int ArteChanOptPb::kGainFieldNumber;
 const int ArteChanOptPb::kThresholdFieldNumber;
-const int ArteChanOptPb::kDaqIdFieldNumber;
 const int ArteChanOptPb::kDaqChanFieldNumber;
 const int ArteChanOptPb::kSourceTrodeFieldNumber;
 #endif  // !_MSC_VER
@@ -2756,7 +2881,6 @@ void ArteChanOptPb::SharedCtor() {
   _cached_size_ = 0;
   gain_ = 0;
   threshold_ = 0;
-  daq_id_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   daq_chan_ = 0u;
   source_trode_ = 0u;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -2767,9 +2891,6 @@ ArteChanOptPb::~ArteChanOptPb() {
 }
 
 void ArteChanOptPb::SharedDtor() {
-  if (daq_id_ != &::google::protobuf::internal::kEmptyString) {
-    delete daq_id_;
-  }
   if (this != default_instance_) {
   }
 }
@@ -2798,11 +2919,6 @@ void ArteChanOptPb::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     gain_ = 0;
     threshold_ = 0;
-    if (has_daq_id()) {
-      if (daq_id_ != &::google::protobuf::internal::kEmptyString) {
-        daq_id_->clear();
-      }
-    }
     daq_chan_ = 0u;
     source_trode_ = 0u;
   }
@@ -2843,29 +2959,12 @@ bool ArteChanOptPb::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(26)) goto parse_daq_id;
+        if (input->ExpectTag(24)) goto parse_daq_chan;
         break;
       }
       
-      // optional string daq_id = 3;
+      // optional uint32 daq_chan = 3;
       case 3: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_daq_id:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_daq_id()));
-          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-            this->daq_id().data(), this->daq_id().length(),
-            ::google::protobuf::internal::WireFormat::PARSE);
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(32)) goto parse_daq_chan;
-        break;
-      }
-      
-      // optional uint32 daq_chan = 4;
-      case 4: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_daq_chan:
@@ -2876,12 +2975,12 @@ bool ArteChanOptPb::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(40)) goto parse_source_trode;
+        if (input->ExpectTag(32)) goto parse_source_trode;
         break;
       }
       
-      // optional uint32 source_trode = 5;
-      case 5: {
+      // optional uint32 source_trode = 4;
+      case 4: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_source_trode:
@@ -2924,23 +3023,14 @@ void ArteChanOptPb::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteFloat(2, this->threshold(), output);
   }
   
-  // optional string daq_id = 3;
-  if (has_daq_id()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->daq_id().data(), this->daq_id().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    ::google::protobuf::internal::WireFormatLite::WriteString(
-      3, this->daq_id(), output);
-  }
-  
-  // optional uint32 daq_chan = 4;
+  // optional uint32 daq_chan = 3;
   if (has_daq_chan()) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(4, this->daq_chan(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(3, this->daq_chan(), output);
   }
   
-  // optional uint32 source_trode = 5;
+  // optional uint32 source_trode = 4;
   if (has_source_trode()) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(5, this->source_trode(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(4, this->source_trode(), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -2961,24 +3051,14 @@ void ArteChanOptPb::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(2, this->threshold(), target);
   }
   
-  // optional string daq_id = 3;
-  if (has_daq_id()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->daq_id().data(), this->daq_id().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        3, this->daq_id(), target);
-  }
-  
-  // optional uint32 daq_chan = 4;
+  // optional uint32 daq_chan = 3;
   if (has_daq_chan()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(4, this->daq_chan(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(3, this->daq_chan(), target);
   }
   
-  // optional uint32 source_trode = 5;
+  // optional uint32 source_trode = 4;
   if (has_source_trode()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(5, this->source_trode(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(4, this->source_trode(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -3002,21 +3082,14 @@ int ArteChanOptPb::ByteSize() const {
       total_size += 1 + 4;
     }
     
-    // optional string daq_id = 3;
-    if (has_daq_id()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::StringSize(
-          this->daq_id());
-    }
-    
-    // optional uint32 daq_chan = 4;
+    // optional uint32 daq_chan = 3;
     if (has_daq_chan()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::UInt32Size(
           this->daq_chan());
     }
     
-    // optional uint32 source_trode = 5;
+    // optional uint32 source_trode = 4;
     if (has_source_trode()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::UInt32Size(
@@ -3056,9 +3129,6 @@ void ArteChanOptPb::MergeFrom(const ArteChanOptPb& from) {
     if (from.has_threshold()) {
       set_threshold(from.threshold());
     }
-    if (from.has_daq_id()) {
-      set_daq_id(from.daq_id());
-    }
     if (from.has_daq_chan()) {
       set_daq_chan(from.daq_chan());
     }
@@ -3090,7 +3160,6 @@ void ArteChanOptPb::Swap(ArteChanOptPb* other) {
   if (other != this) {
     std::swap(gain_, other->gain_);
     std::swap(threshold_, other->threshold_);
-    std::swap(daq_id_, other->daq_id_);
     std::swap(daq_chan_, other->daq_chan_);
     std::swap(source_trode_, other->source_trode_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);

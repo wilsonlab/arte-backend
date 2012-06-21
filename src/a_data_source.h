@@ -24,28 +24,7 @@
 
 // helpful utility - where should it go?  Probably not in this file
 // From post at wonderful GotW blog: http://www.gotw.ca/gotw/079.htm
-template <class T>
-struct PtrTo{
-  typedef std::shared_ptr <T> Type;
-  typedef std::vector < std::shared_ptr <T> > ListType;
-};
 
-
-
-// define some types of data
-typedef boost::multi_array <rdata_t,2> raw_voltage_array;
-typedef std::vector < boost::circular_buffer <rdata_t> > raw_voltage_circular_buffer;
-typedef raw_voltage_array::index voltage_array_index;
-
-struct NeuralVoltageBuffer{
-  timestamp_t       one_past_end_timestamp;
-  raw_voltage_array voltage_buffer;
-};
-
-struct NeuralVoltageCircBuffer{
-  timestamp_t                 one_past_end_timestamp;
-  raw_voltage_circular_buffer voltage_buffer;
-};
 
 enum data_source_state_t  {DATA_SOURCE_INVALID, 
 			   DATA_SOURCE_STOPPED, 
@@ -57,7 +36,7 @@ class ADataSource{
 
 
  public:
-
+  ADataSource();
   typedef typename PtrTo<ADataSource <DataType> >::Type SourcePtr;
   typedef typename PtrTo<ADataSource <DataType> >::ListType SourceList;
   // start should produce data, and only be called after
@@ -104,6 +83,10 @@ class ADataSource{
 
 };
 
+template <class DataType>
+ADataSource<DataType>::ADataSource(){
+  std::cout << "Abstract data source constructor\n";
+}
 
 template <class DataType>
 DataType & ADataSource<DataType>::get_data(){ 
@@ -129,9 +112,9 @@ void ADataSource<DataType>::set_data(DataType &new_data){
 
     // Assert that all listeners have finished copying the prior data
     // Mark all listeners as dirty by adding their labels to dirty-list
-    system("clear");
-    std::cout << "SOURCE About to update data: ";
-    std::cout << new_data << std::endl;
+    //    system("clear");
+    //    std::cout << "SOURCE About to update data: ";
+    //    std::cout << new_data << std::endl;
     for (auto it = smudge_set.begin(); it != smudge_set.end(); it++){
       //assert( ! ( **it) ); // assert that this listener has already processed
       (**it) = true; // Mark the listener's data as dirty (needs processing)

@@ -769,12 +769,33 @@ class ArteFilterOptPb : public ::google::protobuf::Message {
   inline ::google::protobuf::uint32 order() const;
   inline void set_order(::google::protobuf::uint32 value);
   
-  // optional int32 delay_direction = 8;
+  // optional int32 delay_direction = 8 [default = 1];
   inline bool has_delay_direction() const;
   inline void clear_delay_direction();
   static const int kDelayDirectionFieldNumber = 8;
   inline ::google::protobuf::int32 delay_direction() const;
   inline void set_delay_direction(::google::protobuf::int32 value);
+  
+  // optional bool make_sos = 9 [default = true];
+  inline bool has_make_sos() const;
+  inline void clear_make_sos();
+  static const int kMakeSosFieldNumber = 9;
+  inline bool make_sos() const;
+  inline void set_make_sos(bool value);
+  
+  // optional int32 filtfilt_invalid_samps = 10 [default = 32];
+  inline bool has_filtfilt_invalid_samps() const;
+  inline void clear_filtfilt_invalid_samps();
+  static const int kFiltfiltInvalidSampsFieldNumber = 10;
+  inline ::google::protobuf::int32 filtfilt_invalid_samps() const;
+  inline void set_filtfilt_invalid_samps(::google::protobuf::int32 value);
+  
+  // optional bool regenerate_coefs = 11 [default = false];
+  inline bool has_regenerate_coefs() const;
+  inline void clear_regenerate_coefs();
+  static const int kRegenerateCoefsFieldNumber = 11;
+  inline bool regenerate_coefs() const;
+  inline void set_regenerate_coefs(bool value);
   
   // @@protoc_insertion_point(class_scope:ArteFilterOptPb)
  private:
@@ -788,6 +809,12 @@ class ArteFilterOptPb : public ::google::protobuf::Message {
   inline void clear_has_order();
   inline void set_has_delay_direction();
   inline void clear_has_delay_direction();
+  inline void set_has_make_sos();
+  inline void clear_has_make_sos();
+  inline void set_has_filtfilt_invalid_samps();
+  inline void clear_has_filtfilt_invalid_samps();
+  inline void set_has_regenerate_coefs();
+  inline void clear_has_regenerate_coefs();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
@@ -799,9 +826,12 @@ class ArteFilterOptPb : public ::google::protobuf::Message {
   float high_cut_;
   ::google::protobuf::uint32 order_;
   ::google::protobuf::int32 delay_direction_;
+  ::google::protobuf::int32 filtfilt_invalid_samps_;
+  bool make_sos_;
+  bool regenerate_coefs_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(8 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(11 + 31) / 32];
   
   friend void  protobuf_AddDesc_arte_5fpb_2eproto();
   friend void protobuf_AssignDesc_arte_5fpb_2eproto();
@@ -880,28 +910,17 @@ class ArteChanOptPb : public ::google::protobuf::Message {
   inline float threshold() const;
   inline void set_threshold(float value);
   
-  // optional string daq_id = 3;
-  inline bool has_daq_id() const;
-  inline void clear_daq_id();
-  static const int kDaqIdFieldNumber = 3;
-  inline const ::std::string& daq_id() const;
-  inline void set_daq_id(const ::std::string& value);
-  inline void set_daq_id(const char* value);
-  inline void set_daq_id(const char* value, size_t size);
-  inline ::std::string* mutable_daq_id();
-  inline ::std::string* release_daq_id();
-  
-  // optional uint32 daq_chan = 4;
+  // optional uint32 daq_chan = 3;
   inline bool has_daq_chan() const;
   inline void clear_daq_chan();
-  static const int kDaqChanFieldNumber = 4;
+  static const int kDaqChanFieldNumber = 3;
   inline ::google::protobuf::uint32 daq_chan() const;
   inline void set_daq_chan(::google::protobuf::uint32 value);
   
-  // optional uint32 source_trode = 5;
+  // optional uint32 source_trode = 4;
   inline bool has_source_trode() const;
   inline void clear_source_trode();
-  static const int kSourceTrodeFieldNumber = 5;
+  static const int kSourceTrodeFieldNumber = 4;
   inline ::google::protobuf::uint32 source_trode() const;
   inline void set_source_trode(::google::protobuf::uint32 value);
   
@@ -911,8 +930,6 @@ class ArteChanOptPb : public ::google::protobuf::Message {
   inline void clear_has_gain();
   inline void set_has_threshold();
   inline void clear_has_threshold();
-  inline void set_has_daq_id();
-  inline void clear_has_daq_id();
   inline void set_has_daq_chan();
   inline void clear_has_daq_chan();
   inline void set_has_source_trode();
@@ -922,12 +939,11 @@ class ArteChanOptPb : public ::google::protobuf::Message {
   
   float gain_;
   float threshold_;
-  ::std::string* daq_id_;
   ::google::protobuf::uint32 daq_chan_;
   ::google::protobuf::uint32 source_trode_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
   
   friend void  protobuf_AddDesc_arte_5fpb_2eproto();
   friend void protobuf_AssignDesc_arte_5fpb_2eproto();
@@ -2949,7 +2965,7 @@ inline void ArteFilterOptPb::set_order(::google::protobuf::uint32 value) {
   order_ = value;
 }
 
-// optional int32 delay_direction = 8;
+// optional int32 delay_direction = 8 [default = 1];
 inline bool ArteFilterOptPb::has_delay_direction() const {
   return (_has_bits_[0] & 0x00000080u) != 0;
 }
@@ -2960,7 +2976,7 @@ inline void ArteFilterOptPb::clear_has_delay_direction() {
   _has_bits_[0] &= ~0x00000080u;
 }
 inline void ArteFilterOptPb::clear_delay_direction() {
-  delay_direction_ = 0;
+  delay_direction_ = 1;
   clear_has_delay_direction();
 }
 inline ::google::protobuf::int32 ArteFilterOptPb::delay_direction() const {
@@ -2969,6 +2985,72 @@ inline ::google::protobuf::int32 ArteFilterOptPb::delay_direction() const {
 inline void ArteFilterOptPb::set_delay_direction(::google::protobuf::int32 value) {
   set_has_delay_direction();
   delay_direction_ = value;
+}
+
+// optional bool make_sos = 9 [default = true];
+inline bool ArteFilterOptPb::has_make_sos() const {
+  return (_has_bits_[0] & 0x00000100u) != 0;
+}
+inline void ArteFilterOptPb::set_has_make_sos() {
+  _has_bits_[0] |= 0x00000100u;
+}
+inline void ArteFilterOptPb::clear_has_make_sos() {
+  _has_bits_[0] &= ~0x00000100u;
+}
+inline void ArteFilterOptPb::clear_make_sos() {
+  make_sos_ = true;
+  clear_has_make_sos();
+}
+inline bool ArteFilterOptPb::make_sos() const {
+  return make_sos_;
+}
+inline void ArteFilterOptPb::set_make_sos(bool value) {
+  set_has_make_sos();
+  make_sos_ = value;
+}
+
+// optional int32 filtfilt_invalid_samps = 10 [default = 32];
+inline bool ArteFilterOptPb::has_filtfilt_invalid_samps() const {
+  return (_has_bits_[0] & 0x00000200u) != 0;
+}
+inline void ArteFilterOptPb::set_has_filtfilt_invalid_samps() {
+  _has_bits_[0] |= 0x00000200u;
+}
+inline void ArteFilterOptPb::clear_has_filtfilt_invalid_samps() {
+  _has_bits_[0] &= ~0x00000200u;
+}
+inline void ArteFilterOptPb::clear_filtfilt_invalid_samps() {
+  filtfilt_invalid_samps_ = 32;
+  clear_has_filtfilt_invalid_samps();
+}
+inline ::google::protobuf::int32 ArteFilterOptPb::filtfilt_invalid_samps() const {
+  return filtfilt_invalid_samps_;
+}
+inline void ArteFilterOptPb::set_filtfilt_invalid_samps(::google::protobuf::int32 value) {
+  set_has_filtfilt_invalid_samps();
+  filtfilt_invalid_samps_ = value;
+}
+
+// optional bool regenerate_coefs = 11 [default = false];
+inline bool ArteFilterOptPb::has_regenerate_coefs() const {
+  return (_has_bits_[0] & 0x00000400u) != 0;
+}
+inline void ArteFilterOptPb::set_has_regenerate_coefs() {
+  _has_bits_[0] |= 0x00000400u;
+}
+inline void ArteFilterOptPb::clear_has_regenerate_coefs() {
+  _has_bits_[0] &= ~0x00000400u;
+}
+inline void ArteFilterOptPb::clear_regenerate_coefs() {
+  regenerate_coefs_ = false;
+  clear_has_regenerate_coefs();
+}
+inline bool ArteFilterOptPb::regenerate_coefs() const {
+  return regenerate_coefs_;
+}
+inline void ArteFilterOptPb::set_regenerate_coefs(bool value) {
+  set_has_regenerate_coefs();
+  regenerate_coefs_ = value;
 }
 
 // -------------------------------------------------------------------
@@ -3019,73 +3101,15 @@ inline void ArteChanOptPb::set_threshold(float value) {
   threshold_ = value;
 }
 
-// optional string daq_id = 3;
-inline bool ArteChanOptPb::has_daq_id() const {
+// optional uint32 daq_chan = 3;
+inline bool ArteChanOptPb::has_daq_chan() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
-inline void ArteChanOptPb::set_has_daq_id() {
+inline void ArteChanOptPb::set_has_daq_chan() {
   _has_bits_[0] |= 0x00000004u;
 }
-inline void ArteChanOptPb::clear_has_daq_id() {
-  _has_bits_[0] &= ~0x00000004u;
-}
-inline void ArteChanOptPb::clear_daq_id() {
-  if (daq_id_ != &::google::protobuf::internal::kEmptyString) {
-    daq_id_->clear();
-  }
-  clear_has_daq_id();
-}
-inline const ::std::string& ArteChanOptPb::daq_id() const {
-  return *daq_id_;
-}
-inline void ArteChanOptPb::set_daq_id(const ::std::string& value) {
-  set_has_daq_id();
-  if (daq_id_ == &::google::protobuf::internal::kEmptyString) {
-    daq_id_ = new ::std::string;
-  }
-  daq_id_->assign(value);
-}
-inline void ArteChanOptPb::set_daq_id(const char* value) {
-  set_has_daq_id();
-  if (daq_id_ == &::google::protobuf::internal::kEmptyString) {
-    daq_id_ = new ::std::string;
-  }
-  daq_id_->assign(value);
-}
-inline void ArteChanOptPb::set_daq_id(const char* value, size_t size) {
-  set_has_daq_id();
-  if (daq_id_ == &::google::protobuf::internal::kEmptyString) {
-    daq_id_ = new ::std::string;
-  }
-  daq_id_->assign(reinterpret_cast<const char*>(value), size);
-}
-inline ::std::string* ArteChanOptPb::mutable_daq_id() {
-  set_has_daq_id();
-  if (daq_id_ == &::google::protobuf::internal::kEmptyString) {
-    daq_id_ = new ::std::string;
-  }
-  return daq_id_;
-}
-inline ::std::string* ArteChanOptPb::release_daq_id() {
-  clear_has_daq_id();
-  if (daq_id_ == &::google::protobuf::internal::kEmptyString) {
-    return NULL;
-  } else {
-    ::std::string* temp = daq_id_;
-    daq_id_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-    return temp;
-  }
-}
-
-// optional uint32 daq_chan = 4;
-inline bool ArteChanOptPb::has_daq_chan() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
-}
-inline void ArteChanOptPb::set_has_daq_chan() {
-  _has_bits_[0] |= 0x00000008u;
-}
 inline void ArteChanOptPb::clear_has_daq_chan() {
-  _has_bits_[0] &= ~0x00000008u;
+  _has_bits_[0] &= ~0x00000004u;
 }
 inline void ArteChanOptPb::clear_daq_chan() {
   daq_chan_ = 0u;
@@ -3099,15 +3123,15 @@ inline void ArteChanOptPb::set_daq_chan(::google::protobuf::uint32 value) {
   daq_chan_ = value;
 }
 
-// optional uint32 source_trode = 5;
+// optional uint32 source_trode = 4;
 inline bool ArteChanOptPb::has_source_trode() const {
-  return (_has_bits_[0] & 0x00000010u) != 0;
+  return (_has_bits_[0] & 0x00000008u) != 0;
 }
 inline void ArteChanOptPb::set_has_source_trode() {
-  _has_bits_[0] |= 0x00000010u;
+  _has_bits_[0] |= 0x00000008u;
 }
 inline void ArteChanOptPb::clear_has_source_trode() {
-  _has_bits_[0] &= ~0x00000010u;
+  _has_bits_[0] &= ~0x00000008u;
 }
 inline void ArteChanOptPb::clear_source_trode() {
   source_trode_ = 0u;

@@ -11,17 +11,17 @@ SRCS = src/
 
 BACKEND_SRC =  $(SRCS)arte.cpp $(SRCS)filt.cpp $(SRCS)neural_daq.cpp $(SRCS)trode.cpp $(SRCS)util.cpp 
 BACKEND_SRC += $(SRCS)lfp_bank.cpp $(SRCS)filtered_buffer.cpp $(SRCS)filter_fun.cpp $(SRCS)timer.cpp 
-BACKEND_SRC += $(SRCS)process_command.cpp $(SRCS)netcom.cpp $(SRCS)datapacket.cpp $(SRCS)arte_pb.pb.cc 
+BACKEND_SRC += $(SRCS)process_command.cpp $(SRCS)netcom.cpp $(SRCS)arte_pb.pb.cc 
 BACKEND_SRC += $(SRCS)arte_command.pb.cc $(SRCS)arteopt.cpp $(SRCS)glom.cpp 
 BACKEND_SRC += $(SRCS)arte_command_port.cpp $(SRCS)nidaq_data_source.cpp $(SRCS)a_data_source.cpp
-BACKEND_SRC += $(SRCS)a_timer.cpp $(SRCS)global_state.cpp
+BACKEND_SRC += $(SRCS)a_timer.cpp $(SRCS)global_state.cpp $(SRCS)datapacket.cpp
 
 BACKEND_OBJ =  $(SRCS)arte.o $(SRCS)filt.o $(SRCS)neural_daq.o $(SRCS)trode.o $(SRCS)util.o 
 BACKEND_OBJ += $(SRCS)lfp_bank.o $(SRCS)filtered_buffer.o $(SRCS)filter_fun.o $(SRCS)timer.o 
-BACKEND_OBJ += $(SRCS)process_command.o $(SRCS)netcom.o $(SRCS)datapacket.o $(SRCS)arte_pb.pb.o 
+BACKEND_OBJ += $(SRCS)process_command.o $(SRCS)netcom.o $(SRCS)arte_pb.pb.o 
 BACKEND_OBJ += $(SRCS)arte_command.pb.o $(SRCS)arteopt.o $(SRCS)glom.o
 BACKEND_OBJ += $(SRCS)arte_command_port.o $(SRCS)nidaq_data_source.o $(SRCS)a_data_source.o
-BACKEND_OBJ += $(SRCS)a_timer.o $(SRCS)global_state.o
+BACKEND_OBJ += $(SRCS)a_timer.o $(SRCS)global_state.o $(SRCS)datapacket.o 
 
 # path to boost library added to 
 CFLAGS = -D__STDC_LIMIT_MACROS -pthread -std=c++0x -O3 -I /usr/local/include/ -I $(wildcard /usr/local/boost_1_45_0) -I $(wildcard /usr/local/boost-trunk) -I $(wildcard /usr/local/boost_1_45_0/boost/property_tree) -I $(SRCS)
@@ -29,7 +29,7 @@ CFLAGS = -D__STDC_LIMIT_MACROS -pthread -std=c++0x -O3 -I /usr/local/include/ -I
 
 OBJS = src/
 RM = rm
-EXE = $(BUILD_DIR)arte_backend2
+EXE = $(BUILD_DIR)arte_backend3
 
 # clear out all suffixes (from http://owen.sj.ca.us/~rk/howto/slides/make/slides/makesuff.html)
 # should this and the .c.o: rule be in the master makefile, instead of each invidual one?

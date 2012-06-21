@@ -10,14 +10,17 @@
 #include <stdint.h>
 #include <boost/thread/thread.hpp>
 #include <boost/thread/mutex.hpp>
-
-#define MAX_THREADS 32
-#define THREADED_
+#include <memory> // std::shared_ptr
+#include <vector>
 
 #include <pthread.h>
 
 // global mutex for printfs
 // std::mutex print_mutex;
+
+
+#define MAX_THREADS 32
+#define THREADED_
 
 typedef int16_t rdata_t;
 // Don't know why these are giving not-declared errors
@@ -97,6 +100,13 @@ const recordtype_t LFP_BANK_RECORD = 0;
 const recordtype_t EVENT_STRING_RECORD = 1;
 const recordtype_t SPIKE_RECORD = 2;
 const recordtype_t THRESHOLD_FRAME_RECORD = 3;
+
+template <class T>
+struct PtrTo{
+  typedef std::shared_ptr <T> Type;
+  typedef std::vector < std::shared_ptr <T> > ListType;
+};
+
 
 
 #endif

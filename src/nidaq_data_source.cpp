@@ -1,5 +1,6 @@
 #include "arte_pb.pb.h"
 #include "nidaq_data_source.h"
+#include "datapacket.h"
 
 // Define static member
 DaqList NidaqDataSource::daq_list;
@@ -167,13 +168,17 @@ int32 NidaqDataSource::EveryNCallback(TaskHandle task_handle,
   
 for( DaqList::iterator it = this_daq_list->begin(); it != this_daq_list->end(); it++){
     this_daq = it->second;
-    this_daq->scratch_data.one_past_end_timestamp = timer_p->get_count() - this_daq->buffer_delay;
+    this_daq->scratch_data.one_past_end_timestamp = timer_p->get_count();
     // interface is:
     // DAQmxReadBinaryI16(taskhandle, numSampsPerChan, timeout, fillMode,
     //                    read_array[], array_size_samps, samps_actually_ready, reserved)
     // TODO: clean this up, 
     //    rdata_t *the_array = &(this_daq->scratch_data.voltage_buffer[0]);
+
+    
+
     NeuralVoltageBuffer *the_voltage_buffer = &(this_daq->scratch_data);
+    //NeuralVoltageBuffer *the_voltage_buffer = NULL;
     rdata_t *addy_of_first_element = &(the_voltage_buffer->voltage_buffer[0][0]);
     nidaq_err_check(DAQmxReadBinaryI16(this_daq->task_handle, 32, 10.0, 
 				       DAQmx_Val_GroupByScanNumber,
@@ -181,6 +186,9 @@ for( DaqList::iterator it = this_daq_list->begin(); it != this_daq_list->end(); 
 				       32*32, &read, NULL));
     
     this_daq->set_data( *the_voltage_buffer );
+    
+
+
   }
 
 }

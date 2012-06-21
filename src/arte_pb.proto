@@ -47,7 +47,10 @@ message ArteFilterOptPb{
         optional float                        low_cut  = 5;
 	optional float                       high_cut  = 6;
 	optional uint32                         order  = 7;
-	optional int32                delay_direction  = 8;
+	optional int32                delay_direction  = 8  [default = 1];
+	optional bool                        make_sos  = 9  [default = true];
+	optional int32         filtfilt_invalid_samps  = 10 [default = 32];
+	optional bool                regenerate_coefs  = 11 [default = false];
 }
 
 

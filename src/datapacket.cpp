@@ -1,6 +1,35 @@
 #include <iostream>
 #include "datapacket.h"
 
+NeuralVoltageBuffer::NeuralVoltageBuffer(int n_chans, int n_samps, 
+					 std::string device_label)
+  : device_label (device_label)
+  , n_chans      (n_chans)
+  , n_samps      (n_samps)
+{
+  voltage_buffer = raw_voltage_array(boost::extents[n_chans][n_samps]);
+  local_pb.Clear();
+  ArteRawBufferPb *raw_buf = local_pb.mutable_arte_raw_buffer();
+  for(int c = 0; c < n_chans; c++){
+    ArteVoltageTimeseries *ts = 
+      raw_buf->add_chan_data();
+    for(int s = 0; s < n_samps; s++)
+      ts->add_voltage(-2.0); // default 'unset' value
+  }
+}
+
+ArteRawBufferPb& NeuralVoltageBuffer::to_buffer(){
+  ArteVoltageTimeseries *ts;
+  ArteRawBufferPb *raw_buf = local_pb.mutable_arte_raw_buffer();
+  for(int c = 0; c < n_chans; c++){
+    ts = raw_buf->mutable_chan_data(c);
+    for(int s = 0; s < n_samps; s++)
+      ts->set_voltage(s, voltage_buffer[c][s]);
+  }
+}
+
+
+// Old hand-marshalling stuff
 void printBuff(char* buff, int blen){
         char val;
         for (int i=0; i<blen; i++){

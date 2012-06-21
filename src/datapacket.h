@@ -25,6 +25,10 @@
 
 #include <stdint.h>
 #include <netinet/in.h>
+#include <boost/multi_array.hpp>
+#include <boost/circular_buffer.hpp>
+#include "arte_pb.pb.h"
+#include "arte_command.pb.h"
 #include "global_defs.h"
 
 // these seem to assume that host byteorder is little endian
@@ -54,6 +58,39 @@
 
 #define MAX_BUF_LEN 2048
 void printBuff(char* buff, int blen);
+
+// define some types of data
+typedef boost::multi_array <rdata_t,2> raw_voltage_array;
+typedef std::vector < boost::circular_buffer <rdata_t> > raw_voltage_circular_buffer;
+typedef raw_voltage_array::index voltage_array_index;
+
+class NeuralVoltageBuffer{
+ public:
+  NeuralVoltageBuffer(){}
+  NeuralVoltageBuffer(int n_chans, int n_samps, std::string daq_id);
+
+  timestamp_t       one_past_end_timestamp;
+  raw_voltage_array voltage_buffer;
+  std::string       device_label;
+  
+  ArteRawBufferPb& to_buffer();
+  void print();
+ private:
+  ArtePb local_pb;
+  int n_chans, n_samps;
+};
+
+class NeuralVoltageCircBuffer{
+ public:
+  timestamp_t                 one_past_end_timestamp;
+  raw_voltage_circular_buffer voltage_buffer;
+  ArteRawBufferPb& to_buffer();
+  void print();
+ private:
+  ArteRawBufferPb  local_pb;
+};
+
+// From here down: all old data-packet stuff for hand-marshalling 
 
 typedef uint32_t timestamp_t;
 

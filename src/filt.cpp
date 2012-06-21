@@ -1,7 +1,8 @@
-#include "filt.h"
 #include <boost/property_tree/exceptions.hpp>
-#include "util.h"
+#include <exception>
 #include <string>
+#include "filt.h"
+#include "util.h"
 
 #define S_F64 8                   // 8 bytes for a float64
 #define S_ARRAY(R,C) R*C*S_F64   // Size of an array of float64s of row x col size 
@@ -14,24 +15,126 @@ int rel_pt(int pos, int curs, int buf_len){
   return r;
 }
 
-FiltList Filt::filt_list;
+//Filt::FiltList filt_list;
 
-void Filt::build_filt_list( ArteSetupOptPb & setup_opt ){
+Filt::FiltList Filt::build_filt_list( ArteSetupOptPb & setup_opt, int n_samps_per_source_chan ){
+  Filt::FiltList filt_list;
   for(int i = 0; i < setup_opt.filters_size(); i++){
     ArteFilterOptPb this_filt_opt = setup_opt.filters(i);
-    Filt::filt_list.insert( std::pair <std::string, FiltPtr> (this_filt_opt.filter_name(),
-							      FiltPtr( new Filt (this_filt_opt))) );
+    Filt this_filt ( this_filt_opt, n_samps_per_source_chan );
+    filt_list.insert( std::pair <std::string, Filt> 
+			    (this_filt_opt.filter_name(), this_filt) );
+  }
+  return filt_list;
+}
+
+void Filt::generate_coefs( ArteFilterOptPb &filt_opt ){
+  std::cerr << "Not yet implemented.  Calculate your own damn coefficients!\n";
+  //TODO: Filt::generate_coefs from filter options
+}
+
+
+Filt::Filt( ArteFilterOptPb & filt_opt, int n_samps_per_source_chan )
+{
+
+  filt_name = filt_opt.filter_name();
+
+  bool calculate_coefs = false;
+  if( filt_opt.has_regenerate_coefs() ){
+    if( filt_opt.regenerate_coefs() ){
+      generate_coefs( filt_opt );
+    }
+  } else
+    {
+      for ( int n = 0; n < filt_opt.numerators_size(); n++)
+	numerator_coefs.push_back( filt_opt.numerators(n) );
+      for ( int n = 0; n < filt_opt.denominators_size(); n++)
+	denominator_coefs.push_back( filt_opt.denominators(n) );
+      for ( int n = 0; n < filt_opt.multiplier_size(); n++)
+	multipliers.push_back( filt_opt.multiplier(n) );
+    }
+  delay_direction        = filt_opt.delay_direction();
+  make_sos               = filt_opt.make_sos();
+  filtfilt_invalid_samps  = filt_opt.filtfilt_invalid_samps();
+  
+  if( make_sos ){
+    if(!( (numerator_coefs.size() == denominator_coefs.size() &
+	   numerator_coefs.size()/3 == multipliers.size() ) )){
+      std::cerr << "FILT: Error constructing filter sections, "
+		<< "number of numerator and denominator "
+		<< "coefs must match, and be three times as "
+		<< "many as number of multipliers.\n";
+      // TODO: make exceptions for Filt - for example, coefs_mismatched_for_second_order_sections : public exception ?
+      //      throw std::exception;
+    }
+    my_minimum_samps = n_samps_per_source_chan + 2;
+    int n_sections = numerator_coefs.size()/3;
+    for (int n = 0; n < n_sections; n++){
+      bool this_forward_direction;
+      if( (delay_direction == -1) | 
+	  (delay_direction == 0 & n >= (n_sections / 2)) ){
+	this_forward_direction = true;
+      } else {
+	this_forward_direction = false;
+      }
+      sections.push_back( Section ( numerator_coefs.begin()   + (3*n), numerator_coefs.begin()   + (3*n)+2,
+				    denominator_coefs.begin() + (3*n), denominator_coefs.begin() + (3*n)+2,
+				    multipliers       [n],
+				    this_forward_direction ) );
+    }
+  }  else {
+    my_minimum_samps = n_samps_per_source_chan + numerator_coefs.size() - 1;
+    bool this_forward_direction = (delay_direction > -1) ? true : false;
+    sections.push_back( Section (numerator_coefs.begin(), numerator_coefs.end(), 
+				 denominator_coefs.begin(), denominator_coefs.end(), multipliers[0],
+				 this_forward_direction ) );
+  }
+
+}
+
+void Filt::init_raw_voltage_circular_buffer(raw_voltage_circular_buffer &buffer, 
+					    int n_chans, int n_samps){
+  buffer.clear();
+  for(int c = 0; c < n_chans; c++){
+    buffer.push_back( boost::circular_buffer <rdata_t> (n_samps) );
   }
 }
 
 
-Filt::Filt( ArteFilterOptPb & filt_opt ){
-  std::cout << "Called constructor for filt, still need to implement this.\n";
-}
-
-//Filt::attach_buffers( NeuralVoltageCircBuffer _in_buffer, NeuralVoltageCircBuffer _out_buffer ){
+raw_voltage_circular_buffer * Filt::attach_buffers( raw_voltage_circular_buffer *_in_buffer ){
+  n_sections = sections.size();
+  int n_chans = _in_buffer->size();
+  int n_samps = (*_in_buffer)[0].size();
   
+  init_raw_voltage_circular_buffer( output_buffer, n_chans, n_samps );
+  
+  intermediate_buffers.clear();
+  for (int n = 0; n < n_sections; n++){
+    intermediate_buffers.push_back( output_buffer ); // copy output buffer, which is 
+                                                     // init to the right size already
 
+    // set first sections's input buffer to the filter input buffer
+    // all other sections input buffer is the previous intermediate buffer
+    if( n == 0 ){
+      sections[n].input_buffer = _in_buffer;
+    } else {
+      sections[n].input_buffer = &(intermediate_buffers[n-1]);
+    }
+    // set all sections' output buffer addys to intermediate buffers, but last
+    // sections output is the filter output buffer
+    if( n == (n_sections-1) ) {
+      sections[n].output_buffer = &output_buffer;
+    } else {
+      sections[n].output_buffer = &(intermediate_buffers[n]);
+    }
+  }
+  return &output_buffer;
+}
+  
+void Filt::operator()(){
+  std::cout << "Implement Filt::operator()();\n";
+
+}
 // BIG NOTE: this functinon will now be defined in filtered_buffer.cpp
 // This way, it will know what a Filtered_buffer is and can access its
 // public members.  This drastically shortens the argument lis.t

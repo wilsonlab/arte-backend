@@ -9,6 +9,7 @@
 #include <memory> // std::shared_ptr <>
 #include <NIDAQmx.h>
 #include <map>
+#include "datapacket.h"
 #include "a_data_source.h"
 #include "arte_pb.pb.h"
 #include "global_defs.h"
