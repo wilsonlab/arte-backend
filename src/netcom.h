@@ -29,9 +29,16 @@ class NetCom{
  public:
 
   NetCom();
+  
+  // these used to be fields of NetComDat.  But eventually
+  // I want NetCom instances to hold this data, rather
+  // than passing around NetComDat's
+  int sockfd;
+  struct sockaddr_in addr_in;
+  struct sockaddr_storage their_addr;
 
-  static NetComDat initUdpTx(char host[], int port);
-  static NetComDat initUdpRx(char host[], char * port);
+  NetComDat initUdpTx(char host[], int port);
+  NetComDat initUdpRx(char host[], char * port);
 
   static int txTs(NetComDat net, timestamp_t count, int nTx);
   static timestamp_t rxTs(NetComDat net);
@@ -48,8 +55,8 @@ class NetCom{
   static void txBuff(NetComDat net, char * buff, int buff_len);
   static void rxBuff(NetComDat net, char * buff, int *buff_len);
 
-  void txArtePb(NetComDat net, ArtePb& _arte_pb_to_write_from);
-  void rxArtePb(NetComDat net, ArtePb& _arte_pb_to_write_to);
+  void txArtePb(ArtePb& _arte_pb_to_write_from);
+  void rxArtePb(ArtePb& _arte_pb_to_write_to);
 
   char        tmp_buffer_char[BUFFSIZE];
   std::string tmp_buffer_string;

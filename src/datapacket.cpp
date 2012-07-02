@@ -18,6 +18,21 @@ NeuralVoltageBuffer::NeuralVoltageBuffer(int n_chans, int n_samps,
   }
 }
 
+
+void NeuralVoltageCircBuffer::request_size( int new_n_chans, int new_n_samps ){
+  int n_chans = voltage_buffer.size();
+  int n_samps = voltage_buffer[0].size();
+  if (n_chans < new_n_chans) {
+    voltage_buffer.resize( new_n_chans, voltage_buffer[0] );
+    n_chans = voltage_buffer.size();
+  }
+  for (int n = 0; n < n_chans; n++){
+    if (voltage_buffer[n].size() < new_n_samps)
+      voltage_buffer[n].resize(new_n_samps, voltage_buffer[n][0]);
+  }
+};
+
+
 ArteRawBufferPb& NeuralVoltageBuffer::to_buffer(){
   ArteVoltageTimeseries *ts;
   ArteRawBufferPb *raw_buf = local_pb.mutable_arte_raw_buffer();
@@ -26,8 +41,11 @@ ArteRawBufferPb& NeuralVoltageBuffer::to_buffer(){
     for(int s = 0; s < n_samps; s++)
       ts->set_voltage(s, voltage_buffer[c][s]);
   }
-}
+};
 
+timestamp_t NeuralVoltageCircBuffer::ts_of_index( int index, double ts_ticks_per_samp ){
+  return ( one_past_end_timestamp + (index - voltage_buffer[0].size()) * ts_ticks_per_samp );
+}
 
 // Old hand-marshalling stuff
 void printBuff(char* buff, int blen){

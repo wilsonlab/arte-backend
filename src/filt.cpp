@@ -38,7 +38,7 @@ Filt::Filt( ArteFilterOptPb & filt_opt, int n_samps_per_source_chan )
 {
 
   filt_name = filt_opt.filter_name();
-
+  
   bool calculate_coefs = false;
   if( filt_opt.has_regenerate_coefs() ){
     if( filt_opt.regenerate_coefs() ){
@@ -55,8 +55,9 @@ Filt::Filt( ArteFilterOptPb & filt_opt, int n_samps_per_source_chan )
     }
   delay_direction        = filt_opt.delay_direction();
   make_sos               = filt_opt.make_sos();
-  filtfilt_invalid_samps  = filt_opt.filtfilt_invalid_samps();
-  
+  filtfilt_invalid_samps = ( delay_direction == 1 ) ?  
+    0  : filt_opt.filtfilt_invalid_samps();
+
   if( make_sos ){
     if(!( (numerator_coefs.size() == denominator_coefs.size() &
 	   numerator_coefs.size()/3 == multipliers.size() ) )){
@@ -90,6 +91,7 @@ Filt::Filt( ArteFilterOptPb & filt_opt, int n_samps_per_source_chan )
 				 this_forward_direction ) );
   }
 
+
 }
 
 void Filt::init_raw_voltage_circular_buffer(raw_voltage_circular_buffer &buffer, 
@@ -101,7 +103,8 @@ void Filt::init_raw_voltage_circular_buffer(raw_voltage_circular_buffer &buffer,
 }
 
 
-raw_voltage_circular_buffer * Filt::attach_buffers( raw_voltage_circular_buffer *_in_buffer ){
+//raw_voltage_circular_buffer * Filt::attach_buffers( raw_voltage_circular_buffer *_in_buffer ){
+void Filt::attach_buffers (raw_voltage_circular_buffer *_in_buffer, raw_voltage_circular_buffer *_out_buffer){
   n_sections = sections.size();
   int n_chans = _in_buffer->size();
   int n_samps = (*_in_buffer)[0].size();
@@ -125,10 +128,11 @@ raw_voltage_circular_buffer * Filt::attach_buffers( raw_voltage_circular_buffer 
     if( n == (n_sections-1) ) {
       sections[n].output_buffer = &output_buffer;
     } else {
-      sections[n].output_buffer = &(intermediate_buffers[n]);
+      //sections[n].output_buffer = &(intermediate_buffers[n]);
+      sections[n].output_buffer = _out_buffer;
     }
   }
-  return &output_buffer;
+
 }
   
 void Filt::operator()(){

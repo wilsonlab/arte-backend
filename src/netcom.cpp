@@ -8,7 +8,7 @@ NetCom::NetCom(){
 
 NetComDat NetCom::initUdpTx(char host[], int port){
 
-	int sockfd; 
+  //int sockfd; 
 	sockaddr_in addr;
 	hostent *he;
 	int numbytes;
@@ -223,25 +223,25 @@ void NetCom::rxBuff(NetComDat net, char *buff, int *buff_len){
 
 }
 
-void NetCom::txArtePb(NetComDat net, ArtePb& _arte_pb_to_write_from){
+void NetCom::txArtePb(ArtePb& _arte_pb_to_write_from){
 
   int pb_size = _arte_pb_to_write_from.ByteSize();
   std::string buffer_string;
   _arte_pb_to_write_from.SerializeToString( &buffer_string );
 
-  sendto( net.sockfd, buffer_string.c_str(), pb_size, 0,  
-	  (sockaddr*) &net.addr_in, sizeof( net.addr_in ) );
+  sendto( sockfd, buffer_string.c_str(), pb_size, 0,  
+	  (sockaddr*) &addr_in, sizeof( addr_in ) );
 
 }
 
-void NetCom::rxArtePb(NetComDat net, ArtePb& _arte_pb_to_write_to) {
+void NetCom::rxArtePb(ArtePb& _arte_pb_to_write_to) {
 
   int numbytes;
-  sockaddr_storage their_addr = net.their_addr;
+  sockaddr_storage their_addr = their_addr;
   socklen_t addr_len = sizeof(their_addr);
 
   char buff[BUFFSIZE-1];
-  if ( (numbytes = recvfrom(net.sockfd, 
+  if ( (numbytes = recvfrom(sockfd, 
 			    &tmp_buffer_char[0], 
 			    BUFFSIZE-1, 
 			    0, 

@@ -59,8 +59,9 @@ class Filt{
   // do the filtering (new way)
   void operator()();
 
-  raw_voltage_circular_buffer *attach_buffers( raw_voltage_circular_buffer *in_buffer );
-
+  //  raw_voltage_circular_buffer *attach_buffers( raw_voltage_circular_buffer *in_buffer );
+  void                         attach_buffers( raw_voltage_circular_buffer *in_buffer, 
+					       raw_voltage_circular_buffer *out_buffer );
   
   std::string filt_name;
 

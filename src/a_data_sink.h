@@ -121,7 +121,8 @@ void ADataSink <SourceDataType, SinkDataType>::register_self(){
 
 template <class SourceDataType, class SinkDataType>
   void ADataSink<SourceDataType,SinkDataType>::get_data_from_source(){
-  data = my_data_source->get_data();
+  std::cout << "Called abstract data sink's get_data_from_source(). On purpose?\n";
+  //  data = my_data_source->get_data();
 };
 
 

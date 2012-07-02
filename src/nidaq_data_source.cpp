@@ -25,13 +25,19 @@ NidaqDataSource::NidaqDataSource(ArteNeuralDaqOptPb &daq_opt_pb, std::shared_ptr
   is_multiplexing = daq_opt_pb.is_multiplexing();
   out_filename = daq_opt_pb.out_filename();
 
-
   // Initialize data
-  int samp_rate = (int)1e6/32;
+    int samp_rate = (int)1e6/32; // nidaq card sample rate (not per-channel)
   data.voltage_buffer.resize(boost::extents[n_chans][n_samps_per_buffer]);
 
   // Copy reference to timer
   timer_p = timer;
+
+  //
+  double seconds_per_ts_tick = timer_p->get_arte_time_to_secs_coeff();
+  double samps_per_second = 32000.0;
+  samps_per_ts_tick = samps_per_second * seconds_per_ts_tick;
+  ts_ticks_per_samp = 1/samps_per_second;
+
 
   // Initialize daq card
   task_handle = 0;

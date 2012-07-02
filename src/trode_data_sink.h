@@ -1,7 +1,11 @@
 #ifndef TRODE_DATA_SINK_H_
 #define TRODE_DATA_SINK_H_
 
+#include "arte_pb.pb.h"
+#include "arte_command.pb.h"
 #include "a_data_sink.h"
+#include "filt.h"
+#include "netcom.h"
 
 class TrodeDataSink : public ADataSink<NeuralVoltageBuffer,NeuralVoltageCircBuffer >
 {
@@ -9,8 +13,10 @@ class TrodeDataSink : public ADataSink<NeuralVoltageBuffer,NeuralVoltageCircBuff
  public:
 
   TrodeDataSink( ArteTrodeOptPb &trode_opt );
-  operator()();
-  handle_command( ArteCommandPb &the_command );
+  TrodeDataSink( ArteTrodeOptPb &t_o, ArteTrodeOptPb &d_o, Filt::FiltList &filter_list );
+  void get_data_from_source();
+  void operator()();
+  void handle_command( ArteCommand &the_command );
 
  private:
   
@@ -20,16 +26,29 @@ class TrodeDataSink : public ADataSink<NeuralVoltageBuffer,NeuralVoltageCircBuff
   // be assigned in TrodeDataSink constructor
   // data and source_buffer are declared in a_data_sink.h
 
-  std::shared_ptr <oGlom> main_file;
+  std::shared_ptr <oGlom>  main_file;
+  std::shared_ptr <NetCom> data_netcom;
 
   ArteTrodeOptPb trode_opt;
 
-  ArteSpikePb spike_pb;
+  ArtePb      parent_pb;
+  ArteSpikePb *spike_pb;
+
+  // why does trode_data_sink have this?
   ArteVoltageTimeseries voltages_pb;
 
-  static ADataSinkPtr default_trode;
+  // I don't make a default trode, just keep the default settings in pb
+  //static ADataSinkPtr default_trode;
 
-  Filter filter;
+  Filt filter;
+
+  int n_samps, n_chans;
+  NeuralVoltageCircBuffer filtered_data;
+
+  void scan_for_spikes();
+  void publish_spikes();
+
+  timestamp_t last_spike_time;
 
   int trode_opt_version;
   std::vector <double> input_gain;
@@ -45,6 +64,11 @@ class TrodeDataSink : public ADataSink<NeuralVoltageBuffer,NeuralVoltageCircBuff
 
   bool disk;
   bool network;
+
+  int spike_seek_start;
+  int spike_seek_end;
+
+  std::vector <int> spike_index;
 
 };
 

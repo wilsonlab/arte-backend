@@ -78,6 +78,7 @@ class ADataSource{
 
   ArteGlobalState *global_state_p;
 
+  double samps_per_ts_tick, ts_ticks_per_samp;
 
  private:
 

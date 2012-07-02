@@ -83,8 +83,11 @@ class NeuralVoltageBuffer{
 class NeuralVoltageCircBuffer{
  public:
   timestamp_t                 one_past_end_timestamp;
+  int                         invalid_end_samps;
   raw_voltage_circular_buffer voltage_buffer;
   ArteRawBufferPb& to_buffer();
+  void request_size( int new_n_chans, int new_n_samps );
+  timestamp_t ts_of_index( int index, double ts_ticks_per_samp );
   void print();
  private:
   ArteRawBufferPb  local_pb;
@@ -95,16 +98,16 @@ class NeuralVoltageCircBuffer{
 typedef uint32_t timestamp_t;
 
 struct spike_net_t{
-  timestamp_t ts;                                           // bytes 2:5
-  uint16_t    name;                                         // bytes 6:7
-  uint16_t    n_chans;                                      // bytes 8:9
-  uint16_t    n_samps_per_chan;                             // bytes 10:11
-  uint16_t    samp_n_bytes;                                 // bytes 11:12
-  rdata_t     data[MAX_FILTERED_BUFFER_TOTAL_SAMPLE_COUNT]; // bytes 13: 13+( c * s * b )
-  int16_t     gains[MAX_FILTERED_BUFFER_N_CHANS];           // the next 2*c bytes
-  rdata_t     thresh[MAX_FILTERED_BUFFER_N_CHANS];          // the next b*c bytes
-  uint16_t    trig_ind;                                     // the next 2 bytes
-  uint32_t    seq_num;
+  timestamp_t ts;                                           // bytes 2:5                    S
+  uint16_t    name;                                         // bytes 6:7                    O
+  uint16_t    n_chans;                                      // bytes 8:9                     
+  uint16_t    n_samps_per_chan;                             // bytes 10:11                  F
+  uint16_t    samp_n_bytes;                                 // bytes 11:12                  R
+  rdata_t     data[MAX_FILTERED_BUFFER_TOTAL_SAMPLE_COUNT]; // bytes 13: 13+( c * s * b )   A
+  int16_t     gains[MAX_FILTERED_BUFFER_N_CHANS];           // the next 2*c bytes           G
+  rdata_t     thresh[MAX_FILTERED_BUFFER_N_CHANS];          // the next b*c bytes           I
+  uint16_t    trig_ind;                                     // the next 2 bytes             L
+  uint32_t    seq_num;                                      //                              E
 };
 
 struct lfp_bank_net_t{

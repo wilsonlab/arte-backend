@@ -1,9 +1,11 @@
 // Main arte packet.  Since google protobufs isn't introspective
 // we wrap all possible packets (data and commands and config)
-// with a  into a main packet type: Arte_pb
+// into a main packet type: Arte_pb
 //
 // Standalone compile using: protoc arte_pb.proto --cpp_out=./
 //   but this is handled automatically by make for most arte applications
+//        (note - src/Makefile isn't doing this right. compile by 
+//                hand until it's fixed)
 
 import "arte_command.proto";
 
