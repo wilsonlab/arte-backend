@@ -14,14 +14,14 @@ BACKEND_SRC += $(SRCS)lfp_bank.cpp $(SRCS)filtered_buffer.cpp $(SRCS)filter_fun.
 BACKEND_SRC += $(SRCS)process_command.cpp $(SRCS)netcom.cpp $(SRCS)arte_pb.pb.cc $(SRCS)a_data_sink.cpp
 BACKEND_SRC += $(SRCS)arte_command.pb.cc $(SRCS)arteopt.cpp $(SRCS)glom.cpp $(SRCS)trode_data_sink.cpp
 BACKEND_SRC += $(SRCS)arte_command_port.cpp $(SRCS)nidaq_data_source.cpp $(SRCS)a_data_source.cpp
-BACKEND_SRC += $(SRCS)a_timer.cpp $(SRCS)global_state.cpp $(SRCS)datapacket.cpp
+BACKEND_SRC += $(SRCS)a_timer.cpp $(SRCS)global_state.cpp $(SRCS)datapacket.cpp $(SRCS)spike.cpp
 
 BACKEND_OBJ =  $(SRCS)arte.o $(SRCS)filt.o $(SRCS)neural_daq.o $(SRCS)trode.o $(SRCS)util.o 
 BACKEND_OBJ += $(SRCS)lfp_bank.o $(SRCS)filtered_buffer.o $(SRCS)filter_fun.o $(SRCS)timer.o 
 BACKEND_OBJ += $(SRCS)process_command.o $(SRCS)netcom.o $(SRCS)arte_pb.pb.o $(SRCS)a_data_sink.o
 BACKEND_OBJ += $(SRCS)arte_command.pb.o $(SRCS)arteopt.o $(SRCS)glom.o $(SRCS)trode_data_sink.o
 BACKEND_OBJ += $(SRCS)arte_command_port.o $(SRCS)nidaq_data_source.o $(SRCS)a_data_source.o
-BACKEND_OBJ += $(SRCS)a_timer.o $(SRCS)global_state.o $(SRCS)datapacket.o 
+BACKEND_OBJ += $(SRCS)a_timer.o $(SRCS)global_state.o $(SRCS)datapacket.o $(SRCS)spike.o
 
 # path to boost library added to 
 CFLAGS = -D__STDC_LIMIT_MACROS -pthread -std=c++0x -O3 -I /usr/local/include/ -I $(wildcard /usr/local/boost_1_45_0) -I $(wildcard /usr/local/boost-trunk) -I $(wildcard /usr/local/boost_1_45_0/boost/property_tree) -I $(SRCS)
