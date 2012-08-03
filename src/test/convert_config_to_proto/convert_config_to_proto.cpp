@@ -10,57 +10,11 @@
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/property_tree/exceptions.hpp>
 #include <boost/foreach.hpp>
+#include <google/protobuf/text_format.h>
 #include "arte_pb.pb.h"
 #include "glom.h"
 
 using std::string;
-
-// parse string "val1 val2 etc" into array.  set n_elem = -1 to avoid checking the count 
-template <class T>
-void parse_line_for_vals(std::string the_line,T *t, int n_elem){
-  using namespace std;
-  istringstream iss;
-  iss.str(the_line);
-  int n = 0;
-  while((! iss.eof()) && iss.good() ){
-    iss >> t[n];
-    n+=1;
-  }
-  // only do this check if we care about the n_elem specification                                                                                                                                                                     
-  if(n_elem == -1){
-    if(n != n_elem){
-      std::cerr << "While parsing nums from a string, found " << n 
-		<< " numbers when " << n_elem << " were requested." << std::endl;
-      std::cerr << "Maybe an error in arteopt, or in the xml .conf files.  " 
-		<< "If n_chans, check for n thresh values and n window_heights, etc." << std::endl;
-      std::cerr << "Input string:" << the_line << std::endl;
-      std::cerr << "(watch out for white spaces?)" << std::endl;
-      for(int a = 0; a < n; a++)
-        std::cout << "array element is: " << t[a] << std::endl;
-    }
-    std::cout << "Requested " << n_elem << " elements and got " << n << std::endl;
-    assert(n == n_elem);
-  }
-}
-
-// template class to set a trode's field to a value specified in that trode's property tree, 
-//or to that of the default trode propetry tree.                                                                                           
-// if there is no default property tree, easiest thing to do is just pass the trode's 
-//property tree twice                                                                                                                             
-template <class T>
-int assign_property(std::string &tree_key, T * t, 
-		    const boost::property_tree::ptree &this_trode_pt, 
-		    const boost::property_tree::ptree &default_trode_pt, int n_elem){
-
-  std::istringstream iss;
-  std::string the_result;
-
-  the_result = this_trode_pt.get<std::string>(tree_key, default_trode_pt.get<std::string>(tree_key) );
-  iss.str(the_result);
-
-  parse_line_for_vals <T> (iss.str(), t, n_elem);
-
-}
 
 
 class Converter{
@@ -75,7 +29,14 @@ public:
 
     if(verbose) print_args_map();
 
-    my_glom -> pb_write(my_pb);
+    // We want to use a single protobuf, not a glom,
+    // because glom comes with the bit count on top, which will
+    // be out of date if file is edited by hand.
+    //my_glom -> pb_write(my_pb); 
+
+    std::cout << "Test in main of has_arte_session: " << my_pb.has_arte_session() << std::endl;
+
+    do_output();
 
   }
 
@@ -87,6 +48,7 @@ public:
   boost::property_tree::ptree session_pt;
   bool doing_setup, doing_session;
   oGlom *my_glom;
+  std::ofstream output_file;
 
   ArtePb my_pb;
   ArteSessionOptPb *my_session_pb; // method scope b/c used between two functions: 
@@ -94,7 +56,21 @@ public:
   ArteTrodeOptPb * default_trode_pb; // this will be used in find_source_trode, too
   ArteLfpOptPb * default_lfpbank_pb; // and this
 
+  void do_output(){
+    const char m = my_args["output_mode"][0];
+    if (m == 'a') {
+      std::cout << "HELLO\n" << std::endl;
+      std::string tmp ("Test");
+      std::cout << "Success: " << google::protobuf::TextFormat::PrintToString( my_pb, &tmp ) << std::endl;
+      std::cout << tmp;
+      output_file << tmp;
+      std::cout << "Is-initialized:" << my_pb.has_arte_session() << std::endl;
+    }
+
+  }
+
   void translate_setup(){
+    std::cout << "HI!\n";;
     ArteSetupOptPb *my_setup_pb = my_pb.mutable_arte_setup();
     int n_samps_per_buffer; // hold a copy of this value for later use in filter config
     // setup each neural daq
@@ -412,12 +388,14 @@ public:
       }else {
 	read_xml(my_args["session_input"], session_pt, 
 		 boost::property_tree::xml_parser::trim_whitespace);
+	doing_session = true;
       }
       if(my_args["setup_input"].empty()){
 	doing_setup = false;
       }else{
 	read_xml(my_args["setup_input"], setup_pt, 
 		 boost::property_tree::xml_parser::trim_whitespace);
+	doing_setup = true;
       }
     } 
     catch(std::exception &e) {
@@ -425,7 +403,15 @@ public:
     }
     try{
       const char m = my_args["output_mode"][0];
-      my_glom = new oGlom ( my_args["output_file"].c_str(), m);
+      
+      if (m == 'a'){
+	output_file.open(my_args["output_file"], std::ios::out);
+      }
+      if (m == 'b') {
+	output_file.open(my_args["output_file"], std::ios::out | std::ios::binary );
+      }
+      
+      //my_glom = new oGlom ( my_args["output_file"].c_str(), m);
     }
     catch(std::exception &e) {
       std::cerr << "Error opening output file. Exception: " << e.what();
