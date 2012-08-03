@@ -1,3 +1,4 @@
+#! /usr/bin/python
 import sys
 import os
 
@@ -60,7 +61,7 @@ for i in dir_list:
 
 
 for i in range(len(num_list)):
-    cmd_path = "~/programming/arte-ephys/src/extract/arte_to_mwl"
+    cmd_path = "arte_to_mwl"
     final_cmd = cmd_path + " -i " + input_filename + " -o ./" + (dir_list[i]) + "/" + (dir_list[i]) + ".tt -trodename " + str(num_list[i])
     spikeparms_cmd = "spikeparms2 ./" +  (dir_list[i]) + "/" + (dir_list[i]) + ".tt -tetrode -binary -parms t_px,t_py,t_pa,t_pb,t_maxwd,t_maxht,time -pos *.p -o " + (dir_list[i]) + "/" + (dir_list[i]) + ".pxyabw"
     os.system(final_cmd)

@@ -227,7 +227,7 @@ void protobuf_AssignDesc_arte_5fpb_2eproto() {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteTrodeOptPb, refractory_period_samps_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteTrodeOptPb, port_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteTrodeOptPb, host_ip_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteTrodeOptPb, filter_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteTrodeOptPb, filter_name_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteTrodeOptPb, daq_id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteTrodeOptPb, disk_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteTrodeOptPb, network_),
@@ -251,7 +251,7 @@ void protobuf_AssignDesc_arte_5fpb_2eproto() {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteLfpOptPb, keep_nth_sample_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteLfpOptPb, port_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteLfpOptPb, host_ip_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteLfpOptPb, filter_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteLfpOptPb, filter_name_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteLfpOptPb, daq_id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteLfpOptPb, disk_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteLfpOptPb, network_),
@@ -519,50 +519,49 @@ void protobuf_AddDesc_arte_5fpb_2eproto() {
     "ltfilt_invalid_samps\030\n \001(\005:\00232\022\037\n\020regene"
     "rate_coefs\030\013 \001(\010:\005false\"X\n\rArteChanOptPb"
     "\022\014\n\004gain\030\001 \001(\002\022\021\n\tthreshold\030\002 \001(\002\022\020\n\010daq"
-    "_chan\030\003 \001(\r\022\024\n\014source_trode\030\004 \001(\r\"\246\002\n\016Ar"
+    "_chan\030\003 \001(\r\022\024\n\014source_trode\030\004 \001(\r\"\231\002\n\016Ar"
     "teTrodeOptPb\022\024\n\014source_trode\030\001 \001(\r\022\031\n\021tr"
     "ode_opt_version\030\002 \001(\r\022\035\n\005chans\030\003 \003(\0132\016.A"
     "rteChanOptPb\022\031\n\021samps_before_trig\030\004 \001(\r\022"
     "\030\n\020samps_after_trig\030\005 \001(\r\022\037\n\027refractory_"
     "period_samps\030\006 \001(\r\022\014\n\004port\030\007 \001(\t\022\017\n\007host"
-    "_ip\030\010 \001(\t\022 \n\006filter\030\t \001(\0132\020.ArteFilterOp"
-    "tPb\022\016\n\006daq_id\030\n \001(\r\022\014\n\004disk\030\013 \001(\010\022\017\n\007net"
-    "work\030\014 \001(\010\"\347\001\n\014ArteLfpOptPb\022\026\n\016source_lf"
-    "pbank\030\001 \001(\r\022\027\n\017lfp_opt_version\030\002 \001(\r\022\035\n\005"
-    "chans\030\003 \001(\0132\016.ArteChanOptPb\022\027\n\017keep_nth_"
-    "sample\030\004 \001(\r\022\014\n\004port\030\005 \001(\t\022\017\n\007host_ip\030\006 "
-    "\001(\t\022 \n\006filter\030\007 \001(\0132\020.ArteFilterOptPb\022\016\n"
-    "\006daq_id\030\010 \001(\r\022\014\n\004disk\030\t \001(\010\022\017\n\007network\030\n"
-    " \001(\010\"r\n\016ArteTimerOptPb\022\024\n\014clock_source\030\001"
-    " \001(\t\022\020\n\010dev_name\030\002 \001(\t\022\020\n\010ctr_name\030\003 \001(\t"
-    "\022\022\n\ntimer_role\030\004 \001(\t\022\022\n\ntimer_freq\030\005 \001(\r"
-    "\"R\n\024ArteCommandPortOptPb\022\024\n\014command_host"
-    "\030\001 \001(\t\022\014\n\004port\030\002 \001(\t\022\026\n\016secondary_port\030\003"
-    " \001(\t\".\n\rArteHostOptPb\022\014\n\004host\030\001 \001(\t\022\017\n\007i"
-    "p_addy\030\002 \001(\t\"\355\001\n\022ArteNeuralDaqOptPb\022\020\n\010d"
-    "aq_type\030\001 \001(\t\022\020\n\010dev_name\030\002 \001(\t\022\n\n\002id\030\003 "
-    "\001(\r\022\023\n\013in_filename\030\004 \001(\t\022\024\n\014out_filename"
-    "\030\005 \001(\t\022\035\n\005chans\030\006 \003(\0132\016.ArteChanOptPb\022\031\n"
-    "\021buffer_time_samps\030\007 \001(\r\022\026\n\016buffer_n_cha"
-    "ns\030\010 \001(\r\022\021\n\tis_master\030\t \001(\010\022\027\n\017is_multip"
-    "lexing\030\n \001(\010\"\246\001\n\016ArteSetupOptPb\022!\n\004daqs\030"
-    "\001 \003(\0132\023.ArteNeuralDaqOptPb\022+\n\014command_po"
-    "rt\030\002 \001(\0132\025.ArteCommandPortOptPb\022!\n\thost_"
-    "list\030\003 \003(\0132\016.ArteHostOptPb\022!\n\007filters\030\004 "
-    "\003(\0132\020.ArteFilterOptPb\"\273\001\n\020ArteSessionOpt"
-    "Pb\022\025\n\rmain_filename\030\001 \001(\t\022&\n\rdefault_tro"
-    "de\030\002 \001(\0132\017.ArteTrodeOptPb\022\037\n\006trodes\030\003 \003("
-    "\0132\017.ArteTrodeOptPb\022&\n\017default_lfpbank\030\004 "
-    "\001(\0132\r.ArteLfpOptPb\022\037\n\010lfpbanks\030\005 \003(\0132\r.A"
-    "rteLfpOptPb\"\305\002\n\006ArtePb\022\021\n\ttimestamp\030\001 \001("
-    "\004\022 \n\narte_spike\030\002 \001(\0132\014.ArteSpikePb\022\034\n\010a"
-    "rte_lfp\030\003 \001(\0132\n.ArteLfpPb\022\"\n\014arte_comman"
-    "d\030\004 \001(\0132\014.ArteCommand\022-\n\021arte_event_stri"
-    "ng\030\005 \001(\0132\022.ArteEventStringPb\022)\n\017arte_raw"
-    "_buffer\030\006 \001(\0132\020.ArteRawBufferPb\022\034\n\010arte_"
-    "pos\030\007 \001(\0132\n.ArtePosPb\022#\n\narte_setup\030\010 \001("
-    "\0132\017.ArteSetupOptPb\022\'\n\014arte_session\030\t \001(\013"
-    "2\021.ArteSessionOptPb", 2579);
+    "_ip\030\010 \001(\t\022\023\n\013filter_name\030\t \001(\t\022\016\n\006daq_id"
+    "\030\n \001(\r\022\014\n\004disk\030\013 \001(\010\022\017\n\007network\030\014 \001(\010\"\332\001"
+    "\n\014ArteLfpOptPb\022\026\n\016source_lfpbank\030\001 \001(\r\022\027"
+    "\n\017lfp_opt_version\030\002 \001(\r\022\035\n\005chans\030\003 \003(\0132\016"
+    ".ArteChanOptPb\022\027\n\017keep_nth_sample\030\004 \001(\r\022"
+    "\014\n\004port\030\005 \001(\t\022\017\n\007host_ip\030\006 \001(\t\022\023\n\013filter"
+    "_name\030\007 \001(\t\022\016\n\006daq_id\030\010 \001(\r\022\014\n\004disk\030\t \001("
+    "\010\022\017\n\007network\030\n \001(\010\"r\n\016ArteTimerOptPb\022\024\n\014"
+    "clock_source\030\001 \001(\t\022\020\n\010dev_name\030\002 \001(\t\022\020\n\010"
+    "ctr_name\030\003 \001(\t\022\022\n\ntimer_role\030\004 \001(\t\022\022\n\nti"
+    "mer_freq\030\005 \001(\r\"R\n\024ArteCommandPortOptPb\022\024"
+    "\n\014command_host\030\001 \001(\t\022\014\n\004port\030\002 \001(\t\022\026\n\016se"
+    "condary_port\030\003 \001(\t\".\n\rArteHostOptPb\022\014\n\004h"
+    "ost\030\001 \001(\t\022\017\n\007ip_addy\030\002 \001(\t\"\355\001\n\022ArteNeura"
+    "lDaqOptPb\022\020\n\010daq_type\030\001 \001(\t\022\020\n\010dev_name\030"
+    "\002 \001(\t\022\n\n\002id\030\003 \001(\r\022\023\n\013in_filename\030\004 \001(\t\022\024"
+    "\n\014out_filename\030\005 \001(\t\022\035\n\005chans\030\006 \003(\0132\016.Ar"
+    "teChanOptPb\022\031\n\021buffer_time_samps\030\007 \001(\r\022\026"
+    "\n\016buffer_n_chans\030\010 \001(\r\022\021\n\tis_master\030\t \001("
+    "\010\022\027\n\017is_multiplexing\030\n \001(\010\"\246\001\n\016ArteSetup"
+    "OptPb\022!\n\004daqs\030\001 \003(\0132\023.ArteNeuralDaqOptPb"
+    "\022+\n\014command_port\030\002 \001(\0132\025.ArteCommandPort"
+    "OptPb\022!\n\thost_list\030\003 \003(\0132\016.ArteHostOptPb"
+    "\022!\n\007filters\030\004 \003(\0132\020.ArteFilterOptPb\"\273\001\n\020"
+    "ArteSessionOptPb\022\025\n\rmain_filename\030\001 \001(\t\022"
+    "&\n\rdefault_trode\030\002 \001(\0132\017.ArteTrodeOptPb\022"
+    "\037\n\006trodes\030\003 \003(\0132\017.ArteTrodeOptPb\022&\n\017defa"
+    "ult_lfpbank\030\004 \001(\0132\r.ArteLfpOptPb\022\037\n\010lfpb"
+    "anks\030\005 \003(\0132\r.ArteLfpOptPb\"\305\002\n\006ArtePb\022\021\n\t"
+    "timestamp\030\001 \001(\004\022 \n\narte_spike\030\002 \001(\0132\014.Ar"
+    "teSpikePb\022\034\n\010arte_lfp\030\003 \001(\0132\n.ArteLfpPb\022"
+    "\"\n\014arte_command\030\004 \001(\0132\014.ArteCommand\022-\n\021a"
+    "rte_event_string\030\005 \001(\0132\022.ArteEventString"
+    "Pb\022)\n\017arte_raw_buffer\030\006 \001(\0132\020.ArteRawBuf"
+    "ferPb\022\034\n\010arte_pos\030\007 \001(\0132\n.ArtePosPb\022#\n\na"
+    "rte_setup\030\010 \001(\0132\017.ArteSetupOptPb\022\'\n\014arte"
+    "_session\030\t \001(\0132\021.ArteSessionOptPb", 2553);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "arte_pb.proto", &protobuf_RegisterTypes);
   ArteVoltageTimeseries::default_instance_ = new ArteVoltageTimeseries();
@@ -3188,7 +3187,7 @@ const int ArteTrodeOptPb::kSampsAfterTrigFieldNumber;
 const int ArteTrodeOptPb::kRefractoryPeriodSampsFieldNumber;
 const int ArteTrodeOptPb::kPortFieldNumber;
 const int ArteTrodeOptPb::kHostIpFieldNumber;
-const int ArteTrodeOptPb::kFilterFieldNumber;
+const int ArteTrodeOptPb::kFilterNameFieldNumber;
 const int ArteTrodeOptPb::kDaqIdFieldNumber;
 const int ArteTrodeOptPb::kDiskFieldNumber;
 const int ArteTrodeOptPb::kNetworkFieldNumber;
@@ -3200,7 +3199,6 @@ ArteTrodeOptPb::ArteTrodeOptPb()
 }
 
 void ArteTrodeOptPb::InitAsDefaultInstance() {
-  filter_ = const_cast< ::ArteFilterOptPb*>(&::ArteFilterOptPb::default_instance());
 }
 
 ArteTrodeOptPb::ArteTrodeOptPb(const ArteTrodeOptPb& from)
@@ -3218,7 +3216,7 @@ void ArteTrodeOptPb::SharedCtor() {
   refractory_period_samps_ = 0u;
   port_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   host_ip_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  filter_ = NULL;
+  filter_name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   daq_id_ = 0u;
   disk_ = false;
   network_ = false;
@@ -3236,8 +3234,10 @@ void ArteTrodeOptPb::SharedDtor() {
   if (host_ip_ != &::google::protobuf::internal::kEmptyString) {
     delete host_ip_;
   }
+  if (filter_name_ != &::google::protobuf::internal::kEmptyString) {
+    delete filter_name_;
+  }
   if (this != default_instance_) {
-    delete filter_;
   }
 }
 
@@ -3280,8 +3280,10 @@ void ArteTrodeOptPb::Clear() {
     }
   }
   if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
-    if (has_filter()) {
-      if (filter_ != NULL) filter_->::ArteFilterOptPb::Clear();
+    if (has_filter_name()) {
+      if (filter_name_ != &::google::protobuf::internal::kEmptyString) {
+        filter_name_->clear();
+      }
     }
     daq_id_ = 0u;
     disk_ = false;
@@ -3422,17 +3424,20 @@ bool ArteTrodeOptPb::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(74)) goto parse_filter;
+        if (input->ExpectTag(74)) goto parse_filter_name;
         break;
       }
       
-      // optional .ArteFilterOptPb filter = 9;
+      // optional string filter_name = 9;
       case 9: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_filter:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-               input, mutable_filter()));
+         parse_filter_name:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_filter_name()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->filter_name().data(), this->filter_name().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
         } else {
           goto handle_uninterpreted;
         }
@@ -3555,10 +3560,13 @@ void ArteTrodeOptPb::SerializeWithCachedSizes(
       8, this->host_ip(), output);
   }
   
-  // optional .ArteFilterOptPb filter = 9;
-  if (has_filter()) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      9, this->filter(), output);
+  // optional string filter_name = 9;
+  if (has_filter_name()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->filter_name().data(), this->filter_name().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      9, this->filter_name(), output);
   }
   
   // optional uint32 daq_id = 10;
@@ -3636,11 +3644,14 @@ void ArteTrodeOptPb::SerializeWithCachedSizes(
         8, this->host_ip(), target);
   }
   
-  // optional .ArteFilterOptPb filter = 9;
-  if (has_filter()) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteMessageNoVirtualToArray(
-        9, this->filter(), target);
+  // optional string filter_name = 9;
+  if (has_filter_name()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->filter_name().data(), this->filter_name().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        9, this->filter_name(), target);
   }
   
   // optional uint32 daq_id = 10;
@@ -3720,11 +3731,11 @@ int ArteTrodeOptPb::ByteSize() const {
     
   }
   if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
-    // optional .ArteFilterOptPb filter = 9;
-    if (has_filter()) {
+    // optional string filter_name = 9;
+    if (has_filter_name()) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-          this->filter());
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->filter_name());
     }
     
     // optional uint32 daq_id = 10;
@@ -3803,8 +3814,8 @@ void ArteTrodeOptPb::MergeFrom(const ArteTrodeOptPb& from) {
     }
   }
   if (from._has_bits_[8 / 32] & (0xffu << (8 % 32))) {
-    if (from.has_filter()) {
-      mutable_filter()->::ArteFilterOptPb::MergeFrom(from.filter());
+    if (from.has_filter_name()) {
+      set_filter_name(from.filter_name());
     }
     if (from.has_daq_id()) {
       set_daq_id(from.daq_id());
@@ -3846,7 +3857,7 @@ void ArteTrodeOptPb::Swap(ArteTrodeOptPb* other) {
     std::swap(refractory_period_samps_, other->refractory_period_samps_);
     std::swap(port_, other->port_);
     std::swap(host_ip_, other->host_ip_);
-    std::swap(filter_, other->filter_);
+    std::swap(filter_name_, other->filter_name_);
     std::swap(daq_id_, other->daq_id_);
     std::swap(disk_, other->disk_);
     std::swap(network_, other->network_);
@@ -3874,7 +3885,7 @@ const int ArteLfpOptPb::kChansFieldNumber;
 const int ArteLfpOptPb::kKeepNthSampleFieldNumber;
 const int ArteLfpOptPb::kPortFieldNumber;
 const int ArteLfpOptPb::kHostIpFieldNumber;
-const int ArteLfpOptPb::kFilterFieldNumber;
+const int ArteLfpOptPb::kFilterNameFieldNumber;
 const int ArteLfpOptPb::kDaqIdFieldNumber;
 const int ArteLfpOptPb::kDiskFieldNumber;
 const int ArteLfpOptPb::kNetworkFieldNumber;
@@ -3886,8 +3897,6 @@ ArteLfpOptPb::ArteLfpOptPb()
 }
 
 void ArteLfpOptPb::InitAsDefaultInstance() {
-  chans_ = const_cast< ::ArteChanOptPb*>(&::ArteChanOptPb::default_instance());
-  filter_ = const_cast< ::ArteFilterOptPb*>(&::ArteFilterOptPb::default_instance());
 }
 
 ArteLfpOptPb::ArteLfpOptPb(const ArteLfpOptPb& from)
@@ -3900,11 +3909,10 @@ void ArteLfpOptPb::SharedCtor() {
   _cached_size_ = 0;
   source_lfpbank_ = 0u;
   lfp_opt_version_ = 0u;
-  chans_ = NULL;
   keep_nth_sample_ = 0u;
   port_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   host_ip_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  filter_ = NULL;
+  filter_name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   daq_id_ = 0u;
   disk_ = false;
   network_ = false;
@@ -3922,9 +3930,10 @@ void ArteLfpOptPb::SharedDtor() {
   if (host_ip_ != &::google::protobuf::internal::kEmptyString) {
     delete host_ip_;
   }
+  if (filter_name_ != &::google::protobuf::internal::kEmptyString) {
+    delete filter_name_;
+  }
   if (this != default_instance_) {
-    delete chans_;
-    delete filter_;
   }
 }
 
@@ -3952,9 +3961,6 @@ void ArteLfpOptPb::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     source_lfpbank_ = 0u;
     lfp_opt_version_ = 0u;
-    if (has_chans()) {
-      if (chans_ != NULL) chans_->::ArteChanOptPb::Clear();
-    }
     keep_nth_sample_ = 0u;
     if (has_port()) {
       if (port_ != &::google::protobuf::internal::kEmptyString) {
@@ -3966,8 +3972,10 @@ void ArteLfpOptPb::Clear() {
         host_ip_->clear();
       }
     }
-    if (has_filter()) {
-      if (filter_ != NULL) filter_->::ArteFilterOptPb::Clear();
+    if (has_filter_name()) {
+      if (filter_name_ != &::google::protobuf::internal::kEmptyString) {
+        filter_name_->clear();
+      }
     }
     daq_id_ = 0u;
   }
@@ -3975,6 +3983,7 @@ void ArteLfpOptPb::Clear() {
     disk_ = false;
     network_ = false;
   }
+  chans_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
@@ -4016,16 +4025,17 @@ bool ArteLfpOptPb::MergePartialFromCodedStream(
         break;
       }
       
-      // optional .ArteChanOptPb chans = 3;
+      // repeated .ArteChanOptPb chans = 3;
       case 3: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_chans:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-               input, mutable_chans()));
+                input, add_chans()));
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(26)) goto parse_chans;
         if (input->ExpectTag(32)) goto parse_keep_nth_sample;
         break;
       }
@@ -4076,17 +4086,20 @@ bool ArteLfpOptPb::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(58)) goto parse_filter;
+        if (input->ExpectTag(58)) goto parse_filter_name;
         break;
       }
       
-      // optional .ArteFilterOptPb filter = 7;
+      // optional string filter_name = 7;
       case 7: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_filter:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-               input, mutable_filter()));
+         parse_filter_name:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_filter_name()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->filter_name().data(), this->filter_name().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
         } else {
           goto handle_uninterpreted;
         }
@@ -4170,10 +4183,10 @@ void ArteLfpOptPb::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(2, this->lfp_opt_version(), output);
   }
   
-  // optional .ArteChanOptPb chans = 3;
-  if (has_chans()) {
+  // repeated .ArteChanOptPb chans = 3;
+  for (int i = 0; i < this->chans_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      3, this->chans(), output);
+      3, this->chans(i), output);
   }
   
   // optional uint32 keep_nth_sample = 4;
@@ -4199,10 +4212,13 @@ void ArteLfpOptPb::SerializeWithCachedSizes(
       6, this->host_ip(), output);
   }
   
-  // optional .ArteFilterOptPb filter = 7;
-  if (has_filter()) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      7, this->filter(), output);
+  // optional string filter_name = 7;
+  if (has_filter_name()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->filter_name().data(), this->filter_name().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      7, this->filter_name(), output);
   }
   
   // optional uint32 daq_id = 8;
@@ -4238,11 +4254,11 @@ void ArteLfpOptPb::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(2, this->lfp_opt_version(), target);
   }
   
-  // optional .ArteChanOptPb chans = 3;
-  if (has_chans()) {
+  // repeated .ArteChanOptPb chans = 3;
+  for (int i = 0; i < this->chans_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        3, this->chans(), target);
+        3, this->chans(i), target);
   }
   
   // optional uint32 keep_nth_sample = 4;
@@ -4270,11 +4286,14 @@ void ArteLfpOptPb::SerializeWithCachedSizes(
         6, this->host_ip(), target);
   }
   
-  // optional .ArteFilterOptPb filter = 7;
-  if (has_filter()) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteMessageNoVirtualToArray(
-        7, this->filter(), target);
+  // optional string filter_name = 7;
+  if (has_filter_name()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->filter_name().data(), this->filter_name().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        7, this->filter_name(), target);
   }
   
   // optional uint32 daq_id = 8;
@@ -4317,13 +4336,6 @@ int ArteLfpOptPb::ByteSize() const {
           this->lfp_opt_version());
     }
     
-    // optional .ArteChanOptPb chans = 3;
-    if (has_chans()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-          this->chans());
-    }
-    
     // optional uint32 keep_nth_sample = 4;
     if (has_keep_nth_sample()) {
       total_size += 1 +
@@ -4345,11 +4357,11 @@ int ArteLfpOptPb::ByteSize() const {
           this->host_ip());
     }
     
-    // optional .ArteFilterOptPb filter = 7;
-    if (has_filter()) {
+    // optional string filter_name = 7;
+    if (has_filter_name()) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-          this->filter());
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->filter_name());
     }
     
     // optional uint32 daq_id = 8;
@@ -4372,6 +4384,14 @@ int ArteLfpOptPb::ByteSize() const {
     }
     
   }
+  // repeated .ArteChanOptPb chans = 3;
+  total_size += 1 * this->chans_size();
+  for (int i = 0; i < this->chans_size(); i++) {
+    total_size +=
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        this->chans(i));
+  }
+  
   if (!unknown_fields().empty()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
@@ -4397,15 +4417,13 @@ void ArteLfpOptPb::MergeFrom(const ::google::protobuf::Message& from) {
 
 void ArteLfpOptPb::MergeFrom(const ArteLfpOptPb& from) {
   GOOGLE_CHECK_NE(&from, this);
+  chans_.MergeFrom(from.chans_);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (from.has_source_lfpbank()) {
       set_source_lfpbank(from.source_lfpbank());
     }
     if (from.has_lfp_opt_version()) {
       set_lfp_opt_version(from.lfp_opt_version());
-    }
-    if (from.has_chans()) {
-      mutable_chans()->::ArteChanOptPb::MergeFrom(from.chans());
     }
     if (from.has_keep_nth_sample()) {
       set_keep_nth_sample(from.keep_nth_sample());
@@ -4416,8 +4434,8 @@ void ArteLfpOptPb::MergeFrom(const ArteLfpOptPb& from) {
     if (from.has_host_ip()) {
       set_host_ip(from.host_ip());
     }
-    if (from.has_filter()) {
-      mutable_filter()->::ArteFilterOptPb::MergeFrom(from.filter());
+    if (from.has_filter_name()) {
+      set_filter_name(from.filter_name());
     }
     if (from.has_daq_id()) {
       set_daq_id(from.daq_id());
@@ -4455,11 +4473,11 @@ void ArteLfpOptPb::Swap(ArteLfpOptPb* other) {
   if (other != this) {
     std::swap(source_lfpbank_, other->source_lfpbank_);
     std::swap(lfp_opt_version_, other->lfp_opt_version_);
-    std::swap(chans_, other->chans_);
+    chans_.Swap(&other->chans_);
     std::swap(keep_nth_sample_, other->keep_nth_sample_);
     std::swap(port_, other->port_);
     std::swap(host_ip_, other->host_ip_);
-    std::swap(filter_, other->filter_);
+    std::swap(filter_name_, other->filter_name_);
     std::swap(daq_id_, other->daq_id_);
     std::swap(disk_, other->disk_);
     std::swap(network_, other->network_);

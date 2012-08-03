@@ -73,7 +73,7 @@ message ArteTrodeOptPb{
 	optional uint32        refractory_period_samps  = 6;
 	optional string                           port  = 7;
 	optional string                        host_ip  = 8;
-	optional ArteFilterOptPb                filter  = 9;
+	optional string                    filter_name  = 9;
 	optional uint32                         daq_id  = 10;
 	optional bool                             disk  = 11;
 	optional bool                          network  = 12;
@@ -82,11 +82,11 @@ message ArteTrodeOptPb{
 message ArteLfpOptPb{
 	optional uint32                 source_lfpbank  = 1;
 	optional uint32                lfp_opt_version  = 2;
-	optional ArteChanOptPb                   chans  = 3;
+	repeated ArteChanOptPb                   chans  = 3;
 	optional uint32                keep_nth_sample  = 4;
         optional string                           port  = 5;
 	optional string                        host_ip  = 6;
-	optional ArteFilterOptPb                filter  = 7;
+	optional string                    filter_name  = 7;
 	optional uint32                         daq_id  = 8;
 	optional bool                             disk  = 9;
 	optional bool                          network  = 10; 
