@@ -13,3 +13,5 @@ TODO:
 -Debug the 10% spike-dropping issue.
 
 -Multiplexing?
+
+-Config files should be in ~/.arte/ NOT in the build directory.
