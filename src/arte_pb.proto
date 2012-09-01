@@ -55,8 +55,6 @@ message ArteFilterOptPb{
 	optional bool                regenerate_coefs  = 11 [default = false];
 }
 
-
-
 message ArteChanOptPb{
 	optional float                            gain  = 1;
         optional float                       threshold  = 2;
@@ -139,6 +137,30 @@ message ArteSessionOptPb{
 	repeated ArteLfpOptPb                 lfpbanks  = 5;
 }
 
+message ArtePosPb{
+        optional float                        x_meters  = 1;
+        optional float                        y_meters  = 2;
+        optional float                        z_meters  = 3;
+        optional float                        yaw_rads  = 4;
+        optional float                      pitch_rads  = 5;
+        optional float                       roll_rads  = 6;
+        enum TrackerConfidence {
+             FULL = 0;
+             PARTIAL = 1;
+             NONE = 2;
+        }
+        optional TrakcerConfidence          confidence  = 7;
+        /* No PosOptPb b/c tracker setup is handled
+           by a non-main-arte-pb system.  Indend these
+           output buffers to be independent of tracker params */
+
+        /* Extra stuff, some trackers may provide */
+        optional float                  linearized_pos  = 8;
+        optional float                           speed  = 9;
+
+}
+
+
 message ArtePb{
 	optional uint64                      timestamp  = 1;
 	
@@ -152,4 +174,7 @@ message ArtePb{
 
 	optional ArteSetupOptPb             arte_setup  = 8;
 	optional ArteSessionOptPb         arte_session  = 9;
+
+        optional ArtePosPb                    arte_pos  = 10;
 }
+
