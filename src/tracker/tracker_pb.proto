@@ -1,0 +1,34 @@
+/* Define some types of transformations from
+   camera pixel to room position */
+message ScaleShift {
+        optional float               x_scale  = 1;
+        optional float               x_shift  = 2;
+        optional float               y_scale  = 3;
+        optional float               y_shift  = 4;
+}
+message Affine2D {
+        repeated float                  coef  = 1;
+}
+
+
+/* Describe one camera of the tracker */
+message CameraOpt {
+        optional int                      id  = 1;
+        optional string             dev_name  = 2;
+        optional ScaleShift  px_to_pos_scale  = 3;
+        optional Affine2D    px_to_pos_aff2d  = 4;
+}
+
+
+message CameraGroup {
+        repeated CameraOpt              cam  = 1;
+        enum CombineStyle {
+             NONE = 1;
+             PANOSTITCH = 2;
+             FULL3D = 3;
+        }
+        optional CombineStyle       combine  = 2;
+}
+
+message TrackerOpt {
+        repeated CameraGroup         group
