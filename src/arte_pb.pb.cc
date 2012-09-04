@@ -30,9 +30,6 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* ArteRawBufferPb_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   ArteRawBufferPb_reflection_ = NULL;
-const ::google::protobuf::Descriptor* ArtePosPb_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  ArtePosPb_reflection_ = NULL;
 const ::google::protobuf::Descriptor* ArteFilterOptPb_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   ArteFilterOptPb_reflection_ = NULL;
@@ -63,6 +60,10 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* ArteSessionOptPb_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   ArteSessionOptPb_reflection_ = NULL;
+const ::google::protobuf::Descriptor* ArtePosPb_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  ArtePosPb_reflection_ = NULL;
+const ::google::protobuf::EnumDescriptor* ArtePosPb_TrackerConfidence_descriptor_ = NULL;
 const ::google::protobuf::Descriptor* ArtePb_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   ArtePb_reflection_ = NULL;
@@ -156,25 +157,7 @@ void protobuf_AssignDesc_arte_5fpb_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ArteRawBufferPb));
-  ArtePosPb_descriptor_ = file->message_type(5);
-  static const int ArtePosPb_offsets_[4] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArtePosPb, x_pos_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArtePosPb, y_pos_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArtePosPb, head_angle_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArtePosPb, behavioral_state_),
-  };
-  ArtePosPb_reflection_ =
-    new ::google::protobuf::internal::GeneratedMessageReflection(
-      ArtePosPb_descriptor_,
-      ArtePosPb::default_instance_,
-      ArtePosPb_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArtePosPb, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArtePosPb, _unknown_fields_),
-      -1,
-      ::google::protobuf::DescriptorPool::generated_pool(),
-      ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(ArtePosPb));
-  ArteFilterOptPb_descriptor_ = file->message_type(6);
+  ArteFilterOptPb_descriptor_ = file->message_type(5);
   static const int ArteFilterOptPb_offsets_[11] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteFilterOptPb, filter_name_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteFilterOptPb, numerators_),
@@ -199,7 +182,7 @@ void protobuf_AssignDesc_arte_5fpb_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ArteFilterOptPb));
-  ArteChanOptPb_descriptor_ = file->message_type(7);
+  ArteChanOptPb_descriptor_ = file->message_type(6);
   static const int ArteChanOptPb_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteChanOptPb, gain_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteChanOptPb, threshold_),
@@ -217,7 +200,7 @@ void protobuf_AssignDesc_arte_5fpb_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ArteChanOptPb));
-  ArteTrodeOptPb_descriptor_ = file->message_type(8);
+  ArteTrodeOptPb_descriptor_ = file->message_type(7);
   static const int ArteTrodeOptPb_offsets_[12] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteTrodeOptPb, source_trode_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteTrodeOptPb, trode_opt_version_),
@@ -243,7 +226,7 @@ void protobuf_AssignDesc_arte_5fpb_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ArteTrodeOptPb));
-  ArteLfpOptPb_descriptor_ = file->message_type(9);
+  ArteLfpOptPb_descriptor_ = file->message_type(8);
   static const int ArteLfpOptPb_offsets_[10] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteLfpOptPb, source_lfpbank_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteLfpOptPb, lfp_opt_version_),
@@ -267,7 +250,7 @@ void protobuf_AssignDesc_arte_5fpb_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ArteLfpOptPb));
-  ArteTimerOptPb_descriptor_ = file->message_type(10);
+  ArteTimerOptPb_descriptor_ = file->message_type(9);
   static const int ArteTimerOptPb_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteTimerOptPb, clock_source_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteTimerOptPb, dev_name_),
@@ -286,7 +269,7 @@ void protobuf_AssignDesc_arte_5fpb_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ArteTimerOptPb));
-  ArteCommandPortOptPb_descriptor_ = file->message_type(11);
+  ArteCommandPortOptPb_descriptor_ = file->message_type(10);
   static const int ArteCommandPortOptPb_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteCommandPortOptPb, command_host_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteCommandPortOptPb, port_),
@@ -303,7 +286,7 @@ void protobuf_AssignDesc_arte_5fpb_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ArteCommandPortOptPb));
-  ArteHostOptPb_descriptor_ = file->message_type(12);
+  ArteHostOptPb_descriptor_ = file->message_type(11);
   static const int ArteHostOptPb_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteHostOptPb, host_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteHostOptPb, ip_addy_),
@@ -319,7 +302,7 @@ void protobuf_AssignDesc_arte_5fpb_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ArteHostOptPb));
-  ArteNeuralDaqOptPb_descriptor_ = file->message_type(13);
+  ArteNeuralDaqOptPb_descriptor_ = file->message_type(12);
   static const int ArteNeuralDaqOptPb_offsets_[10] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteNeuralDaqOptPb, daq_type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteNeuralDaqOptPb, dev_name_),
@@ -343,7 +326,7 @@ void protobuf_AssignDesc_arte_5fpb_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ArteNeuralDaqOptPb));
-  ArteSetupOptPb_descriptor_ = file->message_type(14);
+  ArteSetupOptPb_descriptor_ = file->message_type(13);
   static const int ArteSetupOptPb_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteSetupOptPb, daqs_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteSetupOptPb, command_port_),
@@ -361,7 +344,7 @@ void protobuf_AssignDesc_arte_5fpb_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ArteSetupOptPb));
-  ArteSessionOptPb_descriptor_ = file->message_type(15);
+  ArteSessionOptPb_descriptor_ = file->message_type(14);
   static const int ArteSessionOptPb_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteSessionOptPb, main_filename_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArteSessionOptPb, default_trode_),
@@ -380,6 +363,30 @@ void protobuf_AssignDesc_arte_5fpb_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ArteSessionOptPb));
+  ArtePosPb_descriptor_ = file->message_type(15);
+  static const int ArtePosPb_offsets_[9] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArtePosPb, x_meters_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArtePosPb, y_meters_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArtePosPb, z_meters_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArtePosPb, yaw_rads_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArtePosPb, pitch_rads_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArtePosPb, roll_rads_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArtePosPb, confidence_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArtePosPb, linearized_pos_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArtePosPb, speed_),
+  };
+  ArtePosPb_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      ArtePosPb_descriptor_,
+      ArtePosPb::default_instance_,
+      ArtePosPb_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArtePosPb, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArtePosPb, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(ArtePosPb));
+  ArtePosPb_TrackerConfidence_descriptor_ = ArtePosPb_descriptor_->enum_type(0);
   ArtePb_descriptor_ = file->message_type(16);
   static const int ArtePb_offsets_[9] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ArtePb, timestamp_),
@@ -426,8 +433,6 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     ArteRawBufferPb_descriptor_, &ArteRawBufferPb::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    ArtePosPb_descriptor_, &ArtePosPb::default_instance());
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     ArteFilterOptPb_descriptor_, &ArteFilterOptPb::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     ArteChanOptPb_descriptor_, &ArteChanOptPb::default_instance());
@@ -448,6 +453,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     ArteSessionOptPb_descriptor_, &ArteSessionOptPb::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    ArtePosPb_descriptor_, &ArtePosPb::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     ArtePb_descriptor_, &ArtePb::default_instance());
 }
 
@@ -464,8 +471,6 @@ void protobuf_ShutdownFile_arte_5fpb_2eproto() {
   delete ArteEventStringPb_reflection_;
   delete ArteRawBufferPb::default_instance_;
   delete ArteRawBufferPb_reflection_;
-  delete ArtePosPb::default_instance_;
-  delete ArtePosPb_reflection_;
   delete ArteFilterOptPb::default_instance_;
   delete ArteFilterOptPb_reflection_;
   delete ArteChanOptPb::default_instance_;
@@ -486,6 +491,8 @@ void protobuf_ShutdownFile_arte_5fpb_2eproto() {
   delete ArteSetupOptPb_reflection_;
   delete ArteSessionOptPb::default_instance_;
   delete ArteSessionOptPb_reflection_;
+  delete ArtePosPb::default_instance_;
+  delete ArtePosPb_reflection_;
   delete ArtePb::default_instance_;
   delete ArtePb_reflection_;
 }
@@ -508,60 +515,65 @@ void protobuf_AddDesc_arte_5fpb_2eproto() {
     "ion\030\003 \001(\r\"-\n\021ArteEventStringPb\022\030\n\020events"
     "tring_data\030\001 \001(\t\"R\n\017ArteRawBufferPb\022\024\n\014d"
     "evice_label\030\001 \001(\t\022)\n\tchan_data\030\002 \003(\0132\026.A"
-    "rteVoltageTimeseries\"W\n\tArtePosPb\022\r\n\005x_p"
-    "os\030\001 \001(\002\022\r\n\005y_pos\030\002 \001(\002\022\022\n\nhead_angle\030\003 "
-    "\001(\002\022\030\n\020behavioral_state\030\004 \001(\t\"\217\002\n\017ArteFi"
-    "lterOptPb\022\023\n\013filter_name\030\001 \001(\t\022\022\n\nnumera"
-    "tors\030\002 \003(\002\022\024\n\014denominators\030\003 \003(\002\022\022\n\nmult"
-    "iplier\030\004 \003(\002\022\017\n\007low_cut\030\005 \001(\002\022\020\n\010high_cu"
-    "t\030\006 \001(\002\022\r\n\005order\030\007 \001(\r\022\032\n\017delay_directio"
-    "n\030\010 \001(\005:\0011\022\026\n\010make_sos\030\t \001(\010:\004true\022\"\n\026fi"
-    "ltfilt_invalid_samps\030\n \001(\005:\00232\022\037\n\020regene"
-    "rate_coefs\030\013 \001(\010:\005false\"X\n\rArteChanOptPb"
-    "\022\014\n\004gain\030\001 \001(\002\022\021\n\tthreshold\030\002 \001(\002\022\020\n\010daq"
-    "_chan\030\003 \001(\r\022\024\n\014source_trode\030\004 \001(\r\"\231\002\n\016Ar"
-    "teTrodeOptPb\022\024\n\014source_trode\030\001 \001(\r\022\031\n\021tr"
-    "ode_opt_version\030\002 \001(\r\022\035\n\005chans\030\003 \003(\0132\016.A"
-    "rteChanOptPb\022\031\n\021samps_before_trig\030\004 \001(\r\022"
-    "\030\n\020samps_after_trig\030\005 \001(\r\022\037\n\027refractory_"
-    "period_samps\030\006 \001(\r\022\014\n\004port\030\007 \001(\t\022\017\n\007host"
-    "_ip\030\010 \001(\t\022\023\n\013filter_name\030\t \001(\t\022\016\n\006daq_id"
-    "\030\n \001(\r\022\014\n\004disk\030\013 \001(\010\022\017\n\007network\030\014 \001(\010\"\332\001"
-    "\n\014ArteLfpOptPb\022\026\n\016source_lfpbank\030\001 \001(\r\022\027"
-    "\n\017lfp_opt_version\030\002 \001(\r\022\035\n\005chans\030\003 \003(\0132\016"
-    ".ArteChanOptPb\022\027\n\017keep_nth_sample\030\004 \001(\r\022"
-    "\014\n\004port\030\005 \001(\t\022\017\n\007host_ip\030\006 \001(\t\022\023\n\013filter"
-    "_name\030\007 \001(\t\022\016\n\006daq_id\030\010 \001(\r\022\014\n\004disk\030\t \001("
-    "\010\022\017\n\007network\030\n \001(\010\"r\n\016ArteTimerOptPb\022\024\n\014"
-    "clock_source\030\001 \001(\t\022\020\n\010dev_name\030\002 \001(\t\022\020\n\010"
-    "ctr_name\030\003 \001(\t\022\022\n\ntimer_role\030\004 \001(\t\022\022\n\nti"
-    "mer_freq\030\005 \001(\r\"R\n\024ArteCommandPortOptPb\022\024"
-    "\n\014command_host\030\001 \001(\t\022\014\n\004port\030\002 \001(\t\022\026\n\016se"
-    "condary_port\030\003 \001(\t\".\n\rArteHostOptPb\022\014\n\004h"
-    "ost\030\001 \001(\t\022\017\n\007ip_addy\030\002 \001(\t\"\355\001\n\022ArteNeura"
-    "lDaqOptPb\022\020\n\010daq_type\030\001 \001(\t\022\020\n\010dev_name\030"
-    "\002 \001(\t\022\n\n\002id\030\003 \001(\r\022\023\n\013in_filename\030\004 \001(\t\022\024"
-    "\n\014out_filename\030\005 \001(\t\022\035\n\005chans\030\006 \003(\0132\016.Ar"
-    "teChanOptPb\022\031\n\021buffer_time_samps\030\007 \001(\r\022\026"
-    "\n\016buffer_n_chans\030\010 \001(\r\022\021\n\tis_master\030\t \001("
-    "\010\022\027\n\017is_multiplexing\030\n \001(\010\"\246\001\n\016ArteSetup"
-    "OptPb\022!\n\004daqs\030\001 \003(\0132\023.ArteNeuralDaqOptPb"
-    "\022+\n\014command_port\030\002 \001(\0132\025.ArteCommandPort"
-    "OptPb\022!\n\thost_list\030\003 \003(\0132\016.ArteHostOptPb"
-    "\022!\n\007filters\030\004 \003(\0132\020.ArteFilterOptPb\"\273\001\n\020"
-    "ArteSessionOptPb\022\025\n\rmain_filename\030\001 \001(\t\022"
-    "&\n\rdefault_trode\030\002 \001(\0132\017.ArteTrodeOptPb\022"
-    "\037\n\006trodes\030\003 \003(\0132\017.ArteTrodeOptPb\022&\n\017defa"
-    "ult_lfpbank\030\004 \001(\0132\r.ArteLfpOptPb\022\037\n\010lfpb"
-    "anks\030\005 \003(\0132\r.ArteLfpOptPb\"\305\002\n\006ArtePb\022\021\n\t"
-    "timestamp\030\001 \001(\004\022 \n\narte_spike\030\002 \001(\0132\014.Ar"
-    "teSpikePb\022\034\n\010arte_lfp\030\003 \001(\0132\n.ArteLfpPb\022"
-    "\"\n\014arte_command\030\004 \001(\0132\014.ArteCommand\022-\n\021a"
-    "rte_event_string\030\005 \001(\0132\022.ArteEventString"
-    "Pb\022)\n\017arte_raw_buffer\030\006 \001(\0132\020.ArteRawBuf"
-    "ferPb\022\034\n\010arte_pos\030\007 \001(\0132\n.ArtePosPb\022#\n\na"
-    "rte_setup\030\010 \001(\0132\017.ArteSetupOptPb\022\'\n\014arte"
-    "_session\030\t \001(\0132\021.ArteSessionOptPb", 2553);
+    "rteVoltageTimeseries\"\217\002\n\017ArteFilterOptPb"
+    "\022\023\n\013filter_name\030\001 \001(\t\022\022\n\nnumerators\030\002 \003("
+    "\002\022\024\n\014denominators\030\003 \003(\002\022\022\n\nmultiplier\030\004 "
+    "\003(\002\022\017\n\007low_cut\030\005 \001(\002\022\020\n\010high_cut\030\006 \001(\002\022\r"
+    "\n\005order\030\007 \001(\r\022\032\n\017delay_direction\030\010 \001(\005:\001"
+    "1\022\026\n\010make_sos\030\t \001(\010:\004true\022\"\n\026filtfilt_in"
+    "valid_samps\030\n \001(\005:\00232\022\037\n\020regenerate_coef"
+    "s\030\013 \001(\010:\005false\"X\n\rArteChanOptPb\022\014\n\004gain\030"
+    "\001 \001(\002\022\021\n\tthreshold\030\002 \001(\002\022\020\n\010daq_chan\030\003 \001"
+    "(\r\022\024\n\014source_trode\030\004 \001(\r\"\231\002\n\016ArteTrodeOp"
+    "tPb\022\024\n\014source_trode\030\001 \001(\r\022\031\n\021trode_opt_v"
+    "ersion\030\002 \001(\r\022\035\n\005chans\030\003 \003(\0132\016.ArteChanOp"
+    "tPb\022\031\n\021samps_before_trig\030\004 \001(\r\022\030\n\020samps_"
+    "after_trig\030\005 \001(\r\022\037\n\027refractory_period_sa"
+    "mps\030\006 \001(\r\022\014\n\004port\030\007 \001(\t\022\017\n\007host_ip\030\010 \001(\t"
+    "\022\023\n\013filter_name\030\t \001(\t\022\016\n\006daq_id\030\n \001(\r\022\014\n"
+    "\004disk\030\013 \001(\010\022\017\n\007network\030\014 \001(\010\"\332\001\n\014ArteLfp"
+    "OptPb\022\026\n\016source_lfpbank\030\001 \001(\r\022\027\n\017lfp_opt"
+    "_version\030\002 \001(\r\022\035\n\005chans\030\003 \003(\0132\016.ArteChan"
+    "OptPb\022\027\n\017keep_nth_sample\030\004 \001(\r\022\014\n\004port\030\005"
+    " \001(\t\022\017\n\007host_ip\030\006 \001(\t\022\023\n\013filter_name\030\007 \001"
+    "(\t\022\016\n\006daq_id\030\010 \001(\r\022\014\n\004disk\030\t \001(\010\022\017\n\007netw"
+    "ork\030\n \001(\010\"r\n\016ArteTimerOptPb\022\024\n\014clock_sou"
+    "rce\030\001 \001(\t\022\020\n\010dev_name\030\002 \001(\t\022\020\n\010ctr_name\030"
+    "\003 \001(\t\022\022\n\ntimer_role\030\004 \001(\t\022\022\n\ntimer_freq\030"
+    "\005 \001(\r\"R\n\024ArteCommandPortOptPb\022\024\n\014command"
+    "_host\030\001 \001(\t\022\014\n\004port\030\002 \001(\t\022\026\n\016secondary_p"
+    "ort\030\003 \001(\t\".\n\rArteHostOptPb\022\014\n\004host\030\001 \001(\t"
+    "\022\017\n\007ip_addy\030\002 \001(\t\"\355\001\n\022ArteNeuralDaqOptPb"
+    "\022\020\n\010daq_type\030\001 \001(\t\022\020\n\010dev_name\030\002 \001(\t\022\n\n\002"
+    "id\030\003 \001(\r\022\023\n\013in_filename\030\004 \001(\t\022\024\n\014out_fil"
+    "ename\030\005 \001(\t\022\035\n\005chans\030\006 \003(\0132\016.ArteChanOpt"
+    "Pb\022\031\n\021buffer_time_samps\030\007 \001(\r\022\026\n\016buffer_"
+    "n_chans\030\010 \001(\r\022\021\n\tis_master\030\t \001(\010\022\027\n\017is_m"
+    "ultiplexing\030\n \001(\010\"\246\001\n\016ArteSetupOptPb\022!\n\004"
+    "daqs\030\001 \003(\0132\023.ArteNeuralDaqOptPb\022+\n\014comma"
+    "nd_port\030\002 \001(\0132\025.ArteCommandPortOptPb\022!\n\t"
+    "host_list\030\003 \003(\0132\016.ArteHostOptPb\022!\n\007filte"
+    "rs\030\004 \003(\0132\020.ArteFilterOptPb\"\273\001\n\020ArteSessi"
+    "onOptPb\022\025\n\rmain_filename\030\001 \001(\t\022&\n\rdefaul"
+    "t_trode\030\002 \001(\0132\017.ArteTrodeOptPb\022\037\n\006trodes"
+    "\030\003 \003(\0132\017.ArteTrodeOptPb\022&\n\017default_lfpba"
+    "nk\030\004 \001(\0132\r.ArteLfpOptPb\022\037\n\010lfpbanks\030\005 \003("
+    "\0132\r.ArteLfpOptPb\"\211\002\n\tArtePosPb\022\020\n\010x_mete"
+    "rs\030\001 \001(\002\022\020\n\010y_meters\030\002 \001(\002\022\020\n\010z_meters\030\003"
+    " \001(\002\022\020\n\010yaw_rads\030\004 \001(\002\022\022\n\npitch_rads\030\005 \001"
+    "(\002\022\021\n\troll_rads\030\006 \001(\002\0220\n\nconfidence\030\007 \001("
+    "\0162\034.ArtePosPb.TrackerConfidence\022\026\n\016linea"
+    "rized_pos\030\010 \001(\002\022\r\n\005speed\030\t \001(\002\"4\n\021Tracke"
+    "rConfidence\022\010\n\004FULL\020\000\022\013\n\007PARTIAL\020\001\022\010\n\004NO"
+    "NE\020\002\"\305\002\n\006ArtePb\022\021\n\ttimestamp\030\001 \001(\004\022 \n\nar"
+    "te_spike\030\002 \001(\0132\014.ArteSpikePb\022\034\n\010arte_lfp"
+    "\030\003 \001(\0132\n.ArteLfpPb\022\"\n\014arte_command\030\004 \001(\013"
+    "2\014.ArteCommand\022-\n\021arte_event_string\030\005 \001("
+    "\0132\022.ArteEventStringPb\022)\n\017arte_raw_buffer"
+    "\030\006 \001(\0132\020.ArteRawBufferPb\022\034\n\010arte_pos\030\007 \001"
+    "(\0132\n.ArtePosPb\022#\n\narte_setup\030\010 \001(\0132\017.Art"
+    "eSetupOptPb\022\'\n\014arte_session\030\t \001(\0132\021.Arte"
+    "SessionOptPb", 2732);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "arte_pb.proto", &protobuf_RegisterTypes);
   ArteVoltageTimeseries::default_instance_ = new ArteVoltageTimeseries();
@@ -569,7 +581,6 @@ void protobuf_AddDesc_arte_5fpb_2eproto() {
   ArteLfpPb::default_instance_ = new ArteLfpPb();
   ArteEventStringPb::default_instance_ = new ArteEventStringPb();
   ArteRawBufferPb::default_instance_ = new ArteRawBufferPb();
-  ArtePosPb::default_instance_ = new ArtePosPb();
   ArteFilterOptPb::default_instance_ = new ArteFilterOptPb();
   ArteChanOptPb::default_instance_ = new ArteChanOptPb();
   ArteTrodeOptPb::default_instance_ = new ArteTrodeOptPb();
@@ -580,13 +591,13 @@ void protobuf_AddDesc_arte_5fpb_2eproto() {
   ArteNeuralDaqOptPb::default_instance_ = new ArteNeuralDaqOptPb();
   ArteSetupOptPb::default_instance_ = new ArteSetupOptPb();
   ArteSessionOptPb::default_instance_ = new ArteSessionOptPb();
+  ArtePosPb::default_instance_ = new ArtePosPb();
   ArtePb::default_instance_ = new ArtePb();
   ArteVoltageTimeseries::default_instance_->InitAsDefaultInstance();
   ArteSpikePb::default_instance_->InitAsDefaultInstance();
   ArteLfpPb::default_instance_->InitAsDefaultInstance();
   ArteEventStringPb::default_instance_->InitAsDefaultInstance();
   ArteRawBufferPb::default_instance_->InitAsDefaultInstance();
-  ArtePosPb::default_instance_->InitAsDefaultInstance();
   ArteFilterOptPb::default_instance_->InitAsDefaultInstance();
   ArteChanOptPb::default_instance_->InitAsDefaultInstance();
   ArteTrodeOptPb::default_instance_->InitAsDefaultInstance();
@@ -597,6 +608,7 @@ void protobuf_AddDesc_arte_5fpb_2eproto() {
   ArteNeuralDaqOptPb::default_instance_->InitAsDefaultInstance();
   ArteSetupOptPb::default_instance_->InitAsDefaultInstance();
   ArteSessionOptPb::default_instance_->InitAsDefaultInstance();
+  ArtePosPb::default_instance_->InitAsDefaultInstance();
   ArtePb::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_arte_5fpb_2eproto);
 }
@@ -1874,344 +1886,6 @@ void ArteRawBufferPb::Swap(ArteRawBufferPb* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = ArteRawBufferPb_descriptor_;
   metadata.reflection = ArteRawBufferPb_reflection_;
-  return metadata;
-}
-
-
-// ===================================================================
-
-#ifndef _MSC_VER
-const int ArtePosPb::kXPosFieldNumber;
-const int ArtePosPb::kYPosFieldNumber;
-const int ArtePosPb::kHeadAngleFieldNumber;
-const int ArtePosPb::kBehavioralStateFieldNumber;
-#endif  // !_MSC_VER
-
-ArtePosPb::ArtePosPb()
-  : ::google::protobuf::Message() {
-  SharedCtor();
-}
-
-void ArtePosPb::InitAsDefaultInstance() {
-}
-
-ArtePosPb::ArtePosPb(const ArtePosPb& from)
-  : ::google::protobuf::Message() {
-  SharedCtor();
-  MergeFrom(from);
-}
-
-void ArtePosPb::SharedCtor() {
-  _cached_size_ = 0;
-  x_pos_ = 0;
-  y_pos_ = 0;
-  head_angle_ = 0;
-  behavioral_state_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-}
-
-ArtePosPb::~ArtePosPb() {
-  SharedDtor();
-}
-
-void ArtePosPb::SharedDtor() {
-  if (behavioral_state_ != &::google::protobuf::internal::kEmptyString) {
-    delete behavioral_state_;
-  }
-  if (this != default_instance_) {
-  }
-}
-
-void ArtePosPb::SetCachedSize(int size) const {
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-}
-const ::google::protobuf::Descriptor* ArtePosPb::descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return ArtePosPb_descriptor_;
-}
-
-const ArtePosPb& ArtePosPb::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_arte_5fpb_2eproto();  return *default_instance_;
-}
-
-ArtePosPb* ArtePosPb::default_instance_ = NULL;
-
-ArtePosPb* ArtePosPb::New() const {
-  return new ArtePosPb;
-}
-
-void ArtePosPb::Clear() {
-  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    x_pos_ = 0;
-    y_pos_ = 0;
-    head_angle_ = 0;
-    if (has_behavioral_state()) {
-      if (behavioral_state_ != &::google::protobuf::internal::kEmptyString) {
-        behavioral_state_->clear();
-      }
-    }
-  }
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-  mutable_unknown_fields()->Clear();
-}
-
-bool ArtePosPb::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
-  ::google::protobuf::uint32 tag;
-  while ((tag = input->ReadTag()) != 0) {
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // optional float x_pos = 1;
-      case 1: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, &x_pos_)));
-          set_has_x_pos();
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(21)) goto parse_y_pos;
-        break;
-      }
-      
-      // optional float y_pos = 2;
-      case 2: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
-         parse_y_pos:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, &y_pos_)));
-          set_has_y_pos();
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(29)) goto parse_head_angle;
-        break;
-      }
-      
-      // optional float head_angle = 3;
-      case 3: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
-         parse_head_angle:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, &head_angle_)));
-          set_has_head_angle();
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(34)) goto parse_behavioral_state;
-        break;
-      }
-      
-      // optional string behavioral_state = 4;
-      case 4: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_behavioral_state:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_behavioral_state()));
-          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-            this->behavioral_state().data(), this->behavioral_state().length(),
-            ::google::protobuf::internal::WireFormat::PARSE);
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectAtEnd()) return true;
-        break;
-      }
-      
-      default: {
-      handle_uninterpreted:
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-          return true;
-        }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, mutable_unknown_fields()));
-        break;
-      }
-    }
-  }
-  return true;
-#undef DO_
-}
-
-void ArtePosPb::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // optional float x_pos = 1;
-  if (has_x_pos()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(1, this->x_pos(), output);
-  }
-  
-  // optional float y_pos = 2;
-  if (has_y_pos()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(2, this->y_pos(), output);
-  }
-  
-  // optional float head_angle = 3;
-  if (has_head_angle()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(3, this->head_angle(), output);
-  }
-  
-  // optional string behavioral_state = 4;
-  if (has_behavioral_state()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->behavioral_state().data(), this->behavioral_state().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    ::google::protobuf::internal::WireFormatLite::WriteString(
-      4, this->behavioral_state(), output);
-  }
-  
-  if (!unknown_fields().empty()) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        unknown_fields(), output);
-  }
-}
-
-::google::protobuf::uint8* ArtePosPb::SerializeWithCachedSizesToArray(
-    ::google::protobuf::uint8* target) const {
-  // optional float x_pos = 1;
-  if (has_x_pos()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(1, this->x_pos(), target);
-  }
-  
-  // optional float y_pos = 2;
-  if (has_y_pos()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(2, this->y_pos(), target);
-  }
-  
-  // optional float head_angle = 3;
-  if (has_head_angle()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(3, this->head_angle(), target);
-  }
-  
-  // optional string behavioral_state = 4;
-  if (has_behavioral_state()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->behavioral_state().data(), this->behavioral_state().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        4, this->behavioral_state(), target);
-  }
-  
-  if (!unknown_fields().empty()) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        unknown_fields(), target);
-  }
-  return target;
-}
-
-int ArtePosPb::ByteSize() const {
-  int total_size = 0;
-  
-  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // optional float x_pos = 1;
-    if (has_x_pos()) {
-      total_size += 1 + 4;
-    }
-    
-    // optional float y_pos = 2;
-    if (has_y_pos()) {
-      total_size += 1 + 4;
-    }
-    
-    // optional float head_angle = 3;
-    if (has_head_angle()) {
-      total_size += 1 + 4;
-    }
-    
-    // optional string behavioral_state = 4;
-    if (has_behavioral_state()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::StringSize(
-          this->behavioral_state());
-    }
-    
-  }
-  if (!unknown_fields().empty()) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        unknown_fields());
-  }
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = total_size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-  return total_size;
-}
-
-void ArtePosPb::MergeFrom(const ::google::protobuf::Message& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  const ArtePosPb* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const ArtePosPb*>(
-      &from);
-  if (source == NULL) {
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
-  } else {
-    MergeFrom(*source);
-  }
-}
-
-void ArtePosPb::MergeFrom(const ArtePosPb& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from.has_x_pos()) {
-      set_x_pos(from.x_pos());
-    }
-    if (from.has_y_pos()) {
-      set_y_pos(from.y_pos());
-    }
-    if (from.has_head_angle()) {
-      set_head_angle(from.head_angle());
-    }
-    if (from.has_behavioral_state()) {
-      set_behavioral_state(from.behavioral_state());
-    }
-  }
-  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
-}
-
-void ArtePosPb::CopyFrom(const ::google::protobuf::Message& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-void ArtePosPb::CopyFrom(const ArtePosPb& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-bool ArtePosPb::IsInitialized() const {
-  
-  return true;
-}
-
-void ArtePosPb::Swap(ArtePosPb* other) {
-  if (other != this) {
-    std::swap(x_pos_, other->x_pos_);
-    std::swap(y_pos_, other->y_pos_);
-    std::swap(head_angle_, other->head_angle_);
-    std::swap(behavioral_state_, other->behavioral_state_);
-    std::swap(_has_bits_[0], other->_has_bits_[0]);
-    _unknown_fields_.Swap(&other->_unknown_fields_);
-    std::swap(_cached_size_, other->_cached_size_);
-  }
-}
-
-::google::protobuf::Metadata ArtePosPb::GetMetadata() const {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::Metadata metadata;
-  metadata.descriptor = ArtePosPb_descriptor_;
-  metadata.reflection = ArtePosPb_reflection_;
   return metadata;
 }
 
@@ -6910,6 +6584,552 @@ void ArteSessionOptPb::Swap(ArteSessionOptPb* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = ArteSessionOptPb_descriptor_;
   metadata.reflection = ArteSessionOptPb_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+const ::google::protobuf::EnumDescriptor* ArtePosPb_TrackerConfidence_descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return ArtePosPb_TrackerConfidence_descriptor_;
+}
+bool ArtePosPb_TrackerConfidence_IsValid(int value) {
+  switch(value) {
+    case 0:
+    case 1:
+    case 2:
+      return true;
+    default:
+      return false;
+  }
+}
+
+#ifndef _MSC_VER
+const ArtePosPb_TrackerConfidence ArtePosPb::FULL;
+const ArtePosPb_TrackerConfidence ArtePosPb::PARTIAL;
+const ArtePosPb_TrackerConfidence ArtePosPb::NONE;
+const ArtePosPb_TrackerConfidence ArtePosPb::TrackerConfidence_MIN;
+const ArtePosPb_TrackerConfidence ArtePosPb::TrackerConfidence_MAX;
+const int ArtePosPb::TrackerConfidence_ARRAYSIZE;
+#endif  // _MSC_VER
+#ifndef _MSC_VER
+const int ArtePosPb::kXMetersFieldNumber;
+const int ArtePosPb::kYMetersFieldNumber;
+const int ArtePosPb::kZMetersFieldNumber;
+const int ArtePosPb::kYawRadsFieldNumber;
+const int ArtePosPb::kPitchRadsFieldNumber;
+const int ArtePosPb::kRollRadsFieldNumber;
+const int ArtePosPb::kConfidenceFieldNumber;
+const int ArtePosPb::kLinearizedPosFieldNumber;
+const int ArtePosPb::kSpeedFieldNumber;
+#endif  // !_MSC_VER
+
+ArtePosPb::ArtePosPb()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void ArtePosPb::InitAsDefaultInstance() {
+}
+
+ArtePosPb::ArtePosPb(const ArtePosPb& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void ArtePosPb::SharedCtor() {
+  _cached_size_ = 0;
+  x_meters_ = 0;
+  y_meters_ = 0;
+  z_meters_ = 0;
+  yaw_rads_ = 0;
+  pitch_rads_ = 0;
+  roll_rads_ = 0;
+  confidence_ = 0;
+  linearized_pos_ = 0;
+  speed_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+ArtePosPb::~ArtePosPb() {
+  SharedDtor();
+}
+
+void ArtePosPb::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void ArtePosPb::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* ArtePosPb::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return ArtePosPb_descriptor_;
+}
+
+const ArtePosPb& ArtePosPb::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_arte_5fpb_2eproto();  return *default_instance_;
+}
+
+ArtePosPb* ArtePosPb::default_instance_ = NULL;
+
+ArtePosPb* ArtePosPb::New() const {
+  return new ArtePosPb;
+}
+
+void ArtePosPb::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    x_meters_ = 0;
+    y_meters_ = 0;
+    z_meters_ = 0;
+    yaw_rads_ = 0;
+    pitch_rads_ = 0;
+    roll_rads_ = 0;
+    confidence_ = 0;
+    linearized_pos_ = 0;
+  }
+  if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    speed_ = 0;
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool ArtePosPb::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional float x_meters = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &x_meters_)));
+          set_has_x_meters();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(21)) goto parse_y_meters;
+        break;
+      }
+      
+      // optional float y_meters = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
+         parse_y_meters:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &y_meters_)));
+          set_has_y_meters();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(29)) goto parse_z_meters;
+        break;
+      }
+      
+      // optional float z_meters = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
+         parse_z_meters:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &z_meters_)));
+          set_has_z_meters();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(37)) goto parse_yaw_rads;
+        break;
+      }
+      
+      // optional float yaw_rads = 4;
+      case 4: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
+         parse_yaw_rads:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &yaw_rads_)));
+          set_has_yaw_rads();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(45)) goto parse_pitch_rads;
+        break;
+      }
+      
+      // optional float pitch_rads = 5;
+      case 5: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
+         parse_pitch_rads:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &pitch_rads_)));
+          set_has_pitch_rads();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(53)) goto parse_roll_rads;
+        break;
+      }
+      
+      // optional float roll_rads = 6;
+      case 6: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
+         parse_roll_rads:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &roll_rads_)));
+          set_has_roll_rads();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(56)) goto parse_confidence;
+        break;
+      }
+      
+      // optional .ArtePosPb.TrackerConfidence confidence = 7;
+      case 7: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_confidence:
+          int value;
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
+                 input, &value)));
+          if (::ArtePosPb_TrackerConfidence_IsValid(value)) {
+            set_confidence(static_cast< ::ArtePosPb_TrackerConfidence >(value));
+          } else {
+            mutable_unknown_fields()->AddVarint(7, value);
+          }
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(69)) goto parse_linearized_pos;
+        break;
+      }
+      
+      // optional float linearized_pos = 8;
+      case 8: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
+         parse_linearized_pos:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &linearized_pos_)));
+          set_has_linearized_pos();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(77)) goto parse_speed;
+        break;
+      }
+      
+      // optional float speed = 9;
+      case 9: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
+         parse_speed:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &speed_)));
+          set_has_speed();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void ArtePosPb::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // optional float x_meters = 1;
+  if (has_x_meters()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(1, this->x_meters(), output);
+  }
+  
+  // optional float y_meters = 2;
+  if (has_y_meters()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(2, this->y_meters(), output);
+  }
+  
+  // optional float z_meters = 3;
+  if (has_z_meters()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(3, this->z_meters(), output);
+  }
+  
+  // optional float yaw_rads = 4;
+  if (has_yaw_rads()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(4, this->yaw_rads(), output);
+  }
+  
+  // optional float pitch_rads = 5;
+  if (has_pitch_rads()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(5, this->pitch_rads(), output);
+  }
+  
+  // optional float roll_rads = 6;
+  if (has_roll_rads()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(6, this->roll_rads(), output);
+  }
+  
+  // optional .ArtePosPb.TrackerConfidence confidence = 7;
+  if (has_confidence()) {
+    ::google::protobuf::internal::WireFormatLite::WriteEnum(
+      7, this->confidence(), output);
+  }
+  
+  // optional float linearized_pos = 8;
+  if (has_linearized_pos()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(8, this->linearized_pos(), output);
+  }
+  
+  // optional float speed = 9;
+  if (has_speed()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(9, this->speed(), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* ArtePosPb::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // optional float x_meters = 1;
+  if (has_x_meters()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(1, this->x_meters(), target);
+  }
+  
+  // optional float y_meters = 2;
+  if (has_y_meters()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(2, this->y_meters(), target);
+  }
+  
+  // optional float z_meters = 3;
+  if (has_z_meters()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(3, this->z_meters(), target);
+  }
+  
+  // optional float yaw_rads = 4;
+  if (has_yaw_rads()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(4, this->yaw_rads(), target);
+  }
+  
+  // optional float pitch_rads = 5;
+  if (has_pitch_rads()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(5, this->pitch_rads(), target);
+  }
+  
+  // optional float roll_rads = 6;
+  if (has_roll_rads()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(6, this->roll_rads(), target);
+  }
+  
+  // optional .ArtePosPb.TrackerConfidence confidence = 7;
+  if (has_confidence()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
+      7, this->confidence(), target);
+  }
+  
+  // optional float linearized_pos = 8;
+  if (has_linearized_pos()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(8, this->linearized_pos(), target);
+  }
+  
+  // optional float speed = 9;
+  if (has_speed()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(9, this->speed(), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int ArtePosPb::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // optional float x_meters = 1;
+    if (has_x_meters()) {
+      total_size += 1 + 4;
+    }
+    
+    // optional float y_meters = 2;
+    if (has_y_meters()) {
+      total_size += 1 + 4;
+    }
+    
+    // optional float z_meters = 3;
+    if (has_z_meters()) {
+      total_size += 1 + 4;
+    }
+    
+    // optional float yaw_rads = 4;
+    if (has_yaw_rads()) {
+      total_size += 1 + 4;
+    }
+    
+    // optional float pitch_rads = 5;
+    if (has_pitch_rads()) {
+      total_size += 1 + 4;
+    }
+    
+    // optional float roll_rads = 6;
+    if (has_roll_rads()) {
+      total_size += 1 + 4;
+    }
+    
+    // optional .ArtePosPb.TrackerConfidence confidence = 7;
+    if (has_confidence()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::EnumSize(this->confidence());
+    }
+    
+    // optional float linearized_pos = 8;
+    if (has_linearized_pos()) {
+      total_size += 1 + 4;
+    }
+    
+  }
+  if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    // optional float speed = 9;
+    if (has_speed()) {
+      total_size += 1 + 4;
+    }
+    
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void ArtePosPb::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const ArtePosPb* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const ArtePosPb*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void ArtePosPb::MergeFrom(const ArtePosPb& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_x_meters()) {
+      set_x_meters(from.x_meters());
+    }
+    if (from.has_y_meters()) {
+      set_y_meters(from.y_meters());
+    }
+    if (from.has_z_meters()) {
+      set_z_meters(from.z_meters());
+    }
+    if (from.has_yaw_rads()) {
+      set_yaw_rads(from.yaw_rads());
+    }
+    if (from.has_pitch_rads()) {
+      set_pitch_rads(from.pitch_rads());
+    }
+    if (from.has_roll_rads()) {
+      set_roll_rads(from.roll_rads());
+    }
+    if (from.has_confidence()) {
+      set_confidence(from.confidence());
+    }
+    if (from.has_linearized_pos()) {
+      set_linearized_pos(from.linearized_pos());
+    }
+  }
+  if (from._has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    if (from.has_speed()) {
+      set_speed(from.speed());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void ArtePosPb::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void ArtePosPb::CopyFrom(const ArtePosPb& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ArtePosPb::IsInitialized() const {
+  
+  return true;
+}
+
+void ArtePosPb::Swap(ArtePosPb* other) {
+  if (other != this) {
+    std::swap(x_meters_, other->x_meters_);
+    std::swap(y_meters_, other->y_meters_);
+    std::swap(z_meters_, other->z_meters_);
+    std::swap(yaw_rads_, other->yaw_rads_);
+    std::swap(pitch_rads_, other->pitch_rads_);
+    std::swap(roll_rads_, other->roll_rads_);
+    std::swap(confidence_, other->confidence_);
+    std::swap(linearized_pos_, other->linearized_pos_);
+    std::swap(speed_, other->speed_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata ArtePosPb::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = ArtePosPb_descriptor_;
+  metadata.reflection = ArtePosPb_reflection_;
   return metadata;
 }
 

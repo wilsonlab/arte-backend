@@ -13,10 +13,17 @@ message Affine2D {
 
 /* Describe one camera of the tracker */
 message CameraOpt {
-        optional int                      id  = 1;
-        optional string             dev_name  = 2;
+        optional int32                    id  = 1;
+        optional string     dev_or_file_name  = 2;
         optional ScaleShift  px_to_pos_scale  = 3;
         optional Affine2D    px_to_pos_aff2d  = 4;
+
+        optional int32             led_blur1  = 5;
+        optional float         led_threshold  = 6;
+        optional int32             led_blur2  = 7;
+        optional int32            body_blur1  = 8;
+        optional int32        body_threshold  = 9;
+        optional int32            body_blur2  = 10;
 }
 
 
@@ -30,5 +37,16 @@ message CameraGroup {
         optional CombineStyle       combine  = 2;
 }
 
+message Led {
+        optional float                x_pos  = 1;
+        optional float                y_pos  = 2;
+        optional float                z_pos  = 3;
+}
+
 message TrackerOpt {
-        repeated CameraGroup         group
+        repeated CameraGroup          group  = 1;
+        optional int32           max_n_cams  = 2;
+        optional string               timer  = 3;
+        optional int32                n_led  = 4;
+        /* What else? */
+}

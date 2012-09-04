@@ -36,7 +36,6 @@ class ArteSpikePb;
 class ArteLfpPb;
 class ArteEventStringPb;
 class ArteRawBufferPb;
-class ArtePosPb;
 class ArteFilterOptPb;
 class ArteChanOptPb;
 class ArteTrodeOptPb;
@@ -47,8 +46,29 @@ class ArteHostOptPb;
 class ArteNeuralDaqOptPb;
 class ArteSetupOptPb;
 class ArteSessionOptPb;
+class ArtePosPb;
 class ArtePb;
 
+enum ArtePosPb_TrackerConfidence {
+  ArtePosPb_TrackerConfidence_FULL = 0,
+  ArtePosPb_TrackerConfidence_PARTIAL = 1,
+  ArtePosPb_TrackerConfidence_NONE = 2
+};
+bool ArtePosPb_TrackerConfidence_IsValid(int value);
+const ArtePosPb_TrackerConfidence ArtePosPb_TrackerConfidence_TrackerConfidence_MIN = ArtePosPb_TrackerConfidence_FULL;
+const ArtePosPb_TrackerConfidence ArtePosPb_TrackerConfidence_TrackerConfidence_MAX = ArtePosPb_TrackerConfidence_NONE;
+const int ArtePosPb_TrackerConfidence_TrackerConfidence_ARRAYSIZE = ArtePosPb_TrackerConfidence_TrackerConfidence_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* ArtePosPb_TrackerConfidence_descriptor();
+inline const ::std::string& ArtePosPb_TrackerConfidence_Name(ArtePosPb_TrackerConfidence value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    ArtePosPb_TrackerConfidence_descriptor(), value);
+}
+inline bool ArtePosPb_TrackerConfidence_Parse(
+    const ::std::string& name, ArtePosPb_TrackerConfidence* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<ArtePosPb_TrackerConfidence>(
+    ArtePosPb_TrackerConfidence_descriptor(), name, value);
+}
 // ===================================================================
 
 class ArteVoltageTimeseries : public ::google::protobuf::Message {
@@ -528,122 +548,6 @@ class ArteRawBufferPb : public ::google::protobuf::Message {
   
   void InitAsDefaultInstance();
   static ArteRawBufferPb* default_instance_;
-};
-// -------------------------------------------------------------------
-
-class ArtePosPb : public ::google::protobuf::Message {
- public:
-  ArtePosPb();
-  virtual ~ArtePosPb();
-  
-  ArtePosPb(const ArtePosPb& from);
-  
-  inline ArtePosPb& operator=(const ArtePosPb& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _unknown_fields_;
-  }
-  
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return &_unknown_fields_;
-  }
-  
-  static const ::google::protobuf::Descriptor* descriptor();
-  static const ArtePosPb& default_instance();
-  
-  void Swap(ArtePosPb* other);
-  
-  // implements Message ----------------------------------------------
-  
-  ArtePosPb* New() const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const ArtePosPb& from);
-  void MergeFrom(const ArtePosPb& from);
-  void Clear();
-  bool IsInitialized() const;
-  
-  int ByteSize() const;
-  bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input);
-  void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
-  int GetCachedSize() const { return _cached_size_; }
-  private:
-  void SharedCtor();
-  void SharedDtor();
-  void SetCachedSize(int size) const;
-  public:
-  
-  ::google::protobuf::Metadata GetMetadata() const;
-  
-  // nested types ----------------------------------------------------
-  
-  // accessors -------------------------------------------------------
-  
-  // optional float x_pos = 1;
-  inline bool has_x_pos() const;
-  inline void clear_x_pos();
-  static const int kXPosFieldNumber = 1;
-  inline float x_pos() const;
-  inline void set_x_pos(float value);
-  
-  // optional float y_pos = 2;
-  inline bool has_y_pos() const;
-  inline void clear_y_pos();
-  static const int kYPosFieldNumber = 2;
-  inline float y_pos() const;
-  inline void set_y_pos(float value);
-  
-  // optional float head_angle = 3;
-  inline bool has_head_angle() const;
-  inline void clear_head_angle();
-  static const int kHeadAngleFieldNumber = 3;
-  inline float head_angle() const;
-  inline void set_head_angle(float value);
-  
-  // optional string behavioral_state = 4;
-  inline bool has_behavioral_state() const;
-  inline void clear_behavioral_state();
-  static const int kBehavioralStateFieldNumber = 4;
-  inline const ::std::string& behavioral_state() const;
-  inline void set_behavioral_state(const ::std::string& value);
-  inline void set_behavioral_state(const char* value);
-  inline void set_behavioral_state(const char* value, size_t size);
-  inline ::std::string* mutable_behavioral_state();
-  inline ::std::string* release_behavioral_state();
-  
-  // @@protoc_insertion_point(class_scope:ArtePosPb)
- private:
-  inline void set_has_x_pos();
-  inline void clear_has_x_pos();
-  inline void set_has_y_pos();
-  inline void clear_has_y_pos();
-  inline void set_has_head_angle();
-  inline void clear_has_head_angle();
-  inline void set_has_behavioral_state();
-  inline void clear_has_behavioral_state();
-  
-  ::google::protobuf::UnknownFieldSet _unknown_fields_;
-  
-  float x_pos_;
-  float y_pos_;
-  ::std::string* behavioral_state_;
-  float head_angle_;
-  
-  mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
-  
-  friend void  protobuf_AddDesc_arte_5fpb_2eproto();
-  friend void protobuf_AssignDesc_arte_5fpb_2eproto();
-  friend void protobuf_ShutdownFile_arte_5fpb_2eproto();
-  
-  void InitAsDefaultInstance();
-  static ArtePosPb* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -2147,6 +2051,193 @@ class ArteSessionOptPb : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
+class ArtePosPb : public ::google::protobuf::Message {
+ public:
+  ArtePosPb();
+  virtual ~ArtePosPb();
+  
+  ArtePosPb(const ArtePosPb& from);
+  
+  inline ArtePosPb& operator=(const ArtePosPb& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ArtePosPb& default_instance();
+  
+  void Swap(ArtePosPb* other);
+  
+  // implements Message ----------------------------------------------
+  
+  ArtePosPb* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const ArtePosPb& from);
+  void MergeFrom(const ArtePosPb& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  typedef ArtePosPb_TrackerConfidence TrackerConfidence;
+  static const TrackerConfidence FULL = ArtePosPb_TrackerConfidence_FULL;
+  static const TrackerConfidence PARTIAL = ArtePosPb_TrackerConfidence_PARTIAL;
+  static const TrackerConfidence NONE = ArtePosPb_TrackerConfidence_NONE;
+  static inline bool TrackerConfidence_IsValid(int value) {
+    return ArtePosPb_TrackerConfidence_IsValid(value);
+  }
+  static const TrackerConfidence TrackerConfidence_MIN =
+    ArtePosPb_TrackerConfidence_TrackerConfidence_MIN;
+  static const TrackerConfidence TrackerConfidence_MAX =
+    ArtePosPb_TrackerConfidence_TrackerConfidence_MAX;
+  static const int TrackerConfidence_ARRAYSIZE =
+    ArtePosPb_TrackerConfidence_TrackerConfidence_ARRAYSIZE;
+  static inline const ::google::protobuf::EnumDescriptor*
+  TrackerConfidence_descriptor() {
+    return ArtePosPb_TrackerConfidence_descriptor();
+  }
+  static inline const ::std::string& TrackerConfidence_Name(TrackerConfidence value) {
+    return ArtePosPb_TrackerConfidence_Name(value);
+  }
+  static inline bool TrackerConfidence_Parse(const ::std::string& name,
+      TrackerConfidence* value) {
+    return ArtePosPb_TrackerConfidence_Parse(name, value);
+  }
+  
+  // accessors -------------------------------------------------------
+  
+  // optional float x_meters = 1;
+  inline bool has_x_meters() const;
+  inline void clear_x_meters();
+  static const int kXMetersFieldNumber = 1;
+  inline float x_meters() const;
+  inline void set_x_meters(float value);
+  
+  // optional float y_meters = 2;
+  inline bool has_y_meters() const;
+  inline void clear_y_meters();
+  static const int kYMetersFieldNumber = 2;
+  inline float y_meters() const;
+  inline void set_y_meters(float value);
+  
+  // optional float z_meters = 3;
+  inline bool has_z_meters() const;
+  inline void clear_z_meters();
+  static const int kZMetersFieldNumber = 3;
+  inline float z_meters() const;
+  inline void set_z_meters(float value);
+  
+  // optional float yaw_rads = 4;
+  inline bool has_yaw_rads() const;
+  inline void clear_yaw_rads();
+  static const int kYawRadsFieldNumber = 4;
+  inline float yaw_rads() const;
+  inline void set_yaw_rads(float value);
+  
+  // optional float pitch_rads = 5;
+  inline bool has_pitch_rads() const;
+  inline void clear_pitch_rads();
+  static const int kPitchRadsFieldNumber = 5;
+  inline float pitch_rads() const;
+  inline void set_pitch_rads(float value);
+  
+  // optional float roll_rads = 6;
+  inline bool has_roll_rads() const;
+  inline void clear_roll_rads();
+  static const int kRollRadsFieldNumber = 6;
+  inline float roll_rads() const;
+  inline void set_roll_rads(float value);
+  
+  // optional .ArtePosPb.TrackerConfidence confidence = 7;
+  inline bool has_confidence() const;
+  inline void clear_confidence();
+  static const int kConfidenceFieldNumber = 7;
+  inline ::ArtePosPb_TrackerConfidence confidence() const;
+  inline void set_confidence(::ArtePosPb_TrackerConfidence value);
+  
+  // optional float linearized_pos = 8;
+  inline bool has_linearized_pos() const;
+  inline void clear_linearized_pos();
+  static const int kLinearizedPosFieldNumber = 8;
+  inline float linearized_pos() const;
+  inline void set_linearized_pos(float value);
+  
+  // optional float speed = 9;
+  inline bool has_speed() const;
+  inline void clear_speed();
+  static const int kSpeedFieldNumber = 9;
+  inline float speed() const;
+  inline void set_speed(float value);
+  
+  // @@protoc_insertion_point(class_scope:ArtePosPb)
+ private:
+  inline void set_has_x_meters();
+  inline void clear_has_x_meters();
+  inline void set_has_y_meters();
+  inline void clear_has_y_meters();
+  inline void set_has_z_meters();
+  inline void clear_has_z_meters();
+  inline void set_has_yaw_rads();
+  inline void clear_has_yaw_rads();
+  inline void set_has_pitch_rads();
+  inline void clear_has_pitch_rads();
+  inline void set_has_roll_rads();
+  inline void clear_has_roll_rads();
+  inline void set_has_confidence();
+  inline void clear_has_confidence();
+  inline void set_has_linearized_pos();
+  inline void clear_has_linearized_pos();
+  inline void set_has_speed();
+  inline void clear_has_speed();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  float x_meters_;
+  float y_meters_;
+  float z_meters_;
+  float yaw_rads_;
+  float pitch_rads_;
+  float roll_rads_;
+  int confidence_;
+  float linearized_pos_;
+  float speed_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(9 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_arte_5fpb_2eproto();
+  friend void protobuf_AssignDesc_arte_5fpb_2eproto();
+  friend void protobuf_ShutdownFile_arte_5fpb_2eproto();
+  
+  void InitAsDefaultInstance();
+  static ArtePosPb* default_instance_;
+};
+// -------------------------------------------------------------------
+
 class ArtePb : public ::google::protobuf::Message {
  public:
   ArtePb();
@@ -2640,134 +2731,6 @@ ArteRawBufferPb::chan_data() const {
 inline ::google::protobuf::RepeatedPtrField< ::ArteVoltageTimeseries >*
 ArteRawBufferPb::mutable_chan_data() {
   return &chan_data_;
-}
-
-// -------------------------------------------------------------------
-
-// ArtePosPb
-
-// optional float x_pos = 1;
-inline bool ArtePosPb::has_x_pos() const {
-  return (_has_bits_[0] & 0x00000001u) != 0;
-}
-inline void ArtePosPb::set_has_x_pos() {
-  _has_bits_[0] |= 0x00000001u;
-}
-inline void ArtePosPb::clear_has_x_pos() {
-  _has_bits_[0] &= ~0x00000001u;
-}
-inline void ArtePosPb::clear_x_pos() {
-  x_pos_ = 0;
-  clear_has_x_pos();
-}
-inline float ArtePosPb::x_pos() const {
-  return x_pos_;
-}
-inline void ArtePosPb::set_x_pos(float value) {
-  set_has_x_pos();
-  x_pos_ = value;
-}
-
-// optional float y_pos = 2;
-inline bool ArtePosPb::has_y_pos() const {
-  return (_has_bits_[0] & 0x00000002u) != 0;
-}
-inline void ArtePosPb::set_has_y_pos() {
-  _has_bits_[0] |= 0x00000002u;
-}
-inline void ArtePosPb::clear_has_y_pos() {
-  _has_bits_[0] &= ~0x00000002u;
-}
-inline void ArtePosPb::clear_y_pos() {
-  y_pos_ = 0;
-  clear_has_y_pos();
-}
-inline float ArtePosPb::y_pos() const {
-  return y_pos_;
-}
-inline void ArtePosPb::set_y_pos(float value) {
-  set_has_y_pos();
-  y_pos_ = value;
-}
-
-// optional float head_angle = 3;
-inline bool ArtePosPb::has_head_angle() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
-}
-inline void ArtePosPb::set_has_head_angle() {
-  _has_bits_[0] |= 0x00000004u;
-}
-inline void ArtePosPb::clear_has_head_angle() {
-  _has_bits_[0] &= ~0x00000004u;
-}
-inline void ArtePosPb::clear_head_angle() {
-  head_angle_ = 0;
-  clear_has_head_angle();
-}
-inline float ArtePosPb::head_angle() const {
-  return head_angle_;
-}
-inline void ArtePosPb::set_head_angle(float value) {
-  set_has_head_angle();
-  head_angle_ = value;
-}
-
-// optional string behavioral_state = 4;
-inline bool ArtePosPb::has_behavioral_state() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
-}
-inline void ArtePosPb::set_has_behavioral_state() {
-  _has_bits_[0] |= 0x00000008u;
-}
-inline void ArtePosPb::clear_has_behavioral_state() {
-  _has_bits_[0] &= ~0x00000008u;
-}
-inline void ArtePosPb::clear_behavioral_state() {
-  if (behavioral_state_ != &::google::protobuf::internal::kEmptyString) {
-    behavioral_state_->clear();
-  }
-  clear_has_behavioral_state();
-}
-inline const ::std::string& ArtePosPb::behavioral_state() const {
-  return *behavioral_state_;
-}
-inline void ArtePosPb::set_behavioral_state(const ::std::string& value) {
-  set_has_behavioral_state();
-  if (behavioral_state_ == &::google::protobuf::internal::kEmptyString) {
-    behavioral_state_ = new ::std::string;
-  }
-  behavioral_state_->assign(value);
-}
-inline void ArtePosPb::set_behavioral_state(const char* value) {
-  set_has_behavioral_state();
-  if (behavioral_state_ == &::google::protobuf::internal::kEmptyString) {
-    behavioral_state_ = new ::std::string;
-  }
-  behavioral_state_->assign(value);
-}
-inline void ArtePosPb::set_behavioral_state(const char* value, size_t size) {
-  set_has_behavioral_state();
-  if (behavioral_state_ == &::google::protobuf::internal::kEmptyString) {
-    behavioral_state_ = new ::std::string;
-  }
-  behavioral_state_->assign(reinterpret_cast<const char*>(value), size);
-}
-inline ::std::string* ArtePosPb::mutable_behavioral_state() {
-  set_has_behavioral_state();
-  if (behavioral_state_ == &::google::protobuf::internal::kEmptyString) {
-    behavioral_state_ = new ::std::string;
-  }
-  return behavioral_state_;
-}
-inline ::std::string* ArtePosPb::release_behavioral_state() {
-  clear_has_behavioral_state();
-  if (behavioral_state_ == &::google::protobuf::internal::kEmptyString) {
-    return NULL;
-  } else {
-    ::std::string* temp = behavioral_state_;
-    behavioral_state_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-    return temp;
-  }
 }
 
 // -------------------------------------------------------------------
@@ -5074,6 +5037,209 @@ ArteSessionOptPb::mutable_lfpbanks() {
 
 // -------------------------------------------------------------------
 
+// ArtePosPb
+
+// optional float x_meters = 1;
+inline bool ArtePosPb::has_x_meters() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void ArtePosPb::set_has_x_meters() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void ArtePosPb::clear_has_x_meters() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void ArtePosPb::clear_x_meters() {
+  x_meters_ = 0;
+  clear_has_x_meters();
+}
+inline float ArtePosPb::x_meters() const {
+  return x_meters_;
+}
+inline void ArtePosPb::set_x_meters(float value) {
+  set_has_x_meters();
+  x_meters_ = value;
+}
+
+// optional float y_meters = 2;
+inline bool ArtePosPb::has_y_meters() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void ArtePosPb::set_has_y_meters() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void ArtePosPb::clear_has_y_meters() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void ArtePosPb::clear_y_meters() {
+  y_meters_ = 0;
+  clear_has_y_meters();
+}
+inline float ArtePosPb::y_meters() const {
+  return y_meters_;
+}
+inline void ArtePosPb::set_y_meters(float value) {
+  set_has_y_meters();
+  y_meters_ = value;
+}
+
+// optional float z_meters = 3;
+inline bool ArtePosPb::has_z_meters() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void ArtePosPb::set_has_z_meters() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void ArtePosPb::clear_has_z_meters() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void ArtePosPb::clear_z_meters() {
+  z_meters_ = 0;
+  clear_has_z_meters();
+}
+inline float ArtePosPb::z_meters() const {
+  return z_meters_;
+}
+inline void ArtePosPb::set_z_meters(float value) {
+  set_has_z_meters();
+  z_meters_ = value;
+}
+
+// optional float yaw_rads = 4;
+inline bool ArtePosPb::has_yaw_rads() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void ArtePosPb::set_has_yaw_rads() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void ArtePosPb::clear_has_yaw_rads() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void ArtePosPb::clear_yaw_rads() {
+  yaw_rads_ = 0;
+  clear_has_yaw_rads();
+}
+inline float ArtePosPb::yaw_rads() const {
+  return yaw_rads_;
+}
+inline void ArtePosPb::set_yaw_rads(float value) {
+  set_has_yaw_rads();
+  yaw_rads_ = value;
+}
+
+// optional float pitch_rads = 5;
+inline bool ArtePosPb::has_pitch_rads() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void ArtePosPb::set_has_pitch_rads() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void ArtePosPb::clear_has_pitch_rads() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void ArtePosPb::clear_pitch_rads() {
+  pitch_rads_ = 0;
+  clear_has_pitch_rads();
+}
+inline float ArtePosPb::pitch_rads() const {
+  return pitch_rads_;
+}
+inline void ArtePosPb::set_pitch_rads(float value) {
+  set_has_pitch_rads();
+  pitch_rads_ = value;
+}
+
+// optional float roll_rads = 6;
+inline bool ArtePosPb::has_roll_rads() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void ArtePosPb::set_has_roll_rads() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void ArtePosPb::clear_has_roll_rads() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void ArtePosPb::clear_roll_rads() {
+  roll_rads_ = 0;
+  clear_has_roll_rads();
+}
+inline float ArtePosPb::roll_rads() const {
+  return roll_rads_;
+}
+inline void ArtePosPb::set_roll_rads(float value) {
+  set_has_roll_rads();
+  roll_rads_ = value;
+}
+
+// optional .ArtePosPb.TrackerConfidence confidence = 7;
+inline bool ArtePosPb::has_confidence() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+inline void ArtePosPb::set_has_confidence() {
+  _has_bits_[0] |= 0x00000040u;
+}
+inline void ArtePosPb::clear_has_confidence() {
+  _has_bits_[0] &= ~0x00000040u;
+}
+inline void ArtePosPb::clear_confidence() {
+  confidence_ = 0;
+  clear_has_confidence();
+}
+inline ::ArtePosPb_TrackerConfidence ArtePosPb::confidence() const {
+  return static_cast< ::ArtePosPb_TrackerConfidence >(confidence_);
+}
+inline void ArtePosPb::set_confidence(::ArtePosPb_TrackerConfidence value) {
+  GOOGLE_DCHECK(::ArtePosPb_TrackerConfidence_IsValid(value));
+  set_has_confidence();
+  confidence_ = value;
+}
+
+// optional float linearized_pos = 8;
+inline bool ArtePosPb::has_linearized_pos() const {
+  return (_has_bits_[0] & 0x00000080u) != 0;
+}
+inline void ArtePosPb::set_has_linearized_pos() {
+  _has_bits_[0] |= 0x00000080u;
+}
+inline void ArtePosPb::clear_has_linearized_pos() {
+  _has_bits_[0] &= ~0x00000080u;
+}
+inline void ArtePosPb::clear_linearized_pos() {
+  linearized_pos_ = 0;
+  clear_has_linearized_pos();
+}
+inline float ArtePosPb::linearized_pos() const {
+  return linearized_pos_;
+}
+inline void ArtePosPb::set_linearized_pos(float value) {
+  set_has_linearized_pos();
+  linearized_pos_ = value;
+}
+
+// optional float speed = 9;
+inline bool ArtePosPb::has_speed() const {
+  return (_has_bits_[0] & 0x00000100u) != 0;
+}
+inline void ArtePosPb::set_has_speed() {
+  _has_bits_[0] |= 0x00000100u;
+}
+inline void ArtePosPb::clear_has_speed() {
+  _has_bits_[0] &= ~0x00000100u;
+}
+inline void ArtePosPb::clear_speed() {
+  speed_ = 0;
+  clear_has_speed();
+}
+inline float ArtePosPb::speed() const {
+  return speed_;
+}
+inline void ArtePosPb::set_speed(float value) {
+  set_has_speed();
+  speed_ = value;
+}
+
+// -------------------------------------------------------------------
+
 // ArtePb
 
 // optional uint64 timestamp = 1;
@@ -5337,6 +5503,10 @@ inline ::ArteSessionOptPb* ArtePb::release_arte_session() {
 namespace google {
 namespace protobuf {
 
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::ArtePosPb_TrackerConfidence>() {
+  return ::ArtePosPb_TrackerConfidence_descriptor();
+}
 
 }  // namespace google
 }  // namespace protobuf

@@ -34,13 +34,6 @@ message ArteRawBufferPb{
 	repeated ArteVoltageTimeseries       chan_data  = 2;
 }
 
-message ArtePosPb{
-	optional float                           x_pos  = 1;
-	optional float                           y_pos  = 2; 
-	optional float                      head_angle  = 3;
-        optional string               behavioral_state  = 4;
-}
-
 message ArteFilterOptPb{
 	optional string                   filter_name  = 1;
 	repeated float                     numerators  = 2;
@@ -149,7 +142,7 @@ message ArtePosPb{
              PARTIAL = 1;
              NONE = 2;
         }
-        optional TrakcerConfidence          confidence  = 7;
+        optional TrackerConfidence          confidence  = 7;
         /* No PosOptPb b/c tracker setup is handled
            by a non-main-arte-pb system.  Indend these
            output buffers to be independent of tracker params */
@@ -175,6 +168,5 @@ message ArtePb{
 	optional ArteSetupOptPb             arte_setup  = 8;
 	optional ArteSessionOptPb         arte_session  = 9;
 
-        optional ArtePosPb                    arte_pos  = 10;
 }
 
