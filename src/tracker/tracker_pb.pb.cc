@@ -78,9 +78,10 @@ void protobuf_AssignDesc_tracker_5fpb_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(Affine2D));
   CameraOpt_descriptor_ = file->message_type(2);
-  static const int CameraOpt_offsets_[10] = {
+  static const int CameraOpt_offsets_[11] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraOpt, id_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraOpt, dev_or_file_name_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraOpt, input_file_name_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraOpt, output_file_name_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraOpt, px_to_pos_scale_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraOpt, px_to_pos_aff2d_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraOpt, led_blur1_),
@@ -102,9 +103,10 @@ void protobuf_AssignDesc_tracker_5fpb_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(CameraOpt));
   CameraGroup_descriptor_ = file->message_type(3);
-  static const int CameraGroup_offsets_[2] = {
+  static const int CameraGroup_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraGroup, cam_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraGroup, combine_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraGroup, label_),
   };
   CameraGroup_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -206,20 +208,21 @@ void protobuf_AddDesc_tracker_5fpb_2eproto() {
     "\n\020tracker_pb.proto\"P\n\nScaleShift\022\017\n\007x_sc"
     "ale\030\001 \001(\002\022\017\n\007x_shift\030\002 \001(\002\022\017\n\007y_scale\030\003 "
     "\001(\002\022\017\n\007y_shift\030\004 \001(\002\"\030\n\010Affine2D\022\014\n\004coef"
-    "\030\001 \003(\002\"\370\001\n\tCameraOpt\022\n\n\002id\030\001 \001(\005\022\030\n\020dev_"
-    "or_file_name\030\002 \001(\t\022$\n\017px_to_pos_scale\030\003 "
-    "\001(\0132\013.ScaleShift\022\"\n\017px_to_pos_aff2d\030\004 \001("
-    "\0132\t.Affine2D\022\021\n\tled_blur1\030\005 \001(\005\022\025\n\rled_t"
-    "hreshold\030\006 \001(\002\022\021\n\tled_blur2\030\007 \001(\005\022\022\n\nbod"
-    "y_blur1\030\010 \001(\005\022\026\n\016body_threshold\030\t \001(\005\022\022\n"
-    "\nbody_blur2\030\n \001(\005\"\210\001\n\013CameraGroup\022\027\n\003cam"
-    "\030\001 \003(\0132\n.CameraOpt\022*\n\007combine\030\002 \001(\0162\031.Ca"
-    "meraGroup.CombineStyle\"4\n\014CombineStyle\022\010"
+    "\030\001 \003(\002\"\221\002\n\tCameraOpt\022\n\n\002id\030\001 \001(\005\022\027\n\017inpu"
+    "t_file_name\030\002 \001(\t\022\030\n\020output_file_name\030\003 "
+    "\001(\t\022$\n\017px_to_pos_scale\030\004 \001(\0132\013.ScaleShif"
+    "t\022\"\n\017px_to_pos_aff2d\030\005 \001(\0132\t.Affine2D\022\021\n"
+    "\tled_blur1\030\006 \001(\005\022\025\n\rled_threshold\030\007 \001(\002\022"
+    "\021\n\tled_blur2\030\010 \001(\005\022\022\n\nbody_blur1\030\t \001(\005\022\026"
+    "\n\016body_threshold\030\n \001(\002\022\022\n\nbody_blur2\030\013 \001"
+    "(\005\"\227\001\n\013CameraGroup\022\027\n\003cam\030\001 \003(\0132\n.Camera"
+    "Opt\022*\n\007combine\030\002 \001(\0162\031.CameraGroup.Combi"
+    "neStyle\022\r\n\005label\030\003 \001(\t\"4\n\014CombineStyle\022\010"
     "\n\004NONE\020\001\022\016\n\nPANOSTITCH\020\002\022\n\n\006FULL3D\020\003\"2\n\003"
     "Led\022\r\n\005x_pos\030\001 \001(\002\022\r\n\005y_pos\030\002 \001(\002\022\r\n\005z_p"
     "os\030\003 \001(\002\"[\n\nTrackerOpt\022\033\n\005group\030\001 \003(\0132\014."
     "CameraGroup\022\022\n\nmax_n_cams\030\002 \001(\005\022\r\n\005timer"
-    "\030\003 \001(\t\022\r\n\005n_led\030\004 \001(\005", 661);
+    "\030\003 \001(\t\022\r\n\005n_led\030\004 \001(\005", 701);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "tracker_pb.proto", &protobuf_RegisterTypes);
   ScaleShift::default_instance_ = new ScaleShift();
@@ -775,7 +778,8 @@ void Affine2D::Swap(Affine2D* other) {
 
 #ifndef _MSC_VER
 const int CameraOpt::kIdFieldNumber;
-const int CameraOpt::kDevOrFileNameFieldNumber;
+const int CameraOpt::kInputFileNameFieldNumber;
+const int CameraOpt::kOutputFileNameFieldNumber;
 const int CameraOpt::kPxToPosScaleFieldNumber;
 const int CameraOpt::kPxToPosAff2DFieldNumber;
 const int CameraOpt::kLedBlur1FieldNumber;
@@ -805,7 +809,8 @@ CameraOpt::CameraOpt(const CameraOpt& from)
 void CameraOpt::SharedCtor() {
   _cached_size_ = 0;
   id_ = 0;
-  dev_or_file_name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  input_file_name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  output_file_name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   px_to_pos_scale_ = NULL;
   px_to_pos_aff2d_ = NULL;
   led_blur1_ = 0;
@@ -822,8 +827,11 @@ CameraOpt::~CameraOpt() {
 }
 
 void CameraOpt::SharedDtor() {
-  if (dev_or_file_name_ != &::google::protobuf::internal::kEmptyString) {
-    delete dev_or_file_name_;
+  if (input_file_name_ != &::google::protobuf::internal::kEmptyString) {
+    delete input_file_name_;
+  }
+  if (output_file_name_ != &::google::protobuf::internal::kEmptyString) {
+    delete output_file_name_;
   }
   if (this != default_instance_) {
     delete px_to_pos_scale_;
@@ -854,9 +862,14 @@ CameraOpt* CameraOpt::New() const {
 void CameraOpt::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     id_ = 0;
-    if (has_dev_or_file_name()) {
-      if (dev_or_file_name_ != &::google::protobuf::internal::kEmptyString) {
-        dev_or_file_name_->clear();
+    if (has_input_file_name()) {
+      if (input_file_name_ != &::google::protobuf::internal::kEmptyString) {
+        input_file_name_->clear();
+      }
+    }
+    if (has_output_file_name()) {
+      if (output_file_name_ != &::google::protobuf::internal::kEmptyString) {
+        output_file_name_->clear();
       }
     }
     if (has_px_to_pos_scale()) {
@@ -868,9 +881,9 @@ void CameraOpt::Clear() {
     led_blur1_ = 0;
     led_threshold_ = 0;
     led_blur2_ = 0;
-    body_blur1_ = 0;
   }
   if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    body_blur1_ = 0;
     body_threshold_ = 0;
     body_blur2_ = 0;
   }
@@ -895,29 +908,46 @@ bool CameraOpt::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(18)) goto parse_dev_or_file_name;
+        if (input->ExpectTag(18)) goto parse_input_file_name;
         break;
       }
       
-      // optional string dev_or_file_name = 2;
+      // optional string input_file_name = 2;
       case 2: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_dev_or_file_name:
+         parse_input_file_name:
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_dev_or_file_name()));
+                input, this->mutable_input_file_name()));
           ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-            this->dev_or_file_name().data(), this->dev_or_file_name().length(),
+            this->input_file_name().data(), this->input_file_name().length(),
             ::google::protobuf::internal::WireFormat::PARSE);
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(26)) goto parse_px_to_pos_scale;
+        if (input->ExpectTag(26)) goto parse_output_file_name;
         break;
       }
       
-      // optional .ScaleShift px_to_pos_scale = 3;
+      // optional string output_file_name = 3;
       case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_output_file_name:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_output_file_name()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->output_file_name().data(), this->output_file_name().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(34)) goto parse_px_to_pos_scale;
+        break;
+      }
+      
+      // optional .ScaleShift px_to_pos_scale = 4;
+      case 4: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_px_to_pos_scale:
@@ -926,12 +956,12 @@ bool CameraOpt::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(34)) goto parse_px_to_pos_aff2d;
+        if (input->ExpectTag(42)) goto parse_px_to_pos_aff2d;
         break;
       }
       
-      // optional .Affine2D px_to_pos_aff2d = 4;
-      case 4: {
+      // optional .Affine2D px_to_pos_aff2d = 5;
+      case 5: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_px_to_pos_aff2d:
@@ -940,12 +970,12 @@ bool CameraOpt::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(40)) goto parse_led_blur1;
+        if (input->ExpectTag(48)) goto parse_led_blur1;
         break;
       }
       
-      // optional int32 led_blur1 = 5;
-      case 5: {
+      // optional int32 led_blur1 = 6;
+      case 6: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_led_blur1:
@@ -956,12 +986,12 @@ bool CameraOpt::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(53)) goto parse_led_threshold;
+        if (input->ExpectTag(61)) goto parse_led_threshold;
         break;
       }
       
-      // optional float led_threshold = 6;
-      case 6: {
+      // optional float led_threshold = 7;
+      case 7: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
          parse_led_threshold:
@@ -972,12 +1002,12 @@ bool CameraOpt::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(56)) goto parse_led_blur2;
+        if (input->ExpectTag(64)) goto parse_led_blur2;
         break;
       }
       
-      // optional int32 led_blur2 = 7;
-      case 7: {
+      // optional int32 led_blur2 = 8;
+      case 8: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_led_blur2:
@@ -988,12 +1018,12 @@ bool CameraOpt::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(64)) goto parse_body_blur1;
+        if (input->ExpectTag(72)) goto parse_body_blur1;
         break;
       }
       
-      // optional int32 body_blur1 = 8;
-      case 8: {
+      // optional int32 body_blur1 = 9;
+      case 9: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_body_blur1:
@@ -1004,28 +1034,28 @@ bool CameraOpt::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(72)) goto parse_body_threshold;
+        if (input->ExpectTag(85)) goto parse_body_threshold;
         break;
       }
       
-      // optional int32 body_threshold = 9;
-      case 9: {
+      // optional float body_threshold = 10;
+      case 10: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
          parse_body_threshold:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  input, &body_threshold_)));
           set_has_body_threshold();
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(80)) goto parse_body_blur2;
+        if (input->ExpectTag(88)) goto parse_body_blur2;
         break;
       }
       
-      // optional int32 body_blur2 = 10;
-      case 10: {
+      // optional int32 body_blur2 = 11;
+      case 11: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_body_blur2:
@@ -1063,55 +1093,64 @@ void CameraOpt::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->id(), output);
   }
   
-  // optional string dev_or_file_name = 2;
-  if (has_dev_or_file_name()) {
+  // optional string input_file_name = 2;
+  if (has_input_file_name()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->dev_or_file_name().data(), this->dev_or_file_name().length(),
+      this->input_file_name().data(), this->input_file_name().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     ::google::protobuf::internal::WireFormatLite::WriteString(
-      2, this->dev_or_file_name(), output);
+      2, this->input_file_name(), output);
   }
   
-  // optional .ScaleShift px_to_pos_scale = 3;
+  // optional string output_file_name = 3;
+  if (has_output_file_name()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->output_file_name().data(), this->output_file_name().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      3, this->output_file_name(), output);
+  }
+  
+  // optional .ScaleShift px_to_pos_scale = 4;
   if (has_px_to_pos_scale()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      3, this->px_to_pos_scale(), output);
+      4, this->px_to_pos_scale(), output);
   }
   
-  // optional .Affine2D px_to_pos_aff2d = 4;
+  // optional .Affine2D px_to_pos_aff2d = 5;
   if (has_px_to_pos_aff2d()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      4, this->px_to_pos_aff2d(), output);
+      5, this->px_to_pos_aff2d(), output);
   }
   
-  // optional int32 led_blur1 = 5;
+  // optional int32 led_blur1 = 6;
   if (has_led_blur1()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(5, this->led_blur1(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(6, this->led_blur1(), output);
   }
   
-  // optional float led_threshold = 6;
+  // optional float led_threshold = 7;
   if (has_led_threshold()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(6, this->led_threshold(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(7, this->led_threshold(), output);
   }
   
-  // optional int32 led_blur2 = 7;
+  // optional int32 led_blur2 = 8;
   if (has_led_blur2()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(7, this->led_blur2(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(8, this->led_blur2(), output);
   }
   
-  // optional int32 body_blur1 = 8;
+  // optional int32 body_blur1 = 9;
   if (has_body_blur1()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(8, this->body_blur1(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(9, this->body_blur1(), output);
   }
   
-  // optional int32 body_threshold = 9;
+  // optional float body_threshold = 10;
   if (has_body_threshold()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(9, this->body_threshold(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(10, this->body_threshold(), output);
   }
   
-  // optional int32 body_blur2 = 10;
+  // optional int32 body_blur2 = 11;
   if (has_body_blur2()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(10, this->body_blur2(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(11, this->body_blur2(), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -1127,58 +1166,68 @@ void CameraOpt::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->id(), target);
   }
   
-  // optional string dev_or_file_name = 2;
-  if (has_dev_or_file_name()) {
+  // optional string input_file_name = 2;
+  if (has_input_file_name()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->dev_or_file_name().data(), this->dev_or_file_name().length(),
+      this->input_file_name().data(), this->input_file_name().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        2, this->dev_or_file_name(), target);
+        2, this->input_file_name(), target);
   }
   
-  // optional .ScaleShift px_to_pos_scale = 3;
+  // optional string output_file_name = 3;
+  if (has_output_file_name()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->output_file_name().data(), this->output_file_name().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        3, this->output_file_name(), target);
+  }
+  
+  // optional .ScaleShift px_to_pos_scale = 4;
   if (has_px_to_pos_scale()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        3, this->px_to_pos_scale(), target);
+        4, this->px_to_pos_scale(), target);
   }
   
-  // optional .Affine2D px_to_pos_aff2d = 4;
+  // optional .Affine2D px_to_pos_aff2d = 5;
   if (has_px_to_pos_aff2d()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        4, this->px_to_pos_aff2d(), target);
+        5, this->px_to_pos_aff2d(), target);
   }
   
-  // optional int32 led_blur1 = 5;
+  // optional int32 led_blur1 = 6;
   if (has_led_blur1()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(5, this->led_blur1(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(6, this->led_blur1(), target);
   }
   
-  // optional float led_threshold = 6;
+  // optional float led_threshold = 7;
   if (has_led_threshold()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(6, this->led_threshold(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(7, this->led_threshold(), target);
   }
   
-  // optional int32 led_blur2 = 7;
+  // optional int32 led_blur2 = 8;
   if (has_led_blur2()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(7, this->led_blur2(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(8, this->led_blur2(), target);
   }
   
-  // optional int32 body_blur1 = 8;
+  // optional int32 body_blur1 = 9;
   if (has_body_blur1()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(8, this->body_blur1(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(9, this->body_blur1(), target);
   }
   
-  // optional int32 body_threshold = 9;
+  // optional float body_threshold = 10;
   if (has_body_threshold()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(9, this->body_threshold(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(10, this->body_threshold(), target);
   }
   
-  // optional int32 body_blur2 = 10;
+  // optional int32 body_blur2 = 11;
   if (has_body_blur2()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(10, this->body_blur2(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(11, this->body_blur2(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -1199,63 +1248,68 @@ int CameraOpt::ByteSize() const {
           this->id());
     }
     
-    // optional string dev_or_file_name = 2;
-    if (has_dev_or_file_name()) {
+    // optional string input_file_name = 2;
+    if (has_input_file_name()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
-          this->dev_or_file_name());
+          this->input_file_name());
     }
     
-    // optional .ScaleShift px_to_pos_scale = 3;
+    // optional string output_file_name = 3;
+    if (has_output_file_name()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->output_file_name());
+    }
+    
+    // optional .ScaleShift px_to_pos_scale = 4;
     if (has_px_to_pos_scale()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           this->px_to_pos_scale());
     }
     
-    // optional .Affine2D px_to_pos_aff2d = 4;
+    // optional .Affine2D px_to_pos_aff2d = 5;
     if (has_px_to_pos_aff2d()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           this->px_to_pos_aff2d());
     }
     
-    // optional int32 led_blur1 = 5;
+    // optional int32 led_blur1 = 6;
     if (has_led_blur1()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
           this->led_blur1());
     }
     
-    // optional float led_threshold = 6;
+    // optional float led_threshold = 7;
     if (has_led_threshold()) {
       total_size += 1 + 4;
     }
     
-    // optional int32 led_blur2 = 7;
+    // optional int32 led_blur2 = 8;
     if (has_led_blur2()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
           this->led_blur2());
     }
     
-    // optional int32 body_blur1 = 8;
+  }
+  if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    // optional int32 body_blur1 = 9;
     if (has_body_blur1()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
           this->body_blur1());
     }
     
-  }
-  if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
-    // optional int32 body_threshold = 9;
+    // optional float body_threshold = 10;
     if (has_body_threshold()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::Int32Size(
-          this->body_threshold());
+      total_size += 1 + 4;
     }
     
-    // optional int32 body_blur2 = 10;
+    // optional int32 body_blur2 = 11;
     if (has_body_blur2()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
@@ -1292,8 +1346,11 @@ void CameraOpt::MergeFrom(const CameraOpt& from) {
     if (from.has_id()) {
       set_id(from.id());
     }
-    if (from.has_dev_or_file_name()) {
-      set_dev_or_file_name(from.dev_or_file_name());
+    if (from.has_input_file_name()) {
+      set_input_file_name(from.input_file_name());
+    }
+    if (from.has_output_file_name()) {
+      set_output_file_name(from.output_file_name());
     }
     if (from.has_px_to_pos_scale()) {
       mutable_px_to_pos_scale()->::ScaleShift::MergeFrom(from.px_to_pos_scale());
@@ -1310,11 +1367,11 @@ void CameraOpt::MergeFrom(const CameraOpt& from) {
     if (from.has_led_blur2()) {
       set_led_blur2(from.led_blur2());
     }
+  }
+  if (from._has_bits_[8 / 32] & (0xffu << (8 % 32))) {
     if (from.has_body_blur1()) {
       set_body_blur1(from.body_blur1());
     }
-  }
-  if (from._has_bits_[8 / 32] & (0xffu << (8 % 32))) {
     if (from.has_body_threshold()) {
       set_body_threshold(from.body_threshold());
     }
@@ -1345,7 +1402,8 @@ bool CameraOpt::IsInitialized() const {
 void CameraOpt::Swap(CameraOpt* other) {
   if (other != this) {
     std::swap(id_, other->id_);
-    std::swap(dev_or_file_name_, other->dev_or_file_name_);
+    std::swap(input_file_name_, other->input_file_name_);
+    std::swap(output_file_name_, other->output_file_name_);
     std::swap(px_to_pos_scale_, other->px_to_pos_scale_);
     std::swap(px_to_pos_aff2d_, other->px_to_pos_aff2d_);
     std::swap(led_blur1_, other->led_blur1_);
@@ -1397,6 +1455,7 @@ const int CameraGroup::CombineStyle_ARRAYSIZE;
 #ifndef _MSC_VER
 const int CameraGroup::kCamFieldNumber;
 const int CameraGroup::kCombineFieldNumber;
+const int CameraGroup::kLabelFieldNumber;
 #endif  // !_MSC_VER
 
 CameraGroup::CameraGroup()
@@ -1416,6 +1475,7 @@ CameraGroup::CameraGroup(const CameraGroup& from)
 void CameraGroup::SharedCtor() {
   _cached_size_ = 0;
   combine_ = 1;
+  label_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -1424,6 +1484,9 @@ CameraGroup::~CameraGroup() {
 }
 
 void CameraGroup::SharedDtor() {
+  if (label_ != &::google::protobuf::internal::kEmptyString) {
+    delete label_;
+  }
   if (this != default_instance_) {
   }
 }
@@ -1451,6 +1514,11 @@ CameraGroup* CameraGroup::New() const {
 void CameraGroup::Clear() {
   if (_has_bits_[1 / 32] & (0xffu << (1 % 32))) {
     combine_ = 1;
+    if (has_label()) {
+      if (label_ != &::google::protobuf::internal::kEmptyString) {
+        label_->clear();
+      }
+    }
   }
   cam_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -1495,6 +1563,23 @@ bool CameraGroup::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(26)) goto parse_label;
+        break;
+      }
+      
+      // optional string label = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_label:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_label()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->label().data(), this->label().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -1529,6 +1614,15 @@ void CameraGroup::SerializeWithCachedSizes(
       2, this->combine(), output);
   }
   
+  // optional string label = 3;
+  if (has_label()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->label().data(), this->label().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      3, this->label(), output);
+  }
+  
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -1550,6 +1644,16 @@ void CameraGroup::SerializeWithCachedSizes(
       2, this->combine(), target);
   }
   
+  // optional string label = 3;
+  if (has_label()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->label().data(), this->label().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        3, this->label(), target);
+  }
+  
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -1565,6 +1669,13 @@ int CameraGroup::ByteSize() const {
     if (has_combine()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::EnumSize(this->combine());
+    }
+    
+    // optional string label = 3;
+    if (has_label()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->label());
     }
     
   }
@@ -1606,6 +1717,9 @@ void CameraGroup::MergeFrom(const CameraGroup& from) {
     if (from.has_combine()) {
       set_combine(from.combine());
     }
+    if (from.has_label()) {
+      set_label(from.label());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -1631,6 +1745,7 @@ void CameraGroup::Swap(CameraGroup* other) {
   if (other != this) {
     cam_.Swap(&other->cam_);
     std::swap(combine_, other->combine_);
+    std::swap(label_, other->label_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

@@ -1,14 +1,3 @@
-#ifndef TRACKER_H_
-#define TRACKER_H_
-
-#include "tracker_gui.h"
-#include "tracker_data_source.h"
-#include "tracker_processor.h"
-#include "../glom.h"
-#include "../netcom.h"
-#include "../arte_pb.pb.h"
-#include "../arte_command.pb.h"
-
 /* Tracker class: Main class for rat tracker.
    
    Has pointers to 
@@ -29,14 +18,27 @@
 
 */
 
+#ifndef TRACKER_H_
+#define TRACKER_H_
+
+#include "tracker_gui.h"
+#include "tracker_data_source.h"
+#include "tracker_processor.h"
+#include "tracker_pb.pb.h"
+#include "../glom.h"
+#include "../netcom.h"
+#include "../arte_pb.pb.h"
+#include "../arte_command.pb.h"
+
+
 class Tracker {
 
  public:
-  Tracker();
+  Tracker(int argc, char *argv[]);
   ~Tracker();
 
  private:
-  /* TrackerDataSource *data_source; */
+  TrackerDataSource *tracker_data_source;
   /* TrackerGui *gui; */
   /* TrackerProcessor *processor; */
 
@@ -45,6 +47,8 @@ class Tracker {
 
   TrackerOpt *tracker_opt;
   ArtePb     *pos_pb;
+
+  void init(int argc, char *argv[]);
 
 };
 
