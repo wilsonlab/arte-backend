@@ -8,7 +8,10 @@
 
 Tracker::Tracker(int argc, char *argv[]){
   init(argc, argv);
-  tracker_data_source = new TrackerDataSource( *tracker_opt );
+  //tracker_data_source = new TrackerDataSource( *tracker_opt );
+
+  gui = new TrackerGui(argc, argv);
+
 }
 
 
@@ -45,6 +48,7 @@ void Tracker::init(int argc, char *argv[]){
               << "\n Please put a valid config file in ~/.arte/tracker_default.conf"
               << " or run tracker with a path to a good config file.\n";
   }
+
 
 }
 

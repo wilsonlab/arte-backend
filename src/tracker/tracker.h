@@ -39,7 +39,7 @@ class Tracker {
 
  private:
   TrackerDataSource *tracker_data_source;
-  /* TrackerGui *gui; */
+  TrackerGui *gui;
   /* TrackerProcessor *processor; */
 
   NetCom *pos_netcom;
