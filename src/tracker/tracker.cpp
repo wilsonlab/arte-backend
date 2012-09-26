@@ -18,19 +18,19 @@ Tracker::Tracker(int argc, char *argv[]){
 Tracker::~Tracker(){
   std::cout << "Tracker: bye\n";
 }
- 
+
 void Tracker::init(int argc, char *argv[]){
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   tracker_opt = new TrackerOpt ();
 
   std::string conf_path = std::string(getenv("HOME")) + "/.arte/tracker_default.conf";
- 
+
   struct stat filestatus;
   if ((stat ( conf_path.c_str(), &filestatus )) == 0){ // file exists
 
     int file_desc = open(conf_path.c_str(), O_RDONLY);
-    
+
     bool success = false;
     if(filestatus.st_size){
       google::protobuf::io::FileInputStream conf_stream(file_desc);
@@ -38,13 +38,13 @@ void Tracker::init(int argc, char *argv[]){
     }
     printf("Filename: %s   Filesize: %d\n", conf_path.c_str(), filestatus.st_size);
     if(!success){
-      std::cerr << 
+      std::cerr <<
         std::cerr << "Tracker Error: config file " << conf_path << " is invalid."
-                << "\n Please put a valid config file in ~/.arte/tracker_default.conf"
-                << " or run tracker with a path to a good config file.\n";
+                  << "\n Please put a valid config file in ~/.arte/tracker_default.conf"
+                  << " or run tracker with a path to a good config file.\n";
     }
   } else {  // file does not exist
-    std::cerr << "No file found at " << conf_path 
+    std::cerr << "No file found at " << conf_path
               << "\n Please put a valid config file in ~/.arte/tracker_default.conf"
               << " or run tracker with a path to a good config file.\n";
   }
