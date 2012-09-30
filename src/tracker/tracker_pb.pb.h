@@ -317,10 +317,17 @@ class CameraOpt : public ::google::protobuf::Message {
   inline ::google::protobuf::int32 id() const;
   inline void set_id(::google::protobuf::int32 value);
   
-  // optional string input_file_name = 2;
+  // optional int32 serial_number = 2;
+  inline bool has_serial_number() const;
+  inline void clear_serial_number();
+  static const int kSerialNumberFieldNumber = 2;
+  inline ::google::protobuf::int32 serial_number() const;
+  inline void set_serial_number(::google::protobuf::int32 value);
+  
+  // optional string input_file_name = 3;
   inline bool has_input_file_name() const;
   inline void clear_input_file_name();
-  static const int kInputFileNameFieldNumber = 2;
+  static const int kInputFileNameFieldNumber = 3;
   inline const ::std::string& input_file_name() const;
   inline void set_input_file_name(const ::std::string& value);
   inline void set_input_file_name(const char* value);
@@ -328,10 +335,10 @@ class CameraOpt : public ::google::protobuf::Message {
   inline ::std::string* mutable_input_file_name();
   inline ::std::string* release_input_file_name();
   
-  // optional string output_file_name = 3;
+  // optional string output_file_name = 4;
   inline bool has_output_file_name() const;
   inline void clear_output_file_name();
-  static const int kOutputFileNameFieldNumber = 3;
+  static const int kOutputFileNameFieldNumber = 4;
   inline const ::std::string& output_file_name() const;
   inline void set_output_file_name(const ::std::string& value);
   inline void set_output_file_name(const char* value);
@@ -339,61 +346,61 @@ class CameraOpt : public ::google::protobuf::Message {
   inline ::std::string* mutable_output_file_name();
   inline ::std::string* release_output_file_name();
   
-  // optional .ScaleShift px_to_pos_scale = 4;
+  // optional .ScaleShift px_to_pos_scale = 5;
   inline bool has_px_to_pos_scale() const;
   inline void clear_px_to_pos_scale();
-  static const int kPxToPosScaleFieldNumber = 4;
+  static const int kPxToPosScaleFieldNumber = 5;
   inline const ::ScaleShift& px_to_pos_scale() const;
   inline ::ScaleShift* mutable_px_to_pos_scale();
   inline ::ScaleShift* release_px_to_pos_scale();
   
-  // optional .Affine2D px_to_pos_aff2d = 5;
+  // optional .Affine2D px_to_pos_aff2d = 6;
   inline bool has_px_to_pos_aff2d() const;
   inline void clear_px_to_pos_aff2d();
-  static const int kPxToPosAff2DFieldNumber = 5;
+  static const int kPxToPosAff2DFieldNumber = 6;
   inline const ::Affine2D& px_to_pos_aff2d() const;
   inline ::Affine2D* mutable_px_to_pos_aff2d();
   inline ::Affine2D* release_px_to_pos_aff2d();
   
-  // optional int32 led_blur1 = 6;
+  // optional int32 led_blur1 = 7;
   inline bool has_led_blur1() const;
   inline void clear_led_blur1();
-  static const int kLedBlur1FieldNumber = 6;
+  static const int kLedBlur1FieldNumber = 7;
   inline ::google::protobuf::int32 led_blur1() const;
   inline void set_led_blur1(::google::protobuf::int32 value);
   
-  // optional float led_threshold = 7;
+  // optional float led_threshold = 8;
   inline bool has_led_threshold() const;
   inline void clear_led_threshold();
-  static const int kLedThresholdFieldNumber = 7;
+  static const int kLedThresholdFieldNumber = 8;
   inline float led_threshold() const;
   inline void set_led_threshold(float value);
   
-  // optional int32 led_blur2 = 8;
+  // optional int32 led_blur2 = 9;
   inline bool has_led_blur2() const;
   inline void clear_led_blur2();
-  static const int kLedBlur2FieldNumber = 8;
+  static const int kLedBlur2FieldNumber = 9;
   inline ::google::protobuf::int32 led_blur2() const;
   inline void set_led_blur2(::google::protobuf::int32 value);
   
-  // optional int32 body_blur1 = 9;
+  // optional int32 body_blur1 = 10;
   inline bool has_body_blur1() const;
   inline void clear_body_blur1();
-  static const int kBodyBlur1FieldNumber = 9;
+  static const int kBodyBlur1FieldNumber = 10;
   inline ::google::protobuf::int32 body_blur1() const;
   inline void set_body_blur1(::google::protobuf::int32 value);
   
-  // optional float body_threshold = 10;
+  // optional float body_threshold = 11;
   inline bool has_body_threshold() const;
   inline void clear_body_threshold();
-  static const int kBodyThresholdFieldNumber = 10;
+  static const int kBodyThresholdFieldNumber = 11;
   inline float body_threshold() const;
   inline void set_body_threshold(float value);
   
-  // optional int32 body_blur2 = 11;
+  // optional int32 body_blur2 = 12;
   inline bool has_body_blur2() const;
   inline void clear_body_blur2();
-  static const int kBodyBlur2FieldNumber = 11;
+  static const int kBodyBlur2FieldNumber = 12;
   inline ::google::protobuf::int32 body_blur2() const;
   inline void set_body_blur2(::google::protobuf::int32 value);
   
@@ -401,6 +408,8 @@ class CameraOpt : public ::google::protobuf::Message {
  private:
   inline void set_has_id();
   inline void clear_has_id();
+  inline void set_has_serial_number();
+  inline void clear_has_serial_number();
   inline void set_has_input_file_name();
   inline void clear_has_input_file_name();
   inline void set_has_output_file_name();
@@ -424,12 +433,13 @@ class CameraOpt : public ::google::protobuf::Message {
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
+  ::google::protobuf::int32 id_;
+  ::google::protobuf::int32 serial_number_;
   ::std::string* input_file_name_;
   ::std::string* output_file_name_;
-  ::google::protobuf::int32 id_;
-  ::google::protobuf::int32 led_blur1_;
   ::ScaleShift* px_to_pos_scale_;
   ::Affine2D* px_to_pos_aff2d_;
+  ::google::protobuf::int32 led_blur1_;
   float led_threshold_;
   ::google::protobuf::int32 led_blur2_;
   ::google::protobuf::int32 body_blur1_;
@@ -437,7 +447,7 @@ class CameraOpt : public ::google::protobuf::Message {
   ::google::protobuf::int32 body_blur2_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(11 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(12 + 31) / 32];
   
   friend void  protobuf_AddDesc_tracker_5fpb_2eproto();
   friend void protobuf_AssignDesc_tracker_5fpb_2eproto();
@@ -951,15 +961,37 @@ inline void CameraOpt::set_id(::google::protobuf::int32 value) {
   id_ = value;
 }
 
-// optional string input_file_name = 2;
-inline bool CameraOpt::has_input_file_name() const {
+// optional int32 serial_number = 2;
+inline bool CameraOpt::has_serial_number() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void CameraOpt::set_has_input_file_name() {
+inline void CameraOpt::set_has_serial_number() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void CameraOpt::clear_has_input_file_name() {
+inline void CameraOpt::clear_has_serial_number() {
   _has_bits_[0] &= ~0x00000002u;
+}
+inline void CameraOpt::clear_serial_number() {
+  serial_number_ = 0;
+  clear_has_serial_number();
+}
+inline ::google::protobuf::int32 CameraOpt::serial_number() const {
+  return serial_number_;
+}
+inline void CameraOpt::set_serial_number(::google::protobuf::int32 value) {
+  set_has_serial_number();
+  serial_number_ = value;
+}
+
+// optional string input_file_name = 3;
+inline bool CameraOpt::has_input_file_name() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void CameraOpt::set_has_input_file_name() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void CameraOpt::clear_has_input_file_name() {
+  _has_bits_[0] &= ~0x00000004u;
 }
 inline void CameraOpt::clear_input_file_name() {
   if (input_file_name_ != &::google::protobuf::internal::kEmptyString) {
@@ -1009,15 +1041,15 @@ inline ::std::string* CameraOpt::release_input_file_name() {
   }
 }
 
-// optional string output_file_name = 3;
+// optional string output_file_name = 4;
 inline bool CameraOpt::has_output_file_name() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
+  return (_has_bits_[0] & 0x00000008u) != 0;
 }
 inline void CameraOpt::set_has_output_file_name() {
-  _has_bits_[0] |= 0x00000004u;
+  _has_bits_[0] |= 0x00000008u;
 }
 inline void CameraOpt::clear_has_output_file_name() {
-  _has_bits_[0] &= ~0x00000004u;
+  _has_bits_[0] &= ~0x00000008u;
 }
 inline void CameraOpt::clear_output_file_name() {
   if (output_file_name_ != &::google::protobuf::internal::kEmptyString) {
@@ -1067,15 +1099,15 @@ inline ::std::string* CameraOpt::release_output_file_name() {
   }
 }
 
-// optional .ScaleShift px_to_pos_scale = 4;
+// optional .ScaleShift px_to_pos_scale = 5;
 inline bool CameraOpt::has_px_to_pos_scale() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
+  return (_has_bits_[0] & 0x00000010u) != 0;
 }
 inline void CameraOpt::set_has_px_to_pos_scale() {
-  _has_bits_[0] |= 0x00000008u;
+  _has_bits_[0] |= 0x00000010u;
 }
 inline void CameraOpt::clear_has_px_to_pos_scale() {
-  _has_bits_[0] &= ~0x00000008u;
+  _has_bits_[0] &= ~0x00000010u;
 }
 inline void CameraOpt::clear_px_to_pos_scale() {
   if (px_to_pos_scale_ != NULL) px_to_pos_scale_->::ScaleShift::Clear();
@@ -1096,15 +1128,15 @@ inline ::ScaleShift* CameraOpt::release_px_to_pos_scale() {
   return temp;
 }
 
-// optional .Affine2D px_to_pos_aff2d = 5;
+// optional .Affine2D px_to_pos_aff2d = 6;
 inline bool CameraOpt::has_px_to_pos_aff2d() const {
-  return (_has_bits_[0] & 0x00000010u) != 0;
+  return (_has_bits_[0] & 0x00000020u) != 0;
 }
 inline void CameraOpt::set_has_px_to_pos_aff2d() {
-  _has_bits_[0] |= 0x00000010u;
+  _has_bits_[0] |= 0x00000020u;
 }
 inline void CameraOpt::clear_has_px_to_pos_aff2d() {
-  _has_bits_[0] &= ~0x00000010u;
+  _has_bits_[0] &= ~0x00000020u;
 }
 inline void CameraOpt::clear_px_to_pos_aff2d() {
   if (px_to_pos_aff2d_ != NULL) px_to_pos_aff2d_->::Affine2D::Clear();
@@ -1125,15 +1157,15 @@ inline ::Affine2D* CameraOpt::release_px_to_pos_aff2d() {
   return temp;
 }
 
-// optional int32 led_blur1 = 6;
+// optional int32 led_blur1 = 7;
 inline bool CameraOpt::has_led_blur1() const {
-  return (_has_bits_[0] & 0x00000020u) != 0;
+  return (_has_bits_[0] & 0x00000040u) != 0;
 }
 inline void CameraOpt::set_has_led_blur1() {
-  _has_bits_[0] |= 0x00000020u;
+  _has_bits_[0] |= 0x00000040u;
 }
 inline void CameraOpt::clear_has_led_blur1() {
-  _has_bits_[0] &= ~0x00000020u;
+  _has_bits_[0] &= ~0x00000040u;
 }
 inline void CameraOpt::clear_led_blur1() {
   led_blur1_ = 0;
@@ -1147,15 +1179,15 @@ inline void CameraOpt::set_led_blur1(::google::protobuf::int32 value) {
   led_blur1_ = value;
 }
 
-// optional float led_threshold = 7;
+// optional float led_threshold = 8;
 inline bool CameraOpt::has_led_threshold() const {
-  return (_has_bits_[0] & 0x00000040u) != 0;
+  return (_has_bits_[0] & 0x00000080u) != 0;
 }
 inline void CameraOpt::set_has_led_threshold() {
-  _has_bits_[0] |= 0x00000040u;
+  _has_bits_[0] |= 0x00000080u;
 }
 inline void CameraOpt::clear_has_led_threshold() {
-  _has_bits_[0] &= ~0x00000040u;
+  _has_bits_[0] &= ~0x00000080u;
 }
 inline void CameraOpt::clear_led_threshold() {
   led_threshold_ = 0;
@@ -1169,15 +1201,15 @@ inline void CameraOpt::set_led_threshold(float value) {
   led_threshold_ = value;
 }
 
-// optional int32 led_blur2 = 8;
+// optional int32 led_blur2 = 9;
 inline bool CameraOpt::has_led_blur2() const {
-  return (_has_bits_[0] & 0x00000080u) != 0;
+  return (_has_bits_[0] & 0x00000100u) != 0;
 }
 inline void CameraOpt::set_has_led_blur2() {
-  _has_bits_[0] |= 0x00000080u;
+  _has_bits_[0] |= 0x00000100u;
 }
 inline void CameraOpt::clear_has_led_blur2() {
-  _has_bits_[0] &= ~0x00000080u;
+  _has_bits_[0] &= ~0x00000100u;
 }
 inline void CameraOpt::clear_led_blur2() {
   led_blur2_ = 0;
@@ -1191,15 +1223,15 @@ inline void CameraOpt::set_led_blur2(::google::protobuf::int32 value) {
   led_blur2_ = value;
 }
 
-// optional int32 body_blur1 = 9;
+// optional int32 body_blur1 = 10;
 inline bool CameraOpt::has_body_blur1() const {
-  return (_has_bits_[0] & 0x00000100u) != 0;
+  return (_has_bits_[0] & 0x00000200u) != 0;
 }
 inline void CameraOpt::set_has_body_blur1() {
-  _has_bits_[0] |= 0x00000100u;
+  _has_bits_[0] |= 0x00000200u;
 }
 inline void CameraOpt::clear_has_body_blur1() {
-  _has_bits_[0] &= ~0x00000100u;
+  _has_bits_[0] &= ~0x00000200u;
 }
 inline void CameraOpt::clear_body_blur1() {
   body_blur1_ = 0;
@@ -1213,15 +1245,15 @@ inline void CameraOpt::set_body_blur1(::google::protobuf::int32 value) {
   body_blur1_ = value;
 }
 
-// optional float body_threshold = 10;
+// optional float body_threshold = 11;
 inline bool CameraOpt::has_body_threshold() const {
-  return (_has_bits_[0] & 0x00000200u) != 0;
+  return (_has_bits_[0] & 0x00000400u) != 0;
 }
 inline void CameraOpt::set_has_body_threshold() {
-  _has_bits_[0] |= 0x00000200u;
+  _has_bits_[0] |= 0x00000400u;
 }
 inline void CameraOpt::clear_has_body_threshold() {
-  _has_bits_[0] &= ~0x00000200u;
+  _has_bits_[0] &= ~0x00000400u;
 }
 inline void CameraOpt::clear_body_threshold() {
   body_threshold_ = 0;
@@ -1235,15 +1267,15 @@ inline void CameraOpt::set_body_threshold(float value) {
   body_threshold_ = value;
 }
 
-// optional int32 body_blur2 = 11;
+// optional int32 body_blur2 = 12;
 inline bool CameraOpt::has_body_blur2() const {
-  return (_has_bits_[0] & 0x00000400u) != 0;
+  return (_has_bits_[0] & 0x00000800u) != 0;
 }
 inline void CameraOpt::set_has_body_blur2() {
-  _has_bits_[0] |= 0x00000400u;
+  _has_bits_[0] |= 0x00000800u;
 }
 inline void CameraOpt::clear_has_body_blur2() {
-  _has_bits_[0] &= ~0x00000400u;
+  _has_bits_[0] &= ~0x00000800u;
 }
 inline void CameraOpt::clear_body_blur2() {
   body_blur2_ = 0;

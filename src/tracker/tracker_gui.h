@@ -12,13 +12,18 @@
 class TrackerGui {
 
  public:
-  TrackerGui(int argc, char *argv[]);
+  TrackerGui(int argc, char *argv[], 
+             TRACKER_CALLBACK_FN run_callback, void* cb_data_r,
+             TRACKER_CALLBACK_FN new_settings, void* cb_data_s);
   void update_tracker_gui( std::vector< ArteFrame >, ArtePb& pos_pb );
 
  private:
   
   TrackerWindow *tracker_window;
   TrackerConfigWindow *tracker_config_window;
+
+  TRACKER_CALLBACK_FN run_callback, new_settings;
+  void *cb_data_R, *cb_data_s;
 
 };
 

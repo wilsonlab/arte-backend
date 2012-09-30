@@ -28,7 +28,9 @@ class TrackerWindow {
   
  public:
 
-  TrackerWindow(int argc, char *argv[]);
+  TrackerWindow(int argc, char *argv[],
+                TRACKER_CALLBACK_FN2 run_callback, void *cb_data_r,
+                TRACKER_CALLBACK_FN2 new_settings, void *cb_data_s);
 
   // update builds the picture to display
   void update( std::vector <ArteFrame>, ArtePb& pos_pb);
@@ -40,6 +42,10 @@ class TrackerWindow {
 
 
  private:
+
+  /** Callback pointers and data **/
+  TRACKER_CALLBACK_FN2 run_callback, new_settings;
+  void *cb_data_r, *cb_data_s;
 
   /** Glade XML object (the libglade way)**/
   Glib::RefPtr<Gnome::Glade::Xml> m_refXml;

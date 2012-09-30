@@ -1,6 +1,11 @@
 #include "tracker_window.h"
 
-TrackerWindow::TrackerWindow(int argc, char *argv[]){
+TrackerWindow::TrackerWindow(int argc, char *argv[],
+                             TRACKER_CALLBACK_FN2 run_callback, void *cb_data_r,
+                             TRACKER_CALLBACK_FN2 new_settings, void *cb_data_s) :
+  run_callback(run_callback), cb_data_r(cb_data_r),
+  new_settings(new_settings), cb_data_s(cb_data_s)
+{
 
   init(argc, argv);
 
@@ -134,6 +139,7 @@ void TrackerWindow::OnAcquisition(){
   if(!acquiring){
     std::cout << "Acquiring.\n";
     acquiring = true;
+    run_callback( cb_data_r, &acquiring );
   } else {
     if(recording){
       std::cout << "Can't stop acquiring during recording.\n";
@@ -141,6 +147,7 @@ void TrackerWindow::OnAcquisition(){
     } else {
       std::cout << "Not Acquiring\n";
       acquiring = false;
+      run_callback( cb_data_r, &acquiring );
     }
   }
 }

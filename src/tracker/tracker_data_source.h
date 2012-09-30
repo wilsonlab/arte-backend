@@ -7,12 +7,18 @@
 #ifndef TRACKER_DATA_SOURCE_H_
 #define TRACKER_DATA_SOURCE_H_
 
-#include <opencv.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/core/core.hpp>
+//#include <cv.h>
+
 #include "FlyCapture2.h"
 #include "tracker_pb.pb.h"
+#include "tracker_defs.h"
 
 enum InputType { FLYCAP_IN, OPENCV_IN }; 
 const InputType input_type = FLYCAP_IN;
+
+enum bool_or_unset {BOU_UNSET, BOU_TRUE, BOU_FALSE};
 
 class TrackerDataSource {
 
@@ -28,18 +34,38 @@ class TrackerDataSource {
    */   
   TrackerDataSource( TrackerOpt &opt, 
                      TRACKER_CALLBACK_FN callback_p,
-                     void *callback_data);
+                     void *callback_data,
+                     frame_collections *frames,
+                     bool *main_running);
   
+  //  int run_cameras();  // this is now static, s_run_cameras
+  static int s_run_cameras(TrackerDataSource *the_source);
 
  private:
-  int init_cameras( TrackerOpt &opt );
-  int init_files( TrackerOpt &opt );
+  int init_cameras( );
+  int init_files( );
+
+  bool_or_unset file_sources;
 
   void print_camera_info( FlyCapture2::CameraInfo* pCamInfo );
   void print_flycapture_build_info();
 
+  TrackerOpt opt;
   TRACKER_CALLBACK_FN callback_p;
   void *callback_data;
+
+  bool *main_running;
+
+  std::map <FlyCapture2::Camera*, ArteFrame*> physical_cameras_p;
+  std::map <CvCapture*,           ArteFrame*> simulated_cameras_p;
+
+  // pointer to frames vector vector owned by tracker.cpp
+  frame_collections *frames;
+
+  static void ptgr_err(FlyCapture2::Error);
+  void list_serial_numbers();
+
+  static void flycapture_to_opencv( FlyCapture2::Image*, IplImage* );
 
 };
 
