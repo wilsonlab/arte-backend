@@ -37,6 +37,8 @@ class TrackerDataSource {
                      void *callback_data,
                      frame_collections *frames,
                      bool *main_running);
+
+  ~TrackerDataSource();
   
   //  int run_cameras();  // this is now static, s_run_cameras
   static int s_run_cameras(TrackerDataSource *the_source);
@@ -59,6 +61,11 @@ class TrackerDataSource {
   std::map <FlyCapture2::Camera*, ArteFrame*> physical_cameras_p;
   std::map <CvCapture*,           ArteFrame*> simulated_cameras_p;
 
+  // Another list of the cameras, in format needed for
+  // FlyCapture2::Camera::StartSyncCapture
+  FlyCapture2::Camera **ppCameras;
+ 
+
   // pointer to frames vector vector owned by tracker.cpp
   frame_collections *frames;
 
@@ -67,6 +74,11 @@ class TrackerDataSource {
 
   static void flycapture_to_opencv( FlyCapture2::Image*, IplImage* );
 
+  // Display just for testing purposes
+  bool draw;
+  int which_cam;
+  
+  
 };
 
 

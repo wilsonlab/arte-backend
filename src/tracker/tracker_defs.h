@@ -17,11 +17,13 @@ typedef void (*TRACKER_CALLBACK_FN3)(void *, void *, void *);
 // Define image_collections
 typedef std::vector <ArteFrame*> frame_p_collection;
 typedef std::vector <frame_p_collection> frame_collections;
+typedef std::map <std::string, frame_collections> multi_frame_collections_map;
 
 const bool VERBOSE = true;
 
 const int FRAME_WIDTH = 640;
 const int FRAME_HEIGHT = 480;
 const int FRAME_RATE = 30;
+
 
 #endif

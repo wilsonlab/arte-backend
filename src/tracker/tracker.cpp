@@ -63,6 +63,8 @@ void Tracker::run_callback(void *cb_data, void *is_running){
       t->cam_thread->join();
       std::cout << "Joined cam_thread\n"; fflush(stdout);
       delete (t->cam_thread);
+      t->cam_thread = NULL;
+      std::cout << "Deleted cam_thread, it is now: " << t->cam_thread;
     } else{
       std::cout << "No thread.  Nothing to do.\n"; fflush(stdout);
     }
@@ -122,7 +124,7 @@ void Tracker::init(int argc, char *argv[]){
     for(int j = 0; j < tracker_opt->group(i).cam_size(); j++){
       IplImage *this_image = cvCreateImage( cvSize(FRAME_WIDTH, FRAME_HEIGHT),
                                             IPL_DEPTH_8U, 1);
-      frames[i].push_back( (ArteFrame*) NULL);
+      frames[i].push_back( (ArteFrame*) this_image);
     }
   }
 

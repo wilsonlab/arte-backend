@@ -35,16 +35,24 @@ TrackerDataSource::TrackerDataSource( TrackerOpt &opt,
 
   init_cameras();
 
+
+  // Drawing just to test capture
+  draw = true;
+  if(draw){
+    which_cam = 2;
+    cvNamedWindow( "Test drawing", CV_WINDOW_AUTOSIZE);
+  }
+
 }
 
-// int TrackerDataSource::run_cameras(){
+TrackerDataSource::~TrackerDataSource(){
 
-//   std::thread source_thread( &TrackerDataSource::s_run_cameras, this );
-//   //std::cout << "Waiting to join source_thread\n";
-//   //source_thread.join();
-//   std::cout << "Finished run_cameras call\n";
+  if(draw){
+    cvDestroyWindow( "Test drawing" );
+  }
 
-// }
+}
+
 
 int TrackerDataSource::s_run_cameras(TrackerDataSource *s){
 
@@ -53,22 +61,13 @@ int TrackerDataSource::s_run_cameras(TrackerDataSource *s){
   // If we are using cameras, not files, then
   if(s->file_sources == BOU_FALSE){
 
-    // Initialize the capture
-    // Build the camera list in the way that flycapture2 wants it: pointer array
-    int n_cams = s->physical_cameras_p.size();
-    FlyCapture2::Camera **ppCameras =
-      new FlyCapture2::Camera*[n_cams];
-    std::map< FlyCapture2::Camera*, ArteFrame*>::iterator it = 
-      s->physical_cameras_p.begin();
-    it = s->physical_cameras_p.begin();
-    for(int i = 0; i < n_cams; i++){
-      ppCameras[i] = it->first;
-      it++;
-    }
+
     FlyCapture2::Error error;
+    std::map<FlyCapture2::Camera*, ArteFrame*>::iterator it;
+    std::cout << "About to start Capture\n";
     ptgr_err( error =
               FlyCapture2::Camera::StartSyncCapture( s->physical_cameras_p.size(),
-                                             (const FlyCapture2::Camera**)ppCameras) );
+                                                     (const FlyCapture2::Camera**)s->ppCameras) );
     if( error != FlyCapture2::PGRERROR_OK){
       std::cerr << "Error starting synced camera capture!/n";
     }
@@ -88,14 +87,30 @@ int TrackerDataSource::s_run_cameras(TrackerDataSource *s){
         }
 
         // Copy frame to frame collection structure
-        flycapture_to_opencv( &image, it->second );
+        s->flycapture_to_opencv( &image, it->second );
+        printf("Hello!\n");
+        // Draw the frame, maybe
+        //        printf("it: %p  begin(): %p\n", it, s->physical_cameras_p.begin());
+        //        if( s->draw && (it == s->physical_cameras_p.begin() ) ){
+        //        if(s->draw){
+          cvShowImage("Test drawing", it->second);
+          //        std::thread t ( cvShowImage, "Test drawing", it->second);
+          //        t.join();
+          //        }
 
       } // end loop over cameras
 
-      std::cout << "From run_cameras, main_running is now: " 
+      std::cout << "From run_cameras, main_running is now: "
                 << *(s->main_running) << std::endl;
 
     } // end of main_running loop
+
+    for(it = s->physical_cameras_p.begin(); it != s->physical_cameras_p.end(); it++){
+      std::cout << "About to Stop()\n";
+      it->first->StopCapture();
+      std::cout << "Finished Stop()\n";
+    }
+
 
   } // end if camera sources
 
@@ -107,8 +122,28 @@ int TrackerDataSource::s_run_cameras(TrackerDataSource *s){
 
 }
 
-void TrackerDataSource::flycapture_to_opencv( FlyCapture2::Image*, IplImage* ){
-  printf("Converting, la la la ...\n");
+void TrackerDataSource::flycapture_to_opencv( FlyCapture2::Image* f, IplImage* t){
+  //printf("Converting, la la la ... f:%p  t:%p\n",f,t);
+  int f_wd = f->GetCols();
+  int f_ht = f->GetRows();
+  float f_bytes_per_px = f->GetBitsPerPixel() / 8.0f;
+  int t_wd = t->width;
+  int t_ht = t->height;
+  float t_bytes_per_px = (t->depth == IPL_DEPTH_8U) || (t->depth == IPL_DEPTH_8S)
+    ? 1.0f : 2.0f;
+
+  //  printf("f_wd: %d  f_ht: %d,  f_byte: %f,  t_wd: %d  t_ht: %d  t_byte: %f\n",
+  //         f_wd, f_ht, f_bytes_per_px, t_wd, t_ht, t_bytes_per_px);
+
+  if ( (t_wd == f_wd) &&
+       (t_ht == f_ht) &&
+       ((abs(t_bytes_per_px - f_bytes_per_px)) < 0.1) ){
+    int rnd_bits = (abs(t_bytes_per_px - 8.0) < 0.1) ? 1 : 2;
+    rnd_bits = 1;
+    memcpy( t->imageData, f->GetData(), t_wd*t_ht*rnd_bits);
+    printf("data[10] is: %c\n", t->imageData[10]);
+  }
+
 }
 
 // Fill out physical_cameras_p vector
@@ -195,6 +230,18 @@ int TrackerDataSource::init_cameras(){
         // Insert a pair into the camera listing map
         // camera_pointer -> image_pointer
         physical_cameras_p[this_camera_p] = (*frames)[g][c];
+
+        // Initialize the capture
+        // Build the camera list in the way that flycapture2 wants it: pointer array
+        std::map<FlyCapture2::Camera*, ArteFrame*>::iterator it;
+        int n_cams = physical_cameras_p.size();
+        ppCameras = new FlyCapture2::Camera*[n_cams];
+        it = physical_cameras_p.begin();
+        for(int i = 0; i < n_cams; i++){
+          ppCameras[i] = it->first;
+          it++;
+        }
+
 
       } // endif this camera really is camera soure
 
