@@ -30,8 +30,9 @@ void  protobuf_AddDesc_tracker_5fpb_2eproto();
 void protobuf_AssignDesc_tracker_5fpb_2eproto();
 void protobuf_ShutdownFile_tracker_5fpb_2eproto();
 
-class ScaleShift;
+class OrthoConv;
 class Affine2D;
+class ProjMat;
 class CameraOpt;
 class CameraGroup;
 class Led;
@@ -59,14 +60,14 @@ inline bool CameraGroup_CombineStyle_Parse(
 }
 // ===================================================================
 
-class ScaleShift : public ::google::protobuf::Message {
+class OrthoConv : public ::google::protobuf::Message {
  public:
-  ScaleShift();
-  virtual ~ScaleShift();
+  OrthoConv();
+  virtual ~OrthoConv();
   
-  ScaleShift(const ScaleShift& from);
+  OrthoConv(const OrthoConv& from);
   
-  inline ScaleShift& operator=(const ScaleShift& from) {
+  inline OrthoConv& operator=(const OrthoConv& from) {
     CopyFrom(from);
     return *this;
   }
@@ -80,17 +81,17 @@ class ScaleShift : public ::google::protobuf::Message {
   }
   
   static const ::google::protobuf::Descriptor* descriptor();
-  static const ScaleShift& default_instance();
+  static const OrthoConv& default_instance();
   
-  void Swap(ScaleShift* other);
+  void Swap(OrthoConv* other);
   
   // implements Message ----------------------------------------------
   
-  ScaleShift* New() const;
+  OrthoConv* New() const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const ScaleShift& from);
-  void MergeFrom(const ScaleShift& from);
+  void CopyFrom(const OrthoConv& from);
+  void MergeFrom(const OrthoConv& from);
   void Clear();
   bool IsInitialized() const;
   
@@ -113,51 +114,51 @@ class ScaleShift : public ::google::protobuf::Message {
   
   // accessors -------------------------------------------------------
   
-  // optional float x_scale = 1;
-  inline bool has_x_scale() const;
-  inline void clear_x_scale();
-  static const int kXScaleFieldNumber = 1;
-  inline float x_scale() const;
-  inline void set_x_scale(float value);
+  // optional float x_min = 1;
+  inline bool has_x_min() const;
+  inline void clear_x_min();
+  static const int kXMinFieldNumber = 1;
+  inline float x_min() const;
+  inline void set_x_min(float value);
   
-  // optional float x_shift = 2;
-  inline bool has_x_shift() const;
-  inline void clear_x_shift();
-  static const int kXShiftFieldNumber = 2;
-  inline float x_shift() const;
-  inline void set_x_shift(float value);
+  // optional float x_max = 2;
+  inline bool has_x_max() const;
+  inline void clear_x_max();
+  static const int kXMaxFieldNumber = 2;
+  inline float x_max() const;
+  inline void set_x_max(float value);
   
-  // optional float y_scale = 3;
-  inline bool has_y_scale() const;
-  inline void clear_y_scale();
-  static const int kYScaleFieldNumber = 3;
-  inline float y_scale() const;
-  inline void set_y_scale(float value);
+  // optional float y_min = 3;
+  inline bool has_y_min() const;
+  inline void clear_y_min();
+  static const int kYMinFieldNumber = 3;
+  inline float y_min() const;
+  inline void set_y_min(float value);
   
-  // optional float y_shift = 4;
-  inline bool has_y_shift() const;
-  inline void clear_y_shift();
-  static const int kYShiftFieldNumber = 4;
-  inline float y_shift() const;
-  inline void set_y_shift(float value);
+  // optional float y_max = 4;
+  inline bool has_y_max() const;
+  inline void clear_y_max();
+  static const int kYMaxFieldNumber = 4;
+  inline float y_max() const;
+  inline void set_y_max(float value);
   
-  // @@protoc_insertion_point(class_scope:ScaleShift)
+  // @@protoc_insertion_point(class_scope:OrthoConv)
  private:
-  inline void set_has_x_scale();
-  inline void clear_has_x_scale();
-  inline void set_has_x_shift();
-  inline void clear_has_x_shift();
-  inline void set_has_y_scale();
-  inline void clear_has_y_scale();
-  inline void set_has_y_shift();
-  inline void clear_has_y_shift();
+  inline void set_has_x_min();
+  inline void clear_has_x_min();
+  inline void set_has_x_max();
+  inline void clear_has_x_max();
+  inline void set_has_y_min();
+  inline void clear_has_y_min();
+  inline void set_has_y_max();
+  inline void clear_has_y_max();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
-  float x_scale_;
-  float x_shift_;
-  float y_scale_;
-  float y_shift_;
+  float x_min_;
+  float x_max_;
+  float y_min_;
+  float y_max_;
   
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
@@ -167,7 +168,7 @@ class ScaleShift : public ::google::protobuf::Message {
   friend void protobuf_ShutdownFile_tracker_5fpb_2eproto();
   
   void InitAsDefaultInstance();
-  static ScaleShift* default_instance_;
+  static OrthoConv* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -253,6 +254,91 @@ class Affine2D : public ::google::protobuf::Message {
   
   void InitAsDefaultInstance();
   static Affine2D* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class ProjMat : public ::google::protobuf::Message {
+ public:
+  ProjMat();
+  virtual ~ProjMat();
+  
+  ProjMat(const ProjMat& from);
+  
+  inline ProjMat& operator=(const ProjMat& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ProjMat& default_instance();
+  
+  void Swap(ProjMat* other);
+  
+  // implements Message ----------------------------------------------
+  
+  ProjMat* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const ProjMat& from);
+  void MergeFrom(const ProjMat& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // repeated float coef = 1;
+  inline int coef_size() const;
+  inline void clear_coef();
+  static const int kCoefFieldNumber = 1;
+  inline float coef(int index) const;
+  inline void set_coef(int index, float value);
+  inline void add_coef(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
+      coef() const;
+  inline ::google::protobuf::RepeatedField< float >*
+      mutable_coef();
+  
+  // @@protoc_insertion_point(class_scope:ProjMat)
+ private:
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::google::protobuf::RepeatedField< float > coef_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_tracker_5fpb_2eproto();
+  friend void protobuf_AssignDesc_tracker_5fpb_2eproto();
+  friend void protobuf_ShutdownFile_tracker_5fpb_2eproto();
+  
+  void InitAsDefaultInstance();
+  static ProjMat* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -346,63 +432,85 @@ class CameraOpt : public ::google::protobuf::Message {
   inline ::std::string* mutable_output_file_name();
   inline ::std::string* release_output_file_name();
   
-  // optional .ScaleShift px_to_pos_scale = 5;
-  inline bool has_px_to_pos_scale() const;
-  inline void clear_px_to_pos_scale();
-  static const int kPxToPosScaleFieldNumber = 5;
-  inline const ::ScaleShift& px_to_pos_scale() const;
-  inline ::ScaleShift* mutable_px_to_pos_scale();
-  inline ::ScaleShift* release_px_to_pos_scale();
+  // optional .OrthoConv ortho_conv = 5;
+  inline bool has_ortho_conv() const;
+  inline void clear_ortho_conv();
+  static const int kOrthoConvFieldNumber = 5;
+  inline const ::OrthoConv& ortho_conv() const;
+  inline ::OrthoConv* mutable_ortho_conv();
+  inline ::OrthoConv* release_ortho_conv();
   
-  // optional .Affine2D px_to_pos_aff2d = 6;
-  inline bool has_px_to_pos_aff2d() const;
-  inline void clear_px_to_pos_aff2d();
-  static const int kPxToPosAff2DFieldNumber = 6;
-  inline const ::Affine2D& px_to_pos_aff2d() const;
-  inline ::Affine2D* mutable_px_to_pos_aff2d();
-  inline ::Affine2D* release_px_to_pos_aff2d();
+  // optional .Affine2D affine_2d = 6;
+  inline bool has_affine_2d() const;
+  inline void clear_affine_2d();
+  static const int kAffine2DFieldNumber = 6;
+  inline const ::Affine2D& affine_2d() const;
+  inline ::Affine2D* mutable_affine_2d();
+  inline ::Affine2D* release_affine_2d();
   
-  // optional int32 led_blur1 = 7;
+  // optional .ProjMat proj_mat = 7;
+  inline bool has_proj_mat() const;
+  inline void clear_proj_mat();
+  static const int kProjMatFieldNumber = 7;
+  inline const ::ProjMat& proj_mat() const;
+  inline ::ProjMat* mutable_proj_mat();
+  inline ::ProjMat* release_proj_mat();
+  
+  // optional int32 led_blur1 = 8;
   inline bool has_led_blur1() const;
   inline void clear_led_blur1();
-  static const int kLedBlur1FieldNumber = 7;
+  static const int kLedBlur1FieldNumber = 8;
   inline ::google::protobuf::int32 led_blur1() const;
   inline void set_led_blur1(::google::protobuf::int32 value);
   
-  // optional float led_threshold = 8;
+  // optional float led_threshold = 9;
   inline bool has_led_threshold() const;
   inline void clear_led_threshold();
-  static const int kLedThresholdFieldNumber = 8;
+  static const int kLedThresholdFieldNumber = 9;
   inline float led_threshold() const;
   inline void set_led_threshold(float value);
   
-  // optional int32 led_blur2 = 9;
+  // optional int32 led_blur2 = 10;
   inline bool has_led_blur2() const;
   inline void clear_led_blur2();
-  static const int kLedBlur2FieldNumber = 9;
+  static const int kLedBlur2FieldNumber = 10;
   inline ::google::protobuf::int32 led_blur2() const;
   inline void set_led_blur2(::google::protobuf::int32 value);
   
-  // optional int32 body_blur1 = 10;
+  // optional int32 body_blur1 = 11;
   inline bool has_body_blur1() const;
   inline void clear_body_blur1();
-  static const int kBodyBlur1FieldNumber = 10;
+  static const int kBodyBlur1FieldNumber = 11;
   inline ::google::protobuf::int32 body_blur1() const;
   inline void set_body_blur1(::google::protobuf::int32 value);
   
-  // optional float body_threshold = 11;
+  // optional float body_threshold = 12;
   inline bool has_body_threshold() const;
   inline void clear_body_threshold();
-  static const int kBodyThresholdFieldNumber = 11;
+  static const int kBodyThresholdFieldNumber = 12;
   inline float body_threshold() const;
   inline void set_body_threshold(float value);
   
-  // optional int32 body_blur2 = 12;
+  // optional int32 body_blur2 = 13;
   inline bool has_body_blur2() const;
   inline void clear_body_blur2();
-  static const int kBodyBlur2FieldNumber = 12;
+  static const int kBodyBlur2FieldNumber = 13;
   inline ::google::protobuf::int32 body_blur2() const;
   inline void set_body_blur2(::google::protobuf::int32 value);
+  
+  // optional int32 led_diameter_px = 14;
+  inline bool has_led_diameter_px() const;
+  inline void clear_led_diameter_px();
+  static const int kLedDiameterPxFieldNumber = 14;
+  inline ::google::protobuf::int32 led_diameter_px() const;
+  inline void set_led_diameter_px(::google::protobuf::int32 value);
+  
+  // optional bool background_subtract = 15;
+  inline bool has_background_subtract() const;
+  inline void clear_background_subtract();
+  static const int kBackgroundSubtractFieldNumber = 15;
+  inline bool background_subtract() const;
+  inline void set_background_subtract(bool value);
   
   // @@protoc_insertion_point(class_scope:CameraOpt)
  private:
@@ -414,10 +522,12 @@ class CameraOpt : public ::google::protobuf::Message {
   inline void clear_has_input_file_name();
   inline void set_has_output_file_name();
   inline void clear_has_output_file_name();
-  inline void set_has_px_to_pos_scale();
-  inline void clear_has_px_to_pos_scale();
-  inline void set_has_px_to_pos_aff2d();
-  inline void clear_has_px_to_pos_aff2d();
+  inline void set_has_ortho_conv();
+  inline void clear_has_ortho_conv();
+  inline void set_has_affine_2d();
+  inline void clear_has_affine_2d();
+  inline void set_has_proj_mat();
+  inline void clear_has_proj_mat();
   inline void set_has_led_blur1();
   inline void clear_has_led_blur1();
   inline void set_has_led_threshold();
@@ -430,6 +540,10 @@ class CameraOpt : public ::google::protobuf::Message {
   inline void clear_has_body_threshold();
   inline void set_has_body_blur2();
   inline void clear_has_body_blur2();
+  inline void set_has_led_diameter_px();
+  inline void clear_has_led_diameter_px();
+  inline void set_has_background_subtract();
+  inline void clear_has_background_subtract();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
@@ -437,17 +551,20 @@ class CameraOpt : public ::google::protobuf::Message {
   ::google::protobuf::int32 serial_number_;
   ::std::string* input_file_name_;
   ::std::string* output_file_name_;
-  ::ScaleShift* px_to_pos_scale_;
-  ::Affine2D* px_to_pos_aff2d_;
+  ::OrthoConv* ortho_conv_;
+  ::Affine2D* affine_2d_;
+  ::ProjMat* proj_mat_;
   ::google::protobuf::int32 led_blur1_;
   float led_threshold_;
   ::google::protobuf::int32 led_blur2_;
   ::google::protobuf::int32 body_blur1_;
   float body_threshold_;
   ::google::protobuf::int32 body_blur2_;
+  ::google::protobuf::int32 led_diameter_px_;
+  bool background_subtract_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(12 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(15 + 31) / 32];
   
   friend void  protobuf_AddDesc_tracker_5fpb_2eproto();
   friend void protobuf_AssignDesc_tracker_5fpb_2eproto();
@@ -816,94 +933,94 @@ class TrackerOpt : public ::google::protobuf::Message {
 
 // ===================================================================
 
-// ScaleShift
+// OrthoConv
 
-// optional float x_scale = 1;
-inline bool ScaleShift::has_x_scale() const {
+// optional float x_min = 1;
+inline bool OrthoConv::has_x_min() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void ScaleShift::set_has_x_scale() {
+inline void OrthoConv::set_has_x_min() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void ScaleShift::clear_has_x_scale() {
+inline void OrthoConv::clear_has_x_min() {
   _has_bits_[0] &= ~0x00000001u;
 }
-inline void ScaleShift::clear_x_scale() {
-  x_scale_ = 0;
-  clear_has_x_scale();
+inline void OrthoConv::clear_x_min() {
+  x_min_ = 0;
+  clear_has_x_min();
 }
-inline float ScaleShift::x_scale() const {
-  return x_scale_;
+inline float OrthoConv::x_min() const {
+  return x_min_;
 }
-inline void ScaleShift::set_x_scale(float value) {
-  set_has_x_scale();
-  x_scale_ = value;
+inline void OrthoConv::set_x_min(float value) {
+  set_has_x_min();
+  x_min_ = value;
 }
 
-// optional float x_shift = 2;
-inline bool ScaleShift::has_x_shift() const {
+// optional float x_max = 2;
+inline bool OrthoConv::has_x_max() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void ScaleShift::set_has_x_shift() {
+inline void OrthoConv::set_has_x_max() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void ScaleShift::clear_has_x_shift() {
+inline void OrthoConv::clear_has_x_max() {
   _has_bits_[0] &= ~0x00000002u;
 }
-inline void ScaleShift::clear_x_shift() {
-  x_shift_ = 0;
-  clear_has_x_shift();
+inline void OrthoConv::clear_x_max() {
+  x_max_ = 0;
+  clear_has_x_max();
 }
-inline float ScaleShift::x_shift() const {
-  return x_shift_;
+inline float OrthoConv::x_max() const {
+  return x_max_;
 }
-inline void ScaleShift::set_x_shift(float value) {
-  set_has_x_shift();
-  x_shift_ = value;
+inline void OrthoConv::set_x_max(float value) {
+  set_has_x_max();
+  x_max_ = value;
 }
 
-// optional float y_scale = 3;
-inline bool ScaleShift::has_y_scale() const {
+// optional float y_min = 3;
+inline bool OrthoConv::has_y_min() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
-inline void ScaleShift::set_has_y_scale() {
+inline void OrthoConv::set_has_y_min() {
   _has_bits_[0] |= 0x00000004u;
 }
-inline void ScaleShift::clear_has_y_scale() {
+inline void OrthoConv::clear_has_y_min() {
   _has_bits_[0] &= ~0x00000004u;
 }
-inline void ScaleShift::clear_y_scale() {
-  y_scale_ = 0;
-  clear_has_y_scale();
+inline void OrthoConv::clear_y_min() {
+  y_min_ = 0;
+  clear_has_y_min();
 }
-inline float ScaleShift::y_scale() const {
-  return y_scale_;
+inline float OrthoConv::y_min() const {
+  return y_min_;
 }
-inline void ScaleShift::set_y_scale(float value) {
-  set_has_y_scale();
-  y_scale_ = value;
+inline void OrthoConv::set_y_min(float value) {
+  set_has_y_min();
+  y_min_ = value;
 }
 
-// optional float y_shift = 4;
-inline bool ScaleShift::has_y_shift() const {
+// optional float y_max = 4;
+inline bool OrthoConv::has_y_max() const {
   return (_has_bits_[0] & 0x00000008u) != 0;
 }
-inline void ScaleShift::set_has_y_shift() {
+inline void OrthoConv::set_has_y_max() {
   _has_bits_[0] |= 0x00000008u;
 }
-inline void ScaleShift::clear_has_y_shift() {
+inline void OrthoConv::clear_has_y_max() {
   _has_bits_[0] &= ~0x00000008u;
 }
-inline void ScaleShift::clear_y_shift() {
-  y_shift_ = 0;
-  clear_has_y_shift();
+inline void OrthoConv::clear_y_max() {
+  y_max_ = 0;
+  clear_has_y_max();
 }
-inline float ScaleShift::y_shift() const {
-  return y_shift_;
+inline float OrthoConv::y_max() const {
+  return y_max_;
 }
-inline void ScaleShift::set_y_shift(float value) {
-  set_has_y_shift();
-  y_shift_ = value;
+inline void OrthoConv::set_y_max(float value) {
+  set_has_y_max();
+  y_max_ = value;
 }
 
 // -------------------------------------------------------------------
@@ -932,6 +1049,35 @@ Affine2D::coef() const {
 }
 inline ::google::protobuf::RepeatedField< float >*
 Affine2D::mutable_coef() {
+  return &coef_;
+}
+
+// -------------------------------------------------------------------
+
+// ProjMat
+
+// repeated float coef = 1;
+inline int ProjMat::coef_size() const {
+  return coef_.size();
+}
+inline void ProjMat::clear_coef() {
+  coef_.Clear();
+}
+inline float ProjMat::coef(int index) const {
+  return coef_.Get(index);
+}
+inline void ProjMat::set_coef(int index, float value) {
+  coef_.Set(index, value);
+}
+inline void ProjMat::add_coef(float value) {
+  coef_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< float >&
+ProjMat::coef() const {
+  return coef_;
+}
+inline ::google::protobuf::RepeatedField< float >*
+ProjMat::mutable_coef() {
   return &coef_;
 }
 
@@ -1099,73 +1245,102 @@ inline ::std::string* CameraOpt::release_output_file_name() {
   }
 }
 
-// optional .ScaleShift px_to_pos_scale = 5;
-inline bool CameraOpt::has_px_to_pos_scale() const {
+// optional .OrthoConv ortho_conv = 5;
+inline bool CameraOpt::has_ortho_conv() const {
   return (_has_bits_[0] & 0x00000010u) != 0;
 }
-inline void CameraOpt::set_has_px_to_pos_scale() {
+inline void CameraOpt::set_has_ortho_conv() {
   _has_bits_[0] |= 0x00000010u;
 }
-inline void CameraOpt::clear_has_px_to_pos_scale() {
+inline void CameraOpt::clear_has_ortho_conv() {
   _has_bits_[0] &= ~0x00000010u;
 }
-inline void CameraOpt::clear_px_to_pos_scale() {
-  if (px_to_pos_scale_ != NULL) px_to_pos_scale_->::ScaleShift::Clear();
-  clear_has_px_to_pos_scale();
+inline void CameraOpt::clear_ortho_conv() {
+  if (ortho_conv_ != NULL) ortho_conv_->::OrthoConv::Clear();
+  clear_has_ortho_conv();
 }
-inline const ::ScaleShift& CameraOpt::px_to_pos_scale() const {
-  return px_to_pos_scale_ != NULL ? *px_to_pos_scale_ : *default_instance_->px_to_pos_scale_;
+inline const ::OrthoConv& CameraOpt::ortho_conv() const {
+  return ortho_conv_ != NULL ? *ortho_conv_ : *default_instance_->ortho_conv_;
 }
-inline ::ScaleShift* CameraOpt::mutable_px_to_pos_scale() {
-  set_has_px_to_pos_scale();
-  if (px_to_pos_scale_ == NULL) px_to_pos_scale_ = new ::ScaleShift;
-  return px_to_pos_scale_;
+inline ::OrthoConv* CameraOpt::mutable_ortho_conv() {
+  set_has_ortho_conv();
+  if (ortho_conv_ == NULL) ortho_conv_ = new ::OrthoConv;
+  return ortho_conv_;
 }
-inline ::ScaleShift* CameraOpt::release_px_to_pos_scale() {
-  clear_has_px_to_pos_scale();
-  ::ScaleShift* temp = px_to_pos_scale_;
-  px_to_pos_scale_ = NULL;
+inline ::OrthoConv* CameraOpt::release_ortho_conv() {
+  clear_has_ortho_conv();
+  ::OrthoConv* temp = ortho_conv_;
+  ortho_conv_ = NULL;
   return temp;
 }
 
-// optional .Affine2D px_to_pos_aff2d = 6;
-inline bool CameraOpt::has_px_to_pos_aff2d() const {
+// optional .Affine2D affine_2d = 6;
+inline bool CameraOpt::has_affine_2d() const {
   return (_has_bits_[0] & 0x00000020u) != 0;
 }
-inline void CameraOpt::set_has_px_to_pos_aff2d() {
+inline void CameraOpt::set_has_affine_2d() {
   _has_bits_[0] |= 0x00000020u;
 }
-inline void CameraOpt::clear_has_px_to_pos_aff2d() {
+inline void CameraOpt::clear_has_affine_2d() {
   _has_bits_[0] &= ~0x00000020u;
 }
-inline void CameraOpt::clear_px_to_pos_aff2d() {
-  if (px_to_pos_aff2d_ != NULL) px_to_pos_aff2d_->::Affine2D::Clear();
-  clear_has_px_to_pos_aff2d();
+inline void CameraOpt::clear_affine_2d() {
+  if (affine_2d_ != NULL) affine_2d_->::Affine2D::Clear();
+  clear_has_affine_2d();
 }
-inline const ::Affine2D& CameraOpt::px_to_pos_aff2d() const {
-  return px_to_pos_aff2d_ != NULL ? *px_to_pos_aff2d_ : *default_instance_->px_to_pos_aff2d_;
+inline const ::Affine2D& CameraOpt::affine_2d() const {
+  return affine_2d_ != NULL ? *affine_2d_ : *default_instance_->affine_2d_;
 }
-inline ::Affine2D* CameraOpt::mutable_px_to_pos_aff2d() {
-  set_has_px_to_pos_aff2d();
-  if (px_to_pos_aff2d_ == NULL) px_to_pos_aff2d_ = new ::Affine2D;
-  return px_to_pos_aff2d_;
+inline ::Affine2D* CameraOpt::mutable_affine_2d() {
+  set_has_affine_2d();
+  if (affine_2d_ == NULL) affine_2d_ = new ::Affine2D;
+  return affine_2d_;
 }
-inline ::Affine2D* CameraOpt::release_px_to_pos_aff2d() {
-  clear_has_px_to_pos_aff2d();
-  ::Affine2D* temp = px_to_pos_aff2d_;
-  px_to_pos_aff2d_ = NULL;
+inline ::Affine2D* CameraOpt::release_affine_2d() {
+  clear_has_affine_2d();
+  ::Affine2D* temp = affine_2d_;
+  affine_2d_ = NULL;
   return temp;
 }
 
-// optional int32 led_blur1 = 7;
-inline bool CameraOpt::has_led_blur1() const {
+// optional .ProjMat proj_mat = 7;
+inline bool CameraOpt::has_proj_mat() const {
   return (_has_bits_[0] & 0x00000040u) != 0;
 }
-inline void CameraOpt::set_has_led_blur1() {
+inline void CameraOpt::set_has_proj_mat() {
   _has_bits_[0] |= 0x00000040u;
 }
-inline void CameraOpt::clear_has_led_blur1() {
+inline void CameraOpt::clear_has_proj_mat() {
   _has_bits_[0] &= ~0x00000040u;
+}
+inline void CameraOpt::clear_proj_mat() {
+  if (proj_mat_ != NULL) proj_mat_->::ProjMat::Clear();
+  clear_has_proj_mat();
+}
+inline const ::ProjMat& CameraOpt::proj_mat() const {
+  return proj_mat_ != NULL ? *proj_mat_ : *default_instance_->proj_mat_;
+}
+inline ::ProjMat* CameraOpt::mutable_proj_mat() {
+  set_has_proj_mat();
+  if (proj_mat_ == NULL) proj_mat_ = new ::ProjMat;
+  return proj_mat_;
+}
+inline ::ProjMat* CameraOpt::release_proj_mat() {
+  clear_has_proj_mat();
+  ::ProjMat* temp = proj_mat_;
+  proj_mat_ = NULL;
+  return temp;
+}
+
+// optional int32 led_blur1 = 8;
+inline bool CameraOpt::has_led_blur1() const {
+  return (_has_bits_[0] & 0x00000080u) != 0;
+}
+inline void CameraOpt::set_has_led_blur1() {
+  _has_bits_[0] |= 0x00000080u;
+}
+inline void CameraOpt::clear_has_led_blur1() {
+  _has_bits_[0] &= ~0x00000080u;
 }
 inline void CameraOpt::clear_led_blur1() {
   led_blur1_ = 0;
@@ -1179,15 +1354,15 @@ inline void CameraOpt::set_led_blur1(::google::protobuf::int32 value) {
   led_blur1_ = value;
 }
 
-// optional float led_threshold = 8;
+// optional float led_threshold = 9;
 inline bool CameraOpt::has_led_threshold() const {
-  return (_has_bits_[0] & 0x00000080u) != 0;
+  return (_has_bits_[0] & 0x00000100u) != 0;
 }
 inline void CameraOpt::set_has_led_threshold() {
-  _has_bits_[0] |= 0x00000080u;
+  _has_bits_[0] |= 0x00000100u;
 }
 inline void CameraOpt::clear_has_led_threshold() {
-  _has_bits_[0] &= ~0x00000080u;
+  _has_bits_[0] &= ~0x00000100u;
 }
 inline void CameraOpt::clear_led_threshold() {
   led_threshold_ = 0;
@@ -1201,15 +1376,15 @@ inline void CameraOpt::set_led_threshold(float value) {
   led_threshold_ = value;
 }
 
-// optional int32 led_blur2 = 9;
+// optional int32 led_blur2 = 10;
 inline bool CameraOpt::has_led_blur2() const {
-  return (_has_bits_[0] & 0x00000100u) != 0;
+  return (_has_bits_[0] & 0x00000200u) != 0;
 }
 inline void CameraOpt::set_has_led_blur2() {
-  _has_bits_[0] |= 0x00000100u;
+  _has_bits_[0] |= 0x00000200u;
 }
 inline void CameraOpt::clear_has_led_blur2() {
-  _has_bits_[0] &= ~0x00000100u;
+  _has_bits_[0] &= ~0x00000200u;
 }
 inline void CameraOpt::clear_led_blur2() {
   led_blur2_ = 0;
@@ -1223,15 +1398,15 @@ inline void CameraOpt::set_led_blur2(::google::protobuf::int32 value) {
   led_blur2_ = value;
 }
 
-// optional int32 body_blur1 = 10;
+// optional int32 body_blur1 = 11;
 inline bool CameraOpt::has_body_blur1() const {
-  return (_has_bits_[0] & 0x00000200u) != 0;
+  return (_has_bits_[0] & 0x00000400u) != 0;
 }
 inline void CameraOpt::set_has_body_blur1() {
-  _has_bits_[0] |= 0x00000200u;
+  _has_bits_[0] |= 0x00000400u;
 }
 inline void CameraOpt::clear_has_body_blur1() {
-  _has_bits_[0] &= ~0x00000200u;
+  _has_bits_[0] &= ~0x00000400u;
 }
 inline void CameraOpt::clear_body_blur1() {
   body_blur1_ = 0;
@@ -1245,15 +1420,15 @@ inline void CameraOpt::set_body_blur1(::google::protobuf::int32 value) {
   body_blur1_ = value;
 }
 
-// optional float body_threshold = 11;
+// optional float body_threshold = 12;
 inline bool CameraOpt::has_body_threshold() const {
-  return (_has_bits_[0] & 0x00000400u) != 0;
+  return (_has_bits_[0] & 0x00000800u) != 0;
 }
 inline void CameraOpt::set_has_body_threshold() {
-  _has_bits_[0] |= 0x00000400u;
+  _has_bits_[0] |= 0x00000800u;
 }
 inline void CameraOpt::clear_has_body_threshold() {
-  _has_bits_[0] &= ~0x00000400u;
+  _has_bits_[0] &= ~0x00000800u;
 }
 inline void CameraOpt::clear_body_threshold() {
   body_threshold_ = 0;
@@ -1267,15 +1442,15 @@ inline void CameraOpt::set_body_threshold(float value) {
   body_threshold_ = value;
 }
 
-// optional int32 body_blur2 = 12;
+// optional int32 body_blur2 = 13;
 inline bool CameraOpt::has_body_blur2() const {
-  return (_has_bits_[0] & 0x00000800u) != 0;
+  return (_has_bits_[0] & 0x00001000u) != 0;
 }
 inline void CameraOpt::set_has_body_blur2() {
-  _has_bits_[0] |= 0x00000800u;
+  _has_bits_[0] |= 0x00001000u;
 }
 inline void CameraOpt::clear_has_body_blur2() {
-  _has_bits_[0] &= ~0x00000800u;
+  _has_bits_[0] &= ~0x00001000u;
 }
 inline void CameraOpt::clear_body_blur2() {
   body_blur2_ = 0;
@@ -1287,6 +1462,50 @@ inline ::google::protobuf::int32 CameraOpt::body_blur2() const {
 inline void CameraOpt::set_body_blur2(::google::protobuf::int32 value) {
   set_has_body_blur2();
   body_blur2_ = value;
+}
+
+// optional int32 led_diameter_px = 14;
+inline bool CameraOpt::has_led_diameter_px() const {
+  return (_has_bits_[0] & 0x00002000u) != 0;
+}
+inline void CameraOpt::set_has_led_diameter_px() {
+  _has_bits_[0] |= 0x00002000u;
+}
+inline void CameraOpt::clear_has_led_diameter_px() {
+  _has_bits_[0] &= ~0x00002000u;
+}
+inline void CameraOpt::clear_led_diameter_px() {
+  led_diameter_px_ = 0;
+  clear_has_led_diameter_px();
+}
+inline ::google::protobuf::int32 CameraOpt::led_diameter_px() const {
+  return led_diameter_px_;
+}
+inline void CameraOpt::set_led_diameter_px(::google::protobuf::int32 value) {
+  set_has_led_diameter_px();
+  led_diameter_px_ = value;
+}
+
+// optional bool background_subtract = 15;
+inline bool CameraOpt::has_background_subtract() const {
+  return (_has_bits_[0] & 0x00004000u) != 0;
+}
+inline void CameraOpt::set_has_background_subtract() {
+  _has_bits_[0] |= 0x00004000u;
+}
+inline void CameraOpt::clear_has_background_subtract() {
+  _has_bits_[0] &= ~0x00004000u;
+}
+inline void CameraOpt::clear_background_subtract() {
+  background_subtract_ = false;
+  clear_has_background_subtract();
+}
+inline bool CameraOpt::background_subtract() const {
+  return background_subtract_;
+}
+inline void CameraOpt::set_background_subtract(bool value) {
+  set_has_background_subtract();
+  background_subtract_ = value;
 }
 
 // -------------------------------------------------------------------

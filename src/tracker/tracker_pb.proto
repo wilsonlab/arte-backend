@@ -1,31 +1,35 @@
 /* Define some types of transformations from
    camera pixel to room position */
-message ScaleShift {
-        optional float               x_scale  = 1;
-        optional float               x_shift  = 2;
-        optional float               y_scale  = 3;
-        optional float               y_shift  = 4;
+message OrthoConv {
+        optional float                 x_min  = 1;
+        optional float                 x_max  = 2;
+        optional float                 y_min  = 3;
+        optional float                 y_max  = 4;
 }
 message Affine2D {
         repeated float                  coef  = 1;
 }
-
-
+message ProjMat{
+        repeated float                  coef  = 1;
+}
 /* Describe one camera of the tracker */
 message CameraOpt {
         optional int32                    id  = 1;
         optional int32         serial_number  = 2;
         optional string      input_file_name  = 3;
         optional string      output_file_name = 4;
-        optional ScaleShift  px_to_pos_scale  = 5;
-        optional Affine2D    px_to_pos_aff2d  = 6;
+        optional OrthoConv        ortho_conv  = 5;
+        optional Affine2D          affine_2d  = 6;
+        optional ProjMat            proj_mat  = 7;
 
-        optional int32             led_blur1  = 7;
-        optional float         led_threshold  = 8;
-        optional int32             led_blur2  = 9;
-        optional int32            body_blur1  = 10;
-        optional float        body_threshold  = 11;
-        optional int32            body_blur2  = 12;
+        optional int32             led_blur1  = 8;
+        optional float         led_threshold  = 9;
+        optional int32             led_blur2  = 10;
+        optional int32            body_blur1  = 11;
+        optional float        body_threshold  = 12;
+        optional int32            body_blur2  = 13;
+        optional int32       led_diameter_px  = 14;  
+        optional bool    background_subtract  = 15;
 }
 
 

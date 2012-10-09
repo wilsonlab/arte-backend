@@ -15,12 +15,15 @@
 
 namespace {
 
-const ::google::protobuf::Descriptor* ScaleShift_descriptor_ = NULL;
+const ::google::protobuf::Descriptor* OrthoConv_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
-  ScaleShift_reflection_ = NULL;
+  OrthoConv_reflection_ = NULL;
 const ::google::protobuf::Descriptor* Affine2D_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   Affine2D_reflection_ = NULL;
+const ::google::protobuf::Descriptor* ProjMat_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  ProjMat_reflection_ = NULL;
 const ::google::protobuf::Descriptor* CameraOpt_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   CameraOpt_reflection_ = NULL;
@@ -44,24 +47,24 @@ void protobuf_AssignDesc_tracker_5fpb_2eproto() {
     ::google::protobuf::DescriptorPool::generated_pool()->FindFileByName(
       "tracker_pb.proto");
   GOOGLE_CHECK(file != NULL);
-  ScaleShift_descriptor_ = file->message_type(0);
-  static const int ScaleShift_offsets_[4] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ScaleShift, x_scale_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ScaleShift, x_shift_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ScaleShift, y_scale_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ScaleShift, y_shift_),
+  OrthoConv_descriptor_ = file->message_type(0);
+  static const int OrthoConv_offsets_[4] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OrthoConv, x_min_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OrthoConv, x_max_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OrthoConv, y_min_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OrthoConv, y_max_),
   };
-  ScaleShift_reflection_ =
+  OrthoConv_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
-      ScaleShift_descriptor_,
-      ScaleShift::default_instance_,
-      ScaleShift_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ScaleShift, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ScaleShift, _unknown_fields_),
+      OrthoConv_descriptor_,
+      OrthoConv::default_instance_,
+      OrthoConv_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OrthoConv, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OrthoConv, _unknown_fields_),
       -1,
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(ScaleShift));
+      sizeof(OrthoConv));
   Affine2D_descriptor_ = file->message_type(1);
   static const int Affine2D_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Affine2D, coef_),
@@ -77,20 +80,38 @@ void protobuf_AssignDesc_tracker_5fpb_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(Affine2D));
-  CameraOpt_descriptor_ = file->message_type(2);
-  static const int CameraOpt_offsets_[12] = {
+  ProjMat_descriptor_ = file->message_type(2);
+  static const int ProjMat_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProjMat, coef_),
+  };
+  ProjMat_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      ProjMat_descriptor_,
+      ProjMat::default_instance_,
+      ProjMat_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProjMat, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProjMat, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(ProjMat));
+  CameraOpt_descriptor_ = file->message_type(3);
+  static const int CameraOpt_offsets_[15] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraOpt, id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraOpt, serial_number_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraOpt, input_file_name_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraOpt, output_file_name_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraOpt, px_to_pos_scale_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraOpt, px_to_pos_aff2d_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraOpt, ortho_conv_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraOpt, affine_2d_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraOpt, proj_mat_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraOpt, led_blur1_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraOpt, led_threshold_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraOpt, led_blur2_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraOpt, body_blur1_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraOpt, body_threshold_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraOpt, body_blur2_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraOpt, led_diameter_px_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraOpt, background_subtract_),
   };
   CameraOpt_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -103,7 +124,7 @@ void protobuf_AssignDesc_tracker_5fpb_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(CameraOpt));
-  CameraGroup_descriptor_ = file->message_type(3);
+  CameraGroup_descriptor_ = file->message_type(4);
   static const int CameraGroup_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraGroup, cam_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraGroup, combine_),
@@ -121,7 +142,7 @@ void protobuf_AssignDesc_tracker_5fpb_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(CameraGroup));
   CameraGroup_CombineStyle_descriptor_ = CameraGroup_descriptor_->enum_type(0);
-  Led_descriptor_ = file->message_type(4);
+  Led_descriptor_ = file->message_type(5);
   static const int Led_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Led, x_pos_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Led, y_pos_),
@@ -138,7 +159,7 @@ void protobuf_AssignDesc_tracker_5fpb_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(Led));
-  TrackerOpt_descriptor_ = file->message_type(5);
+  TrackerOpt_descriptor_ = file->message_type(6);
   static const int TrackerOpt_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TrackerOpt, group_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TrackerOpt, max_n_cams_),
@@ -169,9 +190,11 @@ inline void protobuf_AssignDescriptorsOnce() {
 void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    ScaleShift_descriptor_, &ScaleShift::default_instance());
+    OrthoConv_descriptor_, &OrthoConv::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     Affine2D_descriptor_, &Affine2D::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    ProjMat_descriptor_, &ProjMat::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     CameraOpt_descriptor_, &CameraOpt::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
@@ -185,10 +208,12 @@ void protobuf_RegisterTypes(const ::std::string&) {
 }  // namespace
 
 void protobuf_ShutdownFile_tracker_5fpb_2eproto() {
-  delete ScaleShift::default_instance_;
-  delete ScaleShift_reflection_;
+  delete OrthoConv::default_instance_;
+  delete OrthoConv_reflection_;
   delete Affine2D::default_instance_;
   delete Affine2D_reflection_;
+  delete ProjMat::default_instance_;
+  delete ProjMat_reflection_;
   delete CameraOpt::default_instance_;
   delete CameraOpt_reflection_;
   delete CameraGroup::default_instance_;
@@ -206,35 +231,39 @@ void protobuf_AddDesc_tracker_5fpb_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\020tracker_pb.proto\"P\n\nScaleShift\022\017\n\007x_sc"
-    "ale\030\001 \001(\002\022\017\n\007x_shift\030\002 \001(\002\022\017\n\007y_scale\030\003 "
-    "\001(\002\022\017\n\007y_shift\030\004 \001(\002\"\030\n\010Affine2D\022\014\n\004coef"
-    "\030\001 \003(\002\"\250\002\n\tCameraOpt\022\n\n\002id\030\001 \001(\005\022\025\n\rseri"
-    "al_number\030\002 \001(\005\022\027\n\017input_file_name\030\003 \001(\t"
-    "\022\030\n\020output_file_name\030\004 \001(\t\022$\n\017px_to_pos_"
-    "scale\030\005 \001(\0132\013.ScaleShift\022\"\n\017px_to_pos_af"
-    "f2d\030\006 \001(\0132\t.Affine2D\022\021\n\tled_blur1\030\007 \001(\005\022"
-    "\025\n\rled_threshold\030\010 \001(\002\022\021\n\tled_blur2\030\t \001("
-    "\005\022\022\n\nbody_blur1\030\n \001(\005\022\026\n\016body_threshold\030"
-    "\013 \001(\002\022\022\n\nbody_blur2\030\014 \001(\005\"\227\001\n\013CameraGrou"
-    "p\022\027\n\003cam\030\001 \003(\0132\n.CameraOpt\022*\n\007combine\030\002 "
-    "\001(\0162\031.CameraGroup.CombineStyle\022\r\n\005label\030"
-    "\003 \001(\t\"4\n\014CombineStyle\022\010\n\004NONE\020\001\022\016\n\nPANOS"
-    "TITCH\020\002\022\n\n\006FULL3D\020\003\"2\n\003Led\022\r\n\005x_pos\030\001 \001("
-    "\002\022\r\n\005y_pos\030\002 \001(\002\022\r\n\005z_pos\030\003 \001(\002\"[\n\nTrack"
-    "erOpt\022\033\n\005group\030\001 \003(\0132\014.CameraGroup\022\022\n\nma"
-    "x_n_cams\030\002 \001(\005\022\r\n\005timer\030\003 \001(\t\022\r\n\005n_led\030\004"
-    " \001(\005", 724);
+    "\n\020tracker_pb.proto\"G\n\tOrthoConv\022\r\n\005x_min"
+    "\030\001 \001(\002\022\r\n\005x_max\030\002 \001(\002\022\r\n\005y_min\030\003 \001(\002\022\r\n\005"
+    "y_max\030\004 \001(\002\"\030\n\010Affine2D\022\014\n\004coef\030\001 \003(\002\"\027\n"
+    "\007ProjMat\022\014\n\004coef\030\001 \003(\002\"\356\002\n\tCameraOpt\022\n\n\002"
+    "id\030\001 \001(\005\022\025\n\rserial_number\030\002 \001(\005\022\027\n\017input"
+    "_file_name\030\003 \001(\t\022\030\n\020output_file_name\030\004 \001"
+    "(\t\022\036\n\northo_conv\030\005 \001(\0132\n.OrthoConv\022\034\n\taf"
+    "fine_2d\030\006 \001(\0132\t.Affine2D\022\032\n\010proj_mat\030\007 \001"
+    "(\0132\010.ProjMat\022\021\n\tled_blur1\030\010 \001(\005\022\025\n\rled_t"
+    "hreshold\030\t \001(\002\022\021\n\tled_blur2\030\n \001(\005\022\022\n\nbod"
+    "y_blur1\030\013 \001(\005\022\026\n\016body_threshold\030\014 \001(\002\022\022\n"
+    "\nbody_blur2\030\r \001(\005\022\027\n\017led_diameter_px\030\016 \001"
+    "(\005\022\033\n\023background_subtract\030\017 \001(\010\"\227\001\n\013Came"
+    "raGroup\022\027\n\003cam\030\001 \003(\0132\n.CameraOpt\022*\n\007comb"
+    "ine\030\002 \001(\0162\031.CameraGroup.CombineStyle\022\r\n\005"
+    "label\030\003 \001(\t\"4\n\014CombineStyle\022\010\n\004NONE\020\001\022\016\n"
+    "\nPANOSTITCH\020\002\022\n\n\006FULL3D\020\003\"2\n\003Led\022\r\n\005x_po"
+    "s\030\001 \001(\002\022\r\n\005y_pos\030\002 \001(\002\022\r\n\005z_pos\030\003 \001(\002\"[\n"
+    "\nTrackerOpt\022\033\n\005group\030\001 \003(\0132\014.CameraGroup"
+    "\022\022\n\nmax_n_cams\030\002 \001(\005\022\r\n\005timer\030\003 \001(\t\022\r\n\005n"
+    "_led\030\004 \001(\005", 810);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "tracker_pb.proto", &protobuf_RegisterTypes);
-  ScaleShift::default_instance_ = new ScaleShift();
+  OrthoConv::default_instance_ = new OrthoConv();
   Affine2D::default_instance_ = new Affine2D();
+  ProjMat::default_instance_ = new ProjMat();
   CameraOpt::default_instance_ = new CameraOpt();
   CameraGroup::default_instance_ = new CameraGroup();
   Led::default_instance_ = new Led();
   TrackerOpt::default_instance_ = new TrackerOpt();
-  ScaleShift::default_instance_->InitAsDefaultInstance();
+  OrthoConv::default_instance_->InitAsDefaultInstance();
   Affine2D::default_instance_->InitAsDefaultInstance();
+  ProjMat::default_instance_->InitAsDefaultInstance();
   CameraOpt::default_instance_->InitAsDefaultInstance();
   CameraGroup::default_instance_->InitAsDefaultInstance();
   Led::default_instance_->InitAsDefaultInstance();
@@ -253,137 +282,137 @@ struct StaticDescriptorInitializer_tracker_5fpb_2eproto {
 // ===================================================================
 
 #ifndef _MSC_VER
-const int ScaleShift::kXScaleFieldNumber;
-const int ScaleShift::kXShiftFieldNumber;
-const int ScaleShift::kYScaleFieldNumber;
-const int ScaleShift::kYShiftFieldNumber;
+const int OrthoConv::kXMinFieldNumber;
+const int OrthoConv::kXMaxFieldNumber;
+const int OrthoConv::kYMinFieldNumber;
+const int OrthoConv::kYMaxFieldNumber;
 #endif  // !_MSC_VER
 
-ScaleShift::ScaleShift()
+OrthoConv::OrthoConv()
   : ::google::protobuf::Message() {
   SharedCtor();
 }
 
-void ScaleShift::InitAsDefaultInstance() {
+void OrthoConv::InitAsDefaultInstance() {
 }
 
-ScaleShift::ScaleShift(const ScaleShift& from)
+OrthoConv::OrthoConv(const OrthoConv& from)
   : ::google::protobuf::Message() {
   SharedCtor();
   MergeFrom(from);
 }
 
-void ScaleShift::SharedCtor() {
+void OrthoConv::SharedCtor() {
   _cached_size_ = 0;
-  x_scale_ = 0;
-  x_shift_ = 0;
-  y_scale_ = 0;
-  y_shift_ = 0;
+  x_min_ = 0;
+  x_max_ = 0;
+  y_min_ = 0;
+  y_max_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
-ScaleShift::~ScaleShift() {
+OrthoConv::~OrthoConv() {
   SharedDtor();
 }
 
-void ScaleShift::SharedDtor() {
+void OrthoConv::SharedDtor() {
   if (this != default_instance_) {
   }
 }
 
-void ScaleShift::SetCachedSize(int size) const {
+void OrthoConv::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
-const ::google::protobuf::Descriptor* ScaleShift::descriptor() {
+const ::google::protobuf::Descriptor* OrthoConv::descriptor() {
   protobuf_AssignDescriptorsOnce();
-  return ScaleShift_descriptor_;
+  return OrthoConv_descriptor_;
 }
 
-const ScaleShift& ScaleShift::default_instance() {
+const OrthoConv& OrthoConv::default_instance() {
   if (default_instance_ == NULL) protobuf_AddDesc_tracker_5fpb_2eproto();  return *default_instance_;
 }
 
-ScaleShift* ScaleShift::default_instance_ = NULL;
+OrthoConv* OrthoConv::default_instance_ = NULL;
 
-ScaleShift* ScaleShift::New() const {
-  return new ScaleShift;
+OrthoConv* OrthoConv::New() const {
+  return new OrthoConv;
 }
 
-void ScaleShift::Clear() {
+void OrthoConv::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    x_scale_ = 0;
-    x_shift_ = 0;
-    y_scale_ = 0;
-    y_shift_ = 0;
+    x_min_ = 0;
+    x_max_ = 0;
+    y_min_ = 0;
+    y_max_ = 0;
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
 
-bool ScaleShift::MergePartialFromCodedStream(
+bool OrthoConv::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!(EXPRESSION)) return false
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // optional float x_scale = 1;
+      // optional float x_min = 1;
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, &x_scale_)));
-          set_has_x_scale();
+                 input, &x_min_)));
+          set_has_x_min();
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(21)) goto parse_x_shift;
+        if (input->ExpectTag(21)) goto parse_x_max;
         break;
       }
       
-      // optional float x_shift = 2;
+      // optional float x_max = 2;
       case 2: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
-         parse_x_shift:
+         parse_x_max:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, &x_shift_)));
-          set_has_x_shift();
+                 input, &x_max_)));
+          set_has_x_max();
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(29)) goto parse_y_scale;
+        if (input->ExpectTag(29)) goto parse_y_min;
         break;
       }
       
-      // optional float y_scale = 3;
+      // optional float y_min = 3;
       case 3: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
-         parse_y_scale:
+         parse_y_min:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, &y_scale_)));
-          set_has_y_scale();
+                 input, &y_min_)));
+          set_has_y_min();
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(37)) goto parse_y_shift;
+        if (input->ExpectTag(37)) goto parse_y_max;
         break;
       }
       
-      // optional float y_shift = 4;
+      // optional float y_max = 4;
       case 4: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
-         parse_y_shift:
+         parse_y_max:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, &y_shift_)));
-          set_has_y_shift();
+                 input, &y_max_)));
+          set_has_y_max();
         } else {
           goto handle_uninterpreted;
         }
@@ -407,26 +436,26 @@ bool ScaleShift::MergePartialFromCodedStream(
 #undef DO_
 }
 
-void ScaleShift::SerializeWithCachedSizes(
+void OrthoConv::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // optional float x_scale = 1;
-  if (has_x_scale()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(1, this->x_scale(), output);
+  // optional float x_min = 1;
+  if (has_x_min()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(1, this->x_min(), output);
   }
   
-  // optional float x_shift = 2;
-  if (has_x_shift()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(2, this->x_shift(), output);
+  // optional float x_max = 2;
+  if (has_x_max()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(2, this->x_max(), output);
   }
   
-  // optional float y_scale = 3;
-  if (has_y_scale()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(3, this->y_scale(), output);
+  // optional float y_min = 3;
+  if (has_y_min()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(3, this->y_min(), output);
   }
   
-  // optional float y_shift = 4;
-  if (has_y_shift()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(4, this->y_shift(), output);
+  // optional float y_max = 4;
+  if (has_y_max()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(4, this->y_max(), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -435,26 +464,26 @@ void ScaleShift::SerializeWithCachedSizes(
   }
 }
 
-::google::protobuf::uint8* ScaleShift::SerializeWithCachedSizesToArray(
+::google::protobuf::uint8* OrthoConv::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // optional float x_scale = 1;
-  if (has_x_scale()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(1, this->x_scale(), target);
+  // optional float x_min = 1;
+  if (has_x_min()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(1, this->x_min(), target);
   }
   
-  // optional float x_shift = 2;
-  if (has_x_shift()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(2, this->x_shift(), target);
+  // optional float x_max = 2;
+  if (has_x_max()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(2, this->x_max(), target);
   }
   
-  // optional float y_scale = 3;
-  if (has_y_scale()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(3, this->y_scale(), target);
+  // optional float y_min = 3;
+  if (has_y_min()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(3, this->y_min(), target);
   }
   
-  // optional float y_shift = 4;
-  if (has_y_shift()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(4, this->y_shift(), target);
+  // optional float y_max = 4;
+  if (has_y_max()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(4, this->y_max(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -464,27 +493,27 @@ void ScaleShift::SerializeWithCachedSizes(
   return target;
 }
 
-int ScaleShift::ByteSize() const {
+int OrthoConv::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // optional float x_scale = 1;
-    if (has_x_scale()) {
+    // optional float x_min = 1;
+    if (has_x_min()) {
       total_size += 1 + 4;
     }
     
-    // optional float x_shift = 2;
-    if (has_x_shift()) {
+    // optional float x_max = 2;
+    if (has_x_max()) {
       total_size += 1 + 4;
     }
     
-    // optional float y_scale = 3;
-    if (has_y_scale()) {
+    // optional float y_min = 3;
+    if (has_y_min()) {
       total_size += 1 + 4;
     }
     
-    // optional float y_shift = 4;
-    if (has_y_shift()) {
+    // optional float y_max = 4;
+    if (has_y_max()) {
       total_size += 1 + 4;
     }
     
@@ -500,10 +529,10 @@ int ScaleShift::ByteSize() const {
   return total_size;
 }
 
-void ScaleShift::MergeFrom(const ::google::protobuf::Message& from) {
+void OrthoConv::MergeFrom(const ::google::protobuf::Message& from) {
   GOOGLE_CHECK_NE(&from, this);
-  const ScaleShift* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const ScaleShift*>(
+  const OrthoConv* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const OrthoConv*>(
       &from);
   if (source == NULL) {
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
@@ -512,59 +541,59 @@ void ScaleShift::MergeFrom(const ::google::protobuf::Message& from) {
   }
 }
 
-void ScaleShift::MergeFrom(const ScaleShift& from) {
+void OrthoConv::MergeFrom(const OrthoConv& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from.has_x_scale()) {
-      set_x_scale(from.x_scale());
+    if (from.has_x_min()) {
+      set_x_min(from.x_min());
     }
-    if (from.has_x_shift()) {
-      set_x_shift(from.x_shift());
+    if (from.has_x_max()) {
+      set_x_max(from.x_max());
     }
-    if (from.has_y_scale()) {
-      set_y_scale(from.y_scale());
+    if (from.has_y_min()) {
+      set_y_min(from.y_min());
     }
-    if (from.has_y_shift()) {
-      set_y_shift(from.y_shift());
+    if (from.has_y_max()) {
+      set_y_max(from.y_max());
     }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
-void ScaleShift::CopyFrom(const ::google::protobuf::Message& from) {
+void OrthoConv::CopyFrom(const ::google::protobuf::Message& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-void ScaleShift::CopyFrom(const ScaleShift& from) {
+void OrthoConv::CopyFrom(const OrthoConv& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool ScaleShift::IsInitialized() const {
+bool OrthoConv::IsInitialized() const {
   
   return true;
 }
 
-void ScaleShift::Swap(ScaleShift* other) {
+void OrthoConv::Swap(OrthoConv* other) {
   if (other != this) {
-    std::swap(x_scale_, other->x_scale_);
-    std::swap(x_shift_, other->x_shift_);
-    std::swap(y_scale_, other->y_scale_);
-    std::swap(y_shift_, other->y_shift_);
+    std::swap(x_min_, other->x_min_);
+    std::swap(x_max_, other->x_max_);
+    std::swap(y_min_, other->y_min_);
+    std::swap(y_max_, other->y_max_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
   }
 }
 
-::google::protobuf::Metadata ScaleShift::GetMetadata() const {
+::google::protobuf::Metadata OrthoConv::GetMetadata() const {
   protobuf_AssignDescriptorsOnce();
   ::google::protobuf::Metadata metadata;
-  metadata.descriptor = ScaleShift_descriptor_;
-  metadata.reflection = ScaleShift_reflection_;
+  metadata.descriptor = OrthoConv_descriptor_;
+  metadata.reflection = OrthoConv_reflection_;
   return metadata;
 }
 
@@ -779,18 +808,228 @@ void Affine2D::Swap(Affine2D* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
+const int ProjMat::kCoefFieldNumber;
+#endif  // !_MSC_VER
+
+ProjMat::ProjMat()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void ProjMat::InitAsDefaultInstance() {
+}
+
+ProjMat::ProjMat(const ProjMat& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void ProjMat::SharedCtor() {
+  _cached_size_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+ProjMat::~ProjMat() {
+  SharedDtor();
+}
+
+void ProjMat::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void ProjMat::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* ProjMat::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return ProjMat_descriptor_;
+}
+
+const ProjMat& ProjMat::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_tracker_5fpb_2eproto();  return *default_instance_;
+}
+
+ProjMat* ProjMat::default_instance_ = NULL;
+
+ProjMat* ProjMat::New() const {
+  return new ProjMat;
+}
+
+void ProjMat::Clear() {
+  coef_.Clear();
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool ProjMat::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // repeated float coef = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
+         parse_coef:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 1, 13, input, this->mutable_coef())));
+        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
+                   == ::google::protobuf::internal::WireFormatLite::
+                      WIRETYPE_LENGTH_DELIMITED) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, this->mutable_coef())));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(13)) goto parse_coef;
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void ProjMat::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // repeated float coef = 1;
+  for (int i = 0; i < this->coef_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(
+      1, this->coef(i), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* ProjMat::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // repeated float coef = 1;
+  for (int i = 0; i < this->coef_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteFloatToArray(1, this->coef(i), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int ProjMat::ByteSize() const {
+  int total_size = 0;
+  
+  // repeated float coef = 1;
+  {
+    int data_size = 0;
+    data_size = 4 * this->coef_size();
+    total_size += 1 * this->coef_size() + data_size;
+  }
+  
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void ProjMat::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const ProjMat* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const ProjMat*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void ProjMat::MergeFrom(const ProjMat& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  coef_.MergeFrom(from.coef_);
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void ProjMat::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void ProjMat::CopyFrom(const ProjMat& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ProjMat::IsInitialized() const {
+  
+  return true;
+}
+
+void ProjMat::Swap(ProjMat* other) {
+  if (other != this) {
+    coef_.Swap(&other->coef_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata ProjMat::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = ProjMat_descriptor_;
+  metadata.reflection = ProjMat_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
 const int CameraOpt::kIdFieldNumber;
 const int CameraOpt::kSerialNumberFieldNumber;
 const int CameraOpt::kInputFileNameFieldNumber;
 const int CameraOpt::kOutputFileNameFieldNumber;
-const int CameraOpt::kPxToPosScaleFieldNumber;
-const int CameraOpt::kPxToPosAff2DFieldNumber;
+const int CameraOpt::kOrthoConvFieldNumber;
+const int CameraOpt::kAffine2DFieldNumber;
+const int CameraOpt::kProjMatFieldNumber;
 const int CameraOpt::kLedBlur1FieldNumber;
 const int CameraOpt::kLedThresholdFieldNumber;
 const int CameraOpt::kLedBlur2FieldNumber;
 const int CameraOpt::kBodyBlur1FieldNumber;
 const int CameraOpt::kBodyThresholdFieldNumber;
 const int CameraOpt::kBodyBlur2FieldNumber;
+const int CameraOpt::kLedDiameterPxFieldNumber;
+const int CameraOpt::kBackgroundSubtractFieldNumber;
 #endif  // !_MSC_VER
 
 CameraOpt::CameraOpt()
@@ -799,8 +1038,9 @@ CameraOpt::CameraOpt()
 }
 
 void CameraOpt::InitAsDefaultInstance() {
-  px_to_pos_scale_ = const_cast< ::ScaleShift*>(&::ScaleShift::default_instance());
-  px_to_pos_aff2d_ = const_cast< ::Affine2D*>(&::Affine2D::default_instance());
+  ortho_conv_ = const_cast< ::OrthoConv*>(&::OrthoConv::default_instance());
+  affine_2d_ = const_cast< ::Affine2D*>(&::Affine2D::default_instance());
+  proj_mat_ = const_cast< ::ProjMat*>(&::ProjMat::default_instance());
 }
 
 CameraOpt::CameraOpt(const CameraOpt& from)
@@ -815,14 +1055,17 @@ void CameraOpt::SharedCtor() {
   serial_number_ = 0;
   input_file_name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   output_file_name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  px_to_pos_scale_ = NULL;
-  px_to_pos_aff2d_ = NULL;
+  ortho_conv_ = NULL;
+  affine_2d_ = NULL;
+  proj_mat_ = NULL;
   led_blur1_ = 0;
   led_threshold_ = 0;
   led_blur2_ = 0;
   body_blur1_ = 0;
   body_threshold_ = 0;
   body_blur2_ = 0;
+  led_diameter_px_ = 0;
+  background_subtract_ = false;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -838,8 +1081,9 @@ void CameraOpt::SharedDtor() {
     delete output_file_name_;
   }
   if (this != default_instance_) {
-    delete px_to_pos_scale_;
-    delete px_to_pos_aff2d_;
+    delete ortho_conv_;
+    delete affine_2d_;
+    delete proj_mat_;
   }
 }
 
@@ -877,20 +1121,25 @@ void CameraOpt::Clear() {
         output_file_name_->clear();
       }
     }
-    if (has_px_to_pos_scale()) {
-      if (px_to_pos_scale_ != NULL) px_to_pos_scale_->::ScaleShift::Clear();
+    if (has_ortho_conv()) {
+      if (ortho_conv_ != NULL) ortho_conv_->::OrthoConv::Clear();
     }
-    if (has_px_to_pos_aff2d()) {
-      if (px_to_pos_aff2d_ != NULL) px_to_pos_aff2d_->::Affine2D::Clear();
+    if (has_affine_2d()) {
+      if (affine_2d_ != NULL) affine_2d_->::Affine2D::Clear();
+    }
+    if (has_proj_mat()) {
+      if (proj_mat_ != NULL) proj_mat_->::ProjMat::Clear();
     }
     led_blur1_ = 0;
-    led_threshold_ = 0;
   }
   if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    led_threshold_ = 0;
     led_blur2_ = 0;
     body_blur1_ = 0;
     body_threshold_ = 0;
     body_blur2_ = 0;
+    led_diameter_px_ = 0;
+    background_subtract_ = false;
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -963,40 +1212,54 @@ bool CameraOpt::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(42)) goto parse_px_to_pos_scale;
+        if (input->ExpectTag(42)) goto parse_ortho_conv;
         break;
       }
       
-      // optional .ScaleShift px_to_pos_scale = 5;
+      // optional .OrthoConv ortho_conv = 5;
       case 5: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_px_to_pos_scale:
+         parse_ortho_conv:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-               input, mutable_px_to_pos_scale()));
+               input, mutable_ortho_conv()));
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(50)) goto parse_px_to_pos_aff2d;
+        if (input->ExpectTag(50)) goto parse_affine_2d;
         break;
       }
       
-      // optional .Affine2D px_to_pos_aff2d = 6;
+      // optional .Affine2D affine_2d = 6;
       case 6: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_px_to_pos_aff2d:
+         parse_affine_2d:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-               input, mutable_px_to_pos_aff2d()));
+               input, mutable_affine_2d()));
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(56)) goto parse_led_blur1;
+        if (input->ExpectTag(58)) goto parse_proj_mat;
         break;
       }
       
-      // optional int32 led_blur1 = 7;
+      // optional .ProjMat proj_mat = 7;
       case 7: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_proj_mat:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_proj_mat()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(64)) goto parse_led_blur1;
+        break;
+      }
+      
+      // optional int32 led_blur1 = 8;
+      case 8: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_led_blur1:
@@ -1007,12 +1270,12 @@ bool CameraOpt::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(69)) goto parse_led_threshold;
+        if (input->ExpectTag(77)) goto parse_led_threshold;
         break;
       }
       
-      // optional float led_threshold = 8;
-      case 8: {
+      // optional float led_threshold = 9;
+      case 9: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
          parse_led_threshold:
@@ -1023,12 +1286,12 @@ bool CameraOpt::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(72)) goto parse_led_blur2;
+        if (input->ExpectTag(80)) goto parse_led_blur2;
         break;
       }
       
-      // optional int32 led_blur2 = 9;
-      case 9: {
+      // optional int32 led_blur2 = 10;
+      case 10: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_led_blur2:
@@ -1039,12 +1302,12 @@ bool CameraOpt::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(80)) goto parse_body_blur1;
+        if (input->ExpectTag(88)) goto parse_body_blur1;
         break;
       }
       
-      // optional int32 body_blur1 = 10;
-      case 10: {
+      // optional int32 body_blur1 = 11;
+      case 11: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_body_blur1:
@@ -1055,12 +1318,12 @@ bool CameraOpt::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(93)) goto parse_body_threshold;
+        if (input->ExpectTag(101)) goto parse_body_threshold;
         break;
       }
       
-      // optional float body_threshold = 11;
-      case 11: {
+      // optional float body_threshold = 12;
+      case 12: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
          parse_body_threshold:
@@ -1071,12 +1334,12 @@ bool CameraOpt::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(96)) goto parse_body_blur2;
+        if (input->ExpectTag(104)) goto parse_body_blur2;
         break;
       }
       
-      // optional int32 body_blur2 = 12;
-      case 12: {
+      // optional int32 body_blur2 = 13;
+      case 13: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_body_blur2:
@@ -1084,6 +1347,38 @@ bool CameraOpt::MergePartialFromCodedStream(
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
                  input, &body_blur2_)));
           set_has_body_blur2();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(112)) goto parse_led_diameter_px;
+        break;
+      }
+      
+      // optional int32 led_diameter_px = 14;
+      case 14: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_led_diameter_px:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &led_diameter_px_)));
+          set_has_led_diameter_px();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(120)) goto parse_background_subtract;
+        break;
+      }
+      
+      // optional bool background_subtract = 15;
+      case 15: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_background_subtract:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &background_subtract_)));
+          set_has_background_subtract();
         } else {
           goto handle_uninterpreted;
         }
@@ -1137,46 +1432,62 @@ void CameraOpt::SerializeWithCachedSizes(
       4, this->output_file_name(), output);
   }
   
-  // optional .ScaleShift px_to_pos_scale = 5;
-  if (has_px_to_pos_scale()) {
+  // optional .OrthoConv ortho_conv = 5;
+  if (has_ortho_conv()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      5, this->px_to_pos_scale(), output);
+      5, this->ortho_conv(), output);
   }
   
-  // optional .Affine2D px_to_pos_aff2d = 6;
-  if (has_px_to_pos_aff2d()) {
+  // optional .Affine2D affine_2d = 6;
+  if (has_affine_2d()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      6, this->px_to_pos_aff2d(), output);
+      6, this->affine_2d(), output);
   }
   
-  // optional int32 led_blur1 = 7;
+  // optional .ProjMat proj_mat = 7;
+  if (has_proj_mat()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      7, this->proj_mat(), output);
+  }
+  
+  // optional int32 led_blur1 = 8;
   if (has_led_blur1()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(7, this->led_blur1(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(8, this->led_blur1(), output);
   }
   
-  // optional float led_threshold = 8;
+  // optional float led_threshold = 9;
   if (has_led_threshold()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(8, this->led_threshold(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(9, this->led_threshold(), output);
   }
   
-  // optional int32 led_blur2 = 9;
+  // optional int32 led_blur2 = 10;
   if (has_led_blur2()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(9, this->led_blur2(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(10, this->led_blur2(), output);
   }
   
-  // optional int32 body_blur1 = 10;
+  // optional int32 body_blur1 = 11;
   if (has_body_blur1()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(10, this->body_blur1(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(11, this->body_blur1(), output);
   }
   
-  // optional float body_threshold = 11;
+  // optional float body_threshold = 12;
   if (has_body_threshold()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(11, this->body_threshold(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(12, this->body_threshold(), output);
   }
   
-  // optional int32 body_blur2 = 12;
+  // optional int32 body_blur2 = 13;
   if (has_body_blur2()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(12, this->body_blur2(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(13, this->body_blur2(), output);
+  }
+  
+  // optional int32 led_diameter_px = 14;
+  if (has_led_diameter_px()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(14, this->led_diameter_px(), output);
+  }
+  
+  // optional bool background_subtract = 15;
+  if (has_background_subtract()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(15, this->background_subtract(), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -1217,48 +1528,65 @@ void CameraOpt::SerializeWithCachedSizes(
         4, this->output_file_name(), target);
   }
   
-  // optional .ScaleShift px_to_pos_scale = 5;
-  if (has_px_to_pos_scale()) {
+  // optional .OrthoConv ortho_conv = 5;
+  if (has_ortho_conv()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        5, this->px_to_pos_scale(), target);
+        5, this->ortho_conv(), target);
   }
   
-  // optional .Affine2D px_to_pos_aff2d = 6;
-  if (has_px_to_pos_aff2d()) {
+  // optional .Affine2D affine_2d = 6;
+  if (has_affine_2d()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        6, this->px_to_pos_aff2d(), target);
+        6, this->affine_2d(), target);
   }
   
-  // optional int32 led_blur1 = 7;
+  // optional .ProjMat proj_mat = 7;
+  if (has_proj_mat()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        7, this->proj_mat(), target);
+  }
+  
+  // optional int32 led_blur1 = 8;
   if (has_led_blur1()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(7, this->led_blur1(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(8, this->led_blur1(), target);
   }
   
-  // optional float led_threshold = 8;
+  // optional float led_threshold = 9;
   if (has_led_threshold()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(8, this->led_threshold(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(9, this->led_threshold(), target);
   }
   
-  // optional int32 led_blur2 = 9;
+  // optional int32 led_blur2 = 10;
   if (has_led_blur2()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(9, this->led_blur2(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(10, this->led_blur2(), target);
   }
   
-  // optional int32 body_blur1 = 10;
+  // optional int32 body_blur1 = 11;
   if (has_body_blur1()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(10, this->body_blur1(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(11, this->body_blur1(), target);
   }
   
-  // optional float body_threshold = 11;
+  // optional float body_threshold = 12;
   if (has_body_threshold()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(11, this->body_threshold(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(12, this->body_threshold(), target);
   }
   
-  // optional int32 body_blur2 = 12;
+  // optional int32 body_blur2 = 13;
   if (has_body_blur2()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(12, this->body_blur2(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(13, this->body_blur2(), target);
+  }
+  
+  // optional int32 led_diameter_px = 14;
+  if (has_led_diameter_px()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(14, this->led_diameter_px(), target);
+  }
+  
+  // optional bool background_subtract = 15;
+  if (has_background_subtract()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(15, this->background_subtract(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -1300,58 +1628,77 @@ int CameraOpt::ByteSize() const {
           this->output_file_name());
     }
     
-    // optional .ScaleShift px_to_pos_scale = 5;
-    if (has_px_to_pos_scale()) {
+    // optional .OrthoConv ortho_conv = 5;
+    if (has_ortho_conv()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-          this->px_to_pos_scale());
+          this->ortho_conv());
     }
     
-    // optional .Affine2D px_to_pos_aff2d = 6;
-    if (has_px_to_pos_aff2d()) {
+    // optional .Affine2D affine_2d = 6;
+    if (has_affine_2d()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-          this->px_to_pos_aff2d());
+          this->affine_2d());
     }
     
-    // optional int32 led_blur1 = 7;
+    // optional .ProjMat proj_mat = 7;
+    if (has_proj_mat()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->proj_mat());
+    }
+    
+    // optional int32 led_blur1 = 8;
     if (has_led_blur1()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
           this->led_blur1());
     }
     
-    // optional float led_threshold = 8;
+  }
+  if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    // optional float led_threshold = 9;
     if (has_led_threshold()) {
       total_size += 1 + 4;
     }
     
-  }
-  if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
-    // optional int32 led_blur2 = 9;
+    // optional int32 led_blur2 = 10;
     if (has_led_blur2()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
           this->led_blur2());
     }
     
-    // optional int32 body_blur1 = 10;
+    // optional int32 body_blur1 = 11;
     if (has_body_blur1()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
           this->body_blur1());
     }
     
-    // optional float body_threshold = 11;
+    // optional float body_threshold = 12;
     if (has_body_threshold()) {
       total_size += 1 + 4;
     }
     
-    // optional int32 body_blur2 = 12;
+    // optional int32 body_blur2 = 13;
     if (has_body_blur2()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
           this->body_blur2());
+    }
+    
+    // optional int32 led_diameter_px = 14;
+    if (has_led_diameter_px()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->led_diameter_px());
+    }
+    
+    // optional bool background_subtract = 15;
+    if (has_background_subtract()) {
+      total_size += 1 + 1;
     }
     
   }
@@ -1393,20 +1740,23 @@ void CameraOpt::MergeFrom(const CameraOpt& from) {
     if (from.has_output_file_name()) {
       set_output_file_name(from.output_file_name());
     }
-    if (from.has_px_to_pos_scale()) {
-      mutable_px_to_pos_scale()->::ScaleShift::MergeFrom(from.px_to_pos_scale());
+    if (from.has_ortho_conv()) {
+      mutable_ortho_conv()->::OrthoConv::MergeFrom(from.ortho_conv());
     }
-    if (from.has_px_to_pos_aff2d()) {
-      mutable_px_to_pos_aff2d()->::Affine2D::MergeFrom(from.px_to_pos_aff2d());
+    if (from.has_affine_2d()) {
+      mutable_affine_2d()->::Affine2D::MergeFrom(from.affine_2d());
+    }
+    if (from.has_proj_mat()) {
+      mutable_proj_mat()->::ProjMat::MergeFrom(from.proj_mat());
     }
     if (from.has_led_blur1()) {
       set_led_blur1(from.led_blur1());
     }
+  }
+  if (from._has_bits_[8 / 32] & (0xffu << (8 % 32))) {
     if (from.has_led_threshold()) {
       set_led_threshold(from.led_threshold());
     }
-  }
-  if (from._has_bits_[8 / 32] & (0xffu << (8 % 32))) {
     if (from.has_led_blur2()) {
       set_led_blur2(from.led_blur2());
     }
@@ -1418,6 +1768,12 @@ void CameraOpt::MergeFrom(const CameraOpt& from) {
     }
     if (from.has_body_blur2()) {
       set_body_blur2(from.body_blur2());
+    }
+    if (from.has_led_diameter_px()) {
+      set_led_diameter_px(from.led_diameter_px());
+    }
+    if (from.has_background_subtract()) {
+      set_background_subtract(from.background_subtract());
     }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
@@ -1446,14 +1802,17 @@ void CameraOpt::Swap(CameraOpt* other) {
     std::swap(serial_number_, other->serial_number_);
     std::swap(input_file_name_, other->input_file_name_);
     std::swap(output_file_name_, other->output_file_name_);
-    std::swap(px_to_pos_scale_, other->px_to_pos_scale_);
-    std::swap(px_to_pos_aff2d_, other->px_to_pos_aff2d_);
+    std::swap(ortho_conv_, other->ortho_conv_);
+    std::swap(affine_2d_, other->affine_2d_);
+    std::swap(proj_mat_, other->proj_mat_);
     std::swap(led_blur1_, other->led_blur1_);
     std::swap(led_threshold_, other->led_threshold_);
     std::swap(led_blur2_, other->led_blur2_);
     std::swap(body_blur1_, other->body_blur1_);
     std::swap(body_threshold_, other->body_threshold_);
     std::swap(body_blur2_, other->body_blur2_);
+    std::swap(led_diameter_px_, other->led_diameter_px_);
+    std::swap(background_subtract_, other->background_subtract_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

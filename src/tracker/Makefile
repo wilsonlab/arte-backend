@@ -22,7 +22,8 @@ TRACKER_OBJ = tracker.o   ../arte_pb.pb.o  ../arte_command.pb.o  ../netcom.o   .
 TRACKER_SRC += tracker_pb.pb.cc tracker_data_source.cpp tracker_window.cpp frame_drawing_area.cpp
 TRACKER_OBJ += tracker_pb.pb.o  tracker_data_source.o   tracker_window.o   frame_drawing_area.o
 
-
+TRACKER_SRC += tracker_processor.cpp
+TRACKER_OBJ += tracker_processor.o
 
 .SUFFIXES:
 .SUFFIXES: .o .pb.cc .cpp .cc .proto .h
@@ -36,6 +37,9 @@ $(EXE) : $(TRACKER_OBJ)
 
 ../arte_command.pb.cc : ../arte_command.proto
 	protoc -I ../ $< --cpp_out=../
+
+tracker_pb.pb.h : tracker_pb.proto
+	protoc $< --cpp_out=./
 
 tracker_pb.pb.cc tracker_pb.pb.h : tracker_pb.proto
 	protoc $< --cpp_out=./

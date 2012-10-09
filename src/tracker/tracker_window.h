@@ -12,6 +12,8 @@
 #include <vector>
 #include "tracker_defs.h"
 #include "../arte_pb.pb.h"
+#include "tracker_pb.pb.h"
+#include "frame_drawing_area.h"
 
 /**
  * This class represents a window where frames, estimated position
@@ -30,18 +32,28 @@ class TrackerWindow {
 
   TrackerWindow(int argc, char *argv[],
                 TRACKER_CALLBACK_FN2 run_callback, void *cb_data_r,
-                TRACKER_CALLBACK_FN2 new_settings, void *cb_data_s);
+                TRACKER_CALLBACK_FN2 new_settings, void *cb_data_s,
+                TrackerOpt& o, multi_frame_collections_map* m);
+
+  bool init(int argc, char *argv[]);
+  void run();
 
   // update builds the picture to display
-  void update( std::vector <ArteFrame>, ArtePb& pos_pb);
+  void update(ArtePosPb *p_pb, TrackerWindow *t);
 
   // use to feed frames, but without updating display (uncomment when I see a need)
   // void set_frames_for_display( std::vector <ArteFrame> );
 
   bool Cleanup();
 
+  //** the FrameDrawingArea custom widget **/
+  // why not private?  So that tracker.cpp can set
+  // m_pArea's 'ready' flag.
+  FrameDrawingArea *m_pArea;
+
 
  private:
+
 
   /** Callback pointers and data **/
   TRACKER_CALLBACK_FN2 run_callback, new_settings;
@@ -101,7 +113,8 @@ class TrackerWindow {
   bool recording;
 
   int n_cameras;
-  ArtePb tracker_opt;
+  multi_frame_collections_map *frames_map;
+  TrackerOpt tracker_opt;
 
   struct cam_opt {
     bool use_background_subtraction;
@@ -111,7 +124,7 @@ class TrackerWindow {
   std::vector <cam_opt> cam_opts;
 
   /** Load widgets, attach signals, other init, return 0 for success **/
-  bool init(int argc, char *argv[]);
+
   void GetWidgets();
   void AttachSignals();
 
@@ -119,8 +132,11 @@ class TrackerWindow {
    *  versions of everything.  Is this really necessary?  I'm
    *  going to try without
    */
+
+  bool OnExpose(GdkEventExpose *event );
   bool OnDestroy( GdkEventAny *event );
   void OnAcquisition();
+  bool on_timeout();
 
   void OnRecording();
 

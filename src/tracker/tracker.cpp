@@ -6,20 +6,30 @@
 #include <google/protobuf/text_format.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <thread>
+#include "tracker_processor.h"
+
+std::mutex m_imageMutex;
 
 Tracker::Tracker(int argc, char *argv[]){
   init(argc, argv);
   n_run_calls = 0;
-  //tracker_data_source = new TrackerDataSource( *tracker_opt );
 
-  std::thread gui_thread( &Tracker::start_gui, this, argc, argv, this );
+  // Start the data source
   tracker_data_source = new TrackerDataSource(*tracker_opt,
                                               &handle_frames,
                                               (void*)this,
-                                              &frames,
+                                              &frames_map["raw"],
                                               &main_running);
 
-  std::cout << "About to wait for gui" << std::endl;
+  // Start the processor
+  tracker_processor = new TrackerProcessor( *tracker_opt,
+                                            frames_map,
+                                            multi_frames_mutex_p );
+
+  // Start the gui
+  std::thread gui_thread( &Tracker::start_gui, this, argc, argv, this );
+
+  std::cout << "About to wait for gui to finish" << std::endl;
   gui_thread.join();
 
 }
@@ -30,46 +40,52 @@ Tracker::~Tracker(){
 }
 
 void Tracker::start_gui(int argc, char *argv[], Tracker* the_tracker_p){
+  TrackerWindow *tmp_window_addy;
   gui = new TrackerWindow(argc,argv,
                           &(the_tracker_p->run_callback),the_tracker_p,
-                          &(the_tracker_p->new_settings),the_tracker_p);
+                          &(the_tracker_p->new_settings),the_tracker_p,
+                          *tracker_opt, &frames_map);
+  std::cout << "Gui addy in tracker is: " << gui 
+            << ". Now doing init." << std::endl;
+  gui->init(argc, argv);
 }
 
 void Tracker::handle_frames( void* cb_data ){
   ((Tracker*)cb_data)->m_handle_frames();
 }
+void Tracker::m_handle_frames(){
+  tracker_processor->process(&pos_pb);
+  //  gui->refresh_frames();
+  //  gui->update(pos_pb.mutable_arte_pos(), gui);
+}
 
 void Tracker::run_callback(void *cb_data, void *is_running){
+
   n_run_calls++;
   Tracker *t = (Tracker*) cb_data;
   t->main_running = *(bool*)is_running;
-  std::cout << "run callback in MAIN. main_running is: " << t->main_running << std::endl;
-  if((t->main_running) == true){
+
+  if( (*(bool*)is_running) == true){  // transitioned into running mode
     std::cout << "About to start the thread\n"; fflush(stdout);
     if(t->cam_thread == NULL){
-      t->cam_thread = new std::thread( &(TrackerDataSource::s_run_cameras), t->tracker_data_source );
+      t->cam_thread = new std::thread( &(TrackerDataSource::s_run_cameras), 
+                                       t->tracker_data_source );
     } else {
-      std::cout << "Found non-null thread\n";
+      std::cout << "Found non-null thread when trying to start acquiring\n";
     }
 
-    
-    //    t->tracker_data_source->run_cameras();
-    //    cam_thread.join();
-
-  } else {
+  } else { // Transitioned to not-running
     if(t->cam_thread) {
-      std::cout << "Waiting to join cam_thread\n"; fflush(stdout);
 
       t->cam_thread->join();
-      std::cout << "Joined cam_thread\n"; fflush(stdout);
       delete (t->cam_thread);
       t->cam_thread = NULL;
-      std::cout << "Deleted cam_thread, it is now: " << t->cam_thread;
+
     } else{
-      std::cout << "No thread.  Nothing to do.\n"; fflush(stdout);
+      std::cout << "Tried to stop acq. But no acqisition thread.  Nothing to do.\n"; 
+      fflush(stdout);
     }
 
-    // No need to do anything - tracker_data_source can sense main_running
   } // end
   n_run_calls--;
   std::cout << "End of run_callback.  N-calls is now " << n_run_calls << std::endl;
@@ -79,7 +95,6 @@ void Tracker::new_settings(void *cb_data, void *new_tracker_opt){
   std::cout << "new_settings callback in MAIN\n";
 }
 
-void Tracker::m_handle_frames(){}
 
 void Tracker::init(int argc, char *argv[]){
   GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -87,6 +102,8 @@ void Tracker::init(int argc, char *argv[]){
   main_running = false;
   cam_thread = NULL;
   n_run_calls = 0;
+
+  multi_frames_mutex_p = new std::mutex ();
 
   tracker_opt = new TrackerOpt ();
 
@@ -115,18 +132,47 @@ void Tracker::init(int argc, char *argv[]){
               << " or run tracker with a path to a good config file.\n";
   }
 
+  frame_collections frames, backgrounds, frames_background_subtracted, frames_hybrid;
+
   // Set up frames: the frame buffer for multiple camera groups
   // There are I camera groups, with J image pointers per group
   // (J is different from group to group).  For now, make those
-  // pointers point to NULL
+  // pointers point to NULL 
+
   for(int i = 0; i < tracker_opt->group_size(); i++){
     frames.push_back(frame_p_collection ());
+    backgrounds.push_back(frame_p_collection ());
+    frames_background_subtracted.push_back(frame_p_collection ());
+    frames_hybrid.push_back(frame_p_collection ());
     for(int j = 0; j < tracker_opt->group(i).cam_size(); j++){
-      IplImage *this_image = cvCreateImage( cvSize(FRAME_WIDTH, FRAME_HEIGHT),
-                                            IPL_DEPTH_8U, 1);
-      frames[i].push_back( (ArteFrame*) this_image);
+      IplImage *this_image_a = cvCreateImage( cvSize(FRAME_WIDTH, FRAME_HEIGHT),
+                                              IPL_DEPTH_8U, 1);
+      IplImage *this_image_bk= cvCreateImage( cvSize(FRAME_WIDTH, FRAME_HEIGHT),
+                                              IPL_DEPTH_8U, 1);
+      IplImage *this_image_b = cvCreateImage( cvSize(FRAME_WIDTH, FRAME_HEIGHT),
+                                              IPL_DEPTH_8U, 1);
+      IplImage *this_image_c = cvCreateImage( cvSize(FRAME_WIDTH, FRAME_HEIGHT),
+                                              IPL_DEPTH_8U, 1);
+
+      for(int p = 0; p < FRAME_WIDTH*FRAME_HEIGHT; p++){
+        this_image_a->imageData[p] = 0;
+        this_image_bk->imageData[p] = 0;
+        this_image_b->imageData[p] = 0;
+        this_image_c->imageData[p] = 0;
+      }
+
+      frames[i].push_back( (ArteFrame*) this_image_a);
+      backgrounds[i].push_back( (ArteFrame*) this_image_bk);
+      frames_background_subtracted[i].push_back( (ArteFrame*) this_image_b );
+      frames_hybrid[i].push_back( (ArteFrame*) this_image_c );
     }
   }
+
+  // A map will organize the different processing stages of each frame
+  frames_map["raw"] = frames;
+  frames_map["background"] = backgrounds;
+  frames_map["background_subtracted"] = frames_background_subtracted;
+  frames_map["hybrid"] = frames_hybrid;
 
 }
 

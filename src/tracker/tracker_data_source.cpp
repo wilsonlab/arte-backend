@@ -2,6 +2,7 @@
 #include <sys/time.h>
 #include <thread>
 
+
 TrackerDataSource::TrackerDataSource( TrackerOpt &opt,
                                       TRACKER_CALLBACK_FN callback_p,
                                       void *callback_data,
@@ -37,7 +38,7 @@ TrackerDataSource::TrackerDataSource( TrackerOpt &opt,
 
 
   // Drawing just to test capture
-  draw = true;
+  draw = false;
   if(draw){
     which_cam = 2;
     cvNamedWindow( "Test drawing", CV_WINDOW_AUTOSIZE);
@@ -75,33 +76,48 @@ int TrackerDataSource::s_run_cameras(TrackerDataSource *s){
     // Grab and process frames, checking every time whether main says we're running
     it = s->physical_cameras_p.begin();
     FlyCapture2::Image image;
+    std::cout << " *(s->main_running): " << *(s->main_running) << std::endl;
     while(*(s->main_running)){
+
+      //std::lock_guard<std::mutex> lk(m_imageMutex);
 
       for(it = s->physical_cameras_p.begin(); it != s->physical_cameras_p.end(); it++){
 
+
+        //        std::cout << "About to get frame\n";
         // Get the frame
         ptgr_err( error = it->first->RetrieveBuffer(&image) );
         if( error != FlyCapture2::PGRERROR_OK ){
           std::cerr << "Error retrieving frame from cam at address "
                     << it->first << std::endl;
         }
+        //        std::cout << "Done getting frame\n";
 
+        //        std::cout << "About to convert\n";
         // Copy frame to frame collection structure
         s->flycapture_to_opencv( &image, it->second );
-        printf("Hello!\n");
+        //        std::cout << "Done convert\n";
+
         // Draw the frame, maybe
         //        printf("it: %p  begin(): %p\n", it, s->physical_cameras_p.begin());
         //        if( s->draw && (it == s->physical_cameras_p.begin() ) ){
-        //        if(s->draw){
+        if(s->draw){
           cvShowImage("Test drawing", it->second);
           //        std::thread t ( cvShowImage, "Test drawing", it->second);
           //        t.join();
-          //        }
+        }
 
       } // end loop over cameras
 
-      std::cout << "From run_cameras, main_running is now: "
-                << *(s->main_running) << std::endl;
+      //      std::cout << "About to callback\n";
+
+      // Issue the callback that was set by data_source's owner
+      (*(s->callback_p))(s->callback_data);
+
+      //      std::cout << "Done callback\n";
+
+      // std::cout << "From run_cameras, main_running is now: "
+      //           << *(s->main_running) << std::endl;
 
     } // end of main_running loop
 
@@ -134,16 +150,30 @@ void TrackerDataSource::flycapture_to_opencv( FlyCapture2::Image* f, IplImage* t
 
   //  printf("f_wd: %d  f_ht: %d,  f_byte: %f,  t_wd: %d  t_ht: %d  t_byte: %f\n",
   //         f_wd, f_ht, f_bytes_per_px, t_wd, t_ht, t_bytes_per_px);
-
+  
   if ( (t_wd == f_wd) &&
        (t_ht == f_ht) &&
        ((abs(t_bytes_per_px - f_bytes_per_px)) < 0.1) ){
     int rnd_bits = (abs(t_bytes_per_px - 8.0) < 0.1) ? 1 : 2;
     rnd_bits = 1;
-    memcpy( t->imageData, f->GetData(), t_wd*t_ht*rnd_bits);
-    printf("data[10] is: %c\n", t->imageData[10]);
+    
+    if(t->depth == IPL_DEPTH_8U)
+      memcpy( t->imageData, f->GetData(), t_wd*t_ht*rnd_bits);
+    
+    
+    if(t->depth == IPL_DEPTH_8S){ // convert from unsigned to signed
+      for(int p = 0; p < FRAME_WIDTH * FRAME_HEIGHT; p++){
+        //        t->imageData[p] = (f->GetData()[p] % (CHAR_MAX)) - (CHAR_MAX/2);
+        //        t->imageData[p] = reinterpret_cast<signed char&> (f->GetData()[p]);
+        t->imageData[p] = reinterpret_cast<char&> (f->GetData()[p]);
+        printf("Wrong format?\n");
+      }
+    }
+    
+    int a = CHAR_MIN;
+    //    printf("data[10] is: %c\n", t->imageData[10]);
   }
-
+  
 }
 
 // Fill out physical_cameras_p vector

@@ -22,6 +22,7 @@
 #define TRACKER_H_
 
 #include <thread>
+#include <mutex>
 #include "tracker_window.h"
 #include "tracker_data_source.h"
 #include "tracker_processor.h"
@@ -40,25 +41,29 @@ class Tracker {
 
   static void handle_frames( void* cb_data );
   void m_handle_frames();
-  frame_collections frames;
+  //  frame_collections frames;
+  multi_frame_collections_map frames_map;
 
   bool main_running;
 
   static int n_run_calls;
 
+  std::mutex *multi_frames_mutex_p;
 
  private:
   TrackerDataSource *tracker_data_source;
   TrackerWindow *gui;
-  /* TrackerProcessor *processor; */
+  TrackerProcessor *tracker_processor;
 
   std::thread *cam_thread;
+
+
 
   NetCom *pos_netcom;
   oGlom *output_file;
 
   TrackerOpt *tracker_opt;
-  ArtePb     *pos_pb;
+  ArtePb     pos_pb;
 
   // Read tracker_opt file, setup physical cameras
   // and the frame buffer into which the camera frames

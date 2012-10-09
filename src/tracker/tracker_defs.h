@@ -1,9 +1,9 @@
-
-
 #ifndef TRACKER_DEFS_H_
 #define TRACKER_DEFS_H_
 
 #include <opencv.hpp>
+#include <mutex>
+
 #define OPENCV_FRAMES
 typedef IplImage ArteFrame;
 
@@ -25,5 +25,6 @@ const int FRAME_WIDTH = 640;
 const int FRAME_HEIGHT = 480;
 const int FRAME_RATE = 30;
 
+extern std::mutex m_imageMutex;
 
 #endif
