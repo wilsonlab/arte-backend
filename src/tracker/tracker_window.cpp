@@ -32,7 +32,7 @@ void TrackerWindow::update(ArtePosPb* p_pb, TrackerWindow* t){
 }
 
 bool TrackerWindow::init(int argc, char *argv[]){
-
+  std::cout << "Init done\n";
   m_pWindow = NULL;
 
   m_pArea = NULL;
@@ -71,7 +71,7 @@ bool TrackerWindow::init(int argc, char *argv[]){
 
   GetWidgets();
   AttachSignals();
-
+  std::cout << "Init done.\n";
   Gtk::Main::run(*m_pWindow);
 
 }

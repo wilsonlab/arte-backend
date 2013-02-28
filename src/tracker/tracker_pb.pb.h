@@ -35,7 +35,7 @@ class Affine2D;
 class ProjMat;
 class CameraOpt;
 class CameraGroup;
-class Led;
+class Point3;
 class TrackerOpt;
 
 enum CameraGroup_CombineStyle {
@@ -709,14 +709,14 @@ class CameraGroup : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class Led : public ::google::protobuf::Message {
+class Point3 : public ::google::protobuf::Message {
  public:
-  Led();
-  virtual ~Led();
+  Point3();
+  virtual ~Point3();
   
-  Led(const Led& from);
+  Point3(const Point3& from);
   
-  inline Led& operator=(const Led& from) {
+  inline Point3& operator=(const Point3& from) {
     CopyFrom(from);
     return *this;
   }
@@ -730,17 +730,17 @@ class Led : public ::google::protobuf::Message {
   }
   
   static const ::google::protobuf::Descriptor* descriptor();
-  static const Led& default_instance();
+  static const Point3& default_instance();
   
-  void Swap(Led* other);
+  void Swap(Point3* other);
   
   // implements Message ----------------------------------------------
   
-  Led* New() const;
+  Point3* New() const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const Led& from);
-  void MergeFrom(const Led& from);
+  void CopyFrom(const Point3& from);
+  void MergeFrom(const Point3& from);
   void Clear();
   bool IsInitialized() const;
   
@@ -784,7 +784,7 @@ class Led : public ::google::protobuf::Message {
   inline float z_pos() const;
   inline void set_z_pos(float value);
   
-  // @@protoc_insertion_point(class_scope:Led)
+  // @@protoc_insertion_point(class_scope:Point3)
  private:
   inline void set_has_x_pos();
   inline void clear_has_x_pos();
@@ -807,7 +807,7 @@ class Led : public ::google::protobuf::Message {
   friend void protobuf_ShutdownFile_tracker_5fpb_2eproto();
   
   void InitAsDefaultInstance();
-  static Led* default_instance_;
+  static Point3* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -895,12 +895,25 @@ class TrackerOpt : public ::google::protobuf::Message {
   inline ::std::string* mutable_timer();
   inline ::std::string* release_timer();
   
-  // optional int32 n_led = 4;
-  inline bool has_n_led() const;
-  inline void clear_n_led();
-  static const int kNLedFieldNumber = 4;
-  inline ::google::protobuf::int32 n_led() const;
-  inline void set_n_led(::google::protobuf::int32 value);
+  // repeated .Point3 led = 4;
+  inline int led_size() const;
+  inline void clear_led();
+  static const int kLedFieldNumber = 4;
+  inline const ::Point3& led(int index) const;
+  inline ::Point3* mutable_led(int index);
+  inline ::Point3* add_led();
+  inline const ::google::protobuf::RepeatedPtrField< ::Point3 >&
+      led() const;
+  inline ::google::protobuf::RepeatedPtrField< ::Point3 >*
+      mutable_led();
+  
+  // optional .Point3 body = 5;
+  inline bool has_body() const;
+  inline void clear_body();
+  static const int kBodyFieldNumber = 5;
+  inline const ::Point3& body() const;
+  inline ::Point3* mutable_body();
+  inline ::Point3* release_body();
   
   // @@protoc_insertion_point(class_scope:TrackerOpt)
  private:
@@ -908,18 +921,19 @@ class TrackerOpt : public ::google::protobuf::Message {
   inline void clear_has_max_n_cams();
   inline void set_has_timer();
   inline void clear_has_timer();
-  inline void set_has_n_led();
-  inline void clear_has_n_led();
+  inline void set_has_body();
+  inline void clear_has_body();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::google::protobuf::RepeatedPtrField< ::CameraGroup > group_;
   ::std::string* timer_;
+  ::google::protobuf::RepeatedPtrField< ::Point3 > led_;
+  ::Point3* body_;
   ::google::protobuf::int32 max_n_cams_;
-  ::google::protobuf::int32 n_led_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
   
   friend void  protobuf_AddDesc_tracker_5fpb_2eproto();
   friend void protobuf_AssignDesc_tracker_5fpb_2eproto();
@@ -1620,70 +1634,70 @@ inline ::std::string* CameraGroup::release_label() {
 
 // -------------------------------------------------------------------
 
-// Led
+// Point3
 
 // optional float x_pos = 1;
-inline bool Led::has_x_pos() const {
+inline bool Point3::has_x_pos() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void Led::set_has_x_pos() {
+inline void Point3::set_has_x_pos() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void Led::clear_has_x_pos() {
+inline void Point3::clear_has_x_pos() {
   _has_bits_[0] &= ~0x00000001u;
 }
-inline void Led::clear_x_pos() {
+inline void Point3::clear_x_pos() {
   x_pos_ = 0;
   clear_has_x_pos();
 }
-inline float Led::x_pos() const {
+inline float Point3::x_pos() const {
   return x_pos_;
 }
-inline void Led::set_x_pos(float value) {
+inline void Point3::set_x_pos(float value) {
   set_has_x_pos();
   x_pos_ = value;
 }
 
 // optional float y_pos = 2;
-inline bool Led::has_y_pos() const {
+inline bool Point3::has_y_pos() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void Led::set_has_y_pos() {
+inline void Point3::set_has_y_pos() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void Led::clear_has_y_pos() {
+inline void Point3::clear_has_y_pos() {
   _has_bits_[0] &= ~0x00000002u;
 }
-inline void Led::clear_y_pos() {
+inline void Point3::clear_y_pos() {
   y_pos_ = 0;
   clear_has_y_pos();
 }
-inline float Led::y_pos() const {
+inline float Point3::y_pos() const {
   return y_pos_;
 }
-inline void Led::set_y_pos(float value) {
+inline void Point3::set_y_pos(float value) {
   set_has_y_pos();
   y_pos_ = value;
 }
 
 // optional float z_pos = 3;
-inline bool Led::has_z_pos() const {
+inline bool Point3::has_z_pos() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
-inline void Led::set_has_z_pos() {
+inline void Point3::set_has_z_pos() {
   _has_bits_[0] |= 0x00000004u;
 }
-inline void Led::clear_has_z_pos() {
+inline void Point3::clear_has_z_pos() {
   _has_bits_[0] &= ~0x00000004u;
 }
-inline void Led::clear_z_pos() {
+inline void Point3::clear_z_pos() {
   z_pos_ = 0;
   clear_has_z_pos();
 }
-inline float Led::z_pos() const {
+inline float Point3::z_pos() const {
   return z_pos_;
 }
-inline void Led::set_z_pos(float value) {
+inline void Point3::set_z_pos(float value) {
   set_has_z_pos();
   z_pos_ = value;
 }
@@ -1797,26 +1811,58 @@ inline ::std::string* TrackerOpt::release_timer() {
   }
 }
 
-// optional int32 n_led = 4;
-inline bool TrackerOpt::has_n_led() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
+// repeated .Point3 led = 4;
+inline int TrackerOpt::led_size() const {
+  return led_.size();
 }
-inline void TrackerOpt::set_has_n_led() {
-  _has_bits_[0] |= 0x00000008u;
+inline void TrackerOpt::clear_led() {
+  led_.Clear();
 }
-inline void TrackerOpt::clear_has_n_led() {
-  _has_bits_[0] &= ~0x00000008u;
+inline const ::Point3& TrackerOpt::led(int index) const {
+  return led_.Get(index);
 }
-inline void TrackerOpt::clear_n_led() {
-  n_led_ = 0;
-  clear_has_n_led();
+inline ::Point3* TrackerOpt::mutable_led(int index) {
+  return led_.Mutable(index);
 }
-inline ::google::protobuf::int32 TrackerOpt::n_led() const {
-  return n_led_;
+inline ::Point3* TrackerOpt::add_led() {
+  return led_.Add();
 }
-inline void TrackerOpt::set_n_led(::google::protobuf::int32 value) {
-  set_has_n_led();
-  n_led_ = value;
+inline const ::google::protobuf::RepeatedPtrField< ::Point3 >&
+TrackerOpt::led() const {
+  return led_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::Point3 >*
+TrackerOpt::mutable_led() {
+  return &led_;
+}
+
+// optional .Point3 body = 5;
+inline bool TrackerOpt::has_body() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void TrackerOpt::set_has_body() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void TrackerOpt::clear_has_body() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void TrackerOpt::clear_body() {
+  if (body_ != NULL) body_->::Point3::Clear();
+  clear_has_body();
+}
+inline const ::Point3& TrackerOpt::body() const {
+  return body_ != NULL ? *body_ : *default_instance_->body_;
+}
+inline ::Point3* TrackerOpt::mutable_body() {
+  set_has_body();
+  if (body_ == NULL) body_ = new ::Point3;
+  return body_;
+}
+inline ::Point3* TrackerOpt::release_body() {
+  clear_has_body();
+  ::Point3* temp = body_;
+  body_ = NULL;
+  return temp;
 }
 
 

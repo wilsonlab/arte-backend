@@ -44,7 +44,7 @@ message CameraGroup {
         optional string               label  = 3;
 }
 
-message Led {
+message Point3 {
         optional float                x_pos  = 1;
         optional float                y_pos  = 2;
         optional float                z_pos  = 3;
@@ -54,6 +54,7 @@ message TrackerOpt {
         repeated CameraGroup          group  = 1;
         optional int32           max_n_cams  = 2;
         optional string               timer  = 3;
-        optional int32                n_led  = 4;
+        repeated Point3                 led  = 4;
+        optional Point3                 body = 5;
         /* What else? */
 }

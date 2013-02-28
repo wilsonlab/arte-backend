@@ -33,9 +33,9 @@ class cam_points_info{
 class assignment_hypothesis{
  public:
   std::map <point, point> point_assignments;
+  ArtePosPb hypo_pos;
   double assignment_score;
 };
-
 
 class TrackerProcessor {
 
@@ -55,11 +55,14 @@ class TrackerProcessor {
   multi_frame_collections_map &frames_map;
   std::mutex *multi_frames_mutex_p;
 
+  assignment_hypothesis process_group(int group_ind);
+
   cam_points_info find_points_in_frame();
   
   point cam_and_world_coords(point p, const CameraOpt& c, int d);
 
-  cam_points_info find_points_in_frame(ArteFrame *f, const CameraOpt &c);
+  cam_points_info find_points_in_frame(ArteFrame *f, const CameraOpt &c,
+                                       ArteFrame *result);
 
   unsigned char neighbors_max(int x, int y, unsigned char *d, int stride);
 
@@ -67,6 +70,12 @@ class TrackerProcessor {
 
   int ind2d(int x, int y, int stride);
   void inv_ind2d(int i, int stride, int *x, int *y);
+
+  void recursive_flatten( unsigned char *s, 
+                          unsigned char *r,
+                          int x, int y, unsigned char thresh,
+                          int *blob_sum_x, int *blob_sum_y, int *blob_px_count,
+                          unsigned char c);
 
 };
 

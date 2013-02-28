@@ -132,19 +132,24 @@ void Tracker::init(int argc, char *argv[]){
               << " or run tracker with a path to a good config file.\n";
   }
 
-  frame_collections frames, backgrounds, frames_background_subtracted, frames_hybrid;
 
   // Set up frames: the frame buffer for multiple camera groups
   // There are I camera groups, with J image pointers per group
   // (J is different from group to group).  For now, make those
   // pointers point to NULL 
 
+  frame_collections frames, backgrounds, frames_background_subtracted, frames_hybrid, test;
+
   for(int i = 0; i < tracker_opt->group_size(); i++){
+
     frames.push_back(frame_p_collection ());
     backgrounds.push_back(frame_p_collection ());
     frames_background_subtracted.push_back(frame_p_collection ());
     frames_hybrid.push_back(frame_p_collection ());
+    test.push_back(frame_p_collection ());
+
     for(int j = 0; j < tracker_opt->group(i).cam_size(); j++){
+
       IplImage *this_image_a = cvCreateImage( cvSize(FRAME_WIDTH, FRAME_HEIGHT),
                                               IPL_DEPTH_8U, 1);
       IplImage *this_image_bk= cvCreateImage( cvSize(FRAME_WIDTH, FRAME_HEIGHT),
@@ -153,18 +158,25 @@ void Tracker::init(int argc, char *argv[]){
                                               IPL_DEPTH_8U, 1);
       IplImage *this_image_c = cvCreateImage( cvSize(FRAME_WIDTH, FRAME_HEIGHT),
                                               IPL_DEPTH_8U, 1);
+      IplImage *this_image_t = cvCreateImage( cvSize(FRAME_WIDTH, FRAME_HEIGHT),
+                                              IPL_DEPTH_8U, 1);
 
       for(int p = 0; p < FRAME_WIDTH*FRAME_HEIGHT; p++){
+
         this_image_a->imageData[p] = 0;
         this_image_bk->imageData[p] = 0;
         this_image_b->imageData[p] = 0;
         this_image_c->imageData[p] = 0;
+        this_image_t->imageData[p] = 0;
+
       }
 
       frames[i].push_back( (ArteFrame*) this_image_a);
       backgrounds[i].push_back( (ArteFrame*) this_image_bk);
       frames_background_subtracted[i].push_back( (ArteFrame*) this_image_b );
       frames_hybrid[i].push_back( (ArteFrame*) this_image_c );
+      test[i].push_back( (ArteFrame*) this_image_t );
+
     }
   }
 
@@ -173,7 +185,7 @@ void Tracker::init(int argc, char *argv[]){
   frames_map["background"] = backgrounds;
   frames_map["background_subtracted"] = frames_background_subtracted;
   frames_map["hybrid"] = frames_hybrid;
-
+  frames_map["test"] = test;
 }
 
 

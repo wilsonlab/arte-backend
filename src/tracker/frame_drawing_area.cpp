@@ -31,13 +31,6 @@ bool FrameDrawingArea::on_expose_event(GdkEventExpose *event){
 
   BeginGL();
 
-  int screenWidth = 0;
-  int screenHeight = 0;
-  get_window()->get_size( screenWidth, screenHeight );
-
-  const double halfPixelAdjustW = 0.25 / (double)screenWidth;
-  const double halfPixelAdjustH = 0.25 / (double)screenHeight;
-
   glEnable( GL_TEXTURE_2D );
   glMatrixMode( GL_MODELVIEW );
   glLoadIdentity();
@@ -137,6 +130,8 @@ bool FrameDrawingArea::CommonInit(TrackerOpt& o, multi_frame_collections_map *f)
   all_selected = false;
   selection = NULL;
   map_selection = "background_subtracted";
+    map_selection = "test";
+  //map_selection = "raw";
   //  map_selection = "background";
 
   // Display is: Main screen, with max_n_cams little screens underneath
@@ -362,6 +357,7 @@ void FrameDrawingArea::assembleView(){
     (selection == NULL)?
     (*frames_map)[ map_selection ][0][0] : selection;
 
+  //  std::cout << "map_selection: " << map_selection << std::endl;
 
   int depth = (this_sel->depth == IPL_DEPTH_8U
                || this_sel->depth == IPL_DEPTH_8S) ?

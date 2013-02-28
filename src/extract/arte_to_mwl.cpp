@@ -9,6 +9,11 @@ int spike_count;
 bool interactive;
 bool verbose;
 
+// Set a first-buffer time threshold in order to drop spikes occurring too early
+// (buffers suffering from the uint underwrite)
+uint32_t low_time_threshold = 1000000; // 1,000,000 time units = 100 seconds
+bool encountered_low = false;
+
 spike_net_t g_spike;    // global spike struct
 lfp_bank_net_t g_lfp;   // global lfp struct
 
@@ -484,6 +489,13 @@ bool get_next_packet(void *arte_packet, int sourcename, packetType_t sourcetype)
       ok_packet = false;
       //printf("Found spike with bad_ts:%d  Current spike_count is:%d   Dropping it.\n", spike->ts, spike_count);
     }
+
+    if(spike->ts > low_time_threshold && (!encountered_low)){
+      printf("Found a spike with ts:%d which is below the time-theshold:%d while low_encoundered is false.  Dropping it.\n",
+             spike->ts, spike_count);
+      return false;
+    }
+
     if(false){
       printf("sought-after sourcename:%d sourcetype:%c  found name:%d type:%c\n",
 	     sourcename, sourcetype, spike->name, the_type);
@@ -499,6 +511,8 @@ bool get_next_packet(void *arte_packet, int sourcename, packetType_t sourcetype)
       fflush(stdout);
     }
     //printf("ABOUT TO RETURN\n");
+    if (ok_packet)
+      encountered_low = true;
     return (ok_packet & (sourcetype == NETCOM_UDP_SPIKE)); 
   }
    

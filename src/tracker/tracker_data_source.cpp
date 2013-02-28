@@ -139,40 +139,45 @@ int TrackerDataSource::s_run_cameras(TrackerDataSource *s){
 }
 
 void TrackerDataSource::flycapture_to_opencv( FlyCapture2::Image* f, IplImage* t){
-  //printf("Converting, la la la ... f:%p  t:%p\n",f,t);
-  int f_wd = f->GetCols();
-  int f_ht = f->GetRows();
-  float f_bytes_per_px = f->GetBitsPerPixel() / 8.0f;
-  int t_wd = t->width;
-  int t_ht = t->height;
-  float t_bytes_per_px = (t->depth == IPL_DEPTH_8U) || (t->depth == IPL_DEPTH_8S)
-    ? 1.0f : 2.0f;
 
-  //  printf("f_wd: %d  f_ht: %d,  f_byte: %f,  t_wd: %d  t_ht: %d  t_byte: %f\n",
-  //         f_wd, f_ht, f_bytes_per_px, t_wd, t_ht, t_bytes_per_px);
+  // //printf("Converting, la la la ... f:%p  t:%p\n",f,t);
+  // int f_wd = f->GetCols();
+  // int f_ht = f->GetRows();
+  // float f_bytes_per_px = f->GetBitsPerPixel() / 8.0f;
+  // int t_wd = t->width;
+  // int t_ht = t->height;
+  // float t_bytes_per_px = (t->depth == IPL_DEPTH_8U) || (t->depth == IPL_DEPTH_8S)
+  //   ? 1.0f : 2.0f;
+
+  // //  printf("f_wd: %d  f_ht: %d,  f_byte: %f,  t_wd: %d  t_ht: %d  t_byte: %f\n",
+  // //         f_wd, f_ht, f_bytes_per_px, t_wd, t_ht, t_bytes_per_px);
   
-  if ( (t_wd == f_wd) &&
-       (t_ht == f_ht) &&
-       ((abs(t_bytes_per_px - f_bytes_per_px)) < 0.1) ){
-    int rnd_bits = (abs(t_bytes_per_px - 8.0) < 0.1) ? 1 : 2;
-    rnd_bits = 1;
+  // if ( (t_wd == f_wd) &&
+  //      (t_ht == f_ht) &&
+  //      ((abs(t_bytes_per_px - f_bytes_per_px)) < 0.1) ){
+  //   int rnd_bits = (abs(t_bytes_per_px - 8.0) < 0.1) ? 1 : 2;
+  //   rnd_bits = 1;
     
-    if(t->depth == IPL_DEPTH_8U)
-      memcpy( t->imageData, f->GetData(), t_wd*t_ht*rnd_bits);
+  //   if(t->depth == IPL_DEPTH_8U)
+  //     memcpy( t->imageData, f->GetData(), t_wd*t_ht*rnd_bits);
     
     
-    if(t->depth == IPL_DEPTH_8S){ // convert from unsigned to signed
-      for(int p = 0; p < FRAME_WIDTH * FRAME_HEIGHT; p++){
-        //        t->imageData[p] = (f->GetData()[p] % (CHAR_MAX)) - (CHAR_MAX/2);
-        //        t->imageData[p] = reinterpret_cast<signed char&> (f->GetData()[p]);
-        t->imageData[p] = reinterpret_cast<char&> (f->GetData()[p]);
-        printf("Wrong format?\n");
-      }
-    }
+  //   if(t->depth == IPL_DEPTH_8S){ // convert from unsigned to signed
+  //     for(int p = 0; p < FRAME_WIDTH * FRAME_HEIGHT; p++){
+  //       //        t->imageData[p] = (f->GetData()[p] % (CHAR_MAX)) - (CHAR_MAX/2);
+  //       //        t->imageData[p] = reinterpret_cast<signed char&> (f->GetData()[p]);
+  //       t->imageData[p] = reinterpret_cast<char&> (f->GetData()[p]);
+  //       printf("Wrong format?\n");
+  //     }
+  //   }
     
-    int a = CHAR_MIN;
-    //    printf("data[10] is: %c\n", t->imageData[10]);
-  }
+  //   int a = CHAR_MIN;
+  //   //    printf("data[10] is: %c\n", t->imageData[10]);
+  // }
+
+
+  // Let's assume that IplImages match the size&depth of the FlyCapture images
+  memcpy( t->imageData, f->GetData(), FRAME_WIDTH * FRAME_HEIGHT);
   
 }
 

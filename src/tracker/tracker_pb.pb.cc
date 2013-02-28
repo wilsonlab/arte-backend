@@ -31,9 +31,9 @@ const ::google::protobuf::Descriptor* CameraGroup_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   CameraGroup_reflection_ = NULL;
 const ::google::protobuf::EnumDescriptor* CameraGroup_CombineStyle_descriptor_ = NULL;
-const ::google::protobuf::Descriptor* Led_descriptor_ = NULL;
+const ::google::protobuf::Descriptor* Point3_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
-  Led_reflection_ = NULL;
+  Point3_reflection_ = NULL;
 const ::google::protobuf::Descriptor* TrackerOpt_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   TrackerOpt_reflection_ = NULL;
@@ -142,29 +142,30 @@ void protobuf_AssignDesc_tracker_5fpb_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(CameraGroup));
   CameraGroup_CombineStyle_descriptor_ = CameraGroup_descriptor_->enum_type(0);
-  Led_descriptor_ = file->message_type(5);
-  static const int Led_offsets_[3] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Led, x_pos_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Led, y_pos_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Led, z_pos_),
+  Point3_descriptor_ = file->message_type(5);
+  static const int Point3_offsets_[3] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Point3, x_pos_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Point3, y_pos_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Point3, z_pos_),
   };
-  Led_reflection_ =
+  Point3_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
-      Led_descriptor_,
-      Led::default_instance_,
-      Led_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Led, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Led, _unknown_fields_),
+      Point3_descriptor_,
+      Point3::default_instance_,
+      Point3_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Point3, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Point3, _unknown_fields_),
       -1,
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(Led));
+      sizeof(Point3));
   TrackerOpt_descriptor_ = file->message_type(6);
-  static const int TrackerOpt_offsets_[4] = {
+  static const int TrackerOpt_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TrackerOpt, group_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TrackerOpt, max_n_cams_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TrackerOpt, timer_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TrackerOpt, n_led_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TrackerOpt, led_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TrackerOpt, body_),
   };
   TrackerOpt_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -200,7 +201,7 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     CameraGroup_descriptor_, &CameraGroup::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    Led_descriptor_, &Led::default_instance());
+    Point3_descriptor_, &Point3::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     TrackerOpt_descriptor_, &TrackerOpt::default_instance());
 }
@@ -218,8 +219,8 @@ void protobuf_ShutdownFile_tracker_5fpb_2eproto() {
   delete CameraOpt_reflection_;
   delete CameraGroup::default_instance_;
   delete CameraGroup_reflection_;
-  delete Led::default_instance_;
-  delete Led_reflection_;
+  delete Point3::default_instance_;
+  delete Point3_reflection_;
   delete TrackerOpt::default_instance_;
   delete TrackerOpt_reflection_;
 }
@@ -247,11 +248,12 @@ void protobuf_AddDesc_tracker_5fpb_2eproto() {
     "raGroup\022\027\n\003cam\030\001 \003(\0132\n.CameraOpt\022*\n\007comb"
     "ine\030\002 \001(\0162\031.CameraGroup.CombineStyle\022\r\n\005"
     "label\030\003 \001(\t\"4\n\014CombineStyle\022\010\n\004NONE\020\001\022\016\n"
-    "\nPANOSTITCH\020\002\022\n\n\006FULL3D\020\003\"2\n\003Led\022\r\n\005x_po"
-    "s\030\001 \001(\002\022\r\n\005y_pos\030\002 \001(\002\022\r\n\005z_pos\030\003 \001(\002\"[\n"
-    "\nTrackerOpt\022\033\n\005group\030\001 \003(\0132\014.CameraGroup"
-    "\022\022\n\nmax_n_cams\030\002 \001(\005\022\r\n\005timer\030\003 \001(\t\022\r\n\005n"
-    "_led\030\004 \001(\005", 810);
+    "\nPANOSTITCH\020\002\022\n\n\006FULL3D\020\003\"5\n\006Point3\022\r\n\005x"
+    "_pos\030\001 \001(\002\022\r\n\005y_pos\030\002 \001(\002\022\r\n\005z_pos\030\003 \001(\002"
+    "\"y\n\nTrackerOpt\022\033\n\005group\030\001 \003(\0132\014.CameraGr"
+    "oup\022\022\n\nmax_n_cams\030\002 \001(\005\022\r\n\005timer\030\003 \001(\t\022\024"
+    "\n\003led\030\004 \003(\0132\007.Point3\022\025\n\004body\030\005 \001(\0132\007.Poi"
+    "nt3", 843);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "tracker_pb.proto", &protobuf_RegisterTypes);
   OrthoConv::default_instance_ = new OrthoConv();
@@ -259,14 +261,14 @@ void protobuf_AddDesc_tracker_5fpb_2eproto() {
   ProjMat::default_instance_ = new ProjMat();
   CameraOpt::default_instance_ = new CameraOpt();
   CameraGroup::default_instance_ = new CameraGroup();
-  Led::default_instance_ = new Led();
+  Point3::default_instance_ = new Point3();
   TrackerOpt::default_instance_ = new TrackerOpt();
   OrthoConv::default_instance_->InitAsDefaultInstance();
   Affine2D::default_instance_->InitAsDefaultInstance();
   ProjMat::default_instance_->InitAsDefaultInstance();
   CameraOpt::default_instance_->InitAsDefaultInstance();
   CameraGroup::default_instance_->InitAsDefaultInstance();
-  Led::default_instance_->InitAsDefaultInstance();
+  Point3::default_instance_->InitAsDefaultInstance();
   TrackerOpt::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_tracker_5fpb_2eproto);
 }
@@ -2165,26 +2167,26 @@ void CameraGroup::Swap(CameraGroup* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
-const int Led::kXPosFieldNumber;
-const int Led::kYPosFieldNumber;
-const int Led::kZPosFieldNumber;
+const int Point3::kXPosFieldNumber;
+const int Point3::kYPosFieldNumber;
+const int Point3::kZPosFieldNumber;
 #endif  // !_MSC_VER
 
-Led::Led()
+Point3::Point3()
   : ::google::protobuf::Message() {
   SharedCtor();
 }
 
-void Led::InitAsDefaultInstance() {
+void Point3::InitAsDefaultInstance() {
 }
 
-Led::Led(const Led& from)
+Point3::Point3(const Point3& from)
   : ::google::protobuf::Message() {
   SharedCtor();
   MergeFrom(from);
 }
 
-void Led::SharedCtor() {
+void Point3::SharedCtor() {
   _cached_size_ = 0;
   x_pos_ = 0;
   y_pos_ = 0;
@@ -2192,36 +2194,36 @@ void Led::SharedCtor() {
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
-Led::~Led() {
+Point3::~Point3() {
   SharedDtor();
 }
 
-void Led::SharedDtor() {
+void Point3::SharedDtor() {
   if (this != default_instance_) {
   }
 }
 
-void Led::SetCachedSize(int size) const {
+void Point3::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
-const ::google::protobuf::Descriptor* Led::descriptor() {
+const ::google::protobuf::Descriptor* Point3::descriptor() {
   protobuf_AssignDescriptorsOnce();
-  return Led_descriptor_;
+  return Point3_descriptor_;
 }
 
-const Led& Led::default_instance() {
+const Point3& Point3::default_instance() {
   if (default_instance_ == NULL) protobuf_AddDesc_tracker_5fpb_2eproto();  return *default_instance_;
 }
 
-Led* Led::default_instance_ = NULL;
+Point3* Point3::default_instance_ = NULL;
 
-Led* Led::New() const {
-  return new Led;
+Point3* Point3::New() const {
+  return new Point3;
 }
 
-void Led::Clear() {
+void Point3::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     x_pos_ = 0;
     y_pos_ = 0;
@@ -2231,7 +2233,7 @@ void Led::Clear() {
   mutable_unknown_fields()->Clear();
 }
 
-bool Led::MergePartialFromCodedStream(
+bool Point3::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!(EXPRESSION)) return false
   ::google::protobuf::uint32 tag;
@@ -2300,7 +2302,7 @@ bool Led::MergePartialFromCodedStream(
 #undef DO_
 }
 
-void Led::SerializeWithCachedSizes(
+void Point3::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // optional float x_pos = 1;
   if (has_x_pos()) {
@@ -2323,7 +2325,7 @@ void Led::SerializeWithCachedSizes(
   }
 }
 
-::google::protobuf::uint8* Led::SerializeWithCachedSizesToArray(
+::google::protobuf::uint8* Point3::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // optional float x_pos = 1;
   if (has_x_pos()) {
@@ -2347,7 +2349,7 @@ void Led::SerializeWithCachedSizes(
   return target;
 }
 
-int Led::ByteSize() const {
+int Point3::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
@@ -2378,10 +2380,10 @@ int Led::ByteSize() const {
   return total_size;
 }
 
-void Led::MergeFrom(const ::google::protobuf::Message& from) {
+void Point3::MergeFrom(const ::google::protobuf::Message& from) {
   GOOGLE_CHECK_NE(&from, this);
-  const Led* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const Led*>(
+  const Point3* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const Point3*>(
       &from);
   if (source == NULL) {
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
@@ -2390,7 +2392,7 @@ void Led::MergeFrom(const ::google::protobuf::Message& from) {
   }
 }
 
-void Led::MergeFrom(const Led& from) {
+void Point3::MergeFrom(const Point3& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (from.has_x_pos()) {
@@ -2406,24 +2408,24 @@ void Led::MergeFrom(const Led& from) {
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
-void Led::CopyFrom(const ::google::protobuf::Message& from) {
+void Point3::CopyFrom(const ::google::protobuf::Message& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-void Led::CopyFrom(const Led& from) {
+void Point3::CopyFrom(const Point3& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool Led::IsInitialized() const {
+bool Point3::IsInitialized() const {
   
   return true;
 }
 
-void Led::Swap(Led* other) {
+void Point3::Swap(Point3* other) {
   if (other != this) {
     std::swap(x_pos_, other->x_pos_);
     std::swap(y_pos_, other->y_pos_);
@@ -2434,11 +2436,11 @@ void Led::Swap(Led* other) {
   }
 }
 
-::google::protobuf::Metadata Led::GetMetadata() const {
+::google::protobuf::Metadata Point3::GetMetadata() const {
   protobuf_AssignDescriptorsOnce();
   ::google::protobuf::Metadata metadata;
-  metadata.descriptor = Led_descriptor_;
-  metadata.reflection = Led_reflection_;
+  metadata.descriptor = Point3_descriptor_;
+  metadata.reflection = Point3_reflection_;
   return metadata;
 }
 
@@ -2449,7 +2451,8 @@ void Led::Swap(Led* other) {
 const int TrackerOpt::kGroupFieldNumber;
 const int TrackerOpt::kMaxNCamsFieldNumber;
 const int TrackerOpt::kTimerFieldNumber;
-const int TrackerOpt::kNLedFieldNumber;
+const int TrackerOpt::kLedFieldNumber;
+const int TrackerOpt::kBodyFieldNumber;
 #endif  // !_MSC_VER
 
 TrackerOpt::TrackerOpt()
@@ -2458,6 +2461,7 @@ TrackerOpt::TrackerOpt()
 }
 
 void TrackerOpt::InitAsDefaultInstance() {
+  body_ = const_cast< ::Point3*>(&::Point3::default_instance());
 }
 
 TrackerOpt::TrackerOpt(const TrackerOpt& from)
@@ -2470,7 +2474,7 @@ void TrackerOpt::SharedCtor() {
   _cached_size_ = 0;
   max_n_cams_ = 0;
   timer_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  n_led_ = 0;
+  body_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -2483,6 +2487,7 @@ void TrackerOpt::SharedDtor() {
     delete timer_;
   }
   if (this != default_instance_) {
+    delete body_;
   }
 }
 
@@ -2514,9 +2519,12 @@ void TrackerOpt::Clear() {
         timer_->clear();
       }
     }
-    n_led_ = 0;
+    if (has_body()) {
+      if (body_ != NULL) body_->::Point3::Clear();
+    }
   }
   group_.Clear();
+  led_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
@@ -2571,19 +2579,32 @@ bool TrackerOpt::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(32)) goto parse_n_led;
+        if (input->ExpectTag(34)) goto parse_led;
         break;
       }
       
-      // optional int32 n_led = 4;
+      // repeated .Point3 led = 4;
       case 4: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
-         parse_n_led:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &n_led_)));
-          set_has_n_led();
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_led:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+                input, add_led()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(34)) goto parse_led;
+        if (input->ExpectTag(42)) goto parse_body;
+        break;
+      }
+      
+      // optional .Point3 body = 5;
+      case 5: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_body:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_body()));
         } else {
           goto handle_uninterpreted;
         }
@@ -2629,9 +2650,16 @@ void TrackerOpt::SerializeWithCachedSizes(
       3, this->timer(), output);
   }
   
-  // optional int32 n_led = 4;
-  if (has_n_led()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(4, this->n_led(), output);
+  // repeated .Point3 led = 4;
+  for (int i = 0; i < this->led_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      4, this->led(i), output);
+  }
+  
+  // optional .Point3 body = 5;
+  if (has_body()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      5, this->body(), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -2664,9 +2692,18 @@ void TrackerOpt::SerializeWithCachedSizes(
         3, this->timer(), target);
   }
   
-  // optional int32 n_led = 4;
-  if (has_n_led()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(4, this->n_led(), target);
+  // repeated .Point3 led = 4;
+  for (int i = 0; i < this->led_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        4, this->led(i), target);
+  }
+  
+  // optional .Point3 body = 5;
+  if (has_body()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        5, this->body(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -2694,11 +2731,11 @@ int TrackerOpt::ByteSize() const {
           this->timer());
     }
     
-    // optional int32 n_led = 4;
-    if (has_n_led()) {
+    // optional .Point3 body = 5;
+    if (has_body()) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::Int32Size(
-          this->n_led());
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->body());
     }
     
   }
@@ -2708,6 +2745,14 @@ int TrackerOpt::ByteSize() const {
     total_size +=
       ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
         this->group(i));
+  }
+  
+  // repeated .Point3 led = 4;
+  total_size += 1 * this->led_size();
+  for (int i = 0; i < this->led_size(); i++) {
+    total_size +=
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        this->led(i));
   }
   
   if (!unknown_fields().empty()) {
@@ -2736,6 +2781,7 @@ void TrackerOpt::MergeFrom(const ::google::protobuf::Message& from) {
 void TrackerOpt::MergeFrom(const TrackerOpt& from) {
   GOOGLE_CHECK_NE(&from, this);
   group_.MergeFrom(from.group_);
+  led_.MergeFrom(from.led_);
   if (from._has_bits_[1 / 32] & (0xffu << (1 % 32))) {
     if (from.has_max_n_cams()) {
       set_max_n_cams(from.max_n_cams());
@@ -2743,8 +2789,8 @@ void TrackerOpt::MergeFrom(const TrackerOpt& from) {
     if (from.has_timer()) {
       set_timer(from.timer());
     }
-    if (from.has_n_led()) {
-      set_n_led(from.n_led());
+    if (from.has_body()) {
+      mutable_body()->::Point3::MergeFrom(from.body());
     }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
@@ -2772,7 +2818,8 @@ void TrackerOpt::Swap(TrackerOpt* other) {
     group_.Swap(&other->group_);
     std::swap(max_n_cams_, other->max_n_cams_);
     std::swap(timer_, other->timer_);
-    std::swap(n_led_, other->n_led_);
+    led_.Swap(&other->led_);
+    std::swap(body_, other->body_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
