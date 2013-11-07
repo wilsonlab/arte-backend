@@ -1,6 +1,6 @@
 # this file gets included by the one in the main project directory,
 # so act as though we are there, not in src/
-CC = g++44
+CC = g++
 LD = $(CC)
 # in next line: don't nesceccarily do -lnidaqmx.  Instead, check for it and conditional link, as in
 # this post (http://stackoverflow.com/questions/3910054/makefile-conditional-include)
