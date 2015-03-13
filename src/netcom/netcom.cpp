@@ -1,5 +1,5 @@
-#include "netcom.h"
-#include "datapacket.h"
+#include "../netcom.h"
+#include "../datapacket.h"
 
 NetComDat NetCom::initUdpTx(char host[], int port){
 
