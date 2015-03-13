@@ -100,9 +100,7 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
     strcpy( this_nd.raw_dump_filename, tmp_out_name.c_str() );
 
     this_nd.total_samp_count = this_nd.n_chans * this_nd.n_samps_per_buffer;
-    //    this_nd.data_buffer = new rdata_t [MAX_NEURAL_DAQ_BUFFER];
     this_nd.data_ptr = this_nd.data_buffer;
-    this_nd.data_ptr = new rdata_t [MAX_NEURAL_DAQ_BUFFER];
     init_array <rdata_t>(this_nd.data_ptr, 4, (this_nd.n_chans * this_nd.n_samps_per_buffer) );
     this_nd.size_bytes = this_nd.total_samp_count * sizeof(this_nd.data_ptr[0]);
     this_nd.daq_buffer_count = 0;
@@ -208,12 +206,6 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
     }
     std::cout << "Done with daq_processing loop. " << std::endl;
   } //end if for card-read specefic stuff 
-
-  for(int c = 0; c < n_neural_daqs; c++){
-    std::cout << "neural_daq_array[" << c << "]" << std::endl
-	      << "TaskHandle: " << neural_daq_array[c].task_handle << std::endl
-	      << "data_ptr: " << neural_daq_array[c].data_ptr << std::endl;
-  }
   
 }
 

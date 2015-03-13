@@ -22,7 +22,7 @@ struct neural_daq{
   FILE *in_file;
   name_string_t raw_dump_filename;
   FILE *out_file;
-  rdata_t data_buffer [MAX_NEURAL_DAQ_BUFFER];
+  rdata_t data_buffer[MAX_NEURAL_DAQ_BUFFER];
   rdata_t *data_ptr;
   uint32_t buffer_timestamp;
   TaskHandle task_handle;

@@ -25,10 +25,6 @@
 
 #include <stdint.h>
 #include <netinet/in.h>
-#include <boost/multi_array.hpp>
-#include <boost/circular_buffer.hpp>
-#include "arte_pb.pb.h"
-#include "arte_command.pb.h"
 #include "global_defs.h"
 
 // these seem to assume that host byteorder is little endian
@@ -59,55 +55,19 @@
 #define MAX_BUF_LEN 2048
 void printBuff(char* buff, int blen);
 
-// define some types of data
-typedef boost::multi_array <rdata_t,2> raw_voltage_array;
-typedef std::vector < boost::circular_buffer <rdata_t> > raw_voltage_circular_buffer;
-typedef raw_voltage_array::index voltage_array_index;
-
-class NeuralVoltageBuffer{
- public:
-  NeuralVoltageBuffer(){}
-  NeuralVoltageBuffer(int n_chans, int n_samps, std::string daq_id);
-
-  timestamp_t       one_past_end_timestamp;
-  raw_voltage_array voltage_buffer;
-  std::string       device_label;
-  
-  ArteRawBufferPb& to_buffer();
-  void print();
- private:
-  ArtePb local_pb;
-  int n_chans, n_samps;
-};
-
-class NeuralVoltageCircBuffer{
- public:
-  timestamp_t                 one_past_end_timestamp;
-  int                         invalid_end_samps;
-  raw_voltage_circular_buffer voltage_buffer;
-  ArteRawBufferPb& to_buffer();
-  void request_size( int new_n_chans, int new_n_samps );
-  timestamp_t ts_of_index( int index, double ts_ticks_per_samp );
-  void print();
- private:
-  ArteRawBufferPb  local_pb;
-};
-
-// From here down: all old data-packet stuff for hand-marshalling 
-
 typedef uint32_t timestamp_t;
 
 struct spike_net_t{
-  timestamp_t ts;                                           // bytes 2:5                    S
-  uint16_t    name;                                         // bytes 6:7                    O
-  uint16_t    n_chans;                                      // bytes 8:9                     
-  uint16_t    n_samps_per_chan;                             // bytes 10:11                  F
-  uint16_t    samp_n_bytes;                                 // bytes 11:12                  R
-  rdata_t     data[MAX_FILTERED_BUFFER_TOTAL_SAMPLE_COUNT]; // bytes 13: 13+( c * s * b )   A
-  int16_t     gains[MAX_FILTERED_BUFFER_N_CHANS];           // the next 2*c bytes           G
-  rdata_t     thresh[MAX_FILTERED_BUFFER_N_CHANS];          // the next b*c bytes           I
-  uint16_t    trig_ind;                                     // the next 2 bytes             L
-  uint32_t    seq_num;                                      //                              E
+  timestamp_t ts;                                           // bytes 2:5
+  uint16_t    name;                                         // bytes 6:7
+  uint16_t    n_chans;                                      // bytes 8:9
+  uint16_t    n_samps_per_chan;                             // bytes 10:11
+  uint16_t    samp_n_bytes;                                 // bytes 11:12
+  rdata_t     data[MAX_FILTERED_BUFFER_TOTAL_SAMPLE_COUNT]; // bytes 13: 13+( c * s * b )
+  int16_t     gains[MAX_FILTERED_BUFFER_N_CHANS];           // the next 2*c bytes
+  rdata_t     thresh[MAX_FILTERED_BUFFER_N_CHANS];          // the next b*c bytes
+  uint16_t    trig_ind;                                     // the next 2 bytes
+  uint32_t    seq_num;
 };
 
 struct lfp_bank_net_t{

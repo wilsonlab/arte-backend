@@ -8,11 +8,9 @@
 #include <map>
 #include <vector>
 #include <stdint.h>
-
-#include "spike.h"
 #include "filtered_buffer.h"
+
 #include "netcom.h"
-#include "arte_pb.pb.h"
 
 extern neural_daq      * neural_daq_array;
 extern Filtered_buffer * filtered_buffer_array;
@@ -23,7 +21,6 @@ class Trode{
 
  public:
   Trode();
-  Trode( ArteSessionOptPb &session_pb );
   virtual ~Trode();
   
   uint16_t name;
@@ -44,12 +41,9 @@ class Trode{
 
   neural_daq *my_daq;
 
-  //SpikeDetector my_spike_detector;  // <-- No such thing yet :)
+  //SpikeDetector my_spike_detector;
 
   spike_net_t spike_array[MAX_N_SPIKES_PER_BUFFER];
-  ArtePb my_arte_pb;
-  ArteSpikePb *my_spike_pb;
-  ArteTrodeOptPb my_opt_pb;
 
   NetCom * my_netcom;
   NetComDat my_netcomdat;
@@ -58,12 +52,16 @@ class Trode{
   //for debugging
   int *n_times_checked;
 
+  int init(boost::property_tree::ptree &trode_pt, 
+	   boost::property_tree::ptree &default_pt,
+	   std::map<int, neural_daq> &neural_daq_map, 
+	   std::map<std::string, Filt> &filt_map);
+
   void init2(boost::property_tree::ptree &trode_pt,
 	    boost::property_tree::ptree &default_pt,
 	    Filtered_buffer * filtered_buffer_curs);
 
   void setup_spike_array();
-  void setup_pb();
   void set_thresh_uv_one_thresh_n_chans(int16_t uv_thresh, int *chan_array, int n_chans_to_set);
   void set_thresh_uv_n_thresh_n_chans(int16_t *uv_thresh_array, int *chan_array, int n_chans_to_set);
   void set_thresh_uv_one_thresh_all_chans(int16_t uv_thresh);
@@ -72,8 +70,6 @@ class Trode{
   void print_buffers(int chan_lim, int samp_lim); // this should be handled by my_buffer, not trode
   void print_spikes();
   void end_acquisition();
-
-  void spike_to_pb(spike_net_t *spike);
 
 };
 

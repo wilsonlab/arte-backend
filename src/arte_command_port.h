@@ -94,7 +94,6 @@
 #include <sys/time.h>
 #include <vector>
 #include <boost/property_tree/ptree.hpp>
-#include "arte_pb.pb.h"
 #include "arte_command.pb.h"
 
 typedef void (*CALLBACK_FN)(void *);              // Our callback function returns
@@ -106,16 +105,17 @@ class Arte_command_port{
 
   // Three constructors for daily use - pass in property tree for configuration
 
-  Arte_command_port(); // Construct no init (unusual)
-
-  // Construct from ArteSetupPb
-  Arte_command_port( ArteSetupOptPb &setup_pb, CALLBACK_FN, void* arg, bool auto_start);
+  Arte_command_port();                           // Construct no init
 
   Arte_command_port(boost::property_tree::ptree, // Construct from setup conf
-		    CALLBACK_FN, void* arg, bool auto_start);
+		    CALLBACK_FN, 
+		    void* arg,
+		    bool auto_start);
 
   Arte_command_port(std::string pt_pathname,     // Construct from conf filename
-		    CALLBACK_FN, void* arg, bool auto_start);
+		    CALLBACK_FN, 
+		    void* arg, 
+		    bool auto_start);
  
   ~Arte_command_port();
 
@@ -152,7 +152,6 @@ class Arte_command_port{
   void basic_init();         
 
   void do_pt_settings();
-  void do_pb_settings( ArteSetupOptPb &setup_pb );
   
   // check that needed data for starting are non-null
   bool ok_to_start();

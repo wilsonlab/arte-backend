@@ -14,6 +14,5 @@ bool get_next_packet(void *arte_packet, int sourcename, packetType_t sourcetype)
 void ps();
 void interactive_wait(const char *wait_str);
 void print_packet(void *arte_packet, packetType_t sourcetype);
-void print_timestamp(void *arte_packet, packetType_t sourcetype);
 
 #endif

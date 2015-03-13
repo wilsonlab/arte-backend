@@ -2,14 +2,9 @@
 #include <boost/foreach.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/property_tree/exceptions.hpp>
-#include <boost/random.hpp>
-#include <boost/random/mersenne_twister.hpp>
-#include <boost/random/uniform_int_distribution.hpp>
-#include <sstream>
 #include <assert.h>
 #include "global_defs.h"
 #include <iostream>
-#include <exception>
 #include "util.h"
 #include "timer.h"
 #include "filtered_buffer.h"
@@ -85,9 +80,8 @@ void arte_init(int argc, char *argv[], const std::string &setup_fn, const std::s
     read_xml(setup_config_filename,   setup_pt,   boost::property_tree::xml_parser::trim_whitespace); // check where this flag actually lives
     read_xml(session_config_filename, session_pt, boost::property_tree::xml_parser::trim_whitespace); // can/should put 2 possible fails in one try block?
   }
-  catch(std::exception &e){  // find out where the xml_parse_error lives, & how to handle it
+  catch(...){  // find out where the xml_parse_error lives, & how to handle it
     std::cout << "XML read error was thrown - from arteopt.cpp" << std::endl;
-    std::cout << e.what() << std::endl;
     exit(1);
   }
 
@@ -165,17 +159,11 @@ void arte_session_init(int argc, char *argv[]){
   char filename[MAX_NAME_STRING_LEN];
   std::string tmp_filename;
   assign_property<std::string>("options.session.main_filename",&tmp_filename, session_pt, session_pt, 1);
-  std::ostringstream my_oss (tmp_filename, std::ostringstream::out | std::ostringstream::app);
-  boost::mt19937 rng;
-  boost::random::uniform_int_distribution <> my_rand(1, 10000);
-  int my_draw = my_rand(rng);
-  my_oss << my_draw;
-  strcpy( filename, my_oss.str().c_str());
+  strcpy( filename, tmp_filename.c_str());
   if( (strcmp(filename, "none")) != 0 ){
     main_file = try_fopen( filename, "wb" );
   } else{
     main_file = NULL;
-    printf("FILE OPEN ERROR\n");
   }
   arte_disk_on = false;
 

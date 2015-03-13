@@ -5,30 +5,19 @@
 #include <memory.h>
 #include <string>
 #include <iostream>
+//#include <NIDAQmx.h>
 #include <map>
-#include <limits.h>
 #include <stdint.h>
-#include <boost/thread/thread.hpp>
-#include <boost/thread/mutex.hpp>
-#include <memory> // std::shared_ptr
-#include <vector>
-
-#include <pthread.h>
-
-// global mutex for printfs
-// std::mutex print_mutex;
-
 
 #define MAX_THREADS 32
 #define THREADED_
 
+#include <pthread.h>
+
 typedef int16_t rdata_t;
-// Don't know why these are giving not-declared errors
 const rdata_t RDATA_MIN = INT16_MIN;
 const rdata_t RDATA_MAX = INT16_MAX;
 
-typedef uint32_t timestamp_t;
-const int TIMESTAMP_MAX = UINT32_MAX;
 const int SAMPLE_RATE_HZ = 32000;
 const int CLOCK_RATE_HZ = 10000;
 const float SAMPLES_PER_TIC = (float)SAMPLE_RATE_HZ / (float)CLOCK_RATE_HZ;
@@ -100,13 +89,6 @@ const recordtype_t LFP_BANK_RECORD = 0;
 const recordtype_t EVENT_STRING_RECORD = 1;
 const recordtype_t SPIKE_RECORD = 2;
 const recordtype_t THRESHOLD_FRAME_RECORD = 3;
-
-template <class T>
-struct PtrTo{
-  typedef std::shared_ptr <T> Type;
-  typedef std::vector < std::shared_ptr <T> > ListType;
-};
-
 
 
 #endif

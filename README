@@ -1,17 +1,7 @@
-ArtE-ephys Version 0.5
+ArtE-ephys Version 0.1
 
-TODO:
+Very early stages.  Building the basic program (when something goes up) can be done w/ the command:
 
--Figure out how most people do version numbers.  What source files get them?  Where do they show up?
+build.sh links the dl library, forgetting to do this will result in segfault when the program runs, as warned of here:
+ftp://ftp.ni.com/support/daq/linux/NI-DAQmx/8.0/README.txt (or search nidaqmx pthread)
 
--ArtE programs need to be split into multiple repositories (probably on github).  And the common files need to be factored out into a library.  This will be hard.
-
--Remake spike viewer.  The old one doesn't compile anymore.
-
--Switch all wire data from hand-marshaled to protocol buffer.
-
--Debug the 10% spike-dropping issue.
-
--Multiplexing?
-
--Config files should be in ~/.arte/ NOT in the build directory.

@@ -43,7 +43,6 @@ Timer::~Timer(){
 bool Timer::isMaster(){
 	return master;
 }
-
 int Timer::becomeMaster(bool isMaster){
 	std::cout<<"Timer::becomeMaster using:"<<isMaster<<std::endl;
 	master = isMaster;

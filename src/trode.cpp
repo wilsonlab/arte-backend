@@ -22,13 +22,20 @@ Trode::Trode(){
   //std::cout << "In a trode constructor" << std::endl;
 }
 
-Trode::Trode( ArteSessionOptPb &session_pb ){
-  Trode::Trode();
-}
 
 Trode::~Trode(){
   // if (has_sockfd)
   //  close(my_netcomdat.sockfd);
+}
+
+// Old init function using std::maps for trode_map, neural_daq_map, filt_map
+int Trode::init(boost::property_tree::ptree &trode_pt, 
+		boost::property_tree::ptree &default_pt, 
+		std::map<int,neural_daq> &neural_daq_map, 
+		std::map<std::string,Filt> &filt_map){
+  
+  n_chans = 1;
+
 }
 
 // New init function for the global array situation
