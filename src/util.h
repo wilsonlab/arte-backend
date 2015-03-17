@@ -14,6 +14,12 @@
 #include <boost/property_tree/exceptions.hpp>
 #include <NIDAQmx.h>
 #include "global_defs.h"
+#include <cstring>
+#include <iostream>
+#include <assert.h>
+
+//defining path for files relative to home
+std::string appendhome( std::string const & filename );
 
 // convert float64 (double) values to int16_t
 rdata_t ftor(double *f_val);         // single value

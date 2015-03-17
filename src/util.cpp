@@ -1,5 +1,24 @@
 #include "util.h"
 #include <stdint.h>
+#include <cstring>
+#include <iostream>
+#include <assert.h>
+
+//defines path relative to home
+std::string appendhome( std::string const & filename ) 
+{
+  char * val = getenv("HOME");
+  assert (val != NULL); 
+    return std::string(val) + "/" + "filename";
+}
+
+int main (int argc, char *argv[]){
+
+std::cout << "output is :" << appendhome(filename) << std::endl;
+return 0;
+}
+
+
 
 rdata_t ftor(double *f_val){
   return  (rdata_t)  ( (*f_val)/NEURAL_DAQ_V_MAX * RDATA_MAX); // assume n_daq range and rdata range both symmetric around 0
