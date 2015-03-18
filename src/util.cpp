@@ -9,13 +9,7 @@ std::string appendhome( std::string const & filename )
 {
   char * val = getenv("HOME");
   assert (val != NULL); 
-    return std::string(val) + "/" + "filename";
-}
-
-int main (int argc, char *argv[]){
-
-std::cout << "output is :" << appendhome(filename) << std::endl;
-return 0;
+    return std::string(val) + "/" + filename;
 }
 
 

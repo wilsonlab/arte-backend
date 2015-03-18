@@ -76,6 +76,9 @@ void arte_init(int argc, char *argv[], const std::string &setup_fn, const std::s
   else
     session_config_filename = default_session_config_filename.data();
 
+printf("about to try to open setup file: %s\n", (setup_config_filename.c_str()));
+printf("about to try to open sesson file: %s\n", (session_config_filename.c_str()));
+
   try{
     read_xml(setup_config_filename,   setup_pt,   boost::property_tree::xml_parser::trim_whitespace); // check where this flag actually lives
     read_xml(session_config_filename, session_pt, boost::property_tree::xml_parser::trim_whitespace); // can/should put 2 possible fails in one try block?

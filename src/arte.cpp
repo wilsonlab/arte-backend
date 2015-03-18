@@ -10,7 +10,7 @@
 int main(int argc, char *argv[]){
 
   // implement in arteopt. setup done there for global neural_daq_map and trode_map
-  arte_init(argc, argv, default_setup_config_filename, default_session_config_filename);
+  arte_init(argc, argv, appendhome(default_setup_config_filename), appendhome(default_session_config_filename));
   
   //printf("from main, about co tall neural_daq_start_all()\n");
   //neural_daq_start_all(); // now gets called before the timer initializes
