@@ -50,7 +50,8 @@ void neural_daq_init(boost::property_tree::ptree &setup_pt){
   master_id = 0; 
   master_ind =0;
 
-  tmp_timestamp = try_fopen("tmp.ts", "wb");
+  
+tmp_timestamp = try_fopen("tmp.ts", "wb");
 
   n_process_threads_open = 0;
   EveryNCallbackSequence = 0;
@@ -617,6 +618,18 @@ void print_buffer(neural_daq *ndp, int row_lim, int col_lim, int row_length){
 void init_files(void){
   for(int n = 0; n < n_neural_daqs; n++){
     neural_daq *nd = &(neural_daq_array[n]);
+  printf("about to try to open file from neuraldaq622: %s\n", (nd->in_filename));
+  printf("about to try to open file from neuraldaq628: %s\n", (nd->raw_dump_filename));
+
+    if (strcmp(nd->in_filename,"")==0){
+	printf ("error: setting up neural_daqs: in_filename is empty on n=%i out of %i\n", (n),(n_neural_daqs));
+	}
+
+    if (strcmp(nd->raw_dump_filename,"")==0){
+	printf ("error: setting up neural_daqs: raw_dump_filename is empty on n=%i out of %i\n", (n),(n_neural_daqs));
+	exit(1);
+	}
+
 
     if (! (strcmp(nd->in_filename,"none")==0) ){
       nd->in_file = try_fopen( nd->in_filename, "rb" );

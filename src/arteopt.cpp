@@ -163,6 +163,7 @@ void arte_session_init(int argc, char *argv[]){
   std::string tmp_filename;
   assign_property<std::string>("options.session.main_filename",&tmp_filename, session_pt, session_pt, 1);
   strcpy( filename, tmp_filename.c_str());
+  printf("about to try to open file from arteopt.cpp: %s\n", (filename));
   if( (strcmp(filename, "none")) != 0 ){
     main_file = try_fopen( filename, "wb" );
   } else{
