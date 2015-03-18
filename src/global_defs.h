@@ -37,8 +37,8 @@ const int MAX_TRODES = 64;
 const int MAX_LFP_BANKS = 16;
 const int MAX_FILTERED_BUFFERS = MAX_TRODES + MAX_LFP_BANKS;
 
-const std::string default_setup_config_filename ("/home/greghale/arte-ephys/conf/arte_setup_default.conf");
-const std::string default_session_config_filename ("/home/greghale/arte-ephys/conf/arte_session_default.conf");
+const std::string default_setup_config_filename (".arte-ephys/arte_setup_default.conf");
+const std::string default_session_config_filename (".arte-ephys/arte_session_default.conf");
 
 const int MAX_NEURAL_DAQ_N_CHANS = 32;
 const int MAX_NEURAL_DAQ_N_SAMPS_PER_CHAN = 320;
