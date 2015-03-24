@@ -1,0 +1,30 @@
+[DAQmx]
+MajorVersion = 8
+MinorVersion = 0
+
+[DAQmxDevice Dev1]
+ProductType = PCIe-6259
+DevSerialNum = 0x15D9EBB
+BusType = PCIe
+PCI.BusNum = 0xB
+
+[DAQmxDevice Dev2]
+ProductType = PCIe-6259
+DevSerialNum = 0x16324E7
+BusType = PCIe
+PCI.BusNum = 0x3
+
+[DAQmxDevice Dev3]
+ProductType = PCIe-6259
+DevSerialNum = 0x16324CA
+BusType = PCIe
+PCI.BusNum = 0x5
+
+[DAQmxDevice Dev4]
+ProductType = PCIe-6259
+DevSerialNum = 0x16324EE
+BusType = PCIe
+PCI.BusNum = 0xD
+
+;//[DAQmxRTSICable RTSICable0]
+;//RTSI.ConnDevs = Dev1, Dev2, Dev3, Dev4
