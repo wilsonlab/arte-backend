@@ -3,6 +3,7 @@
 #include <cstring>
 #include <iostream>
 #include <assert.h>
+#include "neural_daq.h"
 
 //defines path relative to home
 std::string appendhome( std::string const & filename ) 
@@ -30,10 +31,17 @@ void ftor_a(double *f_val, rdata_t *r_value, int n_elem){
 void daq_err_check(int32 error){
   char errBuff[2048];
   if( DAQmxFailed(error) ){
+        //added next 4 lines to end card function
+    printf("I'll quit now1");
+    DAQmxResetDevice("Dev1");
+    DAQmxResetDevice("Dev2");
+    DAQmxResetDevice("Dev3");
+    DAQmxResetDevice("Dev4");
+    printf("I'll quit now2");
     std::cout << "Caught a DAQmx error..." << std::endl;
     fflush(stdout);
     DAQmxGetExtendedErrorInfo(errBuff,2048);
-    std::cout << "while running daq_err_check util.cpp saw the daqmx error num: " << error << " with message: " << errBuff << std::endl;
+        std::cout << "while running daq_err_check util.cpp saw the daqmx error num: " << error << " with message: " << errBuff << std::endl;
     fflush(stdout);
   }else{
     //    std::cout << "No daqmx error." << std::endl;
@@ -51,6 +59,18 @@ void ECmx(int32 error){
   }else{
     //    std::cout << "No daqmx error." << std::endl;
   }
+}
+
+
+//ends and clears an erroring task
+void daq_err_check_end(int32 error, neural_daq this_nd){
+  if (DAQmxFailed(error) ) {
+    std::cout << "Checking for errors then if error stop task " << std::endl;
+    daq_err_check_end( DAQmxStopTask(this_nd.task_handle ) );
+    daq_err_check_end( DAQmxClearTask(this_nd.task_handle ) );
+    std::cout << "The original error check:" << std::endl;
+    daq_err_check(error);
+ }
 }
 
 

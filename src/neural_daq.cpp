@@ -137,26 +137,26 @@ tmp_timestamp = try_fopen("tmp.ts", "wb");
       char taskname [50];
       sprintf(taskname, "AITask on %s", this_nd.dev_name);
       buffer_size = buffer_samps_per_chan * this_nd.n_chans;
-      daq_err_check( (DAQmxCreateTask(taskname, &(this_nd.task_handle))) );
+      daq_err_check_end( (DAQmxCreateTask(taskname, &(this_nd.task_handle))), this_nd );
 
       
       for (int c = 0; c < this_nd.n_chans; c++){
 	sprintf(channel_name, "%s/ai%d", this_nd.dev_name, c);
-	daq_err_check ( DAQmxCreateAIVoltageChan(this_nd.task_handle,channel_name,"",DAQmx_Val_RSE,NEURAL_DAQ_V_MIN,NEURAL_DAQ_V_MAX,DAQmx_Val_Volts,NULL) );
+	daq_err_check_end ( DAQmxCreateAIVoltageChan(this_nd.task_handle,channel_name,"",DAQmx_Val_RSE,NEURAL_DAQ_V_MIN,NEURAL_DAQ_V_MAX,DAQmx_Val_Volts,NULL), this_nd );
       }  
-      daq_err_check ( DAQmxCfgSampClkTiming(this_nd.task_handle, "", samp_rate, DAQmx_Val_Rising, DAQmx_Val_ContSamps, buffer_size) );
+      daq_err_check_end ( DAQmxCfgSampClkTiming(this_nd.task_handle, "", samp_rate, DAQmx_Val_Rising, DAQmx_Val_ContSamps, buffer_size), this_nd );
   
       if( n == master_id ){
 	std::cout << "Processing master daq" << std::endl;
 	master_daq = this_nd;
-	daq_err_check ( DAQmxSetRefClkSrc( this_nd.task_handle, "OnboardClock") );
+	daq_err_check_end ( DAQmxSetRefClkSrc( this_nd.task_handle, "OnboardClock"), this_nd );
 	if(n_daq > 1)
-	  daq_err_check ( DAQmxGetRefClkSrc( master_daq.task_handle, clk_src, 256) );
-	daq_err_check ( DAQmxGetRefClkRate( master_daq.task_handle, &clkRate) );
+	  daq_err_check_end ( DAQmxGetRefClkSrc( master_daq.task_handle, clk_src, 256), this_nd );
+	daq_err_check_end ( DAQmxGetRefClkRate( master_daq.task_handle, &clkRate), this_nd );
 	if(n_daq > 1)
-	  daq_err_check ( GetTerminalNameWithDevPrefix(master_daq.task_handle, "ai/StartTrigger", trig_name) );
-	daq_err_check ( DAQmxRegisterEveryNSamplesEvent( master_daq.task_handle, DAQmx_Val_Acquired_Into_Buffer, 32,0,EveryNCallback,(void *)&neural_daq_array) );
-	daq_err_check ( DAQmxRegisterDoneEvent(master_daq.task_handle, 0, DoneCallback, (void *)&master_daq) );
+	  daq_err_check_end ( GetTerminalNameWithDevPrefix(master_daq.task_handle, "ai/StartTrigger", trig_name), this_nd );
+	daq_err_check_end ( DAQmxRegisterEveryNSamplesEvent( master_daq.task_handle, DAQmx_Val_Acquired_Into_Buffer, 32,0,EveryNCallback,(void *)&neural_daq_array), this_nd );
+	daq_err_check_end ( DAQmxRegisterDoneEvent(master_daq.task_handle, 0, DoneCallback, (void *)&master_daq), this_nd );
 	std::cout << "Done processing master daq." << std::endl;
 	
 ///// 	daq_err_check( DAQmxCreateTask(	"master_counter_generation_task",
@@ -193,11 +193,11 @@ tmp_timestamp = try_fopen("tmp.ts", "wb");
 	n = 0;
       } else {
 	std::cout << "Processing a slave daq." << std::endl;
-	daq_err_check ( DAQmxSetRefClkSrc( this_nd.task_handle, clk_src) );
-	daq_err_check ( DAQmxSetRefClkRate(this_nd.task_handle, clkRate) );
-	daq_err_check ( DAQmxCfgDigEdgeStartTrig( this_nd.task_handle, trig_name, DAQmx_Val_Rising) );
+	daq_err_check_end ( DAQmxSetRefClkSrc( this_nd.task_handle, clk_src), this_nd );
+	daq_err_check_end ( DAQmxSetRefClkRate(this_nd.task_handle, clkRate), this_nd );
+	daq_err_check_end ( DAQmxCfgDigEdgeStartTrig( this_nd.task_handle, trig_name, DAQmx_Val_Rising), this_nd );
 	// Register every n samples?  No.  we only want the master card to do this.
-	daq_err_check ( DAQmxRegisterDoneEvent(this_nd.task_handle, 0, DoneCallback, (void *)&this_nd) );
+	daq_err_check_end ( DAQmxRegisterDoneEvent(this_nd.task_handle, 0, DoneCallback, (void *)&this_nd), this_nd );
       }
       this_nd.status = 0;
       //neural_daq_map[this_nd.id] = this_nd; // we gained a task handle for each nd. must re-insert into the map for that value to persist
@@ -224,7 +224,7 @@ void neural_daq_start_all(void){
 
       if(nd->id != master_id){
 	printf("about to start a slave daq task\n");
-	daq_err_check ( DAQmxStartTask( nd->task_handle ) );
+	daq_err_check_end ( DAQmxStartTask( nd->task_handle ), this_nd );
 	printf("just finished a slave daq task\n");
 	nd->status= 1;
       }
@@ -236,7 +236,7 @@ void neural_daq_start_all(void){
     ////daq_err_check ( DAQmxStartTask( neural_daq_array[master_id].counter_count_task ) );
     
     printf("about to start the master daq AI task.\n");
-    daq_err_check ( DAQmxStartTask( neural_daq_array[master_id].task_handle) );
+    daq_err_check_end ( DAQmxStartTask( neural_daq_array[master_id].task_handle), this_nd );
     printf("finished starting the master daq task.\n");
     neural_daq_array[master_id].status = 1;
   } else {  // then daqs are getting their data from files
@@ -264,17 +264,17 @@ void neural_daq_stop(int i){
   bool32 task_done;
   if( nd->task_handle > 0 ) {
     printf("Ok after if th is:%d\n", nd->task_handle); fflush(stdout);
-    daq_err_check( DAQmxIsTaskDone( nd->task_handle, &task_done ) );
+    daq_err_check_end( DAQmxIsTaskDone( nd->task_handle, &task_done ), nd_task );
     printf("Ok ofter IsTaskDone check\n"); fflush(stdout);
     if( !task_done ){
       printf("about to stop AI task\n"); fflush(stdout);
-      daq_err_check( DAQmxStopTask ( nd->task_handle) );
+      daq_err_check_end( DAQmxStopTask ( nd->task_handle), nd_task );
       printf(" finished stopping AI task, about co clear it\n");fflush(stdout);
     } else {
       printf("neural daq %d told to stop its AI task, but task is already done.\n", nd->id ); fflush(stdout);
     }
     printf("Ok before cleartask\n"); fflush(stdout);
-    daq_err_check( DAQmxClearTask( nd->task_handle) );
+    daq_err_check_end( DAQmxClearTask( nd->task_handle), nd_task );
     if (i == master_ind){
       arte_timer.stop2();
     }
@@ -481,9 +481,9 @@ void do_cycle(timestamp_t this_cycle_time){
     
     //printf("About to read AD\n");fflush(stdout);
     bool32 tmp_isdone;
-    daq_err_check( DAQmxIsTaskDone( nd->task_handle, &tmp_isdone ));
+    daq_err_check_end( DAQmxIsTaskDone( nd->task_handle, &tmp_isdone ), this_nd);
     if(!tmp_isdone)
-      daq_err_check ( DAQmxReadBinaryI16( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
+      daq_err_check_end ( DAQmxReadBinaryI16( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL), this_nd );
     //printf("Done read\n"); fflush(stdout);
   }
   //pthread_attr_destroy(&attr);
@@ -565,7 +565,7 @@ void *process_daq(void *thread_data){
     nd->daq_buffer_count += 1; 
   }
   
-  daq_err_check ( DAQmxReadBinaryI16( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
+  daq_err_check_end ( DAQmxReadBinaryI16( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL), this_nd );
   
   pthread_exit(NULL);
 }  
