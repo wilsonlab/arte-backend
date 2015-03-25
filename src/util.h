@@ -17,6 +17,8 @@
 #include <cstring>
 #include <iostream>
 #include <assert.h>
+#include "neural_daq.h"
+
 
 //defining path for files relative to home
 std::string appendhome( std::string const & filename );
@@ -100,6 +102,8 @@ void init_array(T * t, T init_value, int num_el){
 void daq_err_check(int32 error);
 void ECmx(int32 error);
 void daq_err_check(int32 error, TaskHandle *task_handle_array, int n_tasks);
+void daq_err_check_end(int32 error, neural_daq this_nd); // stops and clears task when errors
+
 
 int32 GetTerminalNameWithDevPrefix(TaskHandle taskHandle, const char terminalName[], char triggerName[]);
 int32 CVICALLBACK timerDigTrigCallback(TaskHandle taskHandle, int32 signalID, void *callbackData);
