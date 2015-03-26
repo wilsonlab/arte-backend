@@ -101,6 +101,7 @@ void daq_err_check(int32 error);
 void ECmx(int32 error);
 void daq_err_check(int32 error, TaskHandle *task_handle_array, int n_tasks);
 
+void daq_err_check_verbose(int32 error, char *msg);
 int32 GetTerminalNameWithDevPrefix(TaskHandle taskHandle, const char terminalName[], char triggerName[]);
 int32 CVICALLBACK timerDigTrigCallback(TaskHandle taskHandle, int32 signalID, void *callbackData);
 
