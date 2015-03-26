@@ -66,8 +66,8 @@ void ECmx(int32 error){
 void daq_err_check_end(int32 error, neural_daq this_nd){
   if (DAQmxFailed(error) ) {
     std::cout << "Checking for errors then if error stop task " << std::endl;
-    daq_err_check_end( DAQmxStopTask(this_nd.task_handle ) );
-    daq_err_check_end( DAQmxClearTask(this_nd.task_handle ) );
+    DAQmxStopTask(this_nd.task_handle ) ;
+    DAQmxClearTask(this_nd.task_handle ) ;
     std::cout << "The original error check:" << std::endl;
     daq_err_check(error);
  }

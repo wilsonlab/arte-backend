@@ -17,7 +17,9 @@
 #include <cstring>
 #include <iostream>
 #include <assert.h>
-#include "neural_daq.h"
+
+class neural_daq; //forward declaration
+
 
 
 //defining path for files relative to home
