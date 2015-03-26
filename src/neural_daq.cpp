@@ -137,7 +137,7 @@ tmp_timestamp = try_fopen("tmp.ts", "wb");
       char taskname [50];
       sprintf(taskname, "AITask on %s", this_nd.dev_name);
       buffer_size = buffer_samps_per_chan * this_nd.n_chans;
-      daq_err_check_end( (DAQmxCreateTask(taskname, &(this_nd.task_handle))), this_nd );
+      daq_err_check_end_v ( (DAQmxCreateTask(taskname, &(this_nd.task_handle))), this_nd, "line 140" );
 
       
       for (int c = 0; c < this_nd.n_chans; c++){
