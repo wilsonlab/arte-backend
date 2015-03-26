@@ -32,10 +32,10 @@ void daq_err_check(int32 error){
   char errBuff[2048];
   if( DAQmxFailed(error) ){
         //added next 4 lines to end card function
-    DAQmxResetDevice("Dev1");
-    DAQmxResetDevice("Dev2");
-    DAQmxResetDevice("Dev3");
-    DAQmxResetDevice("Dev4");
+   // DAQmxResetDevice("Dev1");
+   // DAQmxResetDevice("Dev2");
+   // DAQmxResetDevice("Dev3");
+   // DAQmxResetDevice("Dev4");
     std::cout << "Caught a DAQmx error..." << std::endl;
     fflush(stdout);
     DAQmxGetExtendedErrorInfo(errBuff,2048);
@@ -46,19 +46,19 @@ void daq_err_check(int32 error){
   }
 }
 
-void daq_err_check_verbose(int32 error, char *msg){
-  char errBuffer[2048];
-  if( DAQmxFailed(error) ){
-    std::cout << "MSG: " << msg << endl << "Caught a DAQmx error..." << std::endl;
-    fflush(stdout);
-    DAQmxGetExtendedErrorInfo(errBuff,2048);
-    std::cout << "DAQmx error message: " << errBuff;
-    fflush(stdout);
-  }
-  else {
-
-  }
-}
+//void daq_err_check_verbose(int32 error, char *msg){
+//  char errBuffer[2048];
+//  if( DAQmxFailed(error) ){
+//    std::cout << "MSG: " << msg << endl << "Caught a DAQmx error..." << std::endl;
+//    fflush(stdout);
+//    DAQmxGetExtendedErrorInfo(errBuff,2048);
+//    std::cout << "DAQmx error message: " << errBuff;
+//    fflush(stdout);
+//  }
+//  else {
+//
+//  }
+//}
 
 void ECmx(int32 error){
   char errBuff[2048];
@@ -77,17 +77,36 @@ void ECmx(int32 error){
 //ends and clears an erroring task
 void daq_err_check_end(int32 error, neural_daq this_nd){
   if (DAQmxFailed(error) ) {
-    std::cout << "Checking for errors then if error stop task " << std::endl;
-    DAQmxStopTask(this_nd.task_handle ) ;
-    DAQmxClearTask(this_nd.task_handle ) ;
     std::cout << "The original error check:" << std::endl;
     daq_err_check(error);
     std::cout << "error occured running task " << this_nd.task_handle << std::endl;
+    std::cout << "about to stop and clear tasks " << std::endl;
+    DAQmxStopTask(this_nd.task_handle ) ;
+    DAQmxClearTask(this_nd.task_handle ) ;
+
     exit(1);
  }else{
 //	std::cout << "No errors, woohoo" << std::endl;
 }
 }
+
+//ends and clears an erroring task with more info
+void daq_err_check_end_v(int32 error, neural_daq this_nd, char const*msg){
+  if (DAQmxFailed(error) ) {
+    std::cout << "The original error check:" << std::endl;
+    daq_err_check(error);
+    std::cout << "error occured running task " << this_nd.task_handle << std::endl;
+    std::cout << "message: " << msg << std::endl;
+    std::cout << "about to stop and clear tasks " << std::endl;
+    DAQmxStopTask(this_nd.task_handle ) ;
+    DAQmxClearTask(this_nd.task_handle ) ;
+    exit(1);
+ }else{
+//      std::cout << "No errors, woohoo" << std::endl;
+}
+}
+
+
 
 
 void daq_err_check(int32 error, TaskHandle *task_handle_array, int n_tasks){
