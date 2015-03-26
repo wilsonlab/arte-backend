@@ -69,10 +69,9 @@ void daq_err_check_end(int32 error, neural_daq this_nd){
     std::cout << "The original error check:" << std::endl;
     daq_err_check(error);
     std::cout << "error occured running task " << this_nd.task_handle << std::endl;
-    //printf ("error occured running task %s\n", __this_nd__);
     exit(1);
  }else{
-	std::cout << "No errors, woohoo" << std::endl;
+//	std::cout << "No errors, woohoo" << std::endl;
 }
 }
 
