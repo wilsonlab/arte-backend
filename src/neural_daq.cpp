@@ -224,7 +224,7 @@ void neural_daq_start_all(void){
 
       if(nd->id != master_id){
 	printf("about to start a slave daq task\n");
-	daq_err_check_end ( DAQmxStartTask( nd->task_handle ), this_nd );
+	daq_err_check ( DAQmxStartTask( nd->task_handle ) );
 	printf("just finished a slave daq task\n");
 	nd->status= 1;
       }
@@ -236,7 +236,7 @@ void neural_daq_start_all(void){
     ////daq_err_check ( DAQmxStartTask( neural_daq_array[master_id].counter_count_task ) );
     
     printf("about to start the master daq AI task.\n");
-    daq_err_check_end ( DAQmxStartTask( neural_daq_array[master_id].task_handle), this_nd );
+    daq_err_check ( DAQmxStartTask( neural_daq_array[master_id].task_handle) );
     printf("finished starting the master daq task.\n");
     neural_daq_array[master_id].status = 1;
   } else {  // then daqs are getting their data from files
@@ -264,17 +264,17 @@ void neural_daq_stop(int i){
   bool32 task_done;
   if( nd->task_handle > 0 ) {
     printf("Ok after if th is:%d\n", nd->task_handle); fflush(stdout);
-    daq_err_check_end( DAQmxIsTaskDone( nd->task_handle, &task_done ), nd_task );
+    daq_err_check( DAQmxIsTaskDone( nd->task_handle, &task_done ) );
     printf("Ok ofter IsTaskDone check\n"); fflush(stdout);
     if( !task_done ){
       printf("about to stop AI task\n"); fflush(stdout);
-      daq_err_check_end( DAQmxStopTask ( nd->task_handle), nd_task );
+      daq_err_check( DAQmxStopTask ( nd->task_handle) );
       printf(" finished stopping AI task, about co clear it\n");fflush(stdout);
     } else {
       printf("neural daq %d told to stop its AI task, but task is already done.\n", nd->id ); fflush(stdout);
     }
     printf("Ok before cleartask\n"); fflush(stdout);
-    daq_err_check_end( DAQmxClearTask( nd->task_handle), nd_task );
+    daq_err_check( DAQmxClearTask( nd->task_handle) );
     if (i == master_ind){
       arte_timer.stop2();
     }
@@ -481,9 +481,9 @@ void do_cycle(timestamp_t this_cycle_time){
     
     //printf("About to read AD\n");fflush(stdout);
     bool32 tmp_isdone;
-    daq_err_check_end( DAQmxIsTaskDone( nd->task_handle, &tmp_isdone ), this_nd);
+    daq_err_check( DAQmxIsTaskDone( nd->task_handle, &tmp_isdone ));
     if(!tmp_isdone)
-      daq_err_check_end ( DAQmxReadBinaryI16( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL), this_nd );
+      daq_err_check ( DAQmxReadBinaryI16( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
     //printf("Done read\n"); fflush(stdout);
   }
   //pthread_attr_destroy(&attr);
@@ -565,7 +565,7 @@ void *process_daq(void *thread_data){
     nd->daq_buffer_count += 1; 
   }
   
-  daq_err_check_end ( DAQmxReadBinaryI16( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL), this_nd );
+  daq_err_check ( DAQmxReadBinaryI16( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
   
   pthread_exit(NULL);
 }  
