@@ -46,6 +46,20 @@ void daq_err_check(int32 error){
   }
 }
 
+void daq_err_check_verbose(int32 error, char *msg){
+  char errBuffer[2048];
+  if( DAQmxFailed(error) ){
+    std::cout << "MSG: " << msg << endl << "Caught a DAQmx error..." << std::endl;
+    fflush(stdout);
+    DAQmxGetExtendedErrorInfo(errBuff,2048);
+    std::cout << "DAQmx error message: " << errBuff;
+    fflush(stdout);
+  }
+  else {
+
+  }
+}
+
 void ECmx(int32 error){
   char errBuff[2048];
   if( DAQmxFailed(error) ){
