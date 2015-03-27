@@ -121,23 +121,31 @@ tmp_timestamp = try_fopen("tmp.ts", "wb");
   
   if( !daqs_reading ){   // that is, if we're really using the cards, as opposed to taking data from raw_dump files
 
-    while(n_completed < n_daq){
-      if(!master_completed){   // we want to init the master card first
+      while(n_completed < n_daq){
+        if(!master_completed){   // we want to init the master card first
 	n = master_id;         // at end of that init, set n to 0,
-      } else{                  // then iterate through the other cards
-	if (n == master_id){
+        } else{                  // then iterate through the other cards
+             // if (n>0) {
+             //	if (n == master_id){
 	  n++;}
-      }
+       //  }
       //this_nd = neural_daq_map[n];  // old way
       this_nd = neural_daq_array[n];// new way
       //it = neural_daq_map.find(n);
       //this_nd = (*it).second;
-      
+     
+      std::cout << "the value for N is: " << n << std::endl;
+
       this_nd.task_handle = 0; // dunno why, but most examples do this 0 init
       char taskname [50];
       sprintf(taskname, "AITask on %s", this_nd.dev_name);
+      std::cout << "task name: " << taskname << std::endl; 
       buffer_size = buffer_samps_per_chan * this_nd.n_chans;
-      daq_err_check_end_v ( (DAQmxCreateTask(taskname, &(this_nd.task_handle))), this_nd, "line 140" );
+      daq_err_check ( (DAQmxCreateTask(taskname, &(this_nd.task_handle)))); //test
+      //printf ("passed line 145");
+      std::cout << "device name: " << this_nd.dev_name << std::endl;  
+      //printf ("passed line 147");
+     // daq_err_check_end_v ( (DAQmxCreateTask(taskname, &(this_nd.task_handle))), this_nd, "line 140" );
 
       
       for (int c = 0; c < this_nd.n_chans; c++){
