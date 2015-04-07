@@ -72,9 +72,12 @@ static float const colFont[3] = {1.0, 1.0, 1.0};
 // 		Network Variables
 // ===================================
 
+char * askport(); //?
+char * port;
 static char host[] = "127.0.0.1";
-static char * port;
-static NetComDat net; // = NetCom::initUdpRx(host,port);
+//static char * port;
+//static char port[] = "4000"; //test
+NetComDat net; // = NetCom::initUdpRx(host,port);
 
 // ===================================
 // 		Data Variables
