@@ -53,13 +53,9 @@ NetComDat NetCom::initUdpTx(char host[], int port){
 
 NetComDat NetCom::initUdpRx(char host[], char * port){
 	using namespace std;
-	if (port==0){	//no idea
-		char *pn[5];
-		cout << "enter port number: ";
-		cin >> *pn >> port;
-		}
+		cout << "enter port number between 1000-9999: "; // gets port from user input
+		cin >> port;			
 	
-
 	printf("initializing NetComDat for UDP-RX\n");
 	int sockfd;
     struct addrinfo hints, *servinfo, *p;
