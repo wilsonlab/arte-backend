@@ -73,7 +73,7 @@ static float const colFont[3] = {1.0, 1.0, 1.0};
 // ===================================
 
 char * askport(); //?
-char * port;
+char port[4]; // or *port??
 static char host[] = "127.0.0.1";
 //static char * port;
 //static char port[] = "4000"; //test
