@@ -1,11 +1,9 @@
 
 #include "simpleSpikePlot.h"
+#include <stdio.h>
+#include <string>
 
 void *getNetSpike(void *ptr);
-
-
-	
-	
 
 
 #define GLUT_ICON "icon.72.png"
@@ -28,9 +26,20 @@ int main( int argc, char** argv )
 	//enter own ports	
 	using namespace std;
 		cout << "enter port number between 1000-9999: "; // gets port from user input
-		cin >> port;
+		cin >> startingport;
 
-	net = NetCom::initUdpRx(host,port); // work from here with port[0] then go through
+
+	for (int i=0; i<32; i++) // defines 16 ports starting with user input
+		{
+		sprintf(portchar, "%d", startingport+i);
+		portarray[i] = portchar;
+		
+		net = NetCom::initUdpRx(host,portarray[i]); 
+		netarray[i]=net;		
+		}
+	
+
+//	net = NetCom::initUdpRx(host,port); // work from here with port[0] then go through
 	pthread_create(&netThread, NULL, getNetSpike, (void *)NULL);
 
 	srand(time(NULL));

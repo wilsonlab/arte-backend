@@ -26,7 +26,7 @@ struct NetComDat{
 class NetCom{
  public:
   static NetComDat initUdpTx(char host[], int port);
-  static NetComDat initUdpRx(char host[], const char *port); // ADDED CONST
+  static NetComDat initUdpRx(char host[], char *port); 
 
   static int txTs(NetComDat net, timestamp_t count, int nTx);
   static timestamp_t rxTs(NetComDat net);
