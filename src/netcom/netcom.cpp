@@ -2,7 +2,7 @@
 #include "../datapacket.h"
 
 
-/*
+
 NetComDat NetCom::initUdpTx(char host[], int port){
 
 	int sockfd; 
@@ -43,9 +43,9 @@ NetComDat NetCom::initUdpTx(char host[], int port){
 	return net;
 }
 
-*/
 
-NetComDat NetCom::initUdpRx(char host[], char const *port){ // ADDED CONST
+
+NetComDat NetCom::initUdpRx(char host[], char *port){ 
 
 
 	printf("initializing NetComDat for UDP-RX\n");
