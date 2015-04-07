@@ -1,6 +1,8 @@
 #include "../netcom.h"
 #include "../datapacket.h"
 
+
+/*
 NetComDat NetCom::initUdpTx(char host[], int port){
 
 	int sockfd; 
@@ -8,6 +10,7 @@ NetComDat NetCom::initUdpTx(char host[], int port){
 	hostent *he;
 	int numbytes;
 	int broadcast = 1;
+	std::cout << "reading from port" << port << std::endl;
 
 	if ((he=gethostbyname(host))==NULL){
 	  perror("gethostname");
@@ -40,22 +43,11 @@ NetComDat NetCom::initUdpTx(char host[], int port){
 	return net;
 }
 
-//for entering ports
-//using namespace std;
+*/
 
-//char* askport () 
-//{
-//char *pn[5];
-//cout << "enter port number: ";
-//cin >> *pn >> port;
-//}
+NetComDat NetCom::initUdpRx(char host[], char const *port){ // ADDED CONST
 
 
-NetComDat NetCom::initUdpRx(char host[], char * port){
-	using namespace std;
-		cout << "enter port number between 1000-9999: "; // gets port from user input
-		cin >> port;			
-	
 	printf("initializing NetComDat for UDP-RX\n");
 	int sockfd;
     struct addrinfo hints, *servinfo, *p;
@@ -77,7 +69,8 @@ NetComDat NetCom::initUdpRx(char host[], char * port){
 			std::cout<<"RV VALUE:"<<rv<<std::endl;
 	        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
             return net;
-    }
+    		}
+
         // loop through all the results and bind to the first we can
         for(p = servinfo; p != NULL; p = p->ai_next) {
                 if ((sockfd = socket(p->ai_family, p->ai_socktype,
@@ -106,6 +99,9 @@ NetComDat NetCom::initUdpRx(char host[], char * port){
 	net.their_addr =  their_addr;
 	return net;
 }
+
+
+
 
 int NetCom::txTs(NetComDat net, timestamp_t count, int nTx){
 	std::cout<<"NetCom::txTs "<<count<<std::endl;

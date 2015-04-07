@@ -4,6 +4,8 @@
 void *getNetSpike(void *ptr);
 
 
+	
+	
 
 
 #define GLUT_ICON "icon.72.png"
@@ -11,7 +13,6 @@ int main( int argc, char** argv )
 {
 	initCommandListAndMap();
 //	parseCommandLineArgs(argc, argv);
-//	askport();
 
 	if(strlen(windowTitle)==0)
 		memcpy(windowTitle, &"Arte Network Spike Viewer", 25);
@@ -23,8 +24,13 @@ int main( int argc, char** argv )
 
 
 	pthread_t netThread;
-	net = NetCom::initUdpRx(host,port);
-	//net = NetCom::initUdpRx(host,port); // here is the mess up
+
+	//enter own ports	
+	using namespace std;
+		cout << "enter port number between 1000-9999: "; // gets port from user input
+		cin >> port;
+
+	net = NetCom::initUdpRx(host,port); // work from here with port[0] then go through
 	pthread_create(&netThread, NULL, getNetSpike, (void *)NULL);
 
 	srand(time(NULL));
@@ -496,7 +502,6 @@ void initCommandListAndMap(){
     slowCmdMap[CMD_THOLD_ALL]   = setTholdAll;
     slowCmdMap[CMD_THOLD_SINGLE]= setTholdSingle;
     slowCmdMap[CMD_SET_FRAMERATE]=setFrameRate;
-   // slowCmdMap[CMD_SET_PORT]    = setPortNumber; //??
     slowCmdMap[CMD_SET_WIN_POSX]= setWindowXPos;
     slowCmdMap[CMD_SET_WIN_POSY]= setWindowYPos;
     slowCmdMap[CMD_SET_WIN_W]   = setWindowWidth;
@@ -590,13 +595,6 @@ void setFrameRate(void *v)
     int r = atoi((char*)v);
     updateFrameRate(r);
 }
-
-
-//void setPortNumber(void* v)
-//{
-//    port = (char*)v;
-//}
-
 
 
 
