@@ -3,11 +3,15 @@
 
 void *getNetSpike(void *ptr);
 
+
+
+
 #define GLUT_ICON "icon.72.png"
-int main( int argc, char** argv )
+int main( int argc, char** argv ) 
 {
 	initCommandListAndMap();
-	parseCommandLineArgs(argc, argv);
+//	parseCommandLineArgs(argc, argv);
+//	askport();
 
 	if(strlen(windowTitle)==0)
 		memcpy(windowTitle, &"Arte Network Spike Viewer", 25);
@@ -17,10 +21,12 @@ int main( int argc, char** argv )
 	void (*prev_fn)(int);
 	prev_fn = signal(SIGUSR1, signalUser1);
 
+
 	pthread_t netThread;
 	net = NetCom::initUdpRx(host,port);
+	//net = NetCom::initUdpRx(host,port); // here is the mess up
 	pthread_create(&netThread, NULL, getNetSpike, (void *)NULL);
-	
+
 	srand(time(NULL));
 	gettimeofday(&startTime,NULL);
 
@@ -490,7 +496,7 @@ void initCommandListAndMap(){
     slowCmdMap[CMD_THOLD_ALL]   = setTholdAll;
     slowCmdMap[CMD_THOLD_SINGLE]= setTholdSingle;
     slowCmdMap[CMD_SET_FRAMERATE]=setFrameRate;
-    slowCmdMap[CMD_SET_PORT]    = setPortNumber;
+   // slowCmdMap[CMD_SET_PORT]    = setPortNumber; //??
     slowCmdMap[CMD_SET_WIN_POSX]= setWindowXPos;
     slowCmdMap[CMD_SET_WIN_POSY]= setWindowYPos;
     slowCmdMap[CMD_SET_WIN_W]   = setWindowWidth;
@@ -584,10 +590,16 @@ void setFrameRate(void *v)
     int r = atoi((char*)v);
     updateFrameRate(r);
 }
-void setPortNumber(void* v)
-{
-    port = (char*)v;
-}
+
+
+//void setPortNumber(void* v)
+//{
+//    port = (char*)v;
+//}
+
+
+
+
 void setWindowXPos(void* v)
 {
     int x = atoi((char*)v);
@@ -640,20 +652,20 @@ void showHelp()
 }
 
 
-void parseCommandLineArgs(int argc, char**argv)
-{
-    std::cout<<"Parsing command line args"<<std::endl;
-    int c = 0;
-    int opt = 0;
-    int optionIndex;
-    int x;
-    while( (c = getopt_long(argc, argv, "", long_options, &optionIndex) )!=-1 )
-    {
-        currentCommand = c;
-        executeCommand(optarg);
-    }
-
-}
+//void parseCommandLineArgs(int argc, char**argv)
+//{
+//    std::cout<<"Parsing command line args"<<std::endl;
+//    int c = 0;
+//    int opt = 0;
+//    int optionIndex;
+ //   int x;
+//    while( (c = getopt_long(argc, argv, "", long_options, &optionIndex) )!=-1 )
+//    {
+//        currentCommand = c;
+//        executeCommand(optarg);
+//    }
+//
+//}
 
 
 void dispCommandString(){
@@ -734,4 +746,5 @@ void signalUser1(int param){
 	std::cout<<"Recieved signal:"<<param<<std::endl;
 	clearWindow();
 }
+
 

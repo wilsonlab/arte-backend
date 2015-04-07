@@ -26,7 +26,7 @@ struct NetComDat{
 class NetCom{
  public:
   static NetComDat initUdpTx(char host[], int port);
-  static NetComDat initUdpRx(char host[], char * port);
+  static NetComDat initUdpRx(char host[], char *port); //was static??
 
   static int txTs(NetComDat net, timestamp_t count, int nTx);
   static timestamp_t rxTs(NetComDat net);
@@ -42,6 +42,8 @@ class NetCom{
 
   static void txBuff(NetComDat net, char * buff, int buff_len);
   static void rxBuff(NetComDat net, char * buff, int *buff_len);
+
+  static char* askport();
 };
 
 void *get_in_addr(struct sockaddr *sa);

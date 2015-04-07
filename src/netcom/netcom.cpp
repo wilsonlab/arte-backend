@@ -40,7 +40,25 @@ NetComDat NetCom::initUdpTx(char host[], int port){
 	return net;
 }
 
+//for entering ports
+//using namespace std;
+
+//char* askport () 
+//{
+//char *pn[5];
+//cout << "enter port number: ";
+//cin >> *pn >> port;
+//}
+
+
 NetComDat NetCom::initUdpRx(char host[], char * port){
+	using namespace std;
+	if (port==0){	//no idea
+		char *pn[5];
+		cout << "enter port number: ";
+		cin >> *pn >> port;
+		}
+	
 
 	printf("initializing NetComDat for UDP-RX\n");
 	int sockfd;
