@@ -39,18 +39,21 @@ int main( int argc, char** argv )
 		}
 	
 
-//	net = NetCom::initUdpRx(host,port); // work from here with port[0] then go through
 	pthread_create(&netThread, NULL, getNetSpike, (void *)NULL);
 
 	srand(time(NULL));
 	gettimeofday(&startTime,NULL);
-
-
+	//cout << "open yet?? 1" << endl; 
 	glutInit(&argc,argv);
+	//cout << "open yet?? 2" << endl; 
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB );
+	//cout << "open yet?? 3" << endl; 
 	glutInitWindowPosition( winPosX, winPosY);
+	//cout << "open yet?? 4" << endl; 
 	glutInitWindowSize( winWidth, winHeight);
-	glutCreateWindow(windowTitle);
+	//cout << "open yet?? 5" << endl; 
+	glutCreateWindow(windowTitle); // this one opens the window
+	//cout << "open yet?? 6" << endl; 
 
 	glutReshapeFunc( resizeWindow );
 	glutIdleFunc( idleFn );
@@ -659,20 +662,20 @@ void showHelp()
 }
 
 
-//void parseCommandLineArgs(int argc, char**argv)
-//{
-//    std::cout<<"Parsing command line args"<<std::endl;
-//    int c = 0;
-//    int opt = 0;
-//    int optionIndex;
- //   int x;
-//    while( (c = getopt_long(argc, argv, "", long_options, &optionIndex) )!=-1 )
-//    {
-//        currentCommand = c;
-//        executeCommand(optarg);
-//    }
-//
-//}
+void parseCommandLineArgs(int argc, char**argv)
+{
+    std::cout<<"Parsing command line args"<<std::endl;
+    int c = 0;
+    int opt = 0;
+    int optionIndex;
+    int x;
+    while( (c = getopt_long(argc, argv, "", long_options, &optionIndex) )!=-1 )
+    {
+        currentCommand = c;
+        executeCommand(optarg);
+    }
+
+}
 
 
 void dispCommandString(){

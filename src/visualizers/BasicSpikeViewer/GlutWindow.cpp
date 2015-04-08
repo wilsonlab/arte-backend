@@ -9,7 +9,6 @@ void createGlutWindow(int xIn, int yIn, int wIn, int hIn, char *title, int argc,
 	h = hIn;
 	nPlots = 1;
 	
-	
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 	glutInitWindowSize( x, y);
