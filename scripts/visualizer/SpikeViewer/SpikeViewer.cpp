@@ -101,27 +101,35 @@ void SpikeViewer::initPlots(){
 	
 	//enter own ports	
 	using namespace std;
-		cout << "enter port number between 1000-9999: "; // gets port from user input
+		cout << "enter a port number between 1000-9999: "; // gets port from user input
 		cin >> startingport;
 
 
-	for (int i=0; i<32; i++) // defines 16 ports starting with user input
+	for (int i=0; i<32; i++) // defines 32 ports starting with user input
 		{
 		sprintf(portchar, "%d", startingport+i);
+		cout << "defining port: " << portchar << endl;
 		portarray[i] = portchar;
 		}
 
-/*
-	char* ports[] = {	};
-*/
+	//next line was commented out
+	//	char* ports[] = {};
+
 	for (int i=0; i<nCol; i++)
-		for (int j=0; j<nRow; j++) //is the following code just for 16??????????
+		for (int j=0; j<nRow; j++) 
 		{
-			plots[nPlots] = new TetrodePlot(dWinX*i, dWinY*(nRow-j-1)+cmdWinHeight, dWinX, dWinY, portarray[nPlots%16]);
-			plots[nPlots]->setTetrodeNumber(nPlots);
-			plots[nPlots]->initNetworkRxThread();
-//			plots[nPlots]->setShaderProgram(shaderProg);
+		   plots[nPlots] = new TetrodePlot(dWinX*i, dWinY*(nRow-j-1)+cmdWinHeight, dWinX, dWinY, portarray[nPlots%16]);
+	      
+		  cout << "j is defined as: " << j << endl;
+		  cout << "i is defined as: " << i << endl;
+		  plots[nPlots]->setTetrodeNumber(nPlots);
+		  cout << " try 1 " << endl;
+		  cout << "nplots is:" << nPlots <<endl;
+		  plots[nPlots]->initNetworkRxThread(); // here is the error
+		  cout << "try 2" << endl;
+		  //already commented out	 plots[nPlots]->setShaderProgram(shaderProg);
 			nPlots++;
+			cout << " try 3" << endl;
 		}
 		
 	cmdWinWidth = plots[nRow*nCol/2 -1 ]->getMaxX();
