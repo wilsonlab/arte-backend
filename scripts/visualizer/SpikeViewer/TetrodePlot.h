@@ -184,7 +184,7 @@ public:
 	double padLeft, padRight, padTop, padBottom;
 	
 	TetrodePlot();
-	TetrodePlot(int x, int y, int w, int h, char* port);
+	TetrodePlot(int x, int y, int w, int h, char* port); 
 	void draw();
 	void resizePlot(int w, int h);
 	void movePlot(int x, int y);

@@ -5,6 +5,7 @@
 #include <GL/glut.h>
 
 
+
 SpikeViewer::SpikeViewer(int c, int r, int w, int h, char * ports[]){
 	nRow = r;
 	nCol = c;
@@ -89,9 +90,10 @@ void SpikeViewer::loadAndCompileShader(){
 	glAttachShader(shaderProg, axesShader);
 	glLinkProgram(shaderProg);
 
-	std::cout<<"DONE!\n"<<std::endl;
+	std::cout<<"DONE NOW!\n"<<std::endl;
 
 }
+
 void SpikeViewer::initPlots(){
 	std::cout<<"SpikeViewer.cpp - initPlots()"<<std::endl;
 	nPlots = 0;
@@ -101,32 +103,35 @@ void SpikeViewer::initPlots(){
 	
 	//enter own ports	
 	using namespace std;
-		cout << "enter port number between 1000-9999: "; // gets port from user input
+		cout << "enter a port number between 1000-9999: "; // gets port from user input
 		cin >> startingport;
 
 
-	for (int i=0; i<32; i++) // defines 16 ports starting with user input
+	for (int i=0; i<32; i++) // defines 32 ports starting with user input
 		{
-		sprintf(portchar, "%d", startingport+i);
-		portarray[i] = portchar;
+		  portarray[i] = new char[6];
+		  startingport=startingport+1;
+		  sprintf(portarray[i], "%d", startingport);
+		  // cout << "defining port: " << portarray[i] << endl;
 		}
 
-/*
-	char* ports[] = {	};
-*/
+	//next line was commented out
+	//	char* ports[] = {};
+
 	for (int i=0; i<nCol; i++)
-		for (int j=0; j<nRow; j++) //is the following code just for 16??????????
+		for (int j=0; j<nRow; j++) 
 		{
-			plots[nPlots] = new TetrodePlot(dWinX*i, dWinY*(nRow-j-1)+cmdWinHeight, dWinX, dWinY, portarray[nPlots%16]);
-			plots[nPlots]->setTetrodeNumber(nPlots);
-			plots[nPlots]->initNetworkRxThread();
-//			plots[nPlots]->setShaderProgram(shaderProg);
+		  plots[nPlots] = new TetrodePlot(dWinX*i, dWinY*(nRow-j-1)+cmdWinHeight, dWinX, dWinY, portarray[nPlots%16]); 
+		  plots[nPlots]->setTetrodeNumber(nPlots);
+		  plots[nPlots]->initNetworkRxThread(); 
+		  //already commented out	 plots[nPlots]->setShaderProgram(shaderProg);
 			nPlots++;
 		}
 		
 	cmdWinWidth = plots[nRow*nCol/2 -1 ]->getMaxX();
 	selectedPlot = 0;
 	plots[selectedPlot]->setSelected(true);
+
 }
 
 void SpikeViewer::drawPlot(){

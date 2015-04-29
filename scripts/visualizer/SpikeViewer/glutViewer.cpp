@@ -28,7 +28,7 @@ int main( int argc, char** argv )
 	glutSpecialFunc(specialKeyFn);
 	glutMouseFunc(mouseClickFn);
 
-	glewInit();					// getting an error here
+	glewInit();				
 	if (GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader){
 		printf("Ready for GLSL\n");
 	}
@@ -38,12 +38,15 @@ int main( int argc, char** argv )
 	}
 	
 	sv.initPlots();
+	printf("testing 0 \n");
+	glGetString(GL_SHADING_LANGUAGE_VERSION);
 	sv.loadAndCompileShader();
 	
-			
+	printf("testing 1 \n");		
 	glClear(GL_COLOR_BUFFER_BIT);
+	printf( "testing 2 \n");
 	glutMainLoop( );
-
+	printf("testing 3 \n");
 	return(0);
 }
 

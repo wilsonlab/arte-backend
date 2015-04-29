@@ -1,6 +1,7 @@
 #include <GL/glew.h>
 #include "TetrodePlot.h"
 
+
 TetrodePlot::TetrodePlot(){
 }
 TetrodePlot::TetrodePlot(int x, int y, int w, int h, char *p){
@@ -539,7 +540,7 @@ void TetrodePlot::drawString(float x, float y, void *f, char *string){
 
 void TetrodePlot::initNetworkRxThread(){
 	pthread_t netThread;
-	net = NetCom::initUdpRx(host,port);
+	net = NetCom::initUdpRx(host,port); //GETTING ERROR HERE
 //	std::cout<< this << " Address of pointer going into networkThreadFunc\n";
 	pthread_create(&netThread, NULL, networkThreadFunc, this);
 }
