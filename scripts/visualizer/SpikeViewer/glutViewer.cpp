@@ -21,7 +21,7 @@ int main( int argc, char** argv )
 	glutCreateWindow("Arte Network Spike Viewer");
 
 	glutReshapeFunc( resizeWinFunc );
-	glutIdleFunc( idleFunc );
+        glutIdleFunc( idleFunc );
 	glutDisplayFunc( redraw );
 
 	glutKeyboardFunc(keyPressedFn);
@@ -45,8 +45,8 @@ int main( int argc, char** argv )
 	printf("testing 1 \n");		
 	glClear(GL_COLOR_BUFFER_BIT);
 	printf( "testing 2 \n");
-	glutMainLoop( );
-	printf("testing 3 \n");
+		glutMainLoop();
+		printf("testing 3 \n");
 	return(0);
 }
 
