@@ -19,7 +19,7 @@
 
 	static int startingport;
 	//static char portchar[6];
-static char *portarray[32]; //took away *
+static char *portarray[32]; 
 
 class SpikeViewer{
 public:

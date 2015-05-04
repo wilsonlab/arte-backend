@@ -103,7 +103,7 @@ void SpikeViewer::initPlots(){
 	
 	//enter own ports	
 	using namespace std;
-		cout << "enter a port number between 1000-9999: "; // gets port from user input
+		cout << "enter a port number between 1000-9999-- the first port used will be the port after your input: "; // gets port from user input
 		cin >> startingport;
 
 
