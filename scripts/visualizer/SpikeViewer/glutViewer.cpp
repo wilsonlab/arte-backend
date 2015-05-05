@@ -10,6 +10,8 @@ int nRow = 4;
 void *font = GLUT_BITMAP_8_BY_13;
 SpikeViewer sv = SpikeViewer(nCol, nRow, winWidth, winHeight, NULL);
 
+
+
 int main( int argc, char** argv )
 {
 
@@ -38,15 +40,11 @@ int main( int argc, char** argv )
 	}
 	
 	sv.initPlots();
-	printf("testing 0 \n");
 	glGetString(GL_SHADING_LANGUAGE_VERSION);
 	sv.loadAndCompileShader();
-	
-	printf("testing 1 \n");		
+		
 	glClear(GL_COLOR_BUFFER_BIT);
-	printf( "testing 2 \n");
 		glutMainLoop();
-		printf("testing 3 \n");
 	return(0);
 }
 
