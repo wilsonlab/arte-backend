@@ -145,6 +145,14 @@ void TetrodePlot::draw()
 		drawProjections();
 		if (newSpike) {
 		  std::cout << "time: " << spike.ts << " name: " << spike.name << " # channels: " << spike.n_chans << " samples/channel: " << spike.n_samps_per_chan << " sample bytes: " << spike.samp_n_bytes << " data: " << spike.data << " gains: " << spike.gains << " threshold: " << spike.thresh << " trig ind: " << spike.trig_ind << " sequence #: " << spike.seq_num <<  std::endl;
+		  
+		  for (int i=0; i<=10; i++)
+		    std:: cout << "data: "  << spike.data[i] << std::endl;
+		  for (int i=0; i<=10; i++) 
+		    std::cout << "gains: " << spike.gains[i] << std::endl;
+		  for (int i=0; i<=10; i++)
+		    std::cout << "thresh: " << spike.thresh[i] << std::endl;
+
 		  addSpikeToVBO();
 		}
 	        
