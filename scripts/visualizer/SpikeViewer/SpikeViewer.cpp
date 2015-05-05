@@ -30,7 +30,7 @@ SpikeViewer::SpikeViewer(int c, int r, int w, int h, char * ports[]){
 
 	font = GLUT_BITMAP_8_BY_13;
 	
-//	loadAndCompileShader(); 
+	//	loadAndCompileShader(); //was commented out
 	
 	initCommandSets();
 }
