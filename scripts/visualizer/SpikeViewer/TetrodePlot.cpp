@@ -1,6 +1,6 @@
 #include <GL/glew.h>
 #include "TetrodePlot.h"
-
+#include "../include/netcom/datapacket.h"
 
 TetrodePlot::TetrodePlot(){
 }
@@ -93,7 +93,7 @@ void TetrodePlot::initColors(){
 	colTitleSelected[2] = 0.15;
 }
 void TetrodePlot::initVBO(){
-		
+  
 		SpikeVertex baseData[MAX_N_PROJ_POINTS];
 		GLuint indices[MAX_N_PROJ_POINTS];
 		countInVBO = 0;
@@ -138,12 +138,17 @@ void TetrodePlot::draw()
 		eraseWaveforms();
 		
 	highlightSelectedWaveform();
+
 	// Get the new spikes in the queue and plot them
 	do{
 		drawWaveforms();
 		drawProjections();
-		if (newSpike)
-			addSpikeToVBO();
+		if (newSpike) {
+		  std::cout << "trying name: " << spike.name << std::endl;
+		  addSpikeToVBO();
+		}
+	        
+
 	}while(newSpike = tryToGetSpikeForPlotting(&spike));
 	
 	drawTitle();
