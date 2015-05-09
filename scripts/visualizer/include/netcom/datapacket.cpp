@@ -1,11 +1,12 @@
 #include <iostream>
+
 #include "datapacket.h"
 
 void printBuff(char* buff, int blen){
         char val;
         for (int i=0; i<blen; i++){
                 val = *(buff+i);
-                std::cout<<"\\"<<(int)val;           
+                std::cout<<"\\"<<(int)val; 
         }
 	std::cout<<std::endl;
 }
@@ -16,15 +17,14 @@ void printBuff(char* buff, int blen){
 void tsToBuff(timestamp_t* t, char* buff, int blen, bool c){
 //	if (blen<6)
 //		std::cout<<"ERROR: Buffer is too short"<<std::endl;
-  timestamp_t ts = hton32c(*t,c);	
-  memcpy(buff+2, &ts, 4);
+   timestamp_t ts = hton32c(*t,c);	
+   memcpy(buff+2, &ts, 4);
 }
 
 timestamp_t buffToTs(char *buff, int blen, bool c){
 
 //	if (blen<6)
 //		std::cout<<"Error buffer is too short"<<std::endl;
-
 	timestamp_t s;
 	memcpy(&s, buff+2, 4);	
 	s = ntoh32c(s,c);
@@ -33,7 +33,6 @@ timestamp_t buffToTs(char *buff, int blen, bool c){
 /*------------- SPIKE ------------*/
 void spikeToBuff(spike_net_t* s, char* buff, int *buff_len, bool c){
   //std::cout<<"spikeToBuff(), isn't checking the buffer size, implement this!"<<std::endl;
-
   buff[0] = typeToChar(NETCOM_UDP_SPIKE); 
   buff[3] = 0; 
   
@@ -52,6 +51,7 @@ void spikeToBuff(spike_net_t* s, char* buff, int *buff_len, bool c){
      // ASSUMES 16-bit data!
      data_tx[i] = hton16c(s->data[i], c);
    }
+
    for(int i = 0; i < s->n_chans; i++){
      gains_tx[i] = hton16c(s->gains[i], c);
      thresh_tx[i] = hton16c(s->thresh[i], c);
@@ -61,7 +61,7 @@ void spikeToBuff(spike_net_t* s, char* buff, int *buff_len, bool c){
   uint16_t cursor_tx;
   
    memcpy(buff+cursor, &ts_tx,               4);
-   cursor += 4;
+ cursor += 4;
    memcpy(buff+cursor, &name_tx,             2);
    cursor += 2;
    memcpy(buff+cursor, &n_chans_tx,          2);
@@ -90,61 +90,102 @@ void spikeToBuff(spike_net_t* s, char* buff, int *buff_len, bool c){
 }
 
 void buffToSpike( spike_net_t *s, char* buff, bool c){
-
+  std::cout << "try 1" << std::endl;
   int cursor = 4;
-  
+  std::cout << "try 2" << std::endl;
   memcpy( &(s->ts),        buff+cursor, 4);
+  std::cout << "try 3" << std::endl;
   s->ts = ntoh32c(s->ts, c);
+  std::cout << "try 4" << std::endl;
   cursor += 4;
   
+  std::cout << "try 5" << std::endl;
   memcpy( &(s->name),      buff+cursor, 2);
+  std::cout << "try 6" << std::endl;
   s->name = ntoh16c(s->name, c);
+  std::cout << "try 7" << std::endl;
   cursor += 2;
 
+  std::cout << "try 8" << std::endl;
   memcpy( &(s->n_chans),   buff+cursor, 2);
+  std::cout << "try 9" << std::endl;
   s->n_chans = ntoh16c(s->n_chans, c);
+  std::cout << "try 10" << std::endl;
   cursor += 2;
 
+  std::cout << "try 11" << std::endl;
   memcpy( &(s->n_samps_per_chan), buff+cursor, 2);
+  std::cout << "try 12" << std::endl;
   s->n_samps_per_chan = ntoh16c(s->n_samps_per_chan, c);
+  std::cout << "try 13" << std::endl;
   cursor += 2;
 
+  std::cout << "try 14" << std::endl;
   memcpy( &(s->samp_n_bytes),     buff+cursor, 2);
+  std::cout << "try 15" << std::endl;
   s->samp_n_bytes = ntoh16c(s->samp_n_bytes, c);
+  std::cout << "try 16" << std::endl;
   cursor += 2;
 
+
+  std::cout << "try 17" << std::endl;
   int n_total_samps = s->n_chans * s->n_samps_per_chan;
+  std::cout << "try 18" << std::endl;
   int data_bytes = n_total_samps * s->samp_n_bytes;
+  std::cout << "try 19" << std::endl;
   int gain_bytes = s->n_chans * 2;    // 2 byte datatype for gain: int16
+  std::cout << "try 20" << std::endl;
   int thresh_bytes = s->n_chans * 2;  // 2 byte datatype for thresh: rdata_t
+  std::cout << "n_total_samps: " << n_total_samps << " n_samps_per_chan " << s->n_samps_per_chan << " n_chans: " << s->n_chans << " samp_n_bytes: " << s->samp_n_bytes << std::endl; 
 
+  std::cout << "try 21" << std::endl;
+  std::cout << "data_bytes: " << data_bytes << std::endl;
   memcpy( &(s->data),           buff+cursor, data_bytes);
-  for(int n = 0; n < n_total_samps; n++)
-    s->data[n] = ntoh16c(s->data[n], c);
+  std::cout << "try 22" << std::endl;
+  for(int n = 0; n < n_total_samps; n++){
+    std::cout << "try 23" << std::endl;
+  s->data[n] = ntoh16c(s->data[n], c);
+ 
+  }
+ 
+
+ std::cout << "try 24" << std::endl;
   cursor += data_bytes;
+ 
+  std::cout << "try 25" << std::endl;
+    memcpy( &(s->gains),         buff+cursor, gain_bytes);
+    std::cout << "try 26" << std::endl;
+    cursor += gain_bytes;
+    std::cout << "try 27" << std::endl;
+    memcpy( &(s->thresh),        buff+cursor, thresh_bytes);
+    std::cout << "try 28" << std::endl;
+    cursor += thresh_bytes;
 
-  memcpy( &(s->gains),         buff+cursor, gain_bytes);
-  cursor += gain_bytes;
-  memcpy( &(s->thresh),        buff+cursor, thresh_bytes);
-  cursor += thresh_bytes;
-
-  for(int n = 0; n < s->n_chans; n++){
-    s->gains[n] = ntoh16c(s->gains[n], c);
-    s->thresh[n] = ntoh16c(s->thresh[n], c);
+    std::cout << "try 29" << std::endl;
+    for(int n = 0; n < s->n_chans; n++){
+      std::cout << "try 30" << std::endl;
+         s->gains[n] = ntoh16c(s->gains[n], c);
+    std::cout << "try 31" << std::endl;
+       s->thresh[n] = ntoh16c(s->thresh[n], c);
   }
 
-  memcpy( &(s->trig_ind),      buff+cursor, 2);
-  s->trig_ind = ntoh16c(s->trig_ind, c);
-  cursor += 2;
+    std::cout << "try 32" << std::endl;
+       memcpy( &(s->trig_ind),      buff+cursor, 2); //
+   std::cout << "try 33" << std::endl;
+   s->trig_ind = ntoh16c(s->trig_ind, c);
+   std::cout << "try 34" << std::endl;
+   cursor += 2;
   
-  memcpy( &(s->seq_num),       buff+cursor, 4);
-  s->seq_num = ntoh32c(s->seq_num, c);
-  cursor += 4;
-
+   std::cout << "try 35" << std::endl;
+     memcpy( &(s->seq_num),       buff+cursor, 4); //
+   std::cout << "try 36" << std::endl;
+   s->seq_num = ntoh32c(s->seq_num, c);
+   std::cout << "try 37" << std::endl;
+   cursor += 4;
+   std::cout << "try 38" << std::endl;
 }
 
 void commandToBuff(command_t *command, char* buff, int *blen, bool c){
-
   uint16_t cursor = 4;
   uint16_t cursor_tx;
   uint16_t n_char_tx;
@@ -165,11 +206,9 @@ void commandToBuff(command_t *command, char* buff, int *blen, bool c){
   
   cursor_tx = hton16c(cursor, c);
   memcpy( buff+1, &cursor_tx, 2 );
-
 }
 
 void buffToCommand(command_t *command, char* buff, bool c){
-  
   uint16_t cursor = 4;
   uint16_t n_char;
   uint16_t buff_len;
@@ -185,12 +224,10 @@ void buffToCommand(command_t *command, char* buff, bool c){
   command->n_char = n_char;
   command->command_str[n_char] = '\0';
 
-  
 }
 
 /*------------- WAVE ------------*/
 void waveToBuff(lfp_bank_net_t* lfp, char* buff, int *blen, bool c){
-  
   int s;
 
   uint16_t cursor = 4;
