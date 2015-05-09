@@ -560,13 +560,18 @@ void TetrodePlot::initNetworkRxThread(){
 
 void TetrodePlot::getNetworkSpikePacket(){
 	while(true){
-		
+	  std::cout << "spike_net_t 1" << std::endl;
 		spike_net_t s;
+		std::cout << "spike_net_t 2" << std::endl;
 		NetCom::rxSpike(net, &s);
-		spikeBuff[writeIdx] = s;
+		std::cout << "spike_net_t 3" << std::endl;
+		spikeBuff[writeIdx] = s; 
+		std::cout << "spike_net_t 4" << std::endl;
 		
 		writeIdx = incrementIdx(writeIdx);
+		std::cout << "spike_net_t 5" << std::endl;
 		nSpikes++;
+		std::cout << "ending spike_net_t" << std::endl;
 
 //		printf("\tWriting to buffer! writeIdx:%d nspikes:%d \n", writeIdx, nSpikes);	
 	}

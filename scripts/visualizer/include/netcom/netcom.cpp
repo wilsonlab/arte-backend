@@ -152,13 +152,32 @@ int NetCom::txSpike(NetComDat net, spike_net_t *spike){
 
 void NetCom::rxSpike(NetComDat net, spike_net_t* spike){
 
-  char buff[BUFFSIZE-1];
+  std::cout << "netcom 1" << std::endl;
+  // char buff[BUFFSIZE-1];
+  char* buff; 
+  printf("buff is: %p\n", buff);  
+  buff=new char[BUFFSIZE-1];
+  std::cout << "buffsize: " << BUFFSIZE << std::endl;
+  printf("buff is again: %p\n", buff);
+ std::cout << "netcom 2" << std::endl;
   int buff_len = 0;
-  // printf("Netcom::rxSpike() calling rxBuff()\n");
-  rxBuff(net, buff, &buff_len);
-//  printf("Netcom::rxSpike() converting buff to spike\n");
+  std::cout << "netcom 3" << std::endl;
+   rxBuff(net, buff, &buff_len);
+  std::cout << "netcom 4" << std::endl;
   buffToSpike(spike, buff, true);
-  //printf("Netcom::rxSpike() the buff is converted\n");
+  std::cout << "netcom 5" << std::endl;
+
+  std::cout << "buff is: " << buff << std::endl;
+
+  std::cout << "time: " << spike->ts << " name: " << spike->name << " # channels: " << spike->n_chans << " samples/channel: " << spike->n_samps_per_chan << " sample bytes: " << spike->samp_n_bytes << " data: " << spike->data << " gains: " << spike->gains << " threshold: " << spike->thresh << " trig ind: " << spike->trig_ind << " sequence #: " << spike->seq_num <<  std::endl;
+    
+    for (int i=0; i<=10; i++)
+        std:: cout << "data: "  << spike->data[i] << std::endl;
+   for (int i=0; i<=10; i++) 
+        std::cout << "gains: " << spike->gains[i] << std::endl;
+   for (int i=0; i<=10; i++)
+        std::cout << "thresh: " << spike->thresh[i] << std::endl;
+   delete[] buff;
 }
 
 int NetCom::txWave(NetComDat net, lfp_bank_net_t *lfp){
