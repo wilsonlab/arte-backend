@@ -31,9 +31,9 @@ int main( int argc, char** argv )
 	loadWaveformColors();
 	
 	pthread_t netThread;
-	net = NetCom::initUdpRx(host,port);
+	net = NetCom::initUdpRx(host,port); //error
 	pthread_create(&netThread, NULL, readNetworkLfpData, (void *)NULL);
-	
+
 	glutInit(&argc,argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB );
 	glutInitWindowPosition( winPosX, winPosY );
@@ -41,7 +41,7 @@ int main( int argc, char** argv )
 
 //	sprintf(windowTitle, "Arte lfp Viewer: (port)");
 	glutCreateWindow(windowTitle);
-	
+
 	glutReshapeFunc( resizeWindow );
 	glutIdleFunc( idleFn );
 	glutDisplayFunc( redrawWindow );
@@ -472,7 +472,7 @@ void initCommandListAndMap(){
 	slowCmdMap[CMD_GAIN_SINGLE] = setGainSingle;
 	slowCmdMap[CMD_SET_WIN_LEN]	= setWindowTimeLen;
 	slowCmdMap[CMD_SET_FRAMERATE]=setFrameRate;
-	slowCmdMap[CMD_SET_PORT]	= setPortNumber;
+	//	slowCmdMap[CMD_SET_PORT]	= setPortNumber;
 	slowCmdMap[CMD_SET_WIN_POSX]= setWindowXPos;
 	slowCmdMap[CMD_SET_WIN_POSY]= setWindowYPos;
 	slowCmdMap[CMD_SET_WIN_W]	= setWindowWidth;
@@ -693,10 +693,10 @@ void setFrameRate(void *v)
 	int r = atoi((char*)v);
 	updateFrameRate(r);
 }
-void setPortNumber(void* v)
-{
-	port = (char*)v;
-}
+//void setPortNumber(void* v)
+//{
+//	port = (char*)v;
+//}
 void setWindowXPos(void* v)
 {
 	int x = atoi((char*)v);

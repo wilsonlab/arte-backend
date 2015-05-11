@@ -77,7 +77,7 @@ static float const colFont[3] = {1.0, 1.0, 1.0};
 // ===================================
 
 static char host[] = "127.0.0.1";
-static char * port;
+static char port[4];
 static NetComDat net; // = NetCom::initUdpRx(host,port);
 
 
