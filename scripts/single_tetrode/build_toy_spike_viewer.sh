@@ -1,0 +1,1 @@
+g++ -I include/toy_spike_viewer -I include/netcom -I include/common src/toy_spike_viewer/*.cpp src/netcom/*.cpp -D__STDC_LIMIT_MACROS -o build/toy_spike_viewer

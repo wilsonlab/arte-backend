@@ -1,1 +1,0 @@
-g++ `pkg-config --cflags sdl` `pkg-config sdl --libs` -lGL -lGLU -lGLEW -lglut -I ../../../../include/netcom/ -I ../../../../include/common/  -D__STDC_LIMIT_MACROS SDLViewer.cpp TetrodePlot.cpp PlotUtils.cpp ../../../netcom/*.cpp -o sdlviewer
