@@ -1,7 +1,7 @@
 import string, os, argparse, subprocess
 from xml.etree.ElementTree import ElementTree
 
-executable = "../scripts/arteSpikeViewer"
+executable = "../scripts/single_tetrode/arteSpikeViewer"
  
 xmin = 0;
 ymin = 0;
