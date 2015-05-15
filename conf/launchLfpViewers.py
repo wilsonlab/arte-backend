@@ -43,7 +43,7 @@ ypos = ymin
 dx = (xmax - xmin) / ncol
 dy = (ymax - ymin) / nrow
 
-binary = "../scripts/arteLfpViewer"
+binary = "../scripts/single_tetrode/arteLfpViewer"
 countx = 1
 county = 1
 for n in lfpChan.iterkeys():
