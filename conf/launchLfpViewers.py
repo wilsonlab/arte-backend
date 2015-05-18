@@ -1,4 +1,4 @@
-#/usr/bin/env python
+#!/usr/bin/env python
 import string, os, argparse
 from xml.etree.ElementTree import ElementTree
 
