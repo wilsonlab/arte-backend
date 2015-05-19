@@ -1,7 +1,10 @@
 #!/bin/bash
 
-#specify starting port in next line
+#specify starting port for spike viewer in next line
 port=5228
+
+#specify starting port for LFP viewer in next line
+portlfp=7000
 
 ./arteSpikeViewer <<<$port >/dev/null 2>/dev/null &
 sleep 1
@@ -53,3 +56,8 @@ sleep 1
 wmctrl -r "Arte Network Spike Viewer" -N "Tetrode 7"
 wmctrl -r "Tetrode 7" -e 0,688,715,600,300
 
+#lfp viewer
+./arteLfpViewer <<<$portlfp >/dev/null 2>/dev/null &
+sleep 1
+wmctrl -r "Arte Network LFP Viewer" -e 0,1300,715,600,300
+ 
