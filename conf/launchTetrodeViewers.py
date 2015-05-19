@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import string, os, argparse, subprocess
 from xml.etree.ElementTree import ElementTree
 
