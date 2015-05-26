@@ -73,13 +73,13 @@ port=$((port+1))
 ./arteSpikeViewer <<<$port >/dev/null 2>/dev/null &
 sleep 1
 wmctrl -r "Arte Network Spike Viewer" -N "Tetrode 9"
-wmctrl -r "Tetrode 9" -e 0,2688,0,600,300
+wmctrl -r "Tetrode 9" -e 0,2614,0,600,300
 
 port=$((port+1))
 ./arteSpikeViewer <<<$port >/dev/null 2>/dev/null &
 sleep 1
 wmctrl -r "Arte Network Spike Viewer" -N "Tetrode 10"
-wmctrl -r "Tetrode 10" -e 0,3300,0,600,300
+wmctrl -r "Tetrode 10" -e 0,3228,0,600,300
 
 #screen 2 2nd row
 
@@ -93,13 +93,13 @@ port=$((port+1))
 ./arteSpikeViewer <<<$port >/dev/null 2>/dev/null &
 sleep 1
 wmctrl -r "Arte Network Spike Viewer" -N "Tetrode 12"
-wmctrl -r "Tetrode 12" -e 0,2688,380,600,300
+wmctrl -r "Tetrode 12" -e 0,2614,380,600,300
 
 port=$((port+1))
 ./arteSpikeViewer <<<$port >/dev/null 2>/dev/null &
 sleep 1
 wmctrl -r "Arte Network Spike Viewer" -N "Tetrode 13"
-wmctrl -r "Tetrode 13" -e 0,3300,380,600,300
+wmctrl -r "Tetrode 13" -e 0,3228,380,600,300
 
 #screen 2 row 3
 port=$((port+1))
@@ -112,12 +112,12 @@ port=$((port+1))
 ./arteSpikeViewer <<<$port >/dev/null 2>/dev/null &
 sleep 1
 wmctrl -r "Arte Network Spike Viewer" -N "Tetrode 15"
-wmctrl -r "Tetrode 15" -e 0,2688,715,600,300
+wmctrl -r "Tetrode 15" -e 0,2614,715,600,300
 
 #lfp viewer
 portlfp=$((port+1))
 ./arteLfpViewer <<<$portlfp >/dev/null 2>/dev/null &
 sleep 1
 wmctrl -r "Arte Network LFP Viewer" -N "LFP Viewer 8-15"
-wmctrl -r "LFP Viewer 8-15" -e 0,3300,715,600,300
+wmctrl -r "LFP Viewer 8-15" -e 0,3228,715,600,300
 
