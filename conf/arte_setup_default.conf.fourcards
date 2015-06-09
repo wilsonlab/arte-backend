@@ -6,16 +6,18 @@
   <command_port> 5233 </command_port>
   <secondary_command_port> 5234 </secondary_command_port>
 
+
   <hosts>
-   <host> devel4
+   <host> 
     <ip_addy> 192.168.2.11 </ip_addy> // visualizer 1 address
    </host>
-   <host> devel2
+   <host>
+    <ip_addy> 192.168.2.10 </ip_addy> // visualizer 2 address
+   </host>
+   <host>
     <ip_addy> 192.168.2.12 </ip_addy> // backend address
    </host>
   </hosts>
-
-//
 
   <timer>
     <clock_source> ad </clock_source>
