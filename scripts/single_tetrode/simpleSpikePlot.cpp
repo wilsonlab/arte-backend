@@ -51,6 +51,7 @@ int main( int argc, char** argv )
 
 	srand(time(NULL));
 	gettimeofday(&startTime,NULL);
+	cout << "start time is: " << &startTime << endl;
 	//cout << "open yet?? 1" << endl; 
 	glutInit(&argc,argv);
 	//cout << "open yet?? 2" << endl; 
@@ -79,8 +80,10 @@ int main( int argc, char** argv )
 
 bool tryToGetSpike(spike_net_t *s){
 
-	if  (readIdx==writeIdx || nSpikes==0)
+	if  (readIdx==writeIdx || nSpikes==0) {
+		cout << "error, nSpikes == 0" << endl;
 		return false;
+		}
 
 	// Copy the spike data
 	s->name 	= spikeBuff[readIdx].name;

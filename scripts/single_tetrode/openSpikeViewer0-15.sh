@@ -115,7 +115,7 @@ wmctrl -r "Arte Network Spike Viewer" -N "Tetrode 15"
 wmctrl -r "Tetrode 15" -e 0,2570,700,620,310
 
 #lfp viewer
-portlfp=$((port+1))
+portlfp=$((portlfp+1))
 ./arteLfpViewer <<<$portlfp >/dev/null 2>/dev/null &
 sleep 1
 wmctrl -r "Arte Network LFP Viewer" -N "LFP Viewer 8-15"

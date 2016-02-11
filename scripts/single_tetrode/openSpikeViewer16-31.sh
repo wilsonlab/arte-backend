@@ -1,10 +1,10 @@
 #!/bin/bash
 
 #specify starting port for spike viewer in next line. make sure it's +16 of the port specified in openSpikeViewer0-15
-port=5228
+port=5316
 
 #specify starting port for LFP viewer in next line
-portlfp=7000
+portlfp=5202
 
 ./arteSpikeViewer <<<$port >/dev/null 2>/dev/null &
 sleep 1
@@ -115,7 +115,7 @@ wmctrl -r "Arte Network Spike Viewer" -N "Tetrode 31"
 wmctrl -r "Tetrode 31" -e 0,2570,700,620,310
 
 #lfp viewer
-portlfp=$((port+1))
+portlfp=$((portlfp+1))
 ./arteLfpViewer <<<$portlfp >/dev/null 2>/dev/null &
 sleep 1
 wmctrl -r "Arte Network LFP Viewer" -N "LFP Viewer 24-31"
