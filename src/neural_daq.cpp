@@ -101,6 +101,8 @@ tmp_timestamp = try_fopen("tmp.ts", "wb");
     strcpy( this_nd.raw_dump_filename, tmp_out_name.c_str() );
 
     this_nd.total_samp_count = this_nd.n_chans * this_nd.n_samps_per_buffer;
+    this_nd.data_buffer = (rdata_t *) malloc(MAX_NEURAL_DAQ_BUFFER * sizeof(int16));
+    assert(this_nd.data_buffer);
     this_nd.data_ptr = this_nd.data_buffer;
     init_array <rdata_t>(this_nd.data_ptr, 4, (this_nd.n_chans * this_nd.n_samps_per_buffer) );
     this_nd.size_bytes = this_nd.total_samp_count * sizeof(this_nd.data_ptr[0]);
