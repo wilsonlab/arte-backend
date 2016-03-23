@@ -5,7 +5,6 @@
 
 void *getNetSpike(void *ptr);
 
-using namespace std;
 
 #define GLUT_ICON "icon.72.png"
 int main( int argc, char** argv ) 
@@ -23,35 +22,27 @@ int main( int argc, char** argv )
 
 
 	pthread_t netThread;
-	/*
-        	//enter own ports	
+
+	//enter own ports	
 	using namespace std;
-		cout << "enter a port number between 1000-9999-- the first port used will be the port after your input: "; // gets port from user input
+		cout << "enter port number between 1000-9999: "; // gets port from user input
 		cin >> startingport;
 
 
-	for (int i=0; i<32; i++) // defines 32 ports starting with user input
+	for (int i=0; i<32; i++) // defines 16 ports starting with user input
 		{
-		  portarray[i] = new char[6];
-		  startingport=startingport+1;
-		  sprintf(portarray[i], "%d", startingport);
-		  // cout << "defining port: " << portarray[i] << endl;
+		sprintf(portchar, "%d", startingport+i);
+		portarray[i] = portchar;
+		
+		net = NetCom::initUdpRx(host,portarray[i]); 
+		netarray[i]=net;		
 		}
-	*/
 	
-	//static int portint;
-	//portint = 5228; 
-	//sprintf(port, "%d", portint); //error
-	//cout << "num 4" << endl;
-	
-        // port="5228";
 
-	net = NetCom::initUdpRx(host,port);
 	pthread_create(&netThread, NULL, getNetSpike, (void *)NULL);
 
 	srand(time(NULL));
 	gettimeofday(&startTime,NULL);
-	cout << "start time is: " << &startTime << endl;
 	//cout << "open yet?? 1" << endl; 
 	glutInit(&argc,argv);
 	//cout << "open yet?? 2" << endl; 
@@ -80,10 +71,8 @@ int main( int argc, char** argv )
 
 bool tryToGetSpike(spike_net_t *s){
 
-	if  (readIdx==writeIdx || nSpikes==0) {
-		cout << "error, nSpikes == 0" << endl;
+	if  (readIdx==writeIdx || nSpikes==0)
 		return false;
-		}
 
 	// Copy the spike data
 	s->name 	= spikeBuff[readIdx].name;
@@ -619,10 +608,6 @@ void setFrameRate(void *v)
     updateFrameRate(r);
 }
 
-//void setPortNumber(void* v) //old
-//{
-//   port = (char*)v;
-//}
 
 
 void setWindowXPos(void* v)

@@ -1,0 +1,19 @@
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual C++ Express 2008
+Project("{440342B6-8CFC-BEB6-A9FA-7D42CBB32492}") = "jSpike", "jSpike.vcproj", "{2CC60BC3-EBF9-E7D7-B57E-9D8C7BAD74BD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2CC60BC3-EBF9-E7D7-B57E-9D8C7BAD74BD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2CC60BC3-EBF9-E7D7-B57E-9D8C7BAD74BD}.Debug|Win32.Build.0 = Debug|Win32
+		{2CC60BC3-EBF9-E7D7-B57E-9D8C7BAD74BD}.Release|Win32.ActiveCfg = Release|Win32
+		{2CC60BC3-EBF9-E7D7-B57E-9D8C7BAD74BD}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
