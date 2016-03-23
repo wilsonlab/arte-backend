@@ -10,7 +10,7 @@ NetComDat NetCom::initUdpTx(char host[], int port){
 	hostent *he;
 	int numbytes;
 	int broadcast = 1;
-	std::cout << "reading from port" << port << std::endl;
+	std::cout << "TX reading from port" << port << std::endl;
 
 	if ((he=gethostbyname(host))==NULL){
 	  perror("gethostname");
@@ -66,7 +66,7 @@ NetComDat NetCom::initUdpRx(char host[], char *port){
     hints.ai_flags = AI_PASSIVE  |  AI_NUMERICSERV; // use my IP
 
 
-	std::cout<<"Listening to port:"<<port<<" from IP:"<<host<<std::endl;
+	std::cout<<"RX Listening to port:"<<port<<" from IP:"<<host<<std::endl;
 
 	if ((rv = getaddrinfo(NULL, port, &hints, &servinfo)) != 0) {
 			std::cout<<"RV VALUE:"<<rv<<std::endl;
