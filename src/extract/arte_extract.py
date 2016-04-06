@@ -8,6 +8,9 @@ beg_label_index = len(sys.argv)
 label_list_end = len(sys.argv) - 1
 trode_label_prefix = "tt"
 
+#sys.argv takes all the text input in a list
+
+#goes through sys.argv and finds the trode names and then stops at next argument
 for i in range(len(sys.argv)):
    if sys.argv[i] == '-trodenames':
       beg_index = i+1
@@ -15,6 +18,7 @@ for i in range(len(sys.argv)):
        list_end  = i
        break
 
+#goes through sys.argv finds the labels and stops at next argument
 for i in range(len(sys.argv)):
    if sys.argv[i] == "-trodelabels":
       beg_label_index = i+1
