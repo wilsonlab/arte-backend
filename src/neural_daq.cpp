@@ -78,6 +78,7 @@ tmp_timestamp = try_fopen("tmp.ts", "wb");
   int tmp_daq_count = 0;
   BOOST_FOREACH(boost::property_tree::ptree::value_type &v,
 		setup_pt.get_child("options.setup.neural_daq_list")){
+	std::cout << "daq count is: " << tmp_daq_count << std::endl;
     tmp_daq_count++;
   }
   
@@ -124,16 +125,19 @@ tmp_timestamp = try_fopen("tmp.ts", "wb");
   if( !daqs_reading ){   // that is, if we're really using the cards, as opposed to taking data from raw_dump files
 
       while(n_completed < n_daq){
-        if(!master_completed){   // we want to init the master card first
+        std::cout << "n completed is: " <<  n_completed << "and n_daq is: " << n_daq << std::endl;
+	if(!master_completed){   // we want to init the master card first
 	n = master_id;         // at end of that init, set n to 0,
         } else{                  // then iterate through the other cards
              // if (n>0) {
-             //	if (n == master_id){
+            // 	if (n == master_id){ //
+	  std::cout << "N IS EQUAL TO: " << n << std::endl;
 	  n++;}
-       //  }
+      //   } 
       //this_nd = neural_daq_map[n];  // old way
       this_nd = neural_daq_array[n];// new way
-      //it = neural_daq_map.find(n);
+     // std::cout << "this_nd is equal to: " << this_nd << std::endl;
+	//it = neural_daq_map.find(n);
       //this_nd = (*it).second;
      
       std::cout << "the value for N is: " << n << std::endl;
@@ -214,7 +218,10 @@ tmp_timestamp = try_fopen("tmp.ts", "wb");
       neural_daq_array[n] = this_nd; // I think this is redundant.  modifications to this_nd have been happening in the array already, right?
       n_completed++;
       std::cout << "Done processing some daq." << std::endl;
-    }
+       //    std::cout << "my id is: " << this_nd.id << " and my dev name is: " << this_nd.dev_name << " my data pointer is: " << this_nd.data_ptr << " ";
+       // std::cout << "nd.data_buffer is: " << this_nd.data_buffer << std::endl;
+
+	 }
     std::cout << "Done with daq_processing loop. " << std::endl;
   } //end if for card-read specefic stuff 
   
@@ -492,9 +499,13 @@ void do_cycle(timestamp_t this_cycle_time){
     //printf("About to read AD\n");fflush(stdout);
     bool32 tmp_isdone;
     daq_err_check( DAQmxIsTaskDone( nd->task_handle, &tmp_isdone ));
-    if(!tmp_isdone)
+    if(!tmp_isdone){
       daq_err_check ( DAQmxReadBinaryI16( nd->task_handle, 32, 10.0, DAQmx_Val_GroupByScanNumber, nd->data_ptr, buffer_size, &read,NULL) );
-    //printf("Done read\n"); fflush(stdout);
+        
+ 	//std::cout << "my id is: " << nd->id << " and my dev name is: " << nd->dev_name << " my data pointer is: " << nd->data_ptr << " ";
+	//std::cout << "nd.data_buffer is: " << nd->data_buffer << std::endl;
+	 //printf("Done read\n"); fflush(stdout);
+	}
   }
   //pthread_attr_destroy(&attr);
   

@@ -41,10 +41,13 @@ void Filtered_buffer::init(boost::property_tree::ptree &pt,
   
   // which neural_daq in the array has the id we want?
   for (int i = 0; i < n_neural_daqs; i++){
-    if( daq_id == neural_daq_array[i].id )
+    if( daq_id == neural_daq_array[i].id ) {
       my_daq = &(neural_daq_array[i]);
-  }
-
+	std::cout << "I USE THIS FOR LOOP WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO" << std::endl;
+ 	std::cout << "daq_id: " << daq_id << " i is " << i << " neural_daq_array[i].id is " << neural_daq_array[i].id << std::endl;
+	std::cout << daq_id << " == " << neural_daq_array[i].id << " : " << (daq_id == neural_daq_array[i].id) << std::endl;
+	 }
+ }
   // stream_n_samps_per_chan is the number of samps per chan
   // collected during each daq card read
   stream_n_samps_per_chan = my_daq->n_samps_per_buffer;

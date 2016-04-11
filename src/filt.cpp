@@ -227,9 +227,12 @@ void Filt::init(boost::property_tree::ptree &filt_pt){
 
 void print_array(rdata_t *buf, int n_chans, int buf_len, int curs)
 {
+std::cout << "n_Chans IS EQUAL TO: " << n_chans << std::endl;
+
   std::cout.precision(2);
   for (int c = 0; c < n_chans; c++){
-    std::cout << "c" << c << " ";
+    std::cout << "c IS EQUAL TO: " << c << std::endl;
+	std::cout << "n_Chans IS EQUAL TO: " << n_chans << std::endl;
     for (int p = 0; p < buf_len; p++){
       if(p == curs)
 	std::cout << " : ";

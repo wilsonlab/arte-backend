@@ -6,8 +6,12 @@
 #include <boost/foreach.hpp>
 #include "util.h"
 #include "neural_daq.h"
+#include "oatezmq.h" //code to network with oat camera system
+
+extern bool arte_disk_on;
 
 int main(int argc, char *argv[]){
+ 
 
   // implement in arteopt. setup done there for global neural_daq_map and trode_map
   arte_init(argc, argv, appendhome(default_setup_config_filename), appendhome(default_session_config_filename));
@@ -20,6 +24,17 @@ int main(int argc, char *argv[]){
   // (this happens in src/arteopt.cpp
   //neural_daq_start_all();
   //arte_timer.start();
+
+  if (arte_disk_on == true){
+  	//crate a new thread so backend can remain in sync with oat
+  	int rc;
+  	pthread_t oate_thread;
+  	rc = pthread_create(&oate_thread, NULL, oate, NULL);
+  	if(rc){
+      		printf("ERROR; return code from pthread_create() in arte oate thread init is %d\n", rc);
+      		exit(1);
+  	}
+  }
 
   std::cout << "Hit return to stop acquisition." << std::endl;
   getchar();
