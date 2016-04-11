@@ -9,6 +9,7 @@
 #include "timer.h"
 #include "filtered_buffer.h"
 #include "process_command.h"
+#include <ctime>
 
 FILE *main_file;
 bool arte_disk_on;
@@ -90,6 +91,9 @@ printf("about to try to open sesson file: %s\n", (session_config_filename.c_str(
 
   arte_setup_init(argc, argv); // Use the property_tree to set global vars
   arte_session_init(argc, argv); // Use property_tree to set up trode list, trode/eeg view vars
+
+  //std::cout << "THE NUMBER OF NEURAL Daqs IS: " << n_neural_daqs << std::cout;
+
   
 //arte_network_init(argc, argv); // look at trode_array and lfp_bank_array, make netcom for each trode or lfp_bank, and 2 for arte itself
   //arte_init_timer();  // in timer.h
@@ -101,6 +105,7 @@ printf("about to try to open sesson file: %s\n", (session_config_filename.c_str(
   arte_timer.init2( setup_pt.get_child("options.setup.timer") );
   
   neural_daq_start_all();
+
   acquiring = true;
 }
 
@@ -158,23 +163,69 @@ void arte_session_init(int argc, char *argv[]){
 
   std::cout << "Starting session init." << std::endl;
 
-  // open the main data file
-  char filename[MAX_NAME_STRING_LEN];
-  std::string tmp_filename;
-  assign_property<std::string>("options.session.main_filename",&tmp_filename, session_pt, session_pt, 1);
-  strcpy( filename, tmp_filename.c_str());
-  printf("about to try to open file from arteopt.cpp: %s\n", (filename));
-  if( (strcmp(filename, "none")) != 0 ){
-    main_file = try_fopen( filename, "wb" );
-  } else{
-    main_file = NULL;
+  //prompt user to determine if data storage should be turned on
+  std::cout << "Would you like to save data? (y/n)" << std::endl;
+  std::string prompt;
+  std::cin >> prompt;
+  while (prompt != "yes" && prompt != "no" && prompt != "y" && prompt != "n") {
+	std::cout << "invalid entry, please enter y, n, yes, or no" << std::endl;
+	prompt = "";
+	std::cin >> prompt;
   }
-  arte_disk_on = false;
+
+  if (prompt == "yes" || prompt == "y") {
+  	arte_disk_on = true;
+  }
+
+  else {
+ 	arte_disk_on = false;
+  }
+
+  // open the main data file
+  if (arte_disk_on) {
+	 std::cout << "THE DISK IS CURRENTLY ON" << std::endl;
+ 	 time_t rawtime2;	//code to create a file name with current date and time, adapted from code in oatezmq
+ 	 struct tm * timeinfo2;
+	 char timeBuf11[80];
+	 char timeBuf22[80];
+ 	 time(&rawtime2);
+ 	 timeinfo2 = localtime(&rawtime2);
+
+ 	 strftime(timeBuf11,80,"%Y-%m-%d",timeinfo2);
+ 	 strftime(timeBuf22,80,"%I-%M",timeinfo2);
+ 	 std::string timeStr11(timeBuf11);
+ 	 std::string timeStr22(timeBuf22);
+ 	 std::string fileName2 = ("../../Data/" + timeStr11 + "-" + timeStr22 + "-");
+ 	 //const char * cctime2 = fileName2.c_str();
+
+
+ 	 char filename[MAX_NAME_STRING_LEN];
+ 	 std::string tmp_filename;
+ 	 assign_property<std::string>("options.session.main_filename",&tmp_filename, session_pt, session_pt, 1);
+ 	 std::string tmp_filename2 = (fileName2 + tmp_filename);
+ 	 //strcpy( filename, tmp_filename.c_str());
+ 	 strcpy( filename, tmp_filename2.c_str());
+
+ 	 printf("about to try to open file from arteopt.cpp: %s\n", (filename));
+ 	 if( (strcmp(filename, "none")) != 0 ){
+ 	 main_file = try_fopen( filename, "wb" );
+ 	 } 
+	 else{
+ 	 main_file = NULL;
+ 	 }
+ 
+  }
+ 
+  else{
+	 std::cout << "THE DISK IS CURRENTLY OFF" << std::endl;
+  }
+
 
   // count how many trodes
   BOOST_FOREACH(boost::property_tree::ptree::value_type &v,
 		session_pt.get_child("options.session.trodes")){
     n_trodes += 1;
+//	std::cout << "THERE ARE THIS MANY TRODES: " << n_trodes << std::endl;
     n_filtered_buffers += 1;
   }
 

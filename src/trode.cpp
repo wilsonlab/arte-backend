@@ -352,10 +352,10 @@ void spike_to_disk(spike_net_t *spike){
   char buff[4000]; // TODO: get the right buffer size
   int buff_size, n;
   // TODO: Get this part thread-safe, needz mutex
-  
   spikeToBuff(spike, buff, &buff_size, false);
-  
+ 
   if(arte_disk_on){
+  //  std::cout << "ARTE DISK IS ON WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO line 359 trode.cpp" << std::endl;
     pthread_mutex_lock(&main_file_mutex);
     try_fwrite <char> (buff, buff_size, main_file);
     pthread_mutex_unlock(&main_file_mutex);

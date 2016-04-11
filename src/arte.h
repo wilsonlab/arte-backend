@@ -8,6 +8,7 @@
 #include "timer.h"
 #include "trode.h"
 #include "lfp_bank.h"
+#include "oatezmq.h"
 
 // Do we really need all these arrays and counters to be declared here?
 

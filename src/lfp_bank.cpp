@@ -121,7 +121,9 @@ void lfp_bank_write_record(void *lfp_bank_in){
     this_bank->next_ts_ok_to_print = this_bank->my_buffer->my_daq->buffer_timestamp + 5000;
     for(int s = 0; s < this_bank->d_buf_len; s++){
       std::cout << this_bank->my_buffer->my_daq->buffer_timestamp / 10000 << " ";
-      for(int c = 0; c < this_bank->n_chans; c++){
+//	std::cout << "my daq is: " << this_bank->my_buffer->my_daq->id << " ";
+//	std::cout << "dev name is: " << this_bank->my_buffer->my_daq->dev_name << " ";  
+    for(int c = 0; c < this_bank->n_chans; c++){
 	std::cout << this_bank->d_buf[(s * (this_bank->n_chans) ) + c] << " ";
       }
       std::cout << std::endl;
