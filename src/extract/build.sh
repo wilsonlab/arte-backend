@@ -1,1 +1,1 @@
-g++ arte_to_mwl.cpp ../netcom/datapacket.cpp -I ../../include/extract -I ../../include/netcom -I ../../include/common -I /usr/local/boost_1_45_0/ -D__STDC_LIMIT_MACROS -D_FILE_OFFSET_BITS=64 -o arte_to_mwl
+g++ --std=c++0x arte_to_mwl.cpp -o arte_to_mwl ../netcom/datapacket.cpp -I ../../include/extract -I .. -I ../../include/common -I /usr/local/boost_1_45_0/ -I /usr/local/include/boost -D__STDC_LIMIT_MACROS -D_FILE_OFFSET_BITS=64 -lboost_system
