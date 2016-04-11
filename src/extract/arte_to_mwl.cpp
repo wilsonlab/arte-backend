@@ -3,14 +3,42 @@
 
 #define MAX_PACKET_BYTES 8000
 
+bool permissive_buffer_lengths = false;
+bool auto_drop_bad_length_packets = true;
+int bad_length_packets;
+
 FILE *in_f, *out_f;
 int spike_count;
 
 bool interactive;
 bool verbose;
 
+// Set a first-buffer time threshold in order to drop spikes occurring too early
+// (buffers suffering from the uint underwrite)
+uint32_t low_time_threshold = 1000000; // 1,000,000 time units = 100 seconds
+bool encountered_low = false;
+
 spike_net_t g_spike;    // global spike struct
 lfp_bank_net_t g_lfp;   // global lfp struct
+
+uint16_t show_header(bool pr) {
+  char buff_head[4];
+  char the_type;
+  uint16_t the_length;
+  char the_next_byte;
+
+  fread  (buff_head, sizeof(char), 4,  in_f);
+  fseek( in_f, -4, SEEK_CUR );
+  
+  the_type = buff_head[0];
+  memcpy( &the_length, buff_head+1, 2 );
+  memcpy( &the_next_byte, buff_head+3, 1);
+  
+  if(pr)
+    printf("Current buffer header:\n the_type: %c\n the_length: %d\n the_next_byte: %d\n\n", the_type, the_length, the_next_byte);
+
+  return the_length;
+}
 
 int main(int argc, char *argv[]){
 
@@ -23,6 +51,7 @@ int main(int argc, char *argv[]){
   int packet_count = 0;
   char blank_data[MAX_PACKET_BYTES];
   
+  bad_length_packets = 0;
   //this_arte_packet = (void *)&(blank_data[0]);
 
   char input_filename[200], output_filename[200];
@@ -92,6 +121,13 @@ int main(int argc, char *argv[]){
       
       if(ok_packet){
 	
+	//print_timestamp(this_arte_packet, sourcetype);
+
+	if(bad_length_packets > 0){
+	  printf("Writing a packet at some point later than the corruption.  Writing:\n");
+	  print_packet(this_arte_packet, sourcetype);
+	}
+
 	fflush(out_f);
 	//printf("in loop...\n");
 	if( sourcetype == NETCOM_UDP_SPIKE){
@@ -110,6 +146,7 @@ int main(int argc, char *argv[]){
     //free(this_arte_packet);
 
   printf("finished. Wrote %d packet(s)\n", packet_count);
+  printf("Encountered %d bad_length_packets.\n", bad_length_packets);
   exit(0);
   
 }
@@ -318,15 +355,27 @@ void write_file_header(void *arte_packet, int argc, char *argv[], packetType_t s
 }
 
 void interactive_wait(const char *wait_str){
+  uint16_t the_length = 0;
   if(interactive){ 
     fflush(stdout);
-    char c = 'a';
-    printf("In interactive mode. hit f [enter] to exit interactive mode.\n");
+    char c = 'b';
+    printf("In interactive mode. hit a [enter] to advance 1 byte until reaching the_length 68 or 294, f [enter] to exit interactive mode.\n");
     printf("%s\n",wait_str);
     while(c != '\n'){
       c = getchar();
       if(c == 'f')
 	interactive = false;
+      if(c == 'a') {
+	int search_dist = 0;
+	the_length = show_header(true);
+	printf("The_length: %d\n", the_length);
+	while (the_length != 68 && the_length != 294){
+	  search_dist++;
+	  printf("Search dist: %d", search_dist);
+	  fseek( in_f, 1, SEEK_CUR );
+	  the_length = show_header(true);
+	}
+      }
     }
   }
   fflush(stdout);
@@ -391,9 +440,23 @@ void init_filenames(int argc, char *argv[],
  
 }
 
+void print_timestamp(void *arte_packet, packetType_t sourcetype){
+  if(sourcetype == NETCOM_UDP_SPIKE){
+    spike_net_t *spike = (spike_net_t*) arte_packet;
+    printf("Spike %d ts: %d\n", spike->name, spike->ts);
+  }
+  if(sourcetype == NETCOM_UDP_LFP){
+    lfp_bank_net_t *lfp = (lfp_bank_net_t*) arte_packet;
+    printf("Lfp %d ts: %d\n", lfp->name, lfp->ts);
+  }
+  if(sourcetype != NETCOM_UDP_SPIKE && sourcetype != NETCOM_UDP_LFP) {
+    printf("UNKNOWN TYPE!\n");
+  }
+}
+
 void print_packet(void *arte_packet, packetType_t sourcetype){
   
-  if(verbose){
+  if(true){
 
     // char packet_type;
     // uint32_t packet_size;
@@ -451,12 +514,50 @@ bool get_next_packet(void *arte_packet, int sourcename, packetType_t sourcetype)
 
   fread  (buff_head, sizeof(char), 4,  in_f);
   fseek( in_f, -4, SEEK_CUR );
-  
+
+  // Read the header
   the_type = buff_head[0];
   memcpy( &the_length, buff_head+1, 2 );
   memcpy( &the_next_byte, buff_head+3, 1);
 
 
+  if (the_length != 68 && the_length != 294){
+    bad_length_packets++;
+    if(!auto_drop_bad_length_packets){
+      printf("the_length: %d\n", the_length);
+      interactive = true;
+      interactive_wait("Bad the_length.\n");
+    }
+
+    if(auto_drop_bad_length_packets){
+      int search_length = 0;
+      while(the_length != 68 && the_length != 294){
+	search_length++;
+	fseek( in_f, 1, SEEK_CUR );
+	fread  (buff_head, sizeof(char), 4,  in_f);
+	fseek( in_f, -4, SEEK_CUR );
+	the_type = buff_head[0];
+	memcpy( &the_length, buff_head+1, 2 );
+	memcpy( &the_next_byte, buff_head+3, 1);
+      }
+      //printf("Succeeded after %d advances\n", search_length);
+    }
+
+    fread  (buff_head, sizeof(char), 4,  in_f);
+    fseek( in_f, -4, SEEK_CUR );
+    the_type = buff_head[0];
+    memcpy( &the_length, buff_head+1, 2 );
+    memcpy( &the_next_byte, buff_head+3, 1);
+    
+    //printf("About to leave corruption-handling block.\n");
+    //show_header(true);
+
+  }
+
+  if(interactive){
+    show_header(true);
+    printf("About to fread %d bytes\n", the_length);
+  }
   //printf("Wanted sourcetype: %c, buff_type:%c length:%d next_byte:%d\n", 
   //	 sourcetype, the_type, the_length, the_next_byte);
 
@@ -472,6 +573,10 @@ bool get_next_packet(void *arte_packet, int sourcename, packetType_t sourcetype)
     
     spike = (spike_net_t*)arte_packet;
     //printf("ok after spike= assignment\n"); fflush(stdout);
+
+    //if(bad_length_packets > 0)
+    //  print_packet(spike, sourcetype);
+
     buffToSpike( spike, buff, false );
     //printf("ok after buffToSpike.\n"); fflush(stdout);
     ok_packet = ( spike->name == sourcename );
@@ -484,6 +589,13 @@ bool get_next_packet(void *arte_packet, int sourcename, packetType_t sourcetype)
       ok_packet = false;
       //printf("Found spike with bad_ts:%d  Current spike_count is:%d   Dropping it.\n", spike->ts, spike_count);
     }
+
+    if(spike->ts > low_time_threshold && (!encountered_low)){
+      printf("Found a spike with ts:%d which is below the time-theshold:%d while low_encoundered is false.  Dropping it.\n",
+             spike->ts, spike_count);
+      return false;
+    }
+
     if(false){
       printf("sought-after sourcename:%d sourcetype:%c  found name:%d type:%c\n",
 	     sourcename, sourcetype, spike->name, the_type);
@@ -499,6 +611,8 @@ bool get_next_packet(void *arte_packet, int sourcename, packetType_t sourcetype)
       fflush(stdout);
     }
     //printf("ABOUT TO RETURN\n");
+    if (ok_packet)
+      encountered_low = true;
     return (ok_packet & (sourcetype == NETCOM_UDP_SPIKE)); 
   }
    

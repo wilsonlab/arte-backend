@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <cstdlib> // apparently needed for exit(0) in Ubuntu
-#include "../datapacket.h"
-#include "../global_defs.h"
+#include "datapacket.h"
+#include "global_defs.h"
 
 void write_mwl(void *arte_packet, packetType_t sourcetype);
 void init_filenames(int argc, char *argv[], char input_filename[], char output_filename[], int *sourcename, packetType_t *sourcetype);
