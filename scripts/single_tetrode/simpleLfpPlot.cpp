@@ -56,7 +56,7 @@ int main( int argc, char** argv )
 }
 void initializeWaveVariables(){
 	
-	sampleRate = 1000 * nSampsPerChan;		
+	sampleRate = 1000 * nSampsPerChan; // changable. smaller is faster. 1000 originally		
 	maxIdx = winDt * sampleRate;
 	
 	if (maxIdx>MAX_N_SAMP){

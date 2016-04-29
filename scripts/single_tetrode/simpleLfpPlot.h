@@ -42,7 +42,7 @@ static double yBox = winHeight/8;
 static double xPadding = 1;
 static double yPadding = 2;
 
-static double const waveformLineWidth = 1;
+static double const waveformLineWidth = 1; // was 1
 static bool disableWaveOverlay = true;
 static char txtDispBuff[40];
 
@@ -62,8 +62,8 @@ static double yScale = 2.0 / (double) yRange;
 //static float dV = 1.0/((float)MAX_VOLT*2);
 
 static float dV = yRange/8;
-static float userScale = 30; //changed from 1 to 30
-static float dUserScale = .1;
+static float userScale = 30; //changed from 1 to 12
+static float dUserScale = .1; //
 
 static float voltShift = 0;
 static float userShift = 0;
@@ -98,9 +98,9 @@ static uint64_t writeInd = 0;
 // ===================================
 static uint32_t curSeqNum = 0;
 static uint32_t prevSeqNum = 0;
-static int nSampsPerChan = 2;
-static double sampleRate = 2000;
-static double winDt = 2;
+static int nSampsPerChan = 2; // uh? 2 originally
+static double sampleRate = 2000; // 2000 originally. no difference as far as i can tell
+static double winDt = 2; // larger is slower. was 2 originally
 static int maxIdx = winDt * sampleRate;
 static uint64_t dIdx = 0;
 static int nBuffLost = 0;
